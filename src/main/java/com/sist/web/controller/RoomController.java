@@ -52,7 +52,7 @@ public class RoomController {
 	
 	
     /**
-     * 숙소 등록 처리 (폼 데이터 및 파일 업로드)
+     * 숙소 등록 처리 (폼 데이터 및 파일 업로드함)
      */	
 	@RequestMapping(value="/room/addProc", method=RequestMethod.POST)
 	public String addProc(MultipartHttpServletRequest request)
