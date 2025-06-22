@@ -1,6 +1,6 @@
 # spacebar
 
-> Spring MVC 기반 숙소 예약 플랫폼
+> Spring MVC 기반 공간 렌탈, 예약 플랫폼
 
 ---
 
