@@ -52,7 +52,7 @@ public class RoomController {
 	
 	
     /**
-     * 숙소 등록 처리 (폼 데이터 및 파일 업로드함)
+     * 숙소 등록 처리 (폼 데이터 및 파일 업로드)
      */	
 	@RequestMapping(value="/room/addProc", method=RequestMethod.POST)
 	public String addProc(MultipartHttpServletRequest request)
@@ -112,34 +112,43 @@ public class RoomController {
 		String roomImgTypeDetail = "detail"; 
 		
 		// 2-1. 메인 이미지 처리(단일 파일)
-		FileData mainImageFile = HttpUtil.getFile(request, "roomMainImage", UPLOAD_SAVE_DIR + File.separator + "room" + roomImgTypeMain);
-		if(mainImageFile != null)
+		MultipartFile mainImageFile = request.getFile("roomMainImage");
+		if(mainImageFile != null && !mainImageFile.isEmpty())
 		{
             RoomImage mainRoomImage = new RoomImage();
             //mainRoomImage.setRoomImgName(mainImageFile.getFileName());
-            mainRoomImage.setRoomImgOrigName(mainImageFile.getFileOrgName());
-            mainRoomImage.setRoomImgExt(mainImageFile.getFileExt());
-            mainRoomImage.setImgSize((int)mainImageFile.getFileSize());
+            //mainRoomImage.setRoomImgOrigName(mainImageFile.getFileOrgName());
+            //mainRoomImage.setRoomImgExt(mainImageFile.getFileExt());
+            //mainRoomImage.setImgSize((int)mainImageFile.getFileSize());
+            mainRoomImage.setFile(mainImageFile); // [중요] MultipartFile 객체를 모델에 담음
+//            mainRoomImage.setRoomImgOrigName(mainImageFile.getOriginalFilename());
+//            mainRoomImage.setRoomImgExt(mainImageFile.getContentType());
+//            mainRoomImage.setImgSize((int)mainImageFile.getSize());
             mainRoomImage.setImgType(roomImgTypeMain);
             mainRoomImage.setSortOrder((short)1);
-            roomImageList.add(mainRoomImage);			
+            roomImageList.add(mainRoomImage);	
 		}
 		
 		// 2-2. 상세 이미지 처리(파일 여러개)
-		List<FileData> detailImageFiles = HttpUtil.getFiles(request, "roomDetailImages", UPLOAD_SAVE_DIR + File.separator + "room" + roomImgTypeDetail);
-		if(detailImageFiles != null)
+		List<MultipartFile> detailImageFiles = request.getFiles("roomDetailImages");
+		if(detailImageFiles != null && detailImageFiles.size() > 0)
 		{
 			short sortOrder = 2;
-			for(FileData fileData : detailImageFiles)
+			for(MultipartFile file : detailImageFiles)
 			{
-				RoomImage detailRoomImage = new RoomImage();
-				//detailRoomImage.setRoomImgName(fileData.getFileName());
-				detailRoomImage.setRoomImgOrigName(fileData.getFileOrgName());
-				detailRoomImage.setRoomImgExt(fileData.getFileExt());
-				detailRoomImage.setImgSize((int)fileData.getFileSize());
-				detailRoomImage.setImgType(roomImgTypeDetail);
-				detailRoomImage.setSortOrder(sortOrder++);
-				roomImageList.add(detailRoomImage);		
+//				RoomImage detailRoomImage = new RoomImage();
+				//detailRoomImage.setRoomImgName(`.getFileName());
+//				detailRoomImage.setRoomImgOrigName(fileData.getFileOrgName());
+//				detailRoomImage.setRoomImgExt(fileData.getFileExt());
+//				detailRoomImage.setImgSize((int)fileData.getFileSize());
+//				detailRoomImage.setImgType(roomImgTypeDetail);
+//				detailRoomImage.setSortOrder(sortOrder++);
+//				roomImageList.add(detailRoomImage);	
+                RoomImage detailRoomImage = new RoomImage();
+                detailRoomImage.setFile(file); // [중요] MultipartFile 객체를 모델에 담음
+                detailRoomImage.setImgType("detail");
+                detailRoomImage.setSortOrder(sortOrder++);
+                roomImageList.add(detailRoomImage);
 			}
 		}
 		// room에 추가함. List<RoomImage> RoomImageList
