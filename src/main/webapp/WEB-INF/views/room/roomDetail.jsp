@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
   <head>
@@ -28,14 +29,21 @@
     <div class="section">
       <div class="container">
         <div class="row justify-content-between">
-          <!-- 이미지 -->
-          <div class="col-lg-7">
-            <div class="img-property-slide">
-              <c:forEach var="img" items="${room.roomImageList}">
-                <img src="/uploads/room/${img.roomImgName}" alt="숙소 이미지" class="img-fluid mb-2" />
-              </c:forEach>
-            </div>
-          </div>
+        <!-- 이미지 -->
+		<div class="col-lg-7">
+		  <div class="img-property-slide">
+		    <c:forEach var="img" items="${room.roomImageList}">
+		      <c:choose>
+		        <c:when test="${img.imgType == 'main'}">
+		          <img src="/resource/upload/room/mainImg/${img.roomImgOrigName}" alt="${img.roomImgOrigName}" class="img-fluid mb-2" />
+		        </c:when>
+		        <c:when test="${img.imgType == 'detail'}">
+		          <img src="/resource/upload/room/detailImg/${img.roomImgOrigName}" alt="${img.roomImgOrigName}" class="img-fluid mb-2" />
+		        </c:when>
+		      </c:choose>
+		    </c:forEach>
+		  </div>
+		</div>
           
           <!-- 텍스트 정보 -->
           <div class="col-lg-4">
