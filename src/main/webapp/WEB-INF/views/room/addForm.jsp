@@ -178,7 +178,7 @@
 
 <script>
 $(document).ready(function() {
-    j
+    
     let roomTypeIndex = 0;
 
     // "객실 타입 추가" 버튼 클릭 이벤트

@@ -143,15 +143,13 @@ public class RoomServiceImpl implements RoomService {
      */
 	    private void saveRoomImageFile(RoomImage roomImage, int roomSeq)
 	    {	
-	    	logger.debug("이건 떠야지?????????????11111111111111111");
 	    	try
 	    	{	
 	    		if(roomImage == null || roomImage.getFile() == null || roomImage.getFile().isEmpty())
 	    		{	
-	    			logger.debug("이건 떠야지?????????????2222222222222");
+	    			logger.debug(">> 파일 없음: roomImage 또는 file 이 null/empty");
 	    			return;
 	    		}
-	    		logger.debug("이건 떠야지?????????????333333333333333333333");
 	    		MultipartFile file = roomImage.getFile();
 	    		// 이미지 타입(폴더명 : main, detail)
 	    		String imgType = roomImage.getImgType();
@@ -159,12 +157,15 @@ public class RoomServiceImpl implements RoomService {
 	    		String roomImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
 	    		// 아마도 "C:upload\room\main"
 	    		String saveDir = UPLOAD_SAVE_DIR + File.separator + "room" + File.separator + imgType;
+	    		logger.debug(">> 이미지 ROOM_IMAGE 저장 경로: {}", saveDir);
 	    		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
 	    		FileUtil.createDirectory(saveDir);
 	    		logger.debug(">> saveRoomImageFile() set roomSeq1111: {}", roomImage.getRoomSeq());
 
 	    		// RoomImage의 Seq 값 조회
-	            short newRoomImgSeq = roomImageDao.getRoomImageSeq();
+	            // short newRoomImgSeq = roomImageDao.getRoomImageSeq();
+	            short maxSeq = roomImageDao.selectMaxRoomImgSeq(roomSeq); // ex: 2
+	            short newRoomImgSeq = (short) (maxSeq + 1); // 다음 이미지의 순번 = 3 
 	    		// 파일명 설정(main, detail 구분)
 	    		String fileName = (imgType.equals("main")) ?  
 	    						  roomSeq + "." + roomImgExt :
@@ -214,12 +215,14 @@ public class RoomServiceImpl implements RoomService {
     		String roomImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
     		// 아마도 "C: upload\roomType\main"
     		String saveDir = UPLOAD_SAVE_DIR + File.separator + "roomType" + File.separator + imgType;
+    		logger.debug(">> 이미지 IROOM_TYPE_IMAGE 저장 경로: {}", saveDir);
     		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
     		FileUtil.createDirectory(saveDir);  		
     		
     		// RoomTypeImage의 Seq 값 조회
-    		short newRoomTypeImgSeq = roomTypeImageDao.getRoomTypeImageSeq();
-    		
+    		// short newRoomTypeImgSeq = roomTypeImageDao.getRoomTypeImageSeq();
+            short maxSeq = roomTypeImageDao.selectMaxRoomTypeImgSeq(roomTypeSeq); // ex: 1
+            short newRoomTypeImgSeq = (short) (maxSeq + 1); // 다음 이미지의 순번 = 2
     		// 파일명 설정(main, detail 구분)
     		String fileName = (imgType.equals("main")) ?  
     						  roomTypeSeq + "." + roomImgExt :
