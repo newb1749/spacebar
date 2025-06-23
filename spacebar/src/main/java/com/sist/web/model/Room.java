@@ -1,0 +1,207 @@
+package com.sist.web.model;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class Room implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1239575109179546912L;
+	
+	
+	private int roomSeq;				// 숙소 시퀀스 (기본키)
+	private int roomCatSeq;				// 숙소 카테고리 시퀀스 (외래키)
+	private String hostId;				// 호스트 ID (외래키)
+	private String roomAddr;			// 숙소 주소
+	private double latitude;			// 위도 (11,9)
+	private double longitude;			// 경도 (12,9)
+	private String region;				// 지역
+	private String regDt;				// 숙소 등록일
+	private String updateDt;			// 마지막 업데이트 일시
+	private String autoConfirmYn;		// 자동 예약 확정 여부 (Y: 예, N: 아니오)
+	private String roomTitle;			// 숙소 제목
+	private String roomDesc;			// 숙소 상세 설명
+	private String cancelPolicy;		// 취소 정책
+	private short minTimes;				// 최소 이용시간
+	private short maxTimes;				// 최대 이용시간
+	private double averageRating;		// 숙소 평균 평점 (2,1)
+	private int reviewCount;			// 숙소 전체 리뷰수
+	
+	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
+	
+	public Room()
+	{
+		roomSeq = 0;
+		roomCatSeq = 0;
+		hostId = "";
+		roomAddr = "";
+		latitude = 0;
+		longitude = 0;
+		region = "";
+		regDt = "";
+		updateDt = "";
+		autoConfirmYn = "N";
+		roomTitle = "";
+		roomDesc = "";
+		cancelPolicy = "";
+		minTimes = 0;
+		maxTimes = 0;
+		averageRating = 0;
+		reviewCount = 0;
+	}
+	
+	
+	
+	public List<RoomImage> getRoomImageList() {
+		return RoomImageList;
+	}
+
+
+
+	public void setRoomImageList(List<RoomImage> roomImageList) {
+		RoomImageList = roomImageList;
+	}
+
+
+
+	public int getRoomSeq() {
+		return roomSeq;
+	}
+
+	public void setRoomSeq(int roomSeq) {
+		this.roomSeq = roomSeq;
+	}
+
+	public int getRoomCatSeq() {
+		return roomCatSeq;
+	}
+
+	public void setRoomCatSeq(int roomCatSeq) {
+		this.roomCatSeq = roomCatSeq;
+	}
+
+	public String getHostId() {
+		return hostId;
+	}
+
+	public void setHostId(String hostId) {
+		this.hostId = hostId;
+	}
+
+	public String getRoomAddr() {
+		return roomAddr;
+	}
+
+	public void setRoomAddr(String roomAddr) {
+		this.roomAddr = roomAddr;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public String getRegDt() {
+		return regDt;
+	}
+
+	public void setRegDt(String regDt) {
+		this.regDt = regDt;
+	}
+
+	public String getUpdateDt() {
+		return updateDt;
+	}
+
+	public void setUpdateDt(String updateDt) {
+		this.updateDt = updateDt;
+	}
+
+	public String getAutoConfirmYn() {
+		return autoConfirmYn;
+	}
+
+	public void setAutoConfirmYn(String autoConfirmYn) {
+		this.autoConfirmYn = autoConfirmYn;
+	}
+
+	public String getRoomTitle() {
+		return roomTitle;
+	}
+
+	public void setRoomTitle(String roomTitle) {
+		this.roomTitle = roomTitle;
+	}
+
+	public String getRoomDesc() {
+		return roomDesc;
+	}
+
+	public void setRoomDesc(String roomDesc) {
+		this.roomDesc = roomDesc;
+	}
+
+	public String getCancelPolicy() {
+		return cancelPolicy;
+	}
+
+	public void setCancelPolicy(String cancelPolicy) {
+		this.cancelPolicy = cancelPolicy;
+	}
+
+	public short getMinTimes() {
+		return minTimes;
+	}
+
+	public void setMinTimes(short minTimes) {
+		this.minTimes = minTimes;
+	}
+
+	public short getMaxTimes() {
+		return maxTimes;
+	}
+
+	public void setMaxTimes(short maxTimes) {
+		this.maxTimes = maxTimes;
+	}
+
+	public double getAverageRating() {
+		return averageRating;
+	}
+
+	public void setAverageRating(double averageRating) {
+		this.averageRating = averageRating;
+	}
+
+	public int getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(int reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+	
+	
+	
+}
