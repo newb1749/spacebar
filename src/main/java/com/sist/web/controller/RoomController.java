@@ -222,4 +222,32 @@ public class RoomController {
 
         return "redirect:/";
     }
+	
+	@RequestMapping(value="/room/list", method=RequestMethod.GET)
+	public String list()
+	{
+		return "/room/list";
+	}
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
