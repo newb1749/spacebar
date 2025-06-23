@@ -60,48 +60,71 @@ public class RoomServiceImpl implements RoomService {
 	            // 이 시점에 room 객체의 roomSeq 필드에는 새로 생성된 시퀀스 값이 채워짐
 	            logger.debug("==================================");
 	            logger.debug("New Room Seq: " + newRoomSeq);
+	            logger.debug("room.getRoomSeq(): {}", room.getRoomSeq()); // 진짜 세팅됐는지 확인
 	            logger.debug("==================================");
 	            
 	            // 2. 숙소 이미지(ROOM_IMAGE) 정보 저장
 	            // Room 객체에 포함된 이미지 리스트를 가져와서 처리
 	            // roomImageSeq는 mapper에서 쿼리로 만들어짐.
 	            List<RoomImage> roomImageList = room.getRoomImageList();
+		        logger.debug("이건찍히겠지11111111111111");	            
 	            if (roomImageList != null && roomImageList.size() > 0) 
-	            {
+	            {	
+	    	        logger.debug("이건찍히겠지22222222222222222");
 	                for (RoomImage roomImage : roomImageList) 
-	                {
+	                {	
+	                    logger.debug("roomImage: {}", roomImage);
+	                    logger.debug(">> roomImage.getFile(): {}", roomImage.getFile());
+	                    logger.debug(">> roomImage.getFile().isEmpty(): {}", 
+	                        roomImage.getFile() != null ? roomImage.getFile().isEmpty() : "null");
+	                    logger.debug(">> Before saveRoomImageFile(), roomSeq: {}", room.getRoomSeq());
+	        	        logger.debug("이건찍히겠지333333333333333333");
 	                	// 위에서 설정된 roomSeq를 넣어줌.
 	                	saveRoomImageFile(roomImage, newRoomSeq);
+	                	logger.debug("이건찍히겠지444444444444444444");
+	                    logger.debug(">> Before insertRoomImage, roomImage.getRoomSeq(): {}", roomImage.getRoomSeq());
 	                    count += roomImageDao.insertRoomImage(roomImage);
+	                	logger.debug("이건찍히겠지55555555555555555555");
 	                }
 	            }
 	        }
-	
+	        logger.debug("이건찍히겠지666666666666666666666");
+	        logger.debug("roomTypeList is null? {}", (roomTypeList == null));
+	        logger.debug("roomTypeList size: {}", (roomTypeList != null ? roomTypeList.size() : 0));
+	        
 	        // 3. 객실 타입(ROOM_TYPE) 정보 저장 (여러 개일 수 있음)
 	        if (roomTypeList != null && roomTypeList.size() > 0) {
 	            for (RoomType roomType : roomTypeList) {
-	                // 부모 숙소의 roomSeq를 설정해줍니다.
-	                roomType.setRoomSeq(room.getRoomSeq());
-	                count += roomTypeDao.insertRoomType(roomType);
-	                int newRoomTypeSeq = roomType.getRoomTypeSeq();
-	                // 이 시점에 각 roomType 객체의 roomTypeSeq 필드에도 새로운 시퀀스 값이 채워짐
-	                logger.debug("==================================");
-	                logger.debug("New RoomType Seq: " + newRoomTypeSeq);
-	                logger.debug("==================================");
-	               
-	                // 4. 객실 타입별 상세 이미지(ROOM_TYPE_IMAGE) 정보 저장
-	                // roomTypeImageSeq는 mapper에서 쿼리로 만들어짐.
-	                // RoomType 객체에 포함된 이미지 리스트를 가져와서 처리.
-	                List<RoomTypeImage> roomTypeImageList = roomType.getRoomTypeImageList();
-	                if (roomTypeImageList != null && roomTypeImageList.size() > 0) 
-	                {
-	                    for (RoomTypeImage roomTypeImage : roomTypeImageList) 
-	                    {
-	                    	// 위에서 설정된 roomTypeSeq를 넣어줌.
-	                    	saveRoomTypeImageFile(roomTypeImage, newRoomTypeSeq);
-	                        count += roomTypeImageDao.insertRoomTypeImage(roomTypeImage);
-	                    }
-	                }
+	            	try
+	            	{        	
+		                // 부모 숙소의 roomSeq를 설정해줍니다.
+		                roomType.setRoomSeq(room.getRoomSeq());
+		                count += roomTypeDao.insertRoomType(roomType);
+		                int newRoomTypeSeq = roomType.getRoomTypeSeq();
+		                // 이 시점에 각 roomType 객체의 roomTypeSeq 필드에도 새로운 시퀀스 값이 채워짐
+		                logger.debug("==================================");
+		                logger.debug("New RoomType Seq: " + newRoomTypeSeq);
+		                logger.debug("==================================");
+		               
+		                // 4. 객실 타입별 상세 이미지(ROOM_TYPE_IMAGE) 정보 저장
+		                // roomTypeImageSeq는 mapper에서 쿼리로 만들어짐.
+		                // RoomType 객체에 포함된 이미지 리스트를 가져와서 처리.
+		                List<RoomTypeImage> roomTypeImageList = roomType.getRoomTypeImageList();
+		                if (roomTypeImageList != null && roomTypeImageList.size() > 0) 
+		                {
+		                    for (RoomTypeImage roomTypeImage : roomTypeImageList) 
+		                    {
+		                    	// 위에서 설정된 roomTypeSeq를 넣어줌.
+		                    	saveRoomTypeImageFile(roomTypeImage, newRoomTypeSeq);
+		                        count += roomTypeImageDao.insertRoomTypeImage(roomTypeImage);
+		                    }
+		                }
+	            	}
+	            	catch(Exception e)
+	            	{
+	                    logger.error("[insertRoomTransaction] RoomType 처리 중 오류 발생", e);
+	                    throw e;	            		
+	            	}
 	            }
 	        }
         
@@ -118,48 +141,57 @@ public class RoomServiceImpl implements RoomService {
     /**
      * RoomImage 파일을 저장하고 모델에 관련 정보를 채우는 헬퍼 메소드
      */
-    private void saveRoomImageFile(RoomImage roomImage, int roomSeq)
-    {
-    	try
-    	{	
-    		if(roomImage == null || roomImage.getFile() == null || roomImage.getFile().isEmpty())
-    		{
-    			return;
-    		}
-    		
-    		MultipartFile file = roomImage.getFile();
-    		// 이미지 타입(폴더명 : main, detail)
-    		String imgType = roomImage.getImgType();
-    		// 확장자 추출
-    		String roomImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
-    		// 아마도 "C:upload\room\main"
-    		String saveDir = UPLOAD_SAVE_DIR + File.separator + "room" + File.separator + imgType;
-    		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
-    		FileUtil.createDirectory(saveDir);
+	    private void saveRoomImageFile(RoomImage roomImage, int roomSeq)
+	    {	
+	    	logger.debug("이건 떠야지?????????????11111111111111111");
+	    	try
+	    	{	
+	    		if(roomImage == null || roomImage.getFile() == null || roomImage.getFile().isEmpty())
+	    		{	
+	    			logger.debug("이건 떠야지?????????????2222222222222");
+	    			return;
+	    		}
+	    		logger.debug("이건 떠야지?????????????333333333333333333333");
+	    		MultipartFile file = roomImage.getFile();
+	    		// 이미지 타입(폴더명 : main, detail)
+	    		String imgType = roomImage.getImgType();
+	    		// 확장자 추출
+	    		String roomImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
+	    		// 아마도 "C:upload\room\main"
+	    		String saveDir = UPLOAD_SAVE_DIR + File.separator + "room" + File.separator + imgType;
+	    		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
+	    		FileUtil.createDirectory(saveDir);
+	    		logger.debug(">> saveRoomImageFile() set roomSeq1111: {}", roomImage.getRoomSeq());
 
-    		// RoomImage의 Seq 값 조회
-            short newRoomImgSeq = roomImageDao.getRoomImageSeq();
-    		// 파일명 설정(main, detail 구분)
-    		String fileName = (imgType.equals("main")) ?  
-    						  roomSeq + "." + roomImgExt :
-    					      roomSeq + "_" + newRoomImgSeq + "." + roomImgExt;
-    		
-    		File saveFile = new File(saveDir + File.separator + fileName);
-    		// 파일 저장
-    		file.transferTo(saveFile);
-    		// 데이터 채우기
-    		roomImage.setRoomSeq(roomSeq);
-    		roomImage.setRoomImgName(fileName);
-    		roomImage.setRoomImgOrigName(file.getOriginalFilename());
-    		roomImage.setRoomImgExt(roomImgExt);
-    		roomImage.setImgSize((int)file.getSize()); // getSize는 long이여서 형변환
-    		
-    	}
-    	catch(Exception e)
-    	{
-    		logger.error("[RoomServiceImpl] saveRoomImageFile Exception : ", e);
-    	}
-    }
+	    		// RoomImage의 Seq 값 조회
+	            short newRoomImgSeq = roomImageDao.getRoomImageSeq();
+	    		// 파일명 설정(main, detail 구분)
+	    		String fileName = (imgType.equals("main")) ?  
+	    						  roomSeq + "." + roomImgExt :
+	    					      roomSeq + "_" + newRoomImgSeq + "." + roomImgExt;
+	    		
+	    		File saveFile = new File(saveDir + File.separator + fileName);
+	    		// 파일 저장
+	    		file.transferTo(saveFile);
+	    		// 데이터 채우기
+	    		roomImage.setRoomSeq(roomSeq);
+	    		logger.debug(">> saveRoomImageFile() set roomSeq2222: {}", roomImage.getRoomSeq());
+
+	    		roomImage.setRoomImgSeq(newRoomImgSeq); 
+	    		roomImage.setRoomImgName(fileName);
+	    		roomImage.setRoomImgOrigName(file.getOriginalFilename());
+	    		roomImage.setRoomImgExt(roomImgExt);
+	    		roomImage.setImgSize((int)file.getSize()); // getSize는 long이여서 형변환
+	    		
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.error("[RoomServiceImpl] saveRoomImageFile Exception : ", e);
+	    	}
+	    	logger.debug(">> After setRoomSeq, roomImage.getRoomSeq(): {}", roomImage.getRoomSeq());
+	    	logger.debug(">> After setRoomImgSeq, roomImage.getRoomImgSeq(): {}", roomImage.getRoomImgSeq());
+
+	    }
     
     
     
@@ -198,6 +230,7 @@ public class RoomServiceImpl implements RoomService {
     		file.transferTo(saveFile);
     		// 데이터 채우기
             roomTypeImage.setRoomTypeSeq(roomTypeSeq);
+            roomTypeImage.setRoomTypeImgSeq(newRoomTypeImgSeq); 
             roomTypeImage.setRoomTypeImgName(fileName);
             roomTypeImage.setRoomTypeImgOrigName(file.getOriginalFilename());
             roomTypeImage.setRoomTypeImgExt(roomImgExt);
