@@ -78,6 +78,56 @@
                             <label for="roomDesc" class="form-label">숙소 설명</label>
                             <textarea class="form-control" id="roomDesc" name="roomDesc" rows="5" placeholder="숙소에 대한 상세한 설명을 작성해주세요."></textarea>
                         </div>
+						<!-- 위도 / 경도 -->
+						<div class="mb-3">
+						    <label for="latitude" class="form-label">위도</label>
+						    <input type="number" step="0.000000001" class="form-control" id="latitude" name="latitude" value="37.566535">
+						</div>
+						<div class="mb-3">
+						    <label for="longitude" class="form-label">경도</label>
+						    <input type="number" step="0.000000001" class="form-control" id="longitude" name="longitude" value="126.977969">
+						</div>
+						
+						<!-- 지역 -->
+						<div class="mb-3">
+						    <label for="region" class="form-label">지역</label>
+						    <input type="text" class="form-control" id="region" name="region" value="서울특별시">
+						</div>
+						
+						<!-- 자동 승인 여부 -->
+						<div class="mb-3">
+						    <label for="autoConfirmYn" class="form-label">자동 승인 여부</label>
+						    <select class="form-select" id="autoConfirmYn" name="autoConfirmYn">
+						        <option value="Y" selected>Y</option>
+						        <option value="N">N</option>
+						    </select>
+						</div>
+						
+						<!-- 취소 정책 -->
+						<div class="mb-3">
+						    <label for="cancelPolicy" class="form-label">취소 정책</label>
+						    <input type="text" class="form-control" id="cancelPolicy" name="cancelPolicy" value="FREE_CANCEL_1DAY">
+						</div>
+						
+						<!-- 평균 평점 / 리뷰 수 -->
+						<div class="mb-3">
+						    <label for="averageRating" class="form-label">평균 평점</label>
+						    <input type="number" step="0.1" class="form-control" id="averageRating" name="averageRating" value="4.5">
+						</div>
+						<div class="mb-3">
+						    <label for="reviewCount" class="form-label">리뷰 수</label>
+						    <input type="number" class="form-control" id="reviewCount" name="reviewCount" value="15">
+						</div>
+						
+						<!-- 최소/최대 예약 일수 -->
+						<div class="mb-3">
+						    <label for="minTimes" class="form-label">최소 숙박일수</label>
+						    <input type="number" class="form-control" id="minTimes" name="minTimes" value="1">
+						</div>
+						<div class="mb-3">
+						    <label for="maxTimes" class="form-label">최대 숙박일수</label>
+						    <input type="number" class="form-control" id="maxTimes" name="maxTimes" value="30">
+						</div>
 
                         <hr/>
                         
@@ -146,6 +196,27 @@
                 <label class="form-label">최대 인원</label>
                 <input type="number" class="form-control" name="maxGuests" required>
             </div>
+            <!-- 체크인/아웃 날짜 -->
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크인 날짜</label>
+			    <input type="text" class="form-control" name="roomCheckInDt" value="20250701">
+			</div>
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크아웃 날짜</label>
+			    <input type="text" class="form-control" name="roomCheckOutDt" value="20250703">
+			</div>
+			
+			<!-- 체크인/아웃 시간 -->
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크인 시간</label>
+			    <input type="text" class="form-control" name="roomCheckInTime" value="1500">
+			</div>
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크아웃 시간</label>
+			    <input type="text" class="form-control" name="roomCheckOutTime" value="1100">
+			</div>
+			            
+            
             <!-- [수정] minDay, maxDay 필드 추가 -->
             <div class="col-md-6 mb-3">
                 <label class="form-label">최소 숙박일수</label>
@@ -178,7 +249,7 @@
 
 <script>
 $(document).ready(function() {
-    j
+    
     let roomTypeIndex = 0;
 
     // "객실 타입 추가" 버튼 클릭 이벤트
@@ -190,6 +261,18 @@ $(document).ready(function() {
         //    (예: roomTypeMainImage_INDEX -> roomTypeMainImage_0)
         template.find('[name="roomTypeMainImage_INDEX"]').attr('name', 'roomTypeMainImage_' + roomTypeIndex);
         template.find('[name="roomTypeDetailImages_INDEX"]').attr('name', 'roomTypeDetailImages_' + roomTypeIndex);
+        // 모든 input name 인덱싱 추가
+        template.find('[name="roomTypeTitle"]').attr('name', 'roomTypeTitle_' + roomTypeIndex);
+        template.find('[name="weekdayAmt"]').attr('name', 'weekdayAmt_' + roomTypeIndex);
+        template.find('[name="weekendAmt"]').attr('name', 'weekendAmt_' + roomTypeIndex);
+        template.find('[name="maxGuests"]').attr('name', 'maxGuests_' + roomTypeIndex);
+        template.find('[name="minDay"]').attr('name', 'minDay_' + roomTypeIndex);
+        template.find('[name="maxDay"]').attr('name', 'maxDay_' + roomTypeIndex);
+        template.find('[name="roomTypeDesc"]').attr('name', 'roomTypeDesc_' + roomTypeIndex);
+        template.find('[name="roomCheckInDt"]').attr('name', 'roomCheckInDt_' + roomTypeIndex);
+        template.find('[name="roomCheckOutDt"]').attr('name', 'roomCheckOutDt_' + roomTypeIndex);
+        template.find('[name="roomCheckInTime"]').attr('name', 'roomCheckInTime_' + roomTypeIndex);
+        template.find('[name="roomCheckOutTime"]').attr('name', 'roomCheckOutTime_' + roomTypeIndex);
         
         // 3. 복사된 템플릿을 컨테이너에 추가합니다.
         $("#roomTypeContainer").append(template);

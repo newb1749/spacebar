@@ -10,6 +10,13 @@ public interface RoomTypeImageDao {
      */
     public short getRoomTypeImageSeq();
     
+    
+    /**
+     * ROOM_TYPE_IMAGE_SEQ에 넣을 숫자 부여
+     * @return short 숙소 타입이 미지에 넣을 숫자 부여
+     */    
+    public short selectMaxRoomTypeImgSeq(int roomTypeSeq);
+    
     /**
      * 객실 타입별 상세 이미지를 저장할 때 사용
      * 방1개에 해당하는 이미지 by nks
