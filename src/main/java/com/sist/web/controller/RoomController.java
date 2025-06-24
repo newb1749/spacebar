@@ -21,6 +21,7 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -42,7 +43,9 @@ public class RoomController {
 	
 	@Autowired
 	private RoomService roomService;
-
+	
+	@Autowired
+	private RoomImgService roomImgService;
 	
     /**
      * 숙소 등록 폼 페이지로 이동
@@ -215,14 +218,10 @@ public class RoomController {
         // 4. 서비스 호출
         try 
         {
-            if(roomService.insertRoomTransaction(room, roomTypeList) > 0)
-            {
-                logger.debug("숙소 등록 성공");
-            } 
-            else 
-            {
-                logger.error("숙소 등록 실패");
-            }
+			/*
+			 * if(roomService.insertRoomTransaction(room, roomTypeList) > 0) {
+			 * logger.debug("숙소 등록 성공"); } else { logger.error("숙소 등록 실패"); }
+			 */
         }
         catch(Exception e)
         {
@@ -233,21 +232,4 @@ public class RoomController {
     }
 	
 	
-	@RequestMapping(value = "/room/roomDetail", method = RequestMethod.GET)
-	public String roomDetail(HttpServletRequest request, Model model)
-	{
-	    int roomSeq = HttpUtil.get(request, "roomSeq", 0);
-
-	    if(roomSeq > 0) 
-	    {
-	        Room room = roomService.getRoomDetail(roomSeq);
-	        if(room != null) 
-	        {
-	            model.addAttribute("room", room);
-	        }
-	    }
-
-	    return "/room/roomDetail";
-	}
-
 }

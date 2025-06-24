@@ -18,6 +18,8 @@ public interface RoomDao {
     
     public Room getRoomDetail(int roomSeq);  // 세미콜론으로 끝남
 
+    public List<RoomImage> getRoomImgDetail(int roomSeq);
+    
     List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  // 세미콜론으로 끝나야 함
 
 }
