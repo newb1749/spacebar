@@ -31,6 +31,11 @@ public class Room implements Serializable{
 	
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
 	
+	private String searchValue;
+	
+	private long startRow;
+	private long endRow;
+	
 	public Room()
 	{
 		roomSeq = 0;
@@ -50,10 +55,55 @@ public class Room implements Serializable{
 		maxTimes = 0;
 		averageRating = 0;
 		reviewCount = 0;
+		
+		searchValue = "";
+		startRow = 0;
+		endRow = 0;
 	}
 	
 	
 	
+	
+	public long getStartRow() {
+		return startRow;
+	}
+
+
+
+
+	public void setStartRow(long startRow) {
+		this.startRow = startRow;
+	}
+
+
+
+
+	public long getEndRow() {
+		return endRow;
+	}
+
+
+
+
+	public void setEndRow(long endRow) {
+		this.endRow = endRow;
+	}
+
+
+
+
+	public String getSearchValue() {
+		return searchValue;
+	}
+
+
+
+	public void setSearchValue(String searchValue) {
+		this.searchValue = searchValue;
+	}
+
+
+
 	public List<RoomImage> getRoomImageList() {
 		return RoomImageList;
 	}

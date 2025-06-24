@@ -52,4 +52,98 @@
 			)
   </insert>
   
+  <select id="roomListCount" parameterType="com.sist.web.model.Room" resultType="long">
+		  SELECT COUNT(ROOM_SEQ) CNT
+		    FROM ROOM
+		   WHERE 1 = 1
+		   
+		<if test='searchValue != null and searchValue !=""'>
+		     AND ROOM_TITLE LIKE '%' || #{searchValue} || '%'
+		      OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
+		      OF ROOM_DESC LIKE '%' || #{searchValue} || '%'
+		</if>
+  </select>
+  
+  <select id="roomList" parameterType="com.sist.web.model.Room" resultMap="roomResultMap">
+  		SELECT ROOM_SEQ,
+		       ROOM_CAT_SEQ,
+		       HOST_ID,
+		       ROOM_ADDR,
+		       LATITUDE,
+		       LONGITUDE,
+		       REGION,
+		       REG_DT,
+		       UPDATE_DT,
+		       AUTO_CONFIRM_YN,
+		       ROOM_TITLE,
+		       ROOM_DESC,
+		       CANCEL_POLICY,
+		       AVERAGE_RATING,
+		       REVIEW_COUNT,
+		       MIN_TIMES,
+		       MAX_TIMES
+		  FROM (SELECT ROWNUM RNUM, 
+		               ROOM_SEQ,
+		               ROOM_CAT_SEQ,
+		               HOST_ID,
+		               ROOM_ADDR,
+		               LATITUDE,
+		               LONGITUDE,
+		               REGION,
+		               REG_DT,
+		               UPDATE_DT,
+		               AUTO_CONFIRM_YN,
+		               ROOM_TITLE,
+		               ROOM_DESC,
+		               CANCEL_POLICY,
+		               AVERAGE_RATING,
+		               REVIEW_COUNT,
+		               MIN_TIMES,
+		               MAX_TIMES
+		          FROM (SELECT ROOM_SEQ,
+		                       NVL(ROOM_CAT_SEQ,0) ROOM_CAT_SEQ,
+		                       HOST_ID,
+		                       NVL(ROOM_ADDR,'') ROOM_ADDR,
+		                       NVL(LATITUDE,0) LATITUDE,
+		                       NVL(LONGITUDE,0) LONGITUDE,
+		                       NVL(REGION,'') REGION,
+		                       NVL(TO_CHAR(REG_DT,'YYYY.MM.DD HH24:MI:SS'),'') REG_DT,
+		                       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT,
+		                       NVL(AUTO_CONFIRM_YN,'') AUTO_CONFIRM_YN,
+		                       NVL(ROOM_TITLE,'') ROOM_TITLE,
+		                       NVL(ROOM_DESC,'') ROOM_DESC,
+		                       NVL(CANCEL_POLICY,'') CANCEL_POLICY,
+		                       NVL(AVERAGE_RATING,0) AVERAGE_RATING,
+		                       NVL(REVIEW_COUNT,0) REVIEW_COUNT,
+		                       NVL(MIN_TIMES,0) MIN_TIMES,
+		                       NVL(MAX_TIMES,0) MAX_TIMES
+		                  FROM ROOM
+		                 WHERE 1 = 1
+		                 
+		      <if test='searchValue != null and searchValue !=""'>
+		                   AND (ROOM_TITLE LIKE '%' || #{searchValue} || '%'
+		                    OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
+		                     OR DBMS_LOB.INSTR(ROOM_DESC, #{searchValue}) > 0)
+		                     
+                </if>
+		                 ORDER BY ROOM_SEQ DESC))
+					                 
+				 WHERE RNUM <![CDATA[>=]]> #{startRow}
+				   AND RNUM <![CDATA[<=]]> #{endRow}
+  </select>
+  
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
