@@ -16,10 +16,9 @@ public class MapController {
 	@Value("#{env['kakao.map.js-key']}")
 	private String KAKAO_MAP_KEY;
 	
-	@RequestMapping(value="/component/mapModule", method=RequestMethod.GET)
+	@RequestMapping(value="/room/test", method=RequestMethod.GET)
 	public String mapModule(Model model) 
 	{	
-	    model.addAttribute("kakaoMapKey", KAKAO_MAP_KEY);
-		return "/component/mapModule";
+		return "/room/test";
 	}
 }
