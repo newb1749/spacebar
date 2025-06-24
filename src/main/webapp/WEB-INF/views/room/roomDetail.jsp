@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>${room.roomTitle} - 숙소 상세</title>
+  <title>${room.roomTitle}-상세야 좀 되라 열받게 하지 말고</title>
 
   <!-- CSS -->
   <link rel="shortcut icon" href="${pageContext.request.contextPath}/resources/images/favicon.ico" type="image/x-icon" />
@@ -141,9 +141,11 @@
       }
 
       const loader = document.querySelector('.loader');
-      if (loader) {
+      if(loader) 
+      {
         loader.style.opacity = 0;
-        setTimeout(() => {
+        setTimeout(() => 
+        {
           loader.style.display = 'none';
         }, 300);
       }
