@@ -32,7 +32,7 @@
   <!-- Hero 영역 -->
 <c:choose>
 	<c:when test="${mainImages.imgType eq 'main'}">
-		<div class="hero page-inner overlay" style="background-image: url('/resources/upload/room/mainImg/${mainImages.roomImgName}')">
+		<div class="hero page-inner overlay" style="background-image: url('/resources/upload/room/main/${mainImages.roomImgName}')">
 	</c:when>
 	<c:otherwise>
 		<div class="hero page-inner overlay" style="background-image: url('/resources/images/file.png')">
@@ -56,7 +56,7 @@
                     <div class="item">
 			          	<c:if test="${!empty detailImages}">
 						<c:forEach var="roomImg" items="${detailImages}" varStatus="status">
-							<img src="/resources/upload/room/detailImg/${roomImg.roomImgName}"
+							<img src="/resources/upload/room/detail/${roomImg.roomImgName}"
 							class="img-fluid" id="tns1_item${status.index}" alt="${roomImg.imgType}" />
 						</c:forEach>
 						</c:if>
@@ -74,7 +74,7 @@
                 <c:forEach var="img" items="${detailImages}">
                   <c:if test="${fn:startsWith(img.roomImgName, prefix)}">
                     <div class="item">
-                      <img src="/resources/upload/room/mainImg/${mainImages.roomImgName}" 
+                      <img src="/resources/upload/room/main/${mainImages.roomImgName}" 
                            class="img-fluid" alt="${img.imgType}" />
                     </div>
                   </c:if>
