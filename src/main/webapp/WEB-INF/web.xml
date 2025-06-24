@@ -54,5 +54,9 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	<!-- DispatcherServlet 종료 -->
-	
+
+    <context-param>
+        <param-name>KAKAO_MAP_KEY</param-name>
+        <param-value>9ff018d1943482b892c625758a44c45c</param-value>
+    </context-param>	
 </web-app>
