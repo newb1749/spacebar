@@ -1,6 +1,9 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import com.sist.web.model.Room;
+import com.sist.web.model.RoomImage;
 
 public interface RoomDao {
 	
@@ -13,6 +16,8 @@ public interface RoomDao {
      */
     public int insertRoom(Room room);
     
+    public Room getRoomDetail(int roomSeq);  // 세미콜론으로 끝남
 
-    
+    List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  // 세미콜론으로 끝나야 함
+
 }

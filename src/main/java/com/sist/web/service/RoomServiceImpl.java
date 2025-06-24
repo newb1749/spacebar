@@ -24,7 +24,8 @@ import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
 
 @Service("roomService")
-public class RoomServiceImpl implements RoomService {
+public class RoomServiceImpl implements RoomService 
+{
 	
 	private static Logger logger = LoggerFactory.getLogger(RoomServiceImpl.class);
 	
@@ -208,5 +209,19 @@ public class RoomServiceImpl implements RoomService {
     	{
     		logger.error("[RoomServiceImpl] saveRoomTypeImageFile Exception : ", e);
     	}
+    }
+    
+    
+    @Override
+    public Room getRoomDetail(int roomSeq) 
+    {
+        Room room = roomDao.getRoomDetail(roomSeq);
+        if(room != null) 
+        {
+            // 이미지 리스트 가져오기
+            List<RoomImage> imageList = roomDao.getRoomImagesByRoomSeq(roomSeq);
+            room.setRoomImageList(imageList); // 이미지 목록 세팅
+        }
+        return room;
     }
 }

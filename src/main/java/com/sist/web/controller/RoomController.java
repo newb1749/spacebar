@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -210,16 +213,41 @@ public class RoomController {
         }
 
         // 4. 서비스 호출
-        try {
-            if (roomService.insertRoomTransaction(room, roomTypeList) > 0) {
+        try 
+        {
+            if(roomService.insertRoomTransaction(room, roomTypeList) > 0)
+            {
                 logger.debug("숙소 등록 성공");
-            } else {
+            } 
+            else 
+            {
                 logger.error("숙소 등록 실패");
             }
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
             logger.error("[RoomController] addProc Exception", e);
         }
 
         return "redirect:/";
     }
+	
+	
+	@RequestMapping(value = "/room/roomDetail", method = RequestMethod.GET)
+	public String roomDetail(HttpServletRequest request, Model model)
+	{
+	    int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+
+	    if(roomSeq > 0) 
+	    {
+	        Room room = roomService.getRoomDetail(roomSeq);
+	        if(room != null) 
+	        {
+	            model.addAttribute("room", room);
+	        }
+	    }
+
+	    return "/room/roomDetail";
+	}
+
 }

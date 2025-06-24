@@ -99,5 +99,15 @@
 		<property name="maxUploadSize" value="#{env['upload.max.size']}" /><!-- 파일 업로드 용량제한 (바이트단위) -->
 	</bean>
 	<!-- 파일 업로드 설정 종료 -->
+	
+	<!-- 정적 리소스 매핑 -->
+<mvc:resources mapping="/css/**" location="/resources/css/" />
+<mvc:resources mapping="/css/**" location="/resources/scss/" />
+<mvc:resources mapping="/js/**" location="/resources/js/" />
+<mvc:resources mapping="/images/**" location="/resources/images/" />
+<mvc:resources mapping="/uploads/**" location="/resources/upload/" />
+
+<!-- 아래 필수 -->
+<mvc:annotation-driven />
 	 	
 </beans>

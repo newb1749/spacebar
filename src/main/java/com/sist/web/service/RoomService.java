@@ -18,4 +18,7 @@ public interface RoomService {
      * @return 성공적으로 처리된 총 행의 수
      */	
 	public int insertRoomTransaction(Room room, List<RoomType> roomTypeList);
+	
+	Room getRoomDetail(int roomSeq);  // 세미콜론으로 끝나야 함
+
 }
