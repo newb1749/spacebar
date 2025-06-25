@@ -67,11 +67,11 @@ public class RoomController {
 
 	        // 임시 호스트 정보
 	        String hostId = "nks";
-	        int roomCatSeq = 990;
-
-	        // 1. Room 객체 설정
+	        int roomCatSeq = HttpUtil.get(request, "roomCatSeq", 0);
+	        // 1-1. Room 객체 설정
 	        Room room = new Room();
 	        room.setHostId(hostId);
+	        //room.setRoomCatSeq(HttpUtil.get(request, "roomCatSeq", 0));
 	        room.setRoomCatSeq(roomCatSeq);
 	        room.setRoomAddr(HttpUtil.get(request, "roomAddr", ""));
 	        room.setLatitude(HttpUtil.get(request, "latitude", 0.0));
@@ -85,8 +85,32 @@ public class RoomController {
 	        room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
 	        room.setAverageRating(HttpUtil.get(request, "averageRating", 0.0));
 	        room.setReviewCount(HttpUtil.get(request, "reviewCount", 0));
-
-
+	        
+	        if (roomCatSeq <= 0) {
+	            // 카테고리를 선택하지 않았을 경우, 메시지와 함께 폼으로 다시 보냄
+	        	logger.debug("카테고리 시퀀스 값 :", roomCatSeq);
+	        	logger.debug("카테고리 get시퀀스 값 :", room.getRoomCatSeq());
+	            return "redirect:/room/addForm"; // 등록 폼으로 리다이렉트
+	        }
+	        // 1-2. 편의시설 정보 처리(일대다)
+	        String[] facilityNosStr = request.getParameterValues("facilitySeqs");
+	        if(!StringUtil.isEmpty(facilityNosStr) && facilityNosStr.length > 0)
+	        {
+	        	List<Integer> facilityNos = new ArrayList<>();
+	        	for(String facNo : facilityNosStr)
+	        	{
+	        		try
+	        		{
+	        			facilityNos.add(Integer.parseInt(facNo));
+	        		}
+	        		catch(NumberFormatException e)
+	        		{
+	        			logger.error("[RoomController] Invalid facility number format: " + facNo, e);
+	        		}
+	        	}
+	        	room.setFacilityNos(facilityNos);
+	        }
+	        
 	        List<RoomImage> roomImageList = new ArrayList<>();
 			// 2-1. 메인 이미지 처리(단일 파일)
 	        MultipartFile mainImage = request.getFile("roomMainImage");

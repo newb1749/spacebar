@@ -1,5 +1,7 @@
 package com.sist.web.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.sist.web.model.Room;
 
 public interface RoomDao {
@@ -13,6 +15,12 @@ public interface RoomDao {
      */
     public int insertRoom(Room room);
     
-
+    /**
+     * 숙소 편의시설 매핑 정보 삽입
+     * @param roomSeq 숙소 번호 (FK)
+     * @param facSeq 편의시설 번호 (FK)
+     * @return 추가된 행의 수
+     */
+    public int insertRoomFacility(@Param("roomSeq") int roomSeq, @Param("facSeq") int facSeq);
     
 }

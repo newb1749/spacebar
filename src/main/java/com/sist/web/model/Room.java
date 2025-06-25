@@ -30,6 +30,7 @@ public class Room implements Serializable{
 	private int reviewCount;			// 숙소 전체 리뷰수
 	
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
+	private List<Integer> facilityNos;	   // 리스트로 FacilitySeq 값 저장
 	
 	public Room()
 	{
@@ -54,6 +55,18 @@ public class Room implements Serializable{
 	
 	
 	
+	public List<Integer> getFacilityNos() {
+		return facilityNos;
+	}
+
+
+
+	public void setFacilityNos(List<Integer> facilityNos) {
+		this.facilityNos = facilityNos;
+	}
+
+
+
 	public List<RoomImage> getRoomImageList() {
 		return RoomImageList;
 	}

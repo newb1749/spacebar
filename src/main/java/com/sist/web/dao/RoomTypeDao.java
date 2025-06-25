@@ -1,5 +1,9 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.sist.web.model.RoomType;
 
 public interface RoomTypeDao {
@@ -13,5 +17,8 @@ public interface RoomTypeDao {
      */
     public int insertRoomType(RoomType roomType);
 
-    public int selectAvailableRoomType(String roomCheckInDt, String roomCheckOutDt);
+    public List<Integer> selectAvailableRoomType(
+    	    @Param("roomCheckInDt") String roomCheckInDt, 
+    	    @Param("roomCheckOutDt") String roomCheckOutDt
+    	);
 }
