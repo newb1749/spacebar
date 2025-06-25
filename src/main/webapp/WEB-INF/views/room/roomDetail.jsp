@@ -85,8 +85,6 @@
         </div>
         -->
          <!-- 상세 이미지용 시작 -->
-        
-        
 
         <!-- 텍스트 정보 -->
         <div class="col-lg-4">
@@ -106,6 +104,27 @@
               <li><strong>취소 정책:</strong> ${room.cancelPolicy}</li>
               <li><strong>평점:</strong> ${room.averageRating} / 리뷰 수: ${room.reviewCount}</li>
             </ul>
+            
+            <!-- Map -->
+            <%-- <c:if test="${not empty room.roomAddr}">
+			  <jsp:include page="/WEB-INF/views/component/mapModule.jsp">
+			    <jsp:param name="address" value="${room.roomAddr}" />
+			    <jsp:param name="roomName" value="${room.roomTitle}" />
+			  </jsp:include>
+			</c:if>
+			<c:if test="${empty room.roomAddr}">
+			  <p>지도 주소 정보가 없습니다.</p>
+			</c:if>
+ --%>
+		 
+		<jsp:include page="/WEB-INF/views/component/mapModule.jsp">
+		  <jsp:param name="address" value="${room.roomAddr}"/>
+		  <jsp:param name="roomName" value="${room.roomTitle}"/>
+		</jsp:include>
+
+		<script>
+		  console.log("📍 room.roomAddr:", "${room.roomAddr}");
+		</script>
           </div>
         </div>
 
