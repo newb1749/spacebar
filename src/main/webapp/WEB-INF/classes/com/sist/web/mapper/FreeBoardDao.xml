@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.FreeBoardDao">
+	<!-- 게시판 리스트 resultMap -->
+		<resultMap type="com.sist.web.model.FreeBoard" id="freeBoardResultMap">
+			<id column="FREE_BOARD_SEQ" property="freeBoardSeq" />
+			<result column="FREE_BOARD_TITLE" property="freeBoardTitle" />
+			<result column="FREE_BOARD_CONTENT" property="freeBoardContent" />
+			<result column="USER_ID" property="userId" />
+			<result column="FREE_BOARD_STAT" property="freeBoardStat" />
+			<result column="REG_DT" property="regDt" />
+			<result column="UPDATE_DT" property="updateDt" />
+			<result column="FREE_BOARD_VIEWS" property="freeBoardViews" />
+			<result column="USER_NAME" property="userName" />
+			<result column="EMAIL" property="userEmail" />
+		</resultMap>
+		
+	<!-- 게시판 리스트 -->
+		<select id="boardList" parameterType="com.sist.web.model.FreeBoard" resultMap="freeBoardResultMap">
+			SELECT FREE_BOARD_SEQ,
+			       FREE_BOARD_TITLE,
+			       FREE_BOARD_CONTENT,
+			       USER_ID,
+			       FREE_BOARD_STAT,
+			       REG_DT,
+			       UPDATE_DT,
+			       FREE_BOARD_VIEWS,
+			       USER_NAME,
+			       EMAIL
+			  FROM(SELECT ROWNUM RNUM,
+			               FREE_BOARD_SEQ,
+			               FREE_BOARD_TITLE,
+			               FREE_BOARD_CONTENT,
+			               USER_ID,
+			               FREE_BOARD_STAT,
+			               REG_DT,
+			               UPDATE_DT,
+			               FREE_BOARD_VIEWS,
+			               USER_NAME,
+			               EMAIL
+			          FROM (SELECT A.FREE_BOARD_SEQ FREE_BOARD_SEQ,
+			                   NVL(A.FREE_BOARD_TITLE, '') FREE_BOARD_TITLE,
+			                   NVL(A.FREE_BOARD_CONTENT, '') FREE_BOARD_CONTENT,
+			                   A.USER_ID USER_ID,
+			                   NVL(A.FREE_BOARD_STAT, 'Y') FREE_BOARD_STAT,
+			                   NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'), '') REG_DT,
+			                   NVL(TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS'), '') UPDATE_DT,
+			                   NVL(A.FREE_BOARD_VIEWS, 0) FREE_BOARD_VIEWS,
+			                   NVL(B.USER_NAME, '') USER_NAME,
+			                   NVL(B.EMAIL, '') EMAIL
+			              FROM FREE_BOARD A, SB_USER B
+			             WHERE A.USER_ID = B.USER_ID
+			             
+			             <if test='searchType != null and searchType != "" and searchValue != null and searchValue !="" '>
+				             <choose>
+				             	<when test='searchType == "1"'>
+				             		AND B.USER_NAME LIKE '%' || #{searchValue} || '%'
+				             	</when>
+				             	<when test='searchType == "2"'>
+				             		AND A.FREE_BOARD_TITLE LIKE '%' || #{searchValue} || '%'
+				             	</when>
+				             	<when test='searchType == "3"'>
+				             		AND DBMS_LOB.INSTR(A.FREE_BOARD_CONTENT, #{searchValue}) > 0
+				             	</when>
+				             	<when test='searchType =="4"'>
+								  AND (
+									    A.FREE_BOARD_TITLE LIKE '%' || #{searchValue} || '%'
+									    OR DBMS_LOB.INSTR(A.FREE_BOARD_CONTENT, #{searchValue}) > 0
+									)
+								  </when>
+				             </choose>
+				         </if>  
+				             
+				             ORDER BY A.FREE_BOARD_SEQ DESC))
+
+			 WHERE RNUM <![CDATA[>=]]> #{startRow}
+		   	   AND RNUM <![CDATA[<=]]> #{endRow}
+		</select>	
+		
+	<!-- 총 게시물 수 -->
+		<select id="boardListCount" parameterType="com.sist.web.model.FreeBoard" resultType="int">
+			SELECT COUNT(A.FREE_BOARD_SEQ) CNT
+			  FROM FREE_BOARD A, SB_USER B
+			 WHERE A.USER_ID = B.USER_ID
+			 
+			 
+			 
+		</select>
+			
+</mapper>
