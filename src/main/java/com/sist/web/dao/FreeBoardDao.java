@@ -14,6 +14,14 @@ public interface FreeBoardDao {
 	//총 게시물 수
 	public int boardListCount(FreeBoard freeBoard);
 	
-	//test
-	public int boardListCount2();
+	//게시물 조회
+	public FreeBoard boardSelect(long freeBoardSeq);
+	
+	//게시물 조회수 증가
+	public int boardCntPlus(long freeBoardSeq);
+	
+	//본인게시물 조회수 증가안되게구현
+	public FreeBoard boardView(long freeBoardSeq, String cookieUserId);
+	
+	
 }

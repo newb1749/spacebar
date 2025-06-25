@@ -18,6 +18,7 @@ import com.sist.common.util.StringUtil;
 import com.sist.web.model.FreeBoard;
 import com.sist.web.model.Paging;
 import com.sist.web.service.FreeBoardService;
+import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 
 @Controller("freeBoardController")
@@ -78,8 +79,7 @@ public class FreeBoardController {
 			searchValue = "";
 		}
 		
-		//totalCount = freeBoardService.boardListCount(search);
-		totalCount = freeBoardService.boardListCount2();
+		totalCount = freeBoardService.boardListCount(search);
 		
 		logger.debug("==================================");
 		logger.debug("totalcCount  : " + totalCount);
@@ -128,5 +128,57 @@ public class FreeBoardController {
 		return "/board/list";
 	}
 	
+	//게시판 상세 조회
+	@RequestMapping(value="/board/view")
+	public String view(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
+		String searchType = HttpUtil.get(request, "searchType", "");
+		String searchValue = HttpUtil.get(request, "searchValue", "");
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		
+		String boardMe = "N";
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		
+		FreeBoard freeBoard = null;
+		
+		if(freeBoardSeq > 0)
+		{
+			freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			
+			if(freeBoard != null && StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+			{
+				logger.debug("userId : " + freeBoard.getUserId());
+				logger.debug("cookieUserId : " + cookieUserId);
+				boardMe = "Y";
+			}
+		}
+		
+		model.addAttribute("freeBoardSeq", freeBoardSeq);
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
+		model.addAttribute("freeBoard", freeBoard);
+		model.addAttribute("boardMe", boardMe);
+
+		return "/board/view";
+	}
 	
+	//게시판 등록 화면
+	@RequestMapping(value="/board/writeForm")
+	public String writeForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		// 쿠키값
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		// 조회항목
+		String searchType = HttpUtil.get(request, "searchType");
+		// 조회값
+		String searchValue = HttpUtil.get(request, "searchValue");
+		// 현재 페이지
+		long curPage = HttpUtil.get(request, "curPage", (long)0);
+		
+		
+		
+		return "/board/writeForm";
+	}
 }

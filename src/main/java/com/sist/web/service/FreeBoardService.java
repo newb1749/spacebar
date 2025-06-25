@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.sist.common.util.StringUtil;
 import com.sist.web.dao.FreeBoardDao;
 import com.sist.web.model.FreeBoard;
 
@@ -56,21 +57,29 @@ public class FreeBoardService {
 		return count;
 	}
 	
-	//test
-	public int boardListCount2()
+	//게시물 상세 조회
+	public FreeBoard boardView(long freeBoardSeq, String cookieUserId)
 	{
-		int count = 0;
+		FreeBoard freeBoard = null;
 		
 		try
 		{
-			count = freeBoardDao.boardListCount2();
-			logger.debug("ttt222222222222222222222222222 : " + count);
+			freeBoard = freeBoardDao.boardSelect(freeBoardSeq);
+			
+			if(freeBoard != null)
+			{
+				if(cookieUserId != null && !StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+				{
+					//조회수 증가
+					freeBoardDao.boardCntPlus(freeBoardSeq);	
+				}
+			}
 		}
 		catch(Exception e)
 		{
-			logger.error("[FreeBoardService] boardListCount2 : ", e);
+			logger.error("[FreeBoardService] boardView Exception ", e);
 		}
 		
-		return count;
-	}	
+		return freeBoard;
+	}
 }

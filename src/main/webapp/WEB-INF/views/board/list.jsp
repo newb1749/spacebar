@@ -24,16 +24,16 @@ $(document).ready(function(){
 });
 
 
-function fn_view(bbsSeq)
+function fn_view(freeBoardSeq)
 {
-	document.bbsForm.hibbsSeq.value = bbsSeq;
+	document.bbsForm.freeBoardSeq.value = freeBoardSeq;
 	document.bbsForm.action = "/board/view"; 
 	document.bbsForm.submit();
 }
 
 function fn_list(curPage)
 {
-	document.bbsForm.hibbsSeq.value = "";
+	document.bbsForm.freeBoardSeq.value = "";
 	document.bbsForm.curPage.value = curPage;
 	document.bbsForm.action = "/board/list";
 	document.bbsForm.submit();
