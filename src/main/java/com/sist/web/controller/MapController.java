@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class MapController {
 	
 	private static Logger logger = LoggerFactory.getLogger(RoomController.class);
-		
-	@Value("#{env['kakao.map.js-key']}")
-	private String KAKAO_MAP_KEY;
-	
+
 	@RequestMapping(value="/room/test", method=RequestMethod.GET)
 	public String mapModule(Model model) 
 	{	
