@@ -48,6 +48,12 @@
             SYSDATE, 
             SYSDATE
         )
-        
   	</insert>
+  	
+  	<select id="selectAvailableRoomType" resultMap="roomTypeResultMap" resultType="int">
+				SELECT ROOM_TYPE_SEQ
+				FROM ROOM_TYPE
+				WHERE ROOM_CHECK_IN_DT >= #{roomCheckInDt} 
+				  AND ROOM_CHECK_OUT_DT <= #{roomCheckOutDt};
+  	</select>
 </mapper>

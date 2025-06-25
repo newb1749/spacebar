@@ -18,4 +18,22 @@ public class MapController {
 	{	
 		return "/room/test";
 	}
+	
+	@RequestMapping(value="/room/testCalendar", method=RequestMethod.GET)
+	public String testCalendar() 
+	{	
+		return "/room/testCalendar";
+	}
+	
+	@RequestMapping(value="/room/testCalendar2", method=RequestMethod.GET)
+	public String testCalendar2() 
+	{	
+		return "/room/testCalendar2";
+	}
+	
+	@RequestMapping(value="/room/testCalendar3", method=RequestMethod.GET)
+	public String testCalendar3() 
+	{	
+		return "/room/testCalendar3";
+	}
 }

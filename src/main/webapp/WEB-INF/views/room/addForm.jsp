@@ -47,6 +47,32 @@
     .btn-remove-room-type {
         float: right;
     }
+    /* ========== [추가] 카테고리 버튼 스타일 ========== */
+	.category-group-title {
+	    font-size: 0.9rem;
+	    color: #6c757d;
+	    margin-bottom: 0.5rem;
+	}
+	.category-tag {
+	    display: inline-block;
+	    padding: 0.5rem 1rem;
+	    margin: 0.25rem;
+	    border: 1px solid #ced4da;
+	    border-radius: 20px;
+	    font-size: 0.95rem;
+	    cursor: pointer;
+	    transition: all 0.2s ease-in-out;
+	}
+	.category-tag:hover {
+	    background-color: #e9ecef;
+	}
+	.category-tag.active {
+	    background-color: #0d6efd; /* Bootstrap primary color */
+	    color: #fff;
+	    border-color: #0d6efd;
+	    font-weight: 500;
+	}
+/* ============================================= */
 </style>
 
 </head>
@@ -70,24 +96,44 @@
                             <input type="text" class="form-control" id="roomTitle" name="roomTitle" placeholder="숙소의 이름을 입력하세요" required>
                         </div>
                         <div class="mb-3">
+                        
+                        <div class="mb-3">
+					    <label class="form-label">카테고리</label>
+					    <input type="hidden" id="roomCategory" name="roomCategory" value="">
+					    
+					    <div class="category-selection-area">
+					        <p class="category-group-title">공간 대여</p>
+					        <div class="category-group">
+					            <span class="category-tag" data-value="PARTY_ROOM">파티룸</span>
+					            <span class="category-tag" data-value="CAFE">카페</span>
+					            <span class="category-tag" data-value="PRACTICE_ROOM">연습실</span>
+					            <span class="category-tag" data-value="STUDIO">스튜디오</span>
+					            <span class="category-tag" data-value="MEETING_ROOM">회의실</span>
+					            <span class="category-tag" data-value="RECORDING_STUDIO">녹음실</span>
+					            <span class="category-tag" data-value="GYM">운동시설</span>
+					        </div>
+					        
+					        <p class="category-group-title mt-3">숙박</p>
+					        <div class="category-group">
+					            <span class="category-tag" data-value="POOL_VILLA">풀빌라</span>
+					            <span class="category-tag" data-value="HOTEL">호텔</span>
+					            <span class="category-tag" data-value="PENSION">팬션</span>
+					            <span class="category-tag" data-value="GUEST_HOUSE">민박</span>
+					            <span class="category-tag" data-value="RESORT">리조트</span>
+					            <span class="category-tag" data-value="HOME">주택</span>
+					            <span class="category-tag" data-value="CAMPING">캠핑장</span>
+					        </div>
+					    </div>
+					</div>
                             <label for="roomAddr" class="form-label">주소</label>
                             <input type="text" class="form-control" id="roomAddr" name="roomAddr" placeholder="숙소의 주소를 입력하세요" required>
                         </div>
-                        <!-- 위도/경도, 카테고리 등 다른 Room 필드 추가... -->
                         
                         <div class="mb-3">
                             <label for="roomDesc" class="form-label">숙소 설명</label>
                             <textarea class="form-control" id="roomDesc" name="roomDesc" rows="5" placeholder="숙소에 대한 상세한 설명을 작성해주세요."></textarea>
                         </div>
-						<!-- 위도 / 경도 -->
-						<div class="mb-3">
-						    <label for="latitude" class="form-label">위도</label>
-						    <input type="number" step="0.000000001" class="form-control" id="latitude" name="latitude" value="37.566535">
-						</div>
-						<div class="mb-3">
-						    <label for="longitude" class="form-label">경도</label>
-						    <input type="number" step="0.000000001" class="form-control" id="longitude" name="longitude" value="126.977969">
-						</div>
+	
 						
 						<!-- 지역 -->
 						<div class="mb-3">
@@ -110,15 +156,6 @@
 						    <input type="text" class="form-control" id="cancelPolicy" name="cancelPolicy" value="FREE_CANCEL_1DAY">
 						</div>
 						
-						<!-- 평균 평점 / 리뷰 수 -->
-						<div class="mb-3">
-						    <label for="averageRating" class="form-label">평균 평점</label>
-						    <input type="number" step="0.1" class="form-control" id="averageRating" name="averageRating" value="4.5">
-						</div>
-						<div class="mb-3">
-						    <label for="reviewCount" class="form-label">리뷰 수</label>
-						    <input type="number" class="form-control" id="reviewCount" name="reviewCount" value="15">
-						</div>
 						
 						<!-- 최소/최대 예약 일수 -->
 						<div class="mb-3">
@@ -193,10 +230,7 @@
                 <label class="form-label">주말 가격</label>
                 <input type="number" class="form-control" name="weekendAmt" required>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label">최대 인원</label>
-                <input type="number" class="form-control" name="maxGuests" required>
-            </div>
+
             <!-- 체크인/아웃 날짜 -->
 			<div class="col-md-6 mb-3">
 			    <label class="form-label">체크인 날짜</label>
@@ -215,10 +249,7 @@
 			<div class="col-md-6 mb-3">
 			    <label class="form-label">체크아웃 시간</label>
 			    <input type="text" class="form-control" name="roomCheckOutTime" value="1100">
-			</div>
-			            
-            
-            <!-- [수정] minDay, maxDay 필드 추가 -->
+			</div>         
             <div class="col-md-6 mb-3">
                 <label class="form-label">최소 숙박일수</label>
                 <input type="number" class="form-control" name="minDay" value="1" required>
@@ -227,6 +258,10 @@
                 <label class="form-label">최대 숙박일수</label>
                 <input type="number" class="form-control" name="maxDay" value="30" required>
             </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">최대 인원</label>
+                <input type="number" class="form-control" name="maxGuests" required>
+            </div>  
             
              <div class="col-12 mb-3">
                 <label class="form-label">객실 설명</label>
@@ -252,7 +287,7 @@
 $(document).ready(function() {
     
     let roomTypeIndex = 0;
-
+	
     // "객실 타입 추가" 버튼 클릭 이벤트
     $("#btnAddRoomType").on("click", function() {
         // 1. 숨겨진 템플릿을 복사합니다.
@@ -300,6 +335,22 @@ $(document).ready(function() {
         // 모든 검사를 통과하면 폼을 제출합니다.
         return true;
     });
+    
+	 // ========== [추가] 카테고리 버튼 클릭 이벤트 ==========
+	    $(".category-selection-area").on("click", ".category-tag", function() {
+	        // 클릭한 태그의 data-value 속성 값 가져오기
+	        const selectedValue = $(this).data("value");
+	
+	        // 숨겨진 input에 값 설정
+	        $("#roomCategory").val(selectedValue);
+	
+	        // 모든 태그에서 active 클래스 제거
+	        $(".category-tag").removeClass("active");
+	
+	        // 클릭한 태그에만 active 클래스 추가
+	        $(this).addClass("active");
+	    });
+    // =============================================
     
     // 페이지 로드 시 기본적으로 객실 타입 1개를 추가해줍니다.
     $("#btnAddRoomType").trigger("click");

@@ -13,5 +13,5 @@ public interface RoomTypeDao {
      */
     public int insertRoomType(RoomType roomType);
 
-
+    public int selectAvailableRoomType(String roomCheckInDt, String roomCheckOutDt);
 }
