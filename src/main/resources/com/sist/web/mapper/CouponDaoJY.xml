@@ -37,7 +37,7 @@
 		     NVL(TO_CHAR(REG_DT, 'YYYY-MM-DD'), '') REG_DT,
 		     NVL(TO_CHAR(UPDATE_DT, 'YYYY-MM-DD'), '') UPDATE_DT
 	    FROM COUPON
-	   ORDER BY REG_DT DESC
+	   ORDER BY CPN_SEQ DESC
 	</select>
 
 </mapper>
