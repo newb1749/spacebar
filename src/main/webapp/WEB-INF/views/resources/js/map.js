@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // 3. 위에서 동적으로 만든 infoContent 변수를 content 속성에 전달합니다.
             const infowindow = new kakao.maps.InfoWindow({
                 content: infoContent,
-                removable: true 
+                removable: false 
             });
 
             kakao.maps.event.addListener(marker, 'mouseover', function() {

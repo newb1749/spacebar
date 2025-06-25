@@ -48,6 +48,14 @@
             SYSDATE, 
             SYSDATE
         )
-        
   	</insert>
+  	
+	<select id="selectAvailableRoomType" resultType="int">
+	    SELECT ROOM_TYPE_SEQ
+	    FROM ROOM_TYPE
+	    WHERE 
+	        TO_DATE(ROOM_CHECK_IN_DT, 'YYYYMMDD') &lt;= TO_DATE(#{roomCheckInDt}, 'YYYYMMDD')
+	        AND 
+	        TO_DATE(ROOM_CHECK_OUT_DT, 'YYYYMMDD') &gt;= TO_DATE(#{roomCheckOutDt}, 'YYYYMMDD')
+	</select>
 </mapper>
