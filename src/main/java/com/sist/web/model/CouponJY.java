@@ -25,8 +25,8 @@ public class CouponJY implements Serializable
         this.cpnSeq = 0;
         this.cpnName = "";
         this.cpnDesc = "";
-        this.discountRate = 0.0;
-        this.discountAmt = 0;
+        this.discountRate = 0;	// 할인율
+        this.discountAmt = 0;		// 할인금액
         this.minOrderAmt = 0;
         this.issueStartDt = "";
         this.issueEndDt = "";
