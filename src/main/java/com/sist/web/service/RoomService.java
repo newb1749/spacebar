@@ -20,3 +20,13 @@ public interface RoomService {
 	public int insertRoomTransaction(Room room, List<RoomType> roomTypeList);
 	
 }
+
+
+
+
+
+
+
+
+
+

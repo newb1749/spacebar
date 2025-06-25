@@ -36,6 +36,13 @@ public class Room implements Serializable{
 	private long startRow;
 	private long endRow;
 	
+	private long amt;
+	private String roomImageName;
+	
+	private String checkInDate;
+	private String checkOutDate;
+	private String regionList;
+	
 	public Room()
 	{
 		roomSeq = 0;
@@ -59,11 +66,88 @@ public class Room implements Serializable{
 		searchValue = "";
 		startRow = 0;
 		endRow = 0;
+		
+		amt = 0;
+		roomImageName = "";
+		regionList = "";
+		
+		checkInDate = "";
+		checkOutDate = "";
 	}
 	
 	
-	
-	
+
+
+	public String getCheckInDate() {
+		return checkInDate;
+	}
+
+
+
+
+	public void setCheckInDate(String checkInDate) {
+		this.checkInDate = checkInDate;
+	}
+
+
+
+
+	public String getCheckOutDate() {
+		return checkOutDate;
+	}
+
+
+
+
+	public void setCheckOutDate(String checkOutDate) {
+		this.checkOutDate = checkOutDate;
+	}
+
+
+
+
+	public String getRegionList() {
+		return regionList;
+	}
+
+
+
+
+	public void setRegionList(String regionList) {
+		this.regionList = regionList;
+	}
+
+
+
+
+	public String getRoomImageName() {
+		return roomImageName;
+	}
+
+
+
+
+	public void setRoomImageName(String roomImageName) {
+		this.roomImageName = roomImageName;
+	}
+
+
+
+
+	public long getAmt() {
+		return amt;
+	}
+
+
+
+
+	public void setAmt(long amt) {
+		this.amt = amt;
+	}
+
+
+
+
 	public long getStartRow() {
 		return startRow;
 	}

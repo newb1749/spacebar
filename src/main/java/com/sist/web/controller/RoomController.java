@@ -2,6 +2,7 @@ package com.sist.web.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +25,6 @@ import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.RoomService;
-import com.sist.web.service.RoomServiceList;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
@@ -45,12 +45,6 @@ public class RoomController {
 	
 	@Autowired
 	private RoomService roomService;
-	
-	@Autowired
-	private RoomServiceList roomServiceList;
-	
-	private static final int LIST_COUNT = 6; 	// 한 페이지의 게시물 수
-	private static final int PAGE_COUNT = 2;	// 페이징 수
 
 	
     /**
@@ -234,57 +228,7 @@ public class RoomController {
 
         return "redirect:/";
     }
-	
-	//방 리스트 페이지
-	@RequestMapping(value="/room/list")
-	public String list(ModelMap model, HttpServletRequest request, HttpServletResponse response)
-	{
-		//조회값
-		String searchValue = HttpUtil.get(request, "searchValue","");
-		// 현재 페이지
-		long curPage = HttpUtil.get(request, "curPage", (long)1);
-		
-		// 게시물 리스트
-		List<Room> list = null;
-		//조회 객체
-		Room search = new Room();
-		//총 게시물 수
-		long totalCount = 0;
-		//페이징 객체
-		Paging paging = null;
-		
-		if(!StringUtil.isEmpty(searchValue))
-		{
-			search.setSearchValue(searchValue);
-		}
-		
-		totalCount = roomServiceList.roomTotalCount(search);
-		
-		logger.debug("================================");
-		logger.debug("totalCount : " + totalCount);
-		logger.debug("================================");
-		
-		if(totalCount > 0)
-		{
-			paging = new Paging("/room/list",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
-			
-			search.setStartRow(paging.getStartRow());
-			search.setEndRow(paging.getEndRow());
-			
-			list = roomServiceList.roomList(search);
-		}
-		
-		model.addAttribute("list",list);
-		model.addAttribute("searchValue",searchValue);
-		model.addAttribute("curPage",curPage);
-		model.addAttribute("paging",paging);
-		
-		
-		
-		
-		return "/room/list";
-	}
-	
+
 }
 
 
