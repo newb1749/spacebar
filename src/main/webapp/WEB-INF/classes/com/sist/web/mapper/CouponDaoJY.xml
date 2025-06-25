@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.web.dao.CouponDaoJY">
+
+  <!-- resultMap 설정 -->
+  <resultMap id="couponResultMap" type="com.sist.web.model.CouponJY">
+    <id     column="CPN_SEQ"        property="cpnSeq" />
+    <result column="CPN_NAME"       property="cpnName" />
+    <result column="CPN_DESC"       property="cpnDesc" />
+    <result column="DISCOUNT_RATE"  property="discountRate" />
+    <result column="DISCOUNT_AMT"   property="discountAmt" />
+    <result column="MIN_ORDER_AMT"  property="minOrderAmt" />
+    <result column="ISSUE_START_DT" property="issueStartDt" />
+    <result column="ISSUE_END_DT"   property="issueEndDt" />
+    <result column="CPN_TYPE"       property="cpnType" />
+    <result column="CPN_STAT"       property="cpnStat" />
+    <result column="TOTAL_CPN_CNT"  property="totalCpnCnt" />
+    <result column="REG_DT"         property="regDt" />
+    <result column="UPDATE_DT"      property="updateDt" />
+  </resultMap>
+
+  <!-- 전체 쿠폰 조회 쿼리 -->
+  <select id="selectAllCoupons" resultMap="couponResultMap">
+	  SELECT NVL(CPN_SEQ, 0) CPN_SEQ,
+		     NVL(CPN_NAME, '') CPN_NAME,
+		     NVL(CPN_DESC, '') CPN_DESC,
+		     NVL(DISCOUNT_RATE, 0) DISCOUNT_RATE,
+		     NVL(DISCOUNT_AMT, 0) DISCOUNT_AMT,
+		     NVL(MIN_ORDER_AMT, 0) MIN_ORDER_AMT,
+		     NVL(TO_CHAR(ISSUE_START_DT, 'YYYY-MM-DD'), '') ISSUE_START_DT,
+		     NVL(TO_CHAR(ISSUE_END_DT, 'YYYY-MM-DD'), '') ISSUE_END_DT,
+		     NVL(CPN_TYPE, '') CPN_TYPE,
+		     NVL(CPN_STAT, '') CPN_STAT,
+		     NVL(TOTAL_CPN_CNT, 0) TOTAL_CPN_CNT,
+		     NVL(TO_CHAR(REG_DT, 'YYYY-MM-DD'), '') REG_DT,
+		     NVL(TO_CHAR(UPDATE_DT, 'YYYY-MM-DD'), '') UPDATE_DT
+	    FROM COUPON
+	   ORDER BY CPN_SEQ DESC
+	</select>
+
+</mapper>
