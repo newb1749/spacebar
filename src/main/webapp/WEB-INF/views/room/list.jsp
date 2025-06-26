@@ -65,15 +65,21 @@ body {
 </style>
 <script>
 let curPage = parseInt("${curPage}");
-let maxPage = ${paging.totalPage};
+let maxPage = ${totalPage};
 let loading = false;
 
 $(document).ready(function(){
   // 검색 버튼
   $("#btnSearch").on("click", function(){
+    document.roomForm.regionList.value = "";
     document.roomForm.roomSeq.value = "";
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
+    
+ 	// 시간값 설정
+    document.roomForm.startTime.value = $("#startTime").val();
+    document.roomForm.endTime.value = $("#endTime").val();
+    
     document.roomForm.submit();
   });
 
@@ -85,10 +91,8 @@ $(document).ready(function(){
   // 필터 적용 -> hidden 추가
   $("#applyFilter").on("click", function(){
 	  const selectedRegion = $("#regionForm input[name='region']:checked").val();
-
 	  // 기존 hidden 제거
 	  //$("input[name='regionList']").remove();
-
 	  if (selectedRegion) {
 	    //$("<input>").attr({
 	      //type: "hidden",
@@ -97,6 +101,16 @@ $(document).ready(function(){
 	    //}).appendTo("#roomForm");
 	    document.roomForm.regionList.value = selectedRegion;
 	  }
+	  
+		document.roomForm.roomSeq.value = "";
+		document.roomForm.searchValue.value = $("#_searchValue").val();
+		document.roomForm.curPage.value = "1";
+		
+		// 시간값 설정
+	    document.roomForm.startTime.value = $("#startTime").val();
+	    document.roomForm.endTime.value = $("#endTime").val();
+		
+		document.roomForm.submit();
 
 	  $("#regionDropdown").hide();
 	});
@@ -143,7 +157,6 @@ $(window).on("scroll", function () {
 		fn_list_scroll(curPage + 1);
 	}
 });
-
 </script>
 
 </head>
@@ -155,8 +168,31 @@ $(window).on("scroll", function () {
 
   <!-- ✅ 검색 + 날짜 + 필터 -->
   <div class="d-flex justify-content-center align-items-center mb-5" style="gap: 12px; flex-wrap: wrap;">
+
     <input type="date" id="checkInDate" class="form-control shadow-sm" style="width: 160px; height: 44px; border-radius: 12px;" />
     <input type="date" id="checkOutDate" class="form-control shadow-sm" style="width: 160px; height: 44px; border-radius: 12px;" />
+    
+    <!-- ✅ 시간 선택 수평 정렬 -->
+<div class="d-flex align-items-center gap-3" style="height: 44px;">
+  <div class="d-flex align-items-center" style="gap: 8px;">
+    <span style="font-weight: bold; white-space: nowrap;">이용시작</span>
+		<select id="startTime" name="startTime" class="form-select" style="width: 100px; height: 44px; border-radius: 12px;">
+		  <c:forEach var="i" begin="0" end="24">
+		    <option value="${i}" <c:if test="${i == param.startTime}">selected</c:if>>${i}시</option>
+		  </c:forEach>
+		</select>
+  </div>
+
+  <div class="d-flex align-items-center" style="gap: 8px;">
+    <span style="font-weight: bold; white-space: nowrap;">이용끝</span>
+    <select id="endTime" name="endTime" class="form-select" style="width: 100px; height: 44px; border-radius: 12px;">
+	  <c:forEach var="i" begin="0" end="24">
+	    <option value="${i}" <c:if test="${i == param.endTime}">selected</c:if>>${i}시</option>
+	  </c:forEach>
+	</select>
+  </div>
+</div>
+
     <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control shadow-sm" maxlength="20"
            style="width: 260px; height: 44px; border-radius: 12px;" placeholder="검색어를 입력하세요" />
     <button type="button" id="btnSearch" class="btn"
@@ -198,7 +234,7 @@ $(window).on("scroll", function () {
     <div class="room-list-item">
       <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail">
       <div class="room-details">
-        <div class="room-title">${room.roomTitle}</div>
+        <div class="room-title">${room.roomTitle}  ${room.roomSeq}</div>
         <div class="room-location">${room.roomAddr}</div>
         <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
         <div class="room-price">
@@ -241,6 +277,8 @@ $(window).on("scroll", function () {
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
   <input type="hidden" name="regionList" id="regionList" value="${regionList}" />
+  <input type="hidden" name="startTime" id="startTime" value="${startTime}"/>
+  <input type="hidden" name="endTime" id="endTime" value="${endTime}"/>
 </form>
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

@@ -1,8 +1,6 @@
 package com.sist.web.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +57,11 @@ public class RoomControllerSh {
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		//필터 값
-		String regionList = HttpUtil.get(request, "regionList", "");
+		String regionList = HttpUtil.get(request, "regionList","");
+		//체크인 시간(대여공간)
+		int startTime = HttpUtil.get(request, "startTime", 0);
+		//체크아웃 시간(대여공간)
+		int endTime = HttpUtil.get(request, "endTime", 0);
 		
 		// 게시물 리스트
 		List<Room> list = null;
@@ -70,8 +72,6 @@ public class RoomControllerSh {
 		//페이징 객체
 		Paging paging = null;
 		
-		logger.debug(regionList);
-		
 		if(!StringUtil.isEmpty(searchValue))
 		{
 			search.setSearchValue(searchValue);
@@ -80,6 +80,7 @@ public class RoomControllerSh {
 		{
 			search.setRegionList(regionList);
 		}
+
 		
 		totalCount = roomService.roomTotalCount(search);
 		
@@ -87,9 +88,13 @@ public class RoomControllerSh {
 		logger.debug("totalCount : " + totalCount);
 		logger.debug("================================");
 		
+		long totalPage = 0;
+		
 		if(totalCount > 0)
 		{
 			paging = new Paging("/room/list",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			
+			totalPage = paging.getTotalPage();
 			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
@@ -102,6 +107,9 @@ public class RoomControllerSh {
 		model.addAttribute("curPage",curPage);
 		model.addAttribute("paging",paging);
 		model.addAttribute("regionList",regionList);
+		model.addAttribute("totalPage",totalPage);
+		model.addAttribute("startTime",startTime);
+		model.addAttribute("endTime",endTime);
 		
 		return "/room/list";
 	}
@@ -143,9 +151,13 @@ public class RoomControllerSh {
 		logger.debug("totalCount : " + totalCount);
 		logger.debug("================================");
 		
+		long totalPage = 0;
+		
 		if(totalCount > 0)
 		{
 			paging = new Paging("/room/list",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			
+			totalPage = paging.getTotalPage();
 			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
@@ -158,6 +170,7 @@ public class RoomControllerSh {
 		model.addAttribute("curPage",curPage);
 		model.addAttribute("paging",paging);
 		model.addAttribute("regionList",regionList);
+		model.addAttribute("totalPage",totalPage);
 		
 		return "/room/listFragment";
 	}

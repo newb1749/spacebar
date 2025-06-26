@@ -37,34 +37,35 @@
   </select>
   
   <select id="roomList" parameterType="com.sist.web.model.Room" resultMap="roomResultMap">
-		SELECT ROOM_SEQ,
-		       ROOM_CAT_SEQ,
-		       HOST_ID,
-		       ROOM_ADDR,
-		       LATITUDE,
-		       LONGITUDE,
-		       REGION,
-		       REG_DT,
-		       UPDATE_DT,
-		       AUTO_CONFIRM_YN,
-		       ROOM_TITLE,
-		       ROOM_DESC,
-		       CANCEL_POLICY,
-		       AVERAGE_RATING,
-		       REVIEW_COUNT,
-		       MIN_TIMES,
-		       MAX_TIMES, 
-		       (SELECT NVL(MIN(C2.AMT), 0)
-		          FROM ROOM_TYPE T2 ,ROOM_AMOUNT C2
-		         WHERE T2.ROOM_TYPE_SEQ = C2.ROOM_TYPE_SEQ
-		           AND T2.ROOM_SEQ = INNER.ROOM_SEQ) AMT,
-		       (SELECT ROOM_IMG_NAME 
-		           FROM ROOM_IMAGE
-		          WHERE ROOM_SEQ = INNER.ROOM_SEQ
-		            AND IMG_TYPE = 'main') ROOM_IMAGE_NAME
+	SELECT ROOM_SEQ,
+	       ROOM_CAT_SEQ,
+	       HOST_ID,
+	       ROOM_ADDR,
+	       LATITUDE,
+	       LONGITUDE,
+	       REGION,
+	       REG_DT,
+	       UPDATE_DT,
+	       AUTO_CONFIRM_YN,
+	       ROOM_TITLE,
+	       ROOM_DESC,
+	       CANCEL_POLICY,
+	       AVERAGE_RATING,
+	       REVIEW_COUNT,
+	       MIN_TIMES,
+	       MAX_TIMES, 
+	       (SELECT NVL(MIN(C2.AMT), 0)
+	          FROM ROOM_TYPE T2, ROOM_AMOUNT C2
+	         WHERE T2.ROOM_TYPE_SEQ = C2.ROOM_TYPE_SEQ
+	           AND T2.ROOM_SEQ = OUTER.ROOM_SEQ) AMT,
+	       (SELECT ROOM_IMG_NAME 
+	          FROM ROOM_IMAGE
+	         WHERE ROOM_SEQ = OUTER.ROOM_SEQ
+	           AND IMG_TYPE = 'main') ROOM_IMAGE_NAME
+	FROM (
+		SELECT ROWNUM RNUM, INNER.*
 		  FROM (
-		    SELECT ROWNUM RNUM,
-		           ROOM_SEQ,
+		    SELECT ROOM_SEQ,
 		           NVL(ROOM_CAT_SEQ, 0) ROOM_CAT_SEQ,
 		           HOST_ID,
 		           NVL(ROOM_ADDR, '') ROOM_ADDR,
@@ -83,20 +84,22 @@
 		           NVL(MAX_TIMES, 0) MAX_TIMES
 		      FROM ROOM
 		     WHERE 1 = 1
-	         <if test='searchValue != null and searchValue != ""'>
-	           AND (
-	             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
-	             OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
-	             OR DBMS_LOB.INSTR(ROOM_DESC, #{searchValue}) > 0
-	           )
-	         </if>
-	         <if test='regionList != null and regionList != ""'>
-	         	AND REGION = #{regionList}
-	         </if>
-	       ORDER BY ROOM_SEQ DESC
-	    ) INNER
-	   WHERE RNUM <![CDATA[>=]]> #{startRow}
-	     AND RNUM <![CDATA[<=]]> #{endRow}
-	</select>
+		         <if test='searchValue != null and searchValue != ""'>
+		           AND (
+		             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
+		             OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
+		             OR DBMS_LOB.INSTR(ROOM_DESC, #{searchValue}) > 0
+		           )
+		         </if>
+		         <if test='regionList != null and regionList != ""'>
+		         	AND REGION = #{regionList}
+		         </if>
+		     ORDER BY ROOM_SEQ DESC
+		  ) INNER
+	) OUTER
+	WHERE RNUM <![CDATA[>=]]> #{startRow}
+	  AND RNUM <![CDATA[<=]]> #{endRow}
+</select>
+
   
 </mapper>
