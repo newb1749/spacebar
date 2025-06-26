@@ -7,12 +7,12 @@
     once: true
   });
 
-  var preloader = function() {
+  var preloader = function () {
     var loader = document.querySelector('.loader');
     var overlay = document.getElementById('overlayer');
 
     function fadeOut(el) {
-      if (!el) return; // el이 없으면 종료
+      if (!el) return;
       el.style.opacity = 1;
       (function fade() {
         if ((el.style.opacity -= 0.1) < 0) {
@@ -23,21 +23,22 @@
       })();
     }
 
-    setTimeout(function() {
+    setTimeout(function () {
       fadeOut(loader);
       fadeOut(overlay);
     }, 200);
   };
   preloader();
 
-  var tinySdlier = function() {
+  // ✅ 오타 수정: tinySdlier → tinySlider
+  var tinySlider = function () {
     var heroSlider = document.querySelectorAll('.hero-slide');
     var propertySlider = document.querySelectorAll('.property-slider');
     var imgPropertySlider = document.querySelectorAll('.img-property-slide');
     var testimonialSlider = document.querySelectorAll('.testimonial-slider');
 
     if (heroSlider.length > 0) {
-      var tnsHeroSlider = tns({
+      tns({
         container: '.hero-slide',
         mode: 'carousel',
         speed: 700,
@@ -50,7 +51,7 @@
     }
 
     if (imgPropertySlider.length > 0) {
-      var tnsPropertyImageSlider = tns({
+      tns({
         container: '.img-property-slide',
         mode: 'carousel',
         speed: 700,
@@ -64,7 +65,7 @@
     }
 
     if (propertySlider.length > 0) {
-      var tnsSlider = tns({
+      tns({
         container: '.property-slider',
         mode: 'carousel',
         speed: 700,
@@ -82,7 +83,7 @@
     }
 
     if (testimonialSlider.length > 0) {
-      var tnsSlider = tns({
+      tns({
         container: '.testimonial-slider',
         mode: 'carousel',
         speed: 700,
@@ -99,6 +100,8 @@
       });
     }
   }
-  tinySdlier();
+
+  // ✅ 함수명도 맞게 실행
+  tinySlider();
 
 })();

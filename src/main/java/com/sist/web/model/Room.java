@@ -28,6 +28,7 @@ public class Room implements Serializable{
 	private short maxTimes;				// 최대 이용시간
 	private double averageRating;		// 숙소 평균 평점 (2,1)
 	private int reviewCount;			// 숙소 전체 리뷰수
+	private int roomTypeSeq;
 	
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
 	
@@ -51,20 +52,25 @@ public class Room implements Serializable{
 		averageRating = 0;
 		reviewCount = 0;
 	}
-	
-	
+
+    // getter / setter
+    public int getRoomTypeSeq() {
+        return roomTypeSeq;
+    }
+
+    public void setRoomTypeSeq(int roomTypeSeq) {
+        this.roomTypeSeq = roomTypeSeq;
+    }
+
 	
 	public List<RoomImage> getRoomImageList() {
 		return RoomImageList;
 	}
 
 
-
 	public void setRoomImageList(List<RoomImage> roomImageList) {
 		RoomImageList = roomImageList;
 	}
-
-
 
 	public int getRoomSeq() {
 		return roomSeq;

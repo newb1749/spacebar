@@ -20,6 +20,7 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+      <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
@@ -35,27 +36,34 @@
   </resultMap>
   
 	<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
-		SELECT 
-			ROOM_SEQ, 
-			ROOM_CAT_SEQ, 
-			HOST_ID, 
-			ROOM_ADDR, 
-			LATITUDE, 
-			LONGITUDE, 
-			REGION, 
-			AUTO_CONFIRM_YN, 
-			ROOM_TITLE, 
-			ROOM_DESC, 
-			CANCEL_POLICY, 
-			MIN_TIMES, 
-			MAX_TIMES,
-			AVERAGE_RATING,
-			REVIEW_COUNT, 
-			TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, 
-			TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
-		FROM ROOM
-		WHERE ROOM_SEQ = #{roomSeq}
-	</select>
+	SELECT 
+		R.ROOM_SEQ, 
+		R.ROOM_CAT_SEQ, 
+		R.HOST_ID, 
+		R.ROOM_ADDR, 
+		R.LATITUDE, 
+		R.LONGITUDE, 
+		R.REGION, 
+		R.AUTO_CONFIRM_YN, 
+		R.ROOM_TITLE, 
+		R.ROOM_DESC, 
+		R.CANCEL_POLICY, 
+		R.MIN_TIMES, 
+		R.MAX_TIMES,
+		R.AVERAGE_RATING,
+		R.REVIEW_COUNT, 
+		TO_CHAR(R.REG_DT, 'YY/MM/DD') AS REG_DT, 
+		TO_CHAR(R.UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT,
+		
+		-- 🔥 추가: ROOM_TYPE_SEQ 가져오기
+		RT.ROOM_TYPE_SEQ
+	
+	FROM ROOM R
+	-- 🔗 ROOM_TYPE 조인
+	LEFT JOIN ROOM_TYPE RT ON R.ROOM_SEQ = RT.ROOM_SEQ
+	
+	WHERE R.ROOM_SEQ = #{roomSeq}
+</select>
   
 	<select id="getRoomImgDetail" resultMap="roomImgResultMap" parameterType="int">
 		SELECT 
