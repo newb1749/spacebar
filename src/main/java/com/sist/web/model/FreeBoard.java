@@ -29,6 +29,10 @@ public class FreeBoard implements Serializable
 	private long startRow;
 	private long endRow;
 	
+    private int commentCount;  // 댓글 수 필드 추가
+
+
+
 	public FreeBoard()
 	{
 		freeBoardSeq = 0;			
@@ -50,6 +54,14 @@ public class FreeBoard implements Serializable
 		endRow = 0;	
 	}
 
+    // getter, setter 추가
+    public int getCommentCount() {
+        return commentCount;
+    }
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+	
 	public long getFreeBoardSeq() {
 		return freeBoardSeq;
 	}

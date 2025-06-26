@@ -156,7 +156,7 @@ public class FreeBoardService {
         return result;
     }
 
-  // 최상위 댓글 등록 후 group_seq 업데이트
+   //최상위 댓글 등록 후 group_seq 업데이트
     public int updateGroupSeq(FreeBoardComment comment) {
         int result = 0;
         try {
@@ -167,5 +167,76 @@ public class FreeBoardService {
         return result;
     }
     
+    //게시물 삭제시 댓글 수 조회
+    public int boardAnswersCount(long freeBoardSeq)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = freeBoardDao.boardAnswersCount(freeBoardSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] boardAnswersCount Exception : ", e);
+		}
+		
+		return count;
+	}
+    
+    //게시물 삭제(댓글도 같이 삭제)
+    @Transactional
+    public int boardDelete(long freeBoardSeq) throws Exception
+	{
+    	int count = 0;
+    	
+    	try
+		{
+    		
+    		freeBoardDao.boardCommentDelete(freeBoardSeq);
+			count = freeBoardDao.boardDelete(freeBoardSeq);
+
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] boardDelete Exception : ", e);
+		}
+		
+		return count;
+	}
+    
+    //댓글 삭제
+    public int commentDelete(long freeBoardCmtSeq) throws Exception
+	{
+    	int count = 0;
+    	
+    	try
+		{
+    		count = freeBoardDao.commentDelete(freeBoardCmtSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] boardDelete Exception : ", e);
+		}
+		
+		return count;
+	}
+    
+    //게시물 수정
+    public int boardUpdate(FreeBoard freeBoard) throws Exception
+	{
+    	int count = 0;
+    	
+    	try
+		{
+    		count = freeBoardDao.boardUpdate(freeBoard);
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] boardUpdate Exception : ", e);
+		}
+		
+		return count;
+	}
     
 }

@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.FreeBoard;
 import com.sist.web.model.FreeBoardComment;
 import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
+import com.sist.web.model.User;
 //import com.sist.web.model.User;
 import com.sist.web.service.FreeBoardService;
+import com.sist.web.service.UserService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 
@@ -42,6 +45,9 @@ public class FreeBoardController {
 	
 	@Autowired
 	private FreeBoardService freeBoardService;
+	
+	@Autowired
+	private UserService userService;
 	
 	private static final int LIST_COUNT = 5; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
@@ -66,6 +72,8 @@ public class FreeBoardController {
 		//페이징 객체
 		Paging paging = null;
 		
+		int cmtCount = 0;
+		
 	
 		if(!StringUtil.isEmpty(searchType) && !StringUtil.isEmpty(searchValue))
 		{
@@ -79,9 +87,7 @@ public class FreeBoardController {
 		}
 		
 		totalCount = freeBoardService.boardListCount(search);
-		
 
-		
 		if(totalCount > 0)
 		{
 			paging = new Paging("/board/list", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
@@ -92,6 +98,10 @@ public class FreeBoardController {
 			list = freeBoardService.boardList(search);
 		}
 		
+		
+		cmtCount = freeBoardService.boardAnswersCount(search.getFreeBoardSeq());
+		
+		model.addAttribute("cmtCount", cmtCount);
 		model.addAttribute("list", list);
 		model.addAttribute("searchType", searchType);
 		model.addAttribute("searchValue", searchValue);
@@ -160,9 +170,9 @@ public class FreeBoardController {
 		model.addAttribute("curPage", curPage);
 		
 		// 사용자정보 조회
-		//User user = userService.userSelect(cookieUserId);
+		User user = userService.userSelect(cookieUserId);
 		
-		//model.addAttribute("user", user);
+		model.addAttribute("user", user);
 		
 		return "/board/writeForm";
 	}
@@ -288,8 +298,202 @@ public class FreeBoardController {
 	    return ajaxResponse;
 	}
 
+	//게시판 삭제(삭제시 댓글도 삭제)
+	@RequestMapping(value="/board/delete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> delete(HttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		
+		if(freeBoardSeq > 0)
+		{
+			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			
+			if(freeBoard != null)
+			{
+				if(StringUtil.equals(cookieUserId, freeBoard.getUserId()))
+				{
+					try
+					{
+						//게시판 삭제
+						if(freeBoardService.boardDelete(freeBoardSeq) > 0)
+						{
+							ajaxResponse.setResponse(0, "success");
+						}
+						else
+						{
+							ajaxResponse.setResponse(500, "server error1");
+						}
+					}
+					catch(Exception e)
+					{
+						logger.error("[FreeBoardController] /board/delete  Exception : ", e);
+						ajaxResponse.setResponse(500, "server error2");
+					}
+		
+				}
+				else	// 본인 글이 아닌 경우
+				{
+					ajaxResponse.setResponse(403, "server error");
+				}
+			}
+			else
+			{
+				ajaxResponse.setResponse(404, "not found");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(400, "bad request");
+		}
+		
+		return ajaxResponse;
+	}
 	
-
+	//댓글 삭제
+	@RequestMapping(value="/board/cmtDelete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> cmtDelete(HttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		long freeBoardCmtSeq = HttpUtil.get(request, "freeBoardCmtSeq", (long)0);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		
+		if(freeBoardCmtSeq > 0)
+		{
+			FreeBoardComment freeBoardComment = freeBoardService.getCommentBySeq(freeBoardCmtSeq);
+			
+			if(freeBoardComment != null)
+			{
+				if(StringUtil.equals(cookieUserId, freeBoardComment.getUserId()))
+				{
+					try
+					{
+						//게시판 삭제
+						if(freeBoardService.commentDelete(freeBoardCmtSeq) > 0)
+						{
+							ajaxResponse.setResponse(0, "success");
+						}
+						else
+						{
+							ajaxResponse.setResponse(500, "server error1");
+						}
+					}
+					catch(Exception e)
+					{
+						logger.error("[FreeBoardController] /board/delete  Exception : ", e);
+						ajaxResponse.setResponse(500, "server error2");
+					}
+		
+				}
+				else	// 본인 글이 아닌 경우
+				{
+					ajaxResponse.setResponse(403, "server error");
+				}
+			}
+			else
+			{
+				ajaxResponse.setResponse(404, "not found");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(400, "bad request");
+		}
+		
+		return ajaxResponse;
+	}
 	
-
+	//게시글 수정화면
+	@RequestMapping(value="/board/updateForm")
+	public String updateForm(ModelMap model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		// 쿠키값
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		// 게시물번호
+		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
+		// 조회항목
+		String searchType = HttpUtil.get(request, "searchType", "");
+		// 조회값
+		String searchValue = HttpUtil.get(request, "searchValue", "");
+		// 현재페이지
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		
+		FreeBoard freeBoard = null;
+		
+		if(freeBoardSeq > 0)
+		{
+			freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			
+			if(freeBoard != null)
+			{
+				if(!StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+				{
+					freeBoard = null;
+				}
+			}
+		}
+		
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
+		model.addAttribute("freeBoard", freeBoard);
+				
+		return "/board/updateForm";
+	}
+	
+	//게시글 수정
+	@RequestMapping(value="/board/updateProc", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> updateProc(MultipartHttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
+		String freeBoardTitle = HttpUtil.get(request, "freeBoardTitle", "");
+		String freeBoardContent = HttpUtil.get(request, "freeBoardContent", "");
+		
+		if(freeBoardSeq > 0 && !StringUtil.isEmpty(freeBoardTitle) && !StringUtil.isEmpty(freeBoardContent))
+		{
+			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			
+			if(freeBoard != null)
+			{
+				freeBoard.setFreeBoardTitle(freeBoardTitle);
+				freeBoard.setFreeBoardContent(freeBoardContent);
+				try
+				{
+					if(freeBoardService.boardUpdate(freeBoard) > 0)
+					{
+						ajaxResponse.setResponse(0, "success");
+					}
+					else
+					{
+						ajaxResponse.setResponse(500, "internal server error2");
+					}
+				}
+				catch(Exception e)
+				{
+					logger.error("[FreeBoardService] updateProc Exception : ", e);
+					ajaxResponse.setResponse(500, "internal server error1");
+				}
+			}
+			else
+			{
+				ajaxResponse.setResponse(404, "not found");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(400, "bad request");
+		}
+	
+		return ajaxResponse;
+		
+	}
 }

@@ -57,6 +57,12 @@
       margin-right: 10px;
       border-radius: 8px;
    }
+   
+    .deleted-comment {
+    color: #999;
+    font-style: italic;
+    margin-bottom: 5px;
+  }
 </style>
 
 </head>
@@ -69,7 +75,8 @@
       <div class="view-title"><c:out value="${freeBoard.freeBoardTitle}" /></div>
       <div class="view-meta">
          작성자: <c:out value="${freeBoard.userName}" /> 
-         (<a href="mailto:${freeBoard.userEmail}">${freeBoard.userEmail}</a>)<br/>
+         <c:out value="(${freeBoard.userEmail})" /> 
+         <br/>
          등록일: <c:out value="${freeBoard.regDt}" /> |
          조회수: <fmt:formatNumber value="${freeBoard.freeBoardViews}" type="number" groupingUsed="true" />
       </div>
@@ -100,19 +107,32 @@
 	
 		<c:forEach var="freeBoardComment" items="${freeBoardComment}">
 		  <div class="comment-item" style="padding-left: ${freeBoardComment.depth * 20}px">
-		    <span class="comment-author">${freeBoardComment.userName}</span>
-		    <span class="comment-date">${freeBoardComment.createDt}</span>
-		    <div class="comment-content">${freeBoardComment.freeBoardCmtContent}</div>
+		  
+		    <c:choose>
+		      <c:when test="${freeBoardComment.freeBoardCmtStat eq 'N'}">
+		        <div class="deleted-comment">삭제된 댓글입니다.</div>
+		      </c:when>
+		      
+		      <c:otherwise>
+		        <span class="comment-author">${freeBoardComment.userName}</span>
+		        <span class="comment-date">${freeBoardComment.createDt}</span>
+		        <div class="comment-content">${freeBoardComment.freeBoardCmtContent}</div>
 		
-		    <!-- 답글 버튼 -->
-		    <button type="button" class="btn btn-sm btn-link btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
+		        <button type="button" class="btn btn-sm btn-link btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
+		        
+		        <c:if test="${boardMe eq 'Y'}">
+		          <button type="button" class="btn btn-warning text-white">수정</button>
+		          <button type="button" class="btn btn-danger btn-cmt-delete" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">삭제</button>
+		        </c:if>
 		
-		    <!-- 답글 입력창 -->
-		    <div id="replyArea-${freeBoardComment.freeBoardCmtSeq}" class="reply-area" style="display:none; margin-top:10px;">
-		      <textarea id="replyContent-${freeBoardComment.freeBoardCmtSeq}" rows="1" style="width:100%;" placeholder="답글 내용을 입력하세요"></textarea><br/>
-		      <button type="button" class="btn btn-primary btn-reply-submit" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글 등록</button>
-		      <button type="button" class="btn btn-secondary btn-reply-cancel" data-parent="${freeBoardComment.freeBoardCmtSeq}">취소</button>
-		    </div>
+		        <div id="replyArea-${freeBoardComment.freeBoardCmtSeq}" class="reply-area" style="display:none; margin-top:10px;">
+		          <textarea id="replyContent-${freeBoardComment.freeBoardCmtSeq}" rows="1" style="width:100%;" placeholder="답글 내용을 입력하세요"></textarea><br/>
+		          <button type="button" class="btn btn-primary btn-reply-submit" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글 등록</button>
+		          <button type="button" class="btn btn-secondary btn-reply-cancel" data-parent="${freeBoardComment.freeBoardCmtSeq}">취소</button>
+		        </div>
+		      </c:otherwise>
+	    	</c:choose>
+		  
 		  </div>
 		</c:forEach>
 
@@ -229,6 +249,35 @@ $(document).ready(function() {
          });
       }
    });
+   
+   $(document).on("click", ".btn-cmt-delete", function(){
+	    if(confirm("해당 댓글을 삭제하시겠습니까?")) {
+	        let cmtSeq = $(this).data("cmt-seq");
+	        $.ajax({
+	            type: "POST",
+	            url: "/board/cmtDelete",
+	            data: {
+	                freeBoardCmtSeq: cmtSeq
+	            },
+	            dataType: "JSON",
+	            beforeSend: function(xhr) {
+	                xhr.setRequestHeader("AJAX", "true");
+	            },
+	            success: function(response) {
+	                if(response.code == 0) {
+	                    alert("댓글이 삭제되었습니다.");
+	                    location.reload(); // 혹은 list로 이동
+	                } else {
+	                    alert("삭제에 실패했습니다. 코드: " + response.code);
+	                }
+	            },
+	            error: function(xhr, status, error) {
+	                alert("오류 발생: " + error);
+	            }
+	        });
+	    }
+	});
+
    </c:if>
 });
 

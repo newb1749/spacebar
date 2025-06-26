@@ -5,6 +5,14 @@
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 
+<style>
+.deleted-title {
+  color: gray;
+  font-style: italic;
+}
+</style>
+
+
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#btnSearch").on("click", function(){
@@ -80,11 +88,18 @@ function fn_list(curPage)
 	<c:forEach var="freeBoard" items="${list}" varStatus="status">
       <tr>
          <td class="text-center">${freeBoard.freeBoardSeq}</td>
-         <td>
-            <a href="javascript:void(0)" onclick="fn_view(${freeBoard.freeBoardSeq})">            
-               	<c:out value="${freeBoard.freeBoardTitle}" />
-            </a>
-         </td>
+         <td class="text-left">
+		  <c:choose>
+		    <c:when test="${freeBoard.freeBoardStat eq 'N'}">
+		      <span class="deleted-title">삭제된 게시물입니다.</span>
+		    </c:when>
+		    <c:otherwise>
+		      <a href="javascript:void(0)" onclick="fn_view(${freeBoard.freeBoardSeq})">            
+		          <c:out value="${freeBoard.freeBoardTitle}" /> (${freeBoard.commentCount})
+		      </a>
+		    </c:otherwise>
+		  </c:choose>
+		</td>
          <td class="text-center">${freeBoard.userName}</td>
          <td class="text-center">${freeBoard.regDt}</td>
          <td class="text-center"><fmt:formatNumber type="number" maxFractionDigits="3" groupingUsed="true" value="${freeBoard.freeBoardViews}" /></td>
