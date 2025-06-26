@@ -59,13 +59,139 @@
    }
 </style>
 
+</head>
+<body>
+
+<div class="container view-wrapper">
+   <h2 class="mb-4">📄 게시물 보기</h2>
+
+   <div class="view-card">
+      <div class="view-title"><c:out value="${freeBoard.freeBoardTitle}" /></div>
+      <div class="view-meta">
+         작성자: <c:out value="${freeBoard.userName}" /> 
+         (<a href="mailto:${freeBoard.userEmail}">${freeBoard.userEmail}</a>)<br/>
+         등록일: <c:out value="${freeBoard.regDt}" /> |
+         조회수: <fmt:formatNumber value="${freeBoard.freeBoardViews}" type="number" groupingUsed="true" />
+      </div>
+      <div class="view-content">
+         <c:out value="${freeBoard.freeBoardContent}" />
+      </div>
+   </div>
+
+   <div class="btn-group-custom">
+      <button type="button" id="btnList" class="btn btn-secondary">리스트</button>
+      <button type="button" id="btnReply" class="btn btn-outline-primary">답글</button> <%-- ✅ 이걸 추가해야 함 --%>
+     <!-- 답글 입력 폼 (처음엔 숨김 처리) -->
+	 <div id="topReplyArea" style="display:none; margin-top: 20px;">
+        <textarea id="replyContent-0" rows="1" style="width:100%;" placeholder="답글 내용을 입력하세요"></textarea>
+        <br/>
+        <button type="button" id="btnReplySubmit" class="btn btn-primary btn-reply-submit" data-parent="0" style="margin-top: 5px;">답글 등록</button>
+        <button type="button" id="btnReplyCancel" class="btn btn-secondary" style="margin-top: 5px;">취소</button>
+    </div>
+
+    <c:if test="${boardMe eq 'Y'}">
+        <button type="button" id="btnUpdate" class="btn btn-warning text-white">수정</button>
+        <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
+    </c:if>
+	</div>
+
+<c:if test="${!empty freeBoardComment}">
+	<div class="comment-box">
+	
+		<c:forEach var="freeBoardComment" items="${freeBoardComment}">
+		  <div class="comment-item" style="padding-left: ${freeBoardComment.depth * 20}px">
+		    <span class="comment-author">${freeBoardComment.userName}</span>
+		    <span class="comment-date">${freeBoardComment.createDt}</span>
+		    <div class="comment-content">${freeBoardComment.freeBoardCmtContent}</div>
+		
+		    <!-- 답글 버튼 -->
+		    <button type="button" class="btn btn-sm btn-link btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
+		
+		    <!-- 답글 입력창 -->
+		    <div id="replyArea-${freeBoardComment.freeBoardCmtSeq}" class="reply-area" style="display:none; margin-top:10px;">
+		      <textarea id="replyContent-${freeBoardComment.freeBoardCmtSeq}" rows="1" style="width:100%;" placeholder="답글 내용을 입력하세요"></textarea><br/>
+		      <button type="button" class="btn btn-primary btn-reply-submit" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글 등록</button>
+		      <button type="button" class="btn btn-secondary btn-reply-cancel" data-parent="${freeBoardComment.freeBoardCmtSeq}">취소</button>
+		    </div>
+		  </div>
+		</c:forEach>
+
+	</div>
+</c:if>
+</div>
+<form name="bbsForm" id="bbsForm" method="post">
+   <input type="hidden" name="freeBoardSeq" value="${freeBoardSeq}" />
+   <input type="hidden" name="searchType" value="${searchType}" />
+   <input type="hidden" name="searchValue" value="${searchValue}" />
+   <input type="hidden" name="curPage" value="${curPage}" />
+</form>
+
+
+
+
 <script type="text/javascript">
 $(document).ready(function() {
-   $("#btnReply").on("click", function(){
-      document.bbsForm.action = "/board/replyForm";
-      document.bbsForm.submit();
-   });
+	
+    // 최상위 댓글 "답글" 버튼
+    $("#btnReply").on("click", function() {
+        $("#topReplyArea").slideDown();
+    });
 
+    // 최상위 댓글 "취소" 버튼
+    $("#btnReplyCancel").on("click", function() {
+        $("#topReplyArea").slideUp();
+    });
+    
+    // 대댓글 "답글" 버튼 → 해당 입력창만 보여줌
+    $(document).on("click", ".btn-reply", function() {
+	    var parentCmtSeq = $(this).data("parent");
+	    // 1. 모든 replyArea 감춤
+	    $(".reply-area").slideUp();
+		
+	    // 2. 해당 댓글의 입력창만 보여줌
+	    $('#replyArea-' + parentCmtSeq).slideDown();
+		});
+	
+	    // 대댓글 "취소" 버튼
+	    $(document).on("click", ".btn-reply-cancel", function() {
+	        var parentCmtSeq = $(this).data("parent");
+	        $('#replyArea-' + parentCmtSeq).slideUp();
+    });
+	
+    $(document).on("click", ".btn-reply-submit", function() {
+        var parentCmtSeq = $(this).data("parent"); // 0이면 최상위
+        var content = $('#replyContent-' + parentCmtSeq).val().trim();
+        var boardSeq = $("input[name='freeBoardSeq']").val();
+
+        if (content === "") {
+            alert("내용을 입력하세요.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/board/commentInsert", // 너의 Controller URL
+            data: {
+                freeBoardSeq: boardSeq,
+                parentCmtSeq: parentCmtSeq,
+                freeBoardCmtContent: content
+            },
+            dataType: "json",
+            success: function(res) {
+                if (res.code === 0) {
+                    location.reload(); // 등록 후 새로고침
+                } else {
+                    alert("댓글 등록 실패: " + res.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("오류 발생: " + error);
+            }
+        });
+    });
+
+
+    
    $("#btnList").on("click", function(){
       document.bbsForm.action = "/board/list";
       document.bbsForm.submit();
@@ -105,42 +231,8 @@ $(document).ready(function() {
    });
    </c:if>
 });
+
 </script>
-</head>
-<body>
-
-<div class="container view-wrapper">
-   <h2 class="mb-4">📄 게시물 보기</h2>
-
-   <div class="view-card">
-      <div class="view-title"><c:out value="${freeBoard.freeBoardTitle}" /></div>
-      <div class="view-meta">
-         작성자: <c:out value="${freeBoard.userName}" /> 
-         (<a href="mailto:${freeBoard.userEmail}">${freeBoard.userEmail}</a>)<br/>
-         등록일: <c:out value="${freeBoard.regDt}" /> |
-         조회수: <fmt:formatNumber value="${freeBoard.freeBoardViews}" type="number" groupingUsed="true" />
-      </div>
-      <div class="view-content">
-         <c:out value="${freeBoard.freeBoardContent}" />
-      </div>
-   </div>
-
-   <div class="btn-group-custom">
-      <button type="button" id="btnList" class="btn btn-secondary">리스트</button>
-      <button type="button" id="btnReply" class="btn btn-primary">답변</button>
-   <c:if test="${boardMe eq 'Y'}">
-      <button type="button" id="btnUpdate" class="btn btn-warning text-white">수정</button>
-      <button type="button" id="btnDelete" class="btn btn-danger">삭제</button>
-   </c:if>
-   </div>
-</div>
-
-<form name="bbsForm" id="bbsForm" method="post">
-   <input type="hidden" name="freeBoardSeq" value="${freeBoardSeq}" />
-   <input type="hidden" name="searchType" value="${searchType}" />
-   <input type="hidden" name="searchValue" value="${searchValue}" />
-   <input type="hidden" name="curPage" value="${curPage}" />
-</form>
 
 </body>
 </html>

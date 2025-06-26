@@ -7,10 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.dao.FreeBoardDao;
 import com.sist.web.model.FreeBoard;
+import com.sist.web.model.FreeBoardComment;
 
 @Service("freeBoardService")
 public class FreeBoardService {
@@ -82,4 +85,87 @@ public class FreeBoardService {
 		
 		return freeBoard;
 	}
+	
+	//게시물 등록
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public int boardInsert(FreeBoard freeBoard) throws Exception
+	{
+		int count = 0;
+		
+		try
+		{
+			count = freeBoardDao.boardInsert(freeBoard);
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] boardInsert Exception ", e);
+		}
+		
+		return count;
+	}
+	
+	//댓글 리스트 조회
+	public List<FreeBoardComment> commentList(long freeBoardSeq)
+	{
+		List<FreeBoardComment> cmtList = null;
+		
+		try
+		{
+			cmtList = freeBoardDao.commentList(freeBoardSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[FreeBoardService] commentList Exception : ", e);
+		}
+		
+		return cmtList;
+	}
+	
+	// 댓글 단건 조회 (부모 댓글 정보용)
+    public FreeBoardComment getCommentBySeq(long freeBoardCmtSeq) {
+        FreeBoardComment comment = null;
+        try {
+            comment = freeBoardDao.commentSelect(freeBoardCmtSeq);
+        } catch (Exception e) {
+            logger.error("[FreeBoardService] getCommentBySeq Exception", e);
+        }
+        return comment;
+    }
+	
+    // 댓글 등록 전 orderNo 밀어내기
+    public int boardGroupOrderUpdate(FreeBoardComment comment) {
+        int result = 0;
+        try {
+            result = freeBoardDao.boardGroupOrderUpdate(comment);
+        } catch (Exception e) {
+            logger.error("[FreeBoardService] boardGroupOrderUpdate Exception", e);
+        }
+        return result;
+    }
+
+    // 댓글 등록
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public int commentInsert(FreeBoardComment comment) {
+        int result = 0;
+        try {
+            result = freeBoardDao.commentInsert(comment);
+        } catch (Exception e) {
+            logger.error("[FreeBoardService] commentInsert Exception", e);
+            throw e; // 트랜잭션 롤백을 위해 예외 다시 throw
+        }
+        return result;
+    }
+
+  // 최상위 댓글 등록 후 group_seq 업데이트
+    public int updateGroupSeq(FreeBoardComment comment) {
+        int result = 0;
+        try {
+            result = freeBoardDao.updateGroupSeq(comment);
+        } catch (Exception e) {
+            logger.error("[FreeBoardService] updateGroupSeq Exception", e);
+        }
+        return result;
+    }
+    
+    
 }

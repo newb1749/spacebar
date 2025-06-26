@@ -13,10 +13,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.FreeBoard;
+import com.sist.web.model.FreeBoardComment;
 import com.sist.web.model.Paging;
+import com.sist.web.model.Response;
+//import com.sist.web.model.User;
 import com.sist.web.service.FreeBoardService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -61,12 +66,6 @@ public class FreeBoardController {
 		//페이징 객체
 		Paging paging = null;
 		
-		logger.debug("searchType1: {}", search.getSearchType());
-		logger.debug("searchValue1: {}", search.getSearchValue());
-		logger.debug("startRow1: {}", search.getStartRow());
-		logger.debug("endRow1: {}", search.getEndRow());
-		logger.debug("search1: {}", search);
-		
 	
 		if(!StringUtil.isEmpty(searchType) && !StringUtil.isEmpty(searchValue))
 		{
@@ -81,16 +80,7 @@ public class FreeBoardController {
 		
 		totalCount = freeBoardService.boardListCount(search);
 		
-		logger.debug("==================================");
-		logger.debug("totalcCount  : " + totalCount);
-		logger.debug("==================================");
-		
-		logger.debug("searchType2: {}", search.getSearchType());
-		logger.debug("searchValue2: {}", search.getSearchValue());
-		logger.debug("startRow2: {}", search.getStartRow());
-		logger.debug("endRow2: {}", search.getEndRow());
-		logger.debug("search2: {}", search);
-		logger.debug("totalCount: {}", totalCount);
+
 		
 		if(totalCount > 0)
 		{
@@ -100,35 +90,18 @@ public class FreeBoardController {
 			search.setEndRow(paging.getEndRow());
 			
 			list = freeBoardService.boardList(search);
-			
-			logger.debug("searchType3: {}", search.getSearchType());
-			logger.debug("searchValue:3 {}", search.getSearchValue());
-			logger.debug("startRow:3 {}", search.getStartRow());
-			logger.debug("endRow3: {}", search.getEndRow());
 		}
-		
-		logger.debug("searchType4: {}", search.getSearchType());
-		logger.debug("searchValue4: {}", search.getSearchValue());
-		logger.debug("startRow4: {}", search.getStartRow());
-		logger.debug("endRow4: {}", search.getEndRow());
-		logger.debug("search4: {}", search);
 		
 		model.addAttribute("list", list);
 		model.addAttribute("searchType", searchType);
 		model.addAttribute("searchValue", searchValue);
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("paging", paging);
-		
-		logger.debug("searchType5: {}", search.getSearchType());
-		logger.debug("searchValue5: {}", search.getSearchValue());
-		logger.debug("startRow5: {}", search.getStartRow());
-		logger.debug("endRow5: {}", search.getEndRow());
-		
-		
+	
 		return "/board/list";
 	}
 	
-	//게시판 상세 조회
+	//게시판 상세 조회(댓글도 같이 조회되도록)
 	@RequestMapping(value="/board/view")
 	public String view(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
@@ -142,9 +115,12 @@ public class FreeBoardController {
 		
 		FreeBoard freeBoard = null;
 		
+		List<FreeBoardComment> freeBoardComment = null;
+		
 		if(freeBoardSeq > 0)
 		{
 			freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			freeBoardComment = freeBoardService.commentList(freeBoardSeq);
 			
 			if(freeBoard != null && StringUtil.equals(freeBoard.getUserId(), cookieUserId))
 			{
@@ -154,6 +130,8 @@ public class FreeBoardController {
 			}
 		}
 		
+		
+		model.addAttribute("freeBoardComment", freeBoardComment);
 		model.addAttribute("freeBoardSeq", freeBoardSeq);
 		model.addAttribute("searchType", searchType);
 		model.addAttribute("searchValue", searchValue);
@@ -177,8 +155,141 @@ public class FreeBoardController {
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)0);
 		
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
 		
+		// 사용자정보 조회
+		//User user = userService.userSelect(cookieUserId);
+		
+		//model.addAttribute("user", user);
 		
 		return "/board/writeForm";
 	}
+	
+	//게시물 등록(ajax 통신)
+	@RequestMapping(value="/board/writeProc", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> writeProc(MultipartHttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String freeBoardTitle = HttpUtil.get(request, "freeBoardTitle", "");
+		String freeBoardContent = HttpUtil.get(request, "freeBoardContent", "");
+		
+		if(!StringUtil.isEmpty(freeBoardTitle) && !StringUtil.isEmpty(freeBoardContent))
+		{
+			FreeBoard freeBoard = new FreeBoard();
+			
+			freeBoard.setUserId(cookieUserId);
+			freeBoard.setFreeBoardTitle(freeBoardTitle);
+			freeBoard.setFreeBoardContent(freeBoardContent);
+			
+			try
+			{
+				if(freeBoardService.boardInsert(freeBoard) > 0)
+				{
+					ajaxResponse.setResponse(0, "success");
+				}
+				else
+				{
+					ajaxResponse.setResponse(500, "internal server error");
+				}
+			}
+			catch(Exception e)
+			{
+				logger.error("[FreeBoardService]writeProc Exception", e);
+				ajaxResponse.setResponse(500, "internal server error2");
+			}
+		}
+		
+		return ajaxResponse;
+	}
+	
+	//댓글 등록
+	@RequestMapping(value = "/board/commentInsert", method = RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> commentInsert(HttpServletRequest request) {
+	    Response<Object> ajaxResponse = new Response<Object>();
+
+	    String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+	    long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
+	    long parentCmtSeq = HttpUtil.get(request, "parentCmtSeq", (long)0); // 부모댓글 seq (0이면 최상위)
+	    String content = HttpUtil.get(request, "freeBoardCmtContent", "");
+	    
+	    if (cookieUserId == null || cookieUserId.isEmpty()) {
+	        ajaxResponse.setResponse(401, "로그인이 필요합니다.");
+	        return ajaxResponse;
+	    }
+	    if (freeBoardSeq <= 0) {
+	        ajaxResponse.setResponse(400, "잘못된 게시물 정보입니다.");
+	        return ajaxResponse;
+	    }
+	    if (content == null || content.trim().isEmpty()) {
+	        ajaxResponse.setResponse(400, "댓글 내용을 입력하세요.");
+	        return ajaxResponse;
+	    }
+
+	    try {
+	        FreeBoardComment comment = new FreeBoardComment();
+	        comment.setFreeBoardSeq(freeBoardSeq);
+	        comment.setUserId(cookieUserId);
+	        comment.setFreeBoardCmtContent(content.trim());
+	        comment.setFreeBoardCmtStat("Y"); // 보통 정상 상태
+	        comment.setParentCmtSeq(parentCmtSeq);
+	        
+	        logger.debug("groupSeq1 : " + comment.getGroupSeq());
+
+	        if (parentCmtSeq == 0) {
+	            // 최상위 댓글인 경우
+	            comment.setDepth(0);
+	            // groupSeq와 orderNo는 서비스에서 처리 (새로운 댓글 시퀀스 기준으로 그룹 생성)
+	            comment.setGroupSeq(0);
+	            comment.setOrderNo(0);
+	        } else {
+	            // 부모 댓글 정보 가져오기
+	            FreeBoardComment parentComment = freeBoardService.getCommentBySeq(parentCmtSeq);
+	            if (parentComment == null) {
+	                ajaxResponse.setResponse(400, "부모 댓글이 존재하지 않습니다.");
+	                return ajaxResponse;
+	            }
+	            comment.setDepth(parentComment.getDepth() + 1);
+	            comment.setGroupSeq(parentComment.getGroupSeq());
+	            comment.setOrderNo(parentComment.getOrderNo() + 1);
+	            
+	            logger.debug("groupSeq2 : " + comment.getGroupSeq());
+
+	            // orderNo 업데이트 (같은 그룹 내 순서 밀어내기)
+	            freeBoardService.boardGroupOrderUpdate(comment);
+	            
+	            logger.debug("groupSeq3 : " + comment.getGroupSeq());
+	        }
+
+	        // 댓글 등록
+	        int result = freeBoardService.commentInsert(comment);
+	        if (result > 0) {
+	            // 부모가 없으면 그룹 번호를 새로 등록된 댓글 seq로 셋팅
+	            if (parentCmtSeq == 0) {
+	                comment.setGroupSeq(comment.getFreeBoardCmtSeq());
+	                freeBoardService.updateGroupSeq(comment);
+	            }
+	            ajaxResponse.setResponse(0, "success");
+	        } else {
+	        	
+	        	logger.debug("groupSeq4 : " + comment.getGroupSeq());
+	            ajaxResponse.setResponse(500, "댓글 등록 실패");
+	        }
+	    } catch (Exception e) {
+	        logger.error("[FreeBoardController] commentInsert error", e);
+	        ajaxResponse.setResponse(500, "서버 오류 발생");
+	    }
+
+	    return ajaxResponse;
+	}
+
+	
+
+	
+
 }
