@@ -51,7 +51,7 @@ public class CouponServiceJY
     public boolean isAlreadyIssued(String userId, int cpnSeq) 
     {
         int count = 0;
-        try 
+        try  
         {
             count = couponDao.countUserCoupon(userId, cpnSeq);
         } 

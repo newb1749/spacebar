@@ -87,7 +87,7 @@
                 ${coupon.cpnDesc}
               </c:otherwise>
             </c:choose>
-          </td>
+          </td> 
           <td>
             <c:choose>
               <c:when test="${coupon.discountRate > 0}">

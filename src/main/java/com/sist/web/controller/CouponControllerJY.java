@@ -37,7 +37,7 @@ public class CouponControllerJY
     private String AUTH_COOKIE_NAME;     // ⬅️ 추가
 
     @GetMapping("/listJY")
-    public String couponList(Model model) 
+    public String couponList(Model model)  
     {
         try 
         {
