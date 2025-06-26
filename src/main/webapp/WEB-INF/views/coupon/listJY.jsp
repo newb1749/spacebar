@@ -4,36 +4,49 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>전체 쿠폰 목록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
+  
+  <!-- Themewagon 부동산 템플릿 CSS 포함 -->
+  <link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet" />
+<%--   <link href="${pageContext.request.contextPath}/resources/css/animate.min.css" rel="stylesheet" />
+  <link href="${pageContext.request.contextPath}/resources/css/owl.carousel.min.css" rel="stylesheet" />
+  <link href="${pageContext.request.contextPath}/resources/css/owl.theme.default.min.css" rel="stylesheet" />
+  <link href="${pageContext.request.contextPath}/resources/css/flaticon.css" rel="stylesheet" /> --%>
+  <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" />
+  
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <style>
-    .clickable {
-      cursor: pointer;
-      color: #FE7743;
-      font-weight: bold;
-    }
-    .clickable:hover {
-      text-decoration: underline;
-    }
-    .alert-fixed {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      display: none;
-    }
-  </style>
+<style>
+  body {
+    padding-top: 100px;
+  }
+
+  .clickable {
+    cursor: pointer;
+    color: #FE7743;
+    font-weight: bold;
+  }
+  .clickable:hover {
+    text-decoration: underline;
+  }
+  .alert-fixed {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: none;
+    min-width: 300px;
+  }
+</style>
 </head>
 <body>
 
 <jsp:include page="/WEB-INF/views/include/navigation.jsp" />
 
-<div class="container" style="padding-top: 300px;">
+<div class="container" style="padding-top: 100px; padding-bottom: 100px;">
   <h2 class="text-center mb-4">전체 쿠폰 목록</h2>
 
   <div class="alert alert-success alert-fixed" id="alertBox"></div>
@@ -91,10 +104,10 @@
           <td>
             <c:choose>
               <c:when test="${coupon.cpnStat eq 'Y'}">
-                <span class="badge bg-success">활성</span>
+                <span class="badge bg-success">발급중</span>
               </c:when>
               <c:otherwise>
-                <span class="badge bg-secondary">비활성</span>
+                <span class="badge bg-secondary">발급불가</span>
               </c:otherwise>
             </c:choose>
           </td>
@@ -137,5 +150,6 @@
   }
 </script>
 
+<jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>
 </html>

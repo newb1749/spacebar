@@ -61,7 +61,7 @@ public class UserController
 					if(StringUtil.equals(user.getUserStat(), "Y"))
 					{
 						CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, CookieUtil.stringToHex(userId));
-						
+						request.getSession().setAttribute("userId", userId); // 추가!
 						logger.debug("userId : " + userId);
 						logger.debug("userId : " + CookieUtil.stringToHex(userId));
 						logger.debug("userPwd : " + userPwd);

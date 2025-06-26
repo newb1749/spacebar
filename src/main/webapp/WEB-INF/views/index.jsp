@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title><spring:eval expression="@env['site.title']" /></title>
@@ -61,21 +61,112 @@ body {
 }
 </style>
 
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#userId").focus();
+	
+	$("#userId").on("keypress", function(e){
+		if(e.which == 13)
+		{
+			fn_loginCheck();
+		}
+	});
+	
+	$("#userPwd").on("keypress", function(e){
+		if(e.which == 13)
+		{
+			fn_loginCheck();
+		}
+	});
+	
+	$("#btnLogin").on("click",function(){
+		fn_loginCheck();
+	});
+	
+	$("#btnReg").on("click",function(){
+		location.href = "/user/regForm";
+	});
+});
+
+function fn_loginCheck()
+{
+	if($.trim($("#userId").val()).length <= 0)
+	{
+		alert("아이디를 입력하세요.");
+		$("#userId").val("");
+		$("#userId").focus();
+		return;
+	}
+	
+	if($.trim($("#userPwd").val()).length <= 0)
+	{
+		alert("비밀번호를 입력하세요.");
+		$("#userPwd").val("");
+		$("#userPwd").focus();
+		return;
+	}
+	
+	$.ajax({
+		type:"POST",
+		url:"/user/login",
+		data:
+		{
+			userId:$("#userId").val(),
+			userPwd:$("#userPwd").val()
+		},
+		dataType:"JSON",
+		beforeSend:function(xhr)
+		{
+			xhr.setRequestHeader("AJAX","true");
+		},
+		success:function(res)
+		{
+			if(res.code == 0)
+			{
+				alert("로그인되었습니다.");
+				location.href = "/coupon/listJY";
+			}
+			else if(res.code == -1)
+			{
+				alert("비밀번호가 올바르지 않습니다.");
+				$("#userPwd").focus();
+			}
+			else if(res.code == -99)
+			{
+				alert("정지된 사용자입니다. 관리자에게 문의하세요");
+				$("#userId").focus();
+			}
+			else if(res.code == 400)
+			{
+				alert("파라미터 값이 올바르지 않습니다.");
+				$("#userId").focus();
+			}
+			else if(res.code == 404)
+			{
+				alert("아이디와 일치하는 정보가 없습니다. ");
+				$("#userId").focus();
+			}
+			else 
+			{
+				alert("오류가 발생하였습니다.");
+				$("#userId").focus();
+			}
+		},
+		error:function(error)
+		{
+			icia.common.error(error);
+		}
+	});
+}
+
+</script>
+
 </head>
 <body>
+<%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
-<nav class="navbar navbar-expand-sm bg-secondary navbar-dark mb-3"> 
-	<ul class="navbar-nav"> 
-	    <li class="nav-item"> 
-	      <a class="nav-link" href="/"> 로그인</a> 
-	    </li> 
-	    <li class="nav-item"> 
-	      <a class="nav-link" href="/user/regForm">회원가입</a> 
-	    </li> 
-  </ul> 
-</nav>
 
-<div class="container">
+<div class="container"><br/><br/><br/><br/><br/>
 
 	<form class="form-signin">
 	    <h2 class="form-signin-heading m-b3">로그인</h2>
@@ -88,5 +179,6 @@ body {
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
 	</form>
 </div>
+<%@ include file="/WEB-INF/views/include/footer.jsp"%>
 </body>
 </html>

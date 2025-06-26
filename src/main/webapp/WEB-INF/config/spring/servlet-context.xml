@@ -102,7 +102,7 @@
 	
 	<!-- 정적 리소스 매핑 -->
 <mvc:resources mapping="/css/**" location="/resources/css/" />
-<mvc:resources mapping="/css/**" location="/resources/scss/" />
+<mvc:resources mapping="/scss/**" location="/resources/scss/" />
 <mvc:resources mapping="/js/**" location="/resources/js/" />
 <mvc:resources mapping="/images/**" location="/resources/images/" />
 <mvc:resources mapping="/uploads/**" location="/resources/upload/" />
