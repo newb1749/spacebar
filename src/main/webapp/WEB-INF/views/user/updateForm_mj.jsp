@@ -28,6 +28,10 @@ function sample4_execDaumPostcode()
 <script type="text/javascript">
 $(document).ready(function(){
 	
+	$("#btndelete").on("click",function(){
+		location.href = "/user/deleteForm";	
+	});
+	
 	$("#changeAddrBtn").on("click", function(){
 		 $("#addrView").hide(); 
          $("#addrUpdate").show(); 
@@ -122,7 +126,7 @@ $(document).ready(function(){
 		}
 		
 		//주소 합치기(도로명주소 + 상세주소)
-		var userAddr = $("#streetAdr").val() + "," + $("#detailAdr").val();
+		var userAddr = $("#streetAdr").val() + " " + $("#detailAdr").val();
 		$("#userAddr").val(userAddr);
 		//document.updateForm.userAddr.value = userAddr;
 		
@@ -148,7 +152,7 @@ $(document).ready(function(){
 				if(res.code == 0)
 				{
 					alert("회원정보가 수정되었습니다.")
-					location.href = "/user/updateForm";
+					location.href = "/user/updateForm_mj";
 				}
 				else if(res.code == 400)
 				{
@@ -213,15 +217,21 @@ function fn_emailCheck(value)
 				    
 				    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
 				        <!-- 이미지 미리보기 -->
+				        <!-- 이미지 등록했을때 -->
+				        <c:if test="${!empty user.profImgExt}">
 				        <img id="previewImg" src="/resources/upload/userprofile/${user.userId}.${user.profImgExt}" 
 				             alt="프로필 이미지" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" />
-				
+						</c:if>
+						<!-- 이미지 등록 안했을때 -->
+						<c:if test="${empty user.profImgExt}">
+				        <img id="previewImg" src="/resources/upload/userprofile/회원.png" 
+				             alt="프로필 이미지" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" />
+						</c:if>
 				        <!-- 파일 선택 -->
 				        <input type="file" id="profImgExt" name="profImgExt" accept="image/*" />
 				    </div>
-				
 				    <p class="error-message" id="profile-image-error"></p>
-				</div>
+				</div>								
                 
                 <div class="form-group">
                     <label for="userId">사용자 아이디</label>
@@ -277,6 +287,7 @@ function fn_emailCheck(value)
                 <input type="hidden" id="userPwd" name="userPwd" value="" />
                 <input type="hidden" id="userAddr" name="userAddr" value="" />
                 <br/><button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+                <button type="button" id="btndelete" class="btn btn-primary">회원탈퇴</button>
             </form>
         </div>
     </div>

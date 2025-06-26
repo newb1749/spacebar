@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sist.web.dao.UserDao">
+<mapper namespace="com.sist.web.dao.UserDao_mj">
 
-	<resultMap type="com.sist.web.model.User" id="userResultMap">
+	<resultMap type="com.sist.web.model.User_mj" id="userResultMap">
 		<id column="USER_ID" property="userId" />
 		<result column="USER_PWD" property="userPwd" />
 		<result column="USER_NAME" property="userName" />
@@ -69,7 +69,7 @@
   	</select>
   	
   	<!-- 회원등록 -->
-  	<insert id="userInsert" parameterType="com.sist.web.model.User">
+  	<insert id="userInsert" parameterType="com.sist.web.model.User_mj">
   		INSERT INTO SB_USER (
 		    USER_ID,
 		    USER_PWD,
@@ -108,7 +108,7 @@
   	</insert>
   	
   	<!-- 회원정보수정 -->
-  	<update id="userUpdate" parameterType="com.sist.web.model.User">
+  	<update id="userUpdate" parameterType="com.sist.web.model.User_mj">
   		UPDATE SB_USER
 		   SET USER_PWD = #{userPwd},
 		       USER_NAME = #{userName},
@@ -121,7 +121,7 @@
   	</update>
   	
   	<!-- 회원탈퇴 -->
-  	<update id="userDelete" parameterType="com.sist.web.model.User">
+  	<update id="userDelete" parameterType="com.sist.web.model.User_mj">
   		UPDATE SB_USER
 		   SET USER_STAT = #{userStat}
 		 WHERE USER_ID = #{userId}

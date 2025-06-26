@@ -20,12 +20,12 @@
           <li><a href="/board/list2">게시판</a></li>
           <li><a href="/kakao/pay2">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
-            <li><a href="/user/updateForm">회원정보수정</a></li>
+            <li><a href="/user/updateForm_mj">회원정보수정</a></li>
             <li><a href="/user/loginOut">로그아웃</a></li>
           </c:if>
           <c:if test="<%= !isLoggedIn %>">
             <li><a href="/">로그인</a></li>
-            <li><a href="/user/regForm">회원가입</a></li>
+            <li><a href="/user/regForm_mj">회원가입</a></li>
           </c:if>
         </ul>
 

@@ -34,8 +34,8 @@ $(document).ready(function(){
 		
 		//공백체크
 		var emptCheck = /\s/g;
-		//아이디, 비밀번호 4~12자 영문 대소문자, 숫자
-		var idPwdCheck = /^[a-zA-Z0-9]{4,12}$/;
+		//아이디, 비밀번호 8~12자 영문 대소문자, 숫자
+		var idPwdCheck = /^[a-zA-Z0-9]{8,12}$/;
 		//전화번호 ex)010-0000-0000
 		var phoneCheck = /^\d{3}-\d{4}-\d{4}$/;
 		
@@ -56,7 +56,7 @@ $(document).ready(function(){
 		
 		if(!idPwdCheck.test($("#userId").val()))
 		{
-			alert("아이디는 4~12자 영문 대소문자, 숫자로만 입력이 가능합니다.");
+			alert("아이디는 8~12자 영문 대소문자, 숫자로만 입력이 가능합니다.");
 			$("#userId").focus();
 			return;
 		}
@@ -71,7 +71,7 @@ $(document).ready(function(){
 		
 		if(!idPwdCheck.test($("#userPwd1").val()))
 		{
-			alert("비밀번호는 4~12자 영문 대소문자, 숫자로만 입력이 가능합니다.");
+			alert("비밀번호는 8~12자 영문 대소문자, 숫자로만 입력이 가능합니다.");
 			$("#userPwd1").focus();
 			return;
 		}
@@ -180,7 +180,7 @@ $(document).ready(function(){
 		}		
 		
 		//주소 합치기(도로명주소 + 상세주소)
-		var userAddr = $("#streetAdr").val() + "," + $("#detailAdr").val();
+		var userAddr = $("#streetAdr").val() + " " + $("#detailAdr").val();
 		document.regForm.userAddr.value = userAddr;
 		
 		var form = $("#regForm")[0];				
@@ -375,7 +375,7 @@ function addrCheck()
 				<div class="form-group">
 				    <label for="userId" class="form-label">아이디</label> 
 				    <div class="input-group">
-				        <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디를 입력하세요 (4~12자 영문/숫자)" required>
+				        <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디를 입력하세요 (8~12자 영문/숫자)" required>
 				        <button type="button" onclick="fn_idCheck()" class="btn btn-secondary">중복확인</button>
 				    </div>
 				    <p class="error-message" id="username-error"></p>
@@ -383,7 +383,7 @@ function addrCheck()
                 
                 <div class="form-group">
                     <label for="userPwd">비밀번호</label>
-                    <input type="password" class="form-control" id="userPwd1" name="userPwd1" placeholder="비밀번호를 입력하세요(8자 이상)" required>
+                    <input type="password" class="form-control" id="userPwd1" name="userPwd1" placeholder="비밀번호를 입력하세요 (8~12자 영문/숫자)" required>
 					<p class="error-message" id="password-error"></p>
                 </div>
                 
