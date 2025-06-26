@@ -169,8 +169,16 @@ $(window).on("scroll", function () {
   <!-- ✅ 검색 + 날짜 + 필터 -->
   <div class="d-flex justify-content-center align-items-center mb-5" style="gap: 12px; flex-wrap: wrap;">
 
-    <input type="date" id="checkInDate" class="form-control shadow-sm" style="width: 160px; height: 44px; border-radius: 12px;" />
-    <input type="date" id="checkOutDate" class="form-control shadow-sm" style="width: 160px; height: 44px; border-radius: 12px;" />
+      <c:set var="calId" value="calendarTest"/> 
+	  <c:set var="fetchUrl" value=""/> 
+	  
+	  <!-- JSP include로 파라미터 전달 -->
+	  <jsp:include page="/WEB-INF/views/component/calendar.jsp">
+	    <jsp:param name="calId" value="${calId}" />
+	    <jsp:param name="fetchUrl" value="${fetchUrl}" />
+	    <jsp:param name="startDate" value="${startDate}" />
+	    <jsp:param name="endDate" value="${endDate}" />
+	  </jsp:include>
     
     <!-- ✅ 시간 선택 수평 정렬 -->
 <div class="d-flex align-items-center gap-3" style="height: 44px;">

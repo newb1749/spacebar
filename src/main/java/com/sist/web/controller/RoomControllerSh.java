@@ -11,9 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -50,7 +52,8 @@ public class RoomControllerSh {
 	
 	//방 리스트 페이지
 	@RequestMapping(value="/room/list")
-	public String list(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	public String list(@RequestParam(required = false) String startDate, // "20250626"
+		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//조회값
 		String searchValue = HttpUtil.get(request, "searchValue","");
@@ -62,6 +65,9 @@ public class RoomControllerSh {
 		int startTime = HttpUtil.get(request, "startTime", 0);
 		//체크아웃 시간(대여공간)
 		int endTime = HttpUtil.get(request, "endTime", 0);
+		
+		System.out.println("startDate: " + startDate);
+	    System.out.println("endDate: " + endDate);
 		
 		// 게시물 리스트
 		List<Room> list = null;
@@ -110,6 +116,8 @@ public class RoomControllerSh {
 		model.addAttribute("totalPage",totalPage);
 		model.addAttribute("startTime",startTime);
 		model.addAttribute("endTime",endTime);
+		model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
 		
 		return "/room/list";
 	}
@@ -174,6 +182,20 @@ public class RoomControllerSh {
 		
 		return "/room/listFragment";
 	}
+	
+	@RequestMapping(value="/room/testSearch", method=RequestMethod.GET)
+    public String searchPage(Model model) {
+        // DB에서 모든 숙소 타입의 가장 빠른 체크인 가능일과 가장 늦은 체크아웃 가능일을 조회
+        //Map<String, String> overallDates = roomService.getOverallAvailableDates(); // 이 메소드는 새로 구현해야 함
+        
+        // 예: overallDates.put("minDate", "2025-07-01");
+        //     overallDates.put("maxDate", "2025-12-31");
+
+        //model.addAttribute("minDate", overallDates.get("minDate"));
+        //model.addAttribute("maxDate", overallDates.get("maxDate"));
+        
+        return "/room/testSearch"; // search.jsp
+    }
 
 }
 
