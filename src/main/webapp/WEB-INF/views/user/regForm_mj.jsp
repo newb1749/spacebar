@@ -26,8 +26,21 @@ function sample4_execDaumPostcode()
 <!-- 카카오 주소 끝 -->
 
 <script type="text/javascript">
+//아이디 중복확인 버튼 눌렀는지 확인을 위한 변수 
+let isIdChecked = false;
+//닉네임 중복확인 버튼 눌렀는지 확인을 위한 변수 
+let isNickNameChecked = false;
+
 $(document).ready(function(){
 	$("#userId").focus();
+	
+	$("#userId").on("input",function(){
+		isIdChecked = false;
+	});
+	
+	$("#nickName").on("input",function(){
+		isNickNameChecked = false;
+	});
 	
 	//가입하기 버튼 눌렀을때
 	$("#btnReg").on("click",function(){
@@ -106,6 +119,20 @@ $(document).ready(function(){
 		{
 			alert("닉네임을 입력하세요.");
 			$("#nickName").val("");
+			$("#nickName").focus();
+			return;
+		}
+		
+		if(!isIdChecked)
+		{
+			alert("아이디 중복 확인을 해주세요.");
+			$("#userId").focus();
+			return;
+		}
+		
+		if(!isNickNameChecked)
+		{
+			alert("닉네임 중복 확인을 해주세요.");
 			$("#nickName").focus();
 			return;
 		}
@@ -248,6 +275,36 @@ function fn_emailCheck(value)
 //아이디 중복확인 버튼 눌렀을때 
 function fn_idCheck()
 {
+	//공백체크
+	var emptCheck = /\s/g;
+	//아이디, 비밀번호 8~12자 영문 대소문자, 숫자
+	var idPwdCheck = /^[a-zA-Z0-9]{8,12}$/;
+	
+	if($.trim($("#userId").val()).length <= 0)
+	{
+		alert("아이디를 입력하세요.");
+		$("#userId").val("");
+		$("#userId").focus();
+		isIdChecked = false;
+		return;
+	}
+	
+	if(emptCheck.test($("#userId").val()))
+	{
+		alert("아이디는 공백을 포함할 수 없습니다.");
+		$("#userId").focus();
+		isIdChecked = false;
+		return;
+	}
+	
+	if(!idPwdCheck.test($("#userId").val()))
+	{
+		alert("아이디는 8~12자 영문 대소문자, 숫자로만 입력이 가능합니다.");
+		$("#userId").focus();
+		isIdChecked = false;
+		return;
+	}
+	
 	$.ajax({
 		type:"POST",
 		url:"/user/idCheck",
@@ -265,26 +322,31 @@ function fn_idCheck()
 			if(res.code == 0)
 			{
 				alert("사용가능한 아이디입니다.");
+				isIdChecked = true;
 			}
 			else if(res.code == 100)
 			{
 				alert("이미 사용중인 아이디 입니다.");
 				$("#userId").focus();
+				isIdChecked = false;
 			}
 			else if(res.code == 400)
 			{
 				alert("파라미터 값이 올바르지 않습니다.");
 				$("#userId").focus();
+				isIdChecked = false;
 			}
 			else
 			{
 				alert("오류가 발생하였습니다.");
 				$("#userId").focus();
+				isIdChecked = false;
 			}			
 		},
 		error:function(error)
 		{
 			icia.common.error(error);
+			isIdChecked = false;
 		}
 	});
 }
@@ -292,6 +354,15 @@ function fn_idCheck()
 //닉네임 중복확인 버튼 눌렀을때
 function fn_nickNameCheck()
 {
+	if($.trim($("#nickName").val()).length <= 0)
+	{
+		alert("닉네임을 입력하세요.");
+		$("#nickName").val("");
+		$("#nickName").focus();
+		isNickNameChecked = false;
+		return;
+	}
+	
 	$.ajax({
 		type:"POST",
 		url:"/user/nickNameCheck",
@@ -309,26 +380,31 @@ function fn_nickNameCheck()
 			if(res.code == 0)
 			{
 				alert("사용가능한 닉네임입니다.");
+				isNickNameChecked = true;
 			}
 			else if(res.code == 100)
 			{
 				alert("이미 사용중인 닉네임 입니다.");
 				$("#nickName").focus();
+				isNickNameChecked = false;
 			}
 			else if(res.code == 400)
 			{
 				alert("파라미터 값이 올바르지 않습니다.");
 				$("#nickName").focus();
+				isNickNameChecked = false;
 			}
 			else
 			{
 				alert("오류가 발생하였습니다.");
 				$("#nickName").focus();
+				isNickNameChecked = false;
 			}			
 		},
 		error:function(error)
 		{
 			icia.common.error(error);
+			isNickNameChecked = false;
 		}
 	});
 }
