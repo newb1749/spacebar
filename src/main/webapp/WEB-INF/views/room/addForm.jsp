@@ -77,7 +77,6 @@
 
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <div class="container-fluid">
     <form name="addForm" id="addForm" action="/room/addProc" method="post" enctype="multipart/form-data">
@@ -531,6 +530,6 @@ $(document).ready(function() {
 
 });
 </script>
-	<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+
 </body>
 </html>
