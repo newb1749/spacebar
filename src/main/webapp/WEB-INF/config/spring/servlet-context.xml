@@ -5,17 +5,23 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/mvc
-		 				   http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+		 				   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		 				   http://www.springframework.org/schema/task
+                           http://www.springframework.org/schema/task/spring-task.xsd
+                           http://www.springframework.org/schema/websocket
+                           http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 		 				   
 	<!-- 어노테이션 service, controller 스캔 시작 -->
-    <context:component-scan base-package="com.sist.web.controller" />
+	<context:component-scan base-package="com.sist.web.controller" />
     <!-- 어노테이션 service, controller 스캔 종료 -->
-    
+        
+    <!--
     <mvc:annotation-driven>
    		<mvc:message-converters>
       		<bean class="org.springframework.http.converter.json.GsonHttpMessageConverter">
@@ -28,6 +34,20 @@
       		</bean>
       	</mvc:message-converters>
     </mvc:annotation-driven>
+    -->
+    
+     <mvc:annotation-driven />
+     
+     
+    <websocket:message-broker application-destination-prefix="/app">
+        <websocket:stomp-endpoint path="/ws-chat">
+            <websocket:sockjs />
+        </websocket:stomp-endpoint>
+        <websocket:simple-broker prefix="/topic" />
+    </websocket:message-broker>
+
+	<task:annotation-driven />    
+    
     
     <!-- url 매핑 시작 (이미지, 자바스트립트, 스타일시트 디렉토리)-->
     <mvc:resources mapping="/resources/**" location="/WEB-INF/views/resources/" />
