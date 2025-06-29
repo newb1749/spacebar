@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.ChatDao">
+      <resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
+        <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
+        <result property="createDate" column="CREATE_DATE"/>
+      </resultMap>
+
+    <resultMap id="chatMessageResultMap" type="com.sist.web.model.ChatMessage">
+        <id property="chatMessageSeq" column="CHAT_MESSAGE_SEQ"/>
+        <result property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
+        <result property="senderId" column="SENDER_ID"/>
+        <result property="messageContent" column="MESSAGE_CONTENT"/>
+        <result property="sendDate" column="SEND_DATE"/>
+        <result property="readCount" column="READ_COUNT"/>
+        <result property="senderName" column="NICKNAME"/>
+    </resultMap>
+	
+
+    <insert id="createChatRoom" parameterType="com.sist.web.model.ChatRoom">
+        <selectKey keyProperty="chatRoomSeq" resultType="int" order="BEFORE">
+            SELECT SEQ_CHAT_ROOM_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CHAT_ROOM (CHAT_ROOM_SEQ, CREATE_DATE)
+        VALUES (#{chatRoomSeq}, SYSDATE)
+    </insert>
+	
+
+    <insert id="addParticipant">
+        INSERT INTO CHAT_PARTICIPANT (CHAT_ROOM_SEQ, USER_ID)
+        VALUES (#{chatRoomSeq}, #{userId})
+    </insert>
+	
+
+    <select id="findChatRoomByUsers" resultType="Integer">
+        SELECT T1.CHAT_ROOM_SEQ
+        FROM CHAT_PARTICIPANT T1
+        INNER JOIN CHAT_PARTICIPANT T2 ON T1.CHAT_ROOM_SEQ = T2.CHAT_ROOM_SEQ
+        WHERE T1.USER_ID = #{userId1} AND T2.USER_ID = #{userId2}
+          AND (SELECT COUNT(*) FROM CHAT_PARTICIPANT WHERE CHAT_ROOM_SEQ = T1.CHAT_ROOM_SEQ) = 2
+    </select>
+    
+    
+    <select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
+        SELECT R.CHAT_ROOM_SEQ, R.CREATE_DATE
+        FROM CHAT_ROOM R
+        JOIN CHAT_PARTICIPANT P ON R.CHAT_ROOM_SEQ = P.CHAT_ROOM_SEQ
+        WHERE P.USER_ID = #{userId}
+        ORDER BY R.CREATE_DATE DESC
+    </select>
+
+
+    <select id="findMessagesByRoomSeq" resultMap="chatMessageResultMap" parameterType="int">
+        SELECT
+            M.CHAT_MESSAGE_SEQ AS CHAT_MESSAGE_SEQ,
+            M.CHAT_ROOM_SEQ AS CHAT_ROOM_SEQ,
+            M.SENDER_ID AS SENDER_ID,
+            U.NICKNAME AS NICKNAME,
+            M.MESSAGE_CONTENT AS MESSAGE_CONTENT,
+            M.SEND_DATE AS SEND_DATE,
+            M.READ_COUNT AS READ_COUNT
+        FROM CHAT_MESSAGE M
+        JOIN SB_USER U ON M.SENDER_ID = U.USER_ID
+        WHERE M.CHAT_ROOM_SEQ = #{chatRoomSeq}
+        ORDER BY M.SEND_DATE ASC
+    </select>
+
+
+    <insert id="saveMessage" parameterType="com.sist.web.model.ChatMessage">
+        INSERT INTO CHAT_MESSAGE (CHAT_MESSAGE_SEQ, CHAT_ROOM_SEQ, SENDER_ID, MESSAGE_CONTENT, SEND_DATE, READ_COUNT)
+        VALUES (SEQ_CHAT_MESSAGE_SEQ.NEXTVAL, #{chatRoomSeq}, #{senderId}, #{messageContent}, SYSDATE, 1)
+    </insert>
+    
+    
+    <update id="updateReadCount">
+        UPDATE CHAT_MESSAGE
+           SET READ_COUNT = 0
+         WHERE CHAT_ROOM_SEQ = #{chatRoomSeq}
+           AND SENDER_ID != #{userId}
+           AND READ_COUNT = 1
+    </update>
+    
+    
+</mapper>
