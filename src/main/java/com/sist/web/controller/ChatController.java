@@ -94,7 +94,7 @@ public class ChatController {
         HttpSession session = request.getSession();
         
         // --- 테스트를 위한 하드코딩 ---
-        SessionUtil.setSession(session, "USER_ID", "userA");
+        SessionUtil.setSession(session, "USER_ID", "userA");    
         // --- 여기까지 ---
         
         String userId = (String) SessionUtil.getSession(session, "USER_ID");
