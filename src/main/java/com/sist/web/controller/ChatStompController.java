@@ -9,8 +9,11 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.sist.common.util.StringUtil;
 import com.sist.web.model.ChatMessage;
+import com.sist.web.model.User_mj;
 import com.sist.web.service.ChatService;
+import com.sist.web.service.UserService_mj;
 
 @Controller
 public class ChatStompController { // 새로운 컨트롤러 클래스
@@ -18,6 +21,9 @@ public class ChatStompController { // 새로운 컨트롤러 클래스
 
     @Autowired
     private ChatService chatService;
+    
+    @Autowired
+    private UserService_mj userService;
 
     /**
      * WebSocket/STOMP를 통해 들어오는 메시지를 처리합니다.
@@ -27,13 +33,23 @@ public class ChatStompController { // 새로운 컨트롤러 클래스
     public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage) {
         logger.debug("STOMP Message Received: ", chatMessage.getMessageContent());
 
-        // 실제 세션에서 보낸 사람 ID 가져오기 (지금은 테스트용)
-        String senderId = "userA"; 
-        chatMessage.setSenderId(senderId);
+        String senderId = chatMessage.getSenderId();
 
-        // 클라이언트에서 온 닉네임이 없다면 DB에서 조회하거나 테스트용으로 설정
-        if (chatMessage.getSenderName() == null || chatMessage.getSenderName().isEmpty()) {
-            chatMessage.setSenderName("테스트A"); // 닉네임이 없는 경우를 위한 방어 코드
+        User_mj sender = userService.userSelect(senderId);
+        
+        if(sender != null)
+        {
+        	chatMessage.setSenderName(sender.getNickName());
+        }
+        else
+        {
+        	// 비정상적인 접근일 수 있으므로 로깅 및 예외처리
+        	logger.warn("Cannot find user with ID: " + senderId + ". Using senderName from client.");
+        	// 클라이언트가 보낸 닉네임이 없다면 '일 수 없음'으로 처리
+        	if(StringUtil.equals(chatMessage.getSenderName(), "") || StringUtil.isEmpty(chatMessage.getSenderName()))
+        	{
+        		chatMessage.setSenderName("알수없음");
+        	}
         }
 
         // 방 번호와 서버 시간 설정

@@ -15,7 +15,7 @@ public interface ChatDao {
     // 채팅방 참여자 추가
     int addParticipant(@Param("chatRoomSeq") int chatRoomSeq, @Param("userId") String userId);
 
-    // 두 사용자 ID로 기존 1:1 채팅방 조회
+    // 두 사용자 ID로 기존 1:1 채팅방 조회, 추가로 닉네임도 가져옴(상대방 포함)
     Integer findChatRoomByUsers(@Param("userId1") String userId1, @Param("userId2") String userId2);
 
     // 특정 사용자가 참여중인 모든 채팅방 목록 조회
@@ -29,4 +29,6 @@ public interface ChatDao {
     
     // 특정 채팅방의 메시지 읽음 처리 (상대방이 채팅방에 들어왔을 때)
     int updateReadCount(@Param("chatRoomSeq") int chatRoomSeq, @Param("userId") String userId);
+    
+   
 }

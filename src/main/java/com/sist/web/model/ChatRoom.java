@@ -13,11 +13,27 @@ public class ChatRoom implements Serializable{
     private int chatRoomSeq;
     private Date createDate;
     
+    private String otherUserNickname; 
+    
     public ChatRoom()
     {
     	chatRoomSeq = 0;
     	createDate = null;
     }
+
+    
+    
+	public String getOtherUserNickname() {
+		return otherUserNickname;
+	}
+
+
+
+	public void setOtherUserNickname(String otherUserNickname) {
+		this.otherUserNickname = otherUserNickname;
+	}
+
+
 
 	public int getChatRoomSeq() {
 		return chatRoomSeq;
