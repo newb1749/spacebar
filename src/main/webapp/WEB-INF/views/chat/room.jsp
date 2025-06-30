@@ -55,7 +55,7 @@ function renderMessages(messages) {
         let messageClass = msg.senderId === USER_ID ? 'my-message' : 'other-message';
         
         let messageHtml = '<div class="message ' + messageClass + '">' +
-                          '    <strong>' + msg.senderName + '</strong>: ' + msg.messageContent +
+                          '    <strong>' + msg.senderName + '</strong> ' + msg.messageContent +
                           '    <br/><small>' + formattedDate + '</small>' +
                           '</div>';
 
@@ -106,7 +106,7 @@ function sendMessage() {
     }
 
     const chatMessage = {
-        senderName: "테스트A", // 실제로는 세션의 사용자 이름 사용
+        senderName: "테스트A", // 실제로는 세션의 사용자 닉네임? 사용
         messageContent: messageContent
     };
 
