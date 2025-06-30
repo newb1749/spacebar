@@ -71,6 +71,9 @@
                      WHERE A.USER_ID = B.USER_ID
                      
                      <if test='searchType != null and searchType != "" and searchValue != null and searchValue !="" '>
+                         
+                         AND A.FREE_BOARD_STAT != 'N'
+                         
                          <choose>
                             <when test='searchType == "1"'>
                                 AND B.USER_NAME LIKE '%' || #{searchValue} || '%'
@@ -169,7 +172,7 @@
 							           #{freeBoardTitle},
 							           #{freeBoardContent},
 							           'test',
-							           #{freeBoardStat},
+							           'Y',
 							           SYSDATE,
 							           SYSDATE,
 							           #{freeBoardViews} )
