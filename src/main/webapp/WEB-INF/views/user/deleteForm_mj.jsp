@@ -41,7 +41,7 @@ $(document).ready(function(){
 			return;
 		}
 		
-		alert("회원탈퇴 하시겠습니까?");
+		alert("회원탈퇴 하시겠습니까??");
 		
 		var form = $("#withdrawForm")[0];
 		var formData = new FormData(form);
