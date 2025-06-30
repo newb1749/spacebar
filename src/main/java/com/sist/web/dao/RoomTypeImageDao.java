@@ -26,4 +26,5 @@ public interface RoomTypeImageDao {
     public int insertRoomTypeImage(RoomTypeImage roomTypeImage);
 
 
+
 }
