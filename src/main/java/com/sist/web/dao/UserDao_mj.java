@@ -22,4 +22,9 @@ public interface UserDao_mj
 	//회원 탈퇴
 	public int userDelete(User_mj user);
 	
+	//아이디 찾기
+	public User_mj searchId(User_mj user);
+	
+	//비밀번호 찾기
+	public User_mj searchPwd(User_mj user);
 }

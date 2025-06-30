@@ -110,4 +110,38 @@ public class UserService_mj
 		
 		return count;
 	}
+	
+	//아이디 찾기
+	public User_mj searchId(User_mj user)
+	{
+		User_mj result = null;
+		
+		try
+		{
+			result = userDao_mj.searchId(user);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService] searchId Exception",e);
+		}
+		
+		return result;
+	}
+	
+	//비밀번호 찾기
+	public User_mj searchPwd(User_mj user)
+	{
+		User_mj result = null;
+		
+		try
+		{
+			result = userDao_mj.searchPwd(user);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService] searchPwd Exception",e);
+		}
+		
+		return result;
+	}
 }
