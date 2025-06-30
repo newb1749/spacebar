@@ -223,20 +223,26 @@
                             </div>
                         </div>
                         <hr class="my-3">
-                        <div class="row">
-                             <div class="col-md-6 mb-3">
-                                <label for="minTimes" class="form-label">최소 이용시간</label>
-                                <select class="form-select" id="minTimes" name="minTimes">
-                                    <option value="30">30분</option><option value="60" selected>1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600">10시간</option>
-                                </select>
+                             <div class="usage-time-container disabled" id="usageTimeContainer">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="minTimes" class="form-label">최소 이용시간</label>
+                                    <select class="form-select" id="minTimes" name="minTimes">
+                                        <option value="30">30분</option><option value="60" selected>1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600">10시간</option><option value="630">10시간 30분</option><option value="660">11시간</option><option value="690">11시간 30분</option><option value="720">12시간</option><option value="750">12시간 30분</option><option value="780">13시간</option><option value="810">13시간 30분</option><option value="840">14시간</option><option value="870">14시간 30분</option><option value="900">15시간</option><option value="930">15시간 30분</option><option value="960">16시간</option><option value="990">16시간 30분</option><option value="1020">17시간</option><option value="1050">17시간 30분</option><option value="1080">18시간</option><option value="1110">18시간 30분</option><option value="1140">19시간</option><option value="1170">19시간 30분</option><option value="1200">20시간</option><option value="1230">20시간 30분</option><option value="1260">21시간</option><option value="1290">21시간 30분</option><option value="1320">22시간</option><option value="1350">22시간 30분</option><option value="1380">23시간</option><option value="1410">23시간 30분</option><option value="1440">24시간</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="maxTimes" class="form-label">최대 이용시간</label>
+                                    <select class="form-select" id="maxTimes" name="maxTimes">
+                                        <option value="30">30분</option><option value="60">1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600" selected>10시간</option><option value="630">10시간 30분</option><option value="660">11시간</option><option value="690">11시간 30분</option><option value="720">12시간</option><option value="750">12시간 30분</option><option value="780">13시간</option><option value="810">13시간 30분</option><option value="840">14시간</option><option value="870">14시간 30분</option><option value="900">15시간</option><option value="930">15시간 30분</option><option value="960">16시간</option><option value="990">16시간 30분</option><option value="1020">17시간</option><option value="1050">17시간 30분</option><option value="1080">18시간</option><option value="1110">18시간 30분</option><option value="1140">19시간</option><option value="1170">19시간 30분</option><option value="1200">20시간</option><option value="1230">20시간 30분</option><option value="1260">21시간</option><option value="1290">21시간 30분</option><option value="1320">22시간</option><option value="1350">22시간 30분</option><option value="1380">23시간</option><option value="1410">23시간 30분</option><option value="1440">24시간</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="maxTimes" class="form-label">최대 이용시간</label>
-                                <select class="form-select" id="maxTimes" name="maxTimes">
-                                    <option value="30">30분</option><option value="60">1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600" selected>10시간</option>
-                                </select>
+                            <div class="form-text text-muted">
+                                <i class="fa-solid fa-info-circle"></i> 공간 대여 카테고리에서만 이용시간을 설정할 수 있습니다.
                             </div>
                         </div>
+                        <hr class="my-4">
                          <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="autoConfirmYn" class="form-label">예약 자동 승인</label>
@@ -445,10 +451,22 @@ $(document).ready(function() {
     });
 
     // 카테고리 선택 이벤트
-    $(".category-selection-area").on("click", ".category-tag", function() {
-        $("#roomCatSeq").val($(this).data("value"));
+    $(".category-selection-area").on("click", ".category-tag", function () {
+        const categorySeq = parseInt($(this).data("value"));
+
+        $("#roomCatSeq").val(categorySeq);
         $(".category-tag").removeClass("active");
         $(this).addClass("active");
+
+       
+        if (categorySeq >= 1 && categorySeq <= 7) {          // 1~7
+            $("#minTimes, #maxTimes").prop("disabled", false)
+                                     .val("");              // 선택값도 초기화(선택)
+            $("#usageTimeContainer").addClass("disabled");   // 시각적 구분용(선택)
+        } else {                                             // 8~14
+            $("#minTimes, #maxTimes").prop("disabled", true);
+            $("#usageTimeContainer").removeClass("disabled");
+        }
     });
 
     // 편의시설 선택 이벤트
@@ -458,29 +476,43 @@ $(document).ready(function() {
         $(this).toggleClass("active", $checkbox.prop('checked'));
     });
 
-    // 이미지 미리보기 함수
-    function previewImages(input, previewContainerSelector) {
-        const previewContainer = $(previewContainerSelector);
-        previewContainer.empty();
-        if (input.files) {
-            Array.from(input.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewItem = `<div class="image-preview-item"><img src="${e.target.result}" alt="preview"></div>`;
-                    previewContainer.append(previewItem);
-                }
-                reader.readAsDataURL(file);
-            });
-        }
-    }
+   	  // 이미지 미리보기 함수
+	  // 공통 미리보기 함수(선택한 input 옆에 자동으로 preview div 생성)
+	  function previewImagesDynamic(fileInput) {
+	    let $preview = $(fileInput).siblings(".image-preview-container");
+	    if (!$preview.length) {
+	      $preview = $('<div class="image-preview-container mt-2"></div>');
+	      $(fileInput).after($preview);
+	    }
+	    $preview.empty();
+	
+	    Array.from(fileInput.files).forEach((file) => {
+	      const reader = new FileReader();
+	      reader.onload = (e) => {
+	        const item = `<div class="image-preview-item"><img src="${e.target.result}" alt="preview"></div>`;
+	        $preview.append(item);
+	      };
+	      reader.readAsDataURL(file);
+	    });
+	  }
+	
+	  /* (1) 기존 숙소 대표/상세 이미지 */
+	  $("#roomMainImage").on("change", function () {
+	    previewImagesDynamic(this);
+	  });
+	  $("#roomDetailImages").on("change", function () {
+	    previewImagesDynamic(this);
+	  });
+	
+	  /* (2) 동적으로 추가되는 객실타입 이미지 → 이벤트 위임 */
+	  $(document).on(
+	    "change",
+	    'input[type="file"][name^="roomTypeMainImage_"], input[type="file"][name^="roomTypeDetailImages_"]',
+	    function () {
+	      previewImagesDynamic(this);
+	    }
+	  );
 
-    // 대표/상세 이미지 미리보기 이벤트
-    $("#roomMainImage").on("change", function() {
-        previewImages(this, "#roomMainImagePreview");
-    });
-    $("#roomDetailImages").on("change", function() {
-        previewImages(this, "#roomDetailImagesPreview");
-    });
 
     // 폼 제출 시 유효성 검사
     $("#addForm").on("submit", function() {
