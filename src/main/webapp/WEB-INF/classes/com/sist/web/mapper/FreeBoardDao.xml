@@ -307,6 +307,13 @@
 			 WHERE FREE_BOARD_SEQ = #{freeBoardSeq}
 		</update>
 	
+	<!-- 댓글 수정 -->
+		<update id="commentUpdate" parameterType="com.sist.web.model.FreeBoardComment">
+		    UPDATE FREE_BOARD_COMMENT
+		    SET FREE_BOARD_CMT_CONTENT = #{freeBoardCmtContent},
+		        UPDATE_DT = SYSDATE
+		    WHERE FREE_BOARD_CMT_SEQ = #{freeBoardCmtSeq}
+		</update>
 	
 	
 	

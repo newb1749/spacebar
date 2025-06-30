@@ -121,7 +121,12 @@
 		        <button type="button" class="btn btn-sm btn-link btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
 		        
 		        <c:if test="${boardMe eq 'Y'}">
-		          <button type="button" class="btn btn-warning text-white">수정</button>
+		          <button type="button" class="btn btn-warning text-white btn-edit" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">수정</button>
+		          <div id="editArea-${freeBoardComment.freeBoardCmtSeq}" style="display:none; margin-top:10px;">
+				    <textarea id="editContent-${freeBoardComment.freeBoardCmtSeq}" rows="1" style="width:100%;">${freeBoardComment.freeBoardCmtContent}</textarea><br/>
+				    <button type="button" class="btn btn-primary btn-edit-submit" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">수정 완료</button>
+				    <button type="button" class="btn btn-secondary btn-edit-cancel" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">취소</button>
+				</div>
 		          <button type="button" class="btn btn-danger btn-cmt-delete" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">삭제</button>
 		        </c:if>
 		
@@ -277,6 +282,53 @@ $(document).ready(function() {
 	        });
 	    }
 	});
+   
+   $(document).on("click", ".btn-edit", function() {
+	    var cmtSeq = $(this).data("cmt-seq");
+	    
+	    // 다른 수정 폼 닫기
+	    $("[id^='editArea-']").slideUp();
+	    
+	    // 해당 수정 폼 열기
+	    $('#editArea-' + cmtSeq).slideDown();
+	});
+   $(document).on("click", ".btn-edit-cancel", function() {
+	    var cmtSeq = $(this).data("cmt-seq");
+	    $('#editArea-' + cmtSeq).slideUp();
+	});
+	
+   $(document).on("click", ".btn-edit-submit", function() {
+	    var cmtSeq = $(this).data("cmt-seq");
+	    var newContent = $('#editContent-' + cmtSeq).val().trim();
+
+	    if (newContent === "") {
+	        alert("수정할 내용을 입력하세요.");
+	        return;
+	    }
+
+	    $.ajax({
+	        type: "POST",
+	        url: "/board/commentUpdate",  // Controller 매핑
+	        data: {
+	            freeBoardCmtSeq: cmtSeq,
+	            freeBoardCmtContent: newContent
+	        },
+	        dataType: "json",
+	        success: function(res) {
+	            if (res.code === 0) {
+	                alert("댓글이 수정되었습니다.");
+	                location.reload();
+	            } else {
+	                alert("수정 실패: " + res.message);
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            alert("오류 발생: " + error);
+	        }
+	    });
+	});
+
+
 
    </c:if>
 });

@@ -239,4 +239,20 @@ public class FreeBoardService {
 		return count;
 	}
     
+    //댓글 수정
+    public int commentUpdate(FreeBoardComment freeBoardComment)
+    {
+    	int count = 0;
+    	
+    	try
+    	{
+    		count = freeBoardDao.commentUpdate(freeBoardComment);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[FreeBoardService] commentUpdate Exception : ", e);
+    	}
+    	
+    	return count;
+    }
 }

@@ -59,4 +59,7 @@ public interface FreeBoardDao {
 	
 	//게시물 수정
 	public int boardUpdate(FreeBoard freeBoard);
+	
+	//댓글 수정
+	public int commentUpdate(FreeBoardComment comment);
 }

@@ -494,6 +494,63 @@ public class FreeBoardController {
 		}
 	
 		return ajaxResponse;
-		
 	}
+	
+	//댓글 수정
+	@RequestMapping(value="/board/commentUpdate", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> commentUpdate(HttpServletRequest request, HttpServletResponse response)
+	{
+	    Response<Object> ajaxResponse = new Response<Object>();
+
+	    long freeBoardCmtSeq = HttpUtil.get(request, "freeBoardCmtSeq", (long)0);
+	    String content = HttpUtil.get(request, "freeBoardCmtContent", "");
+	    String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+
+	    if(freeBoardCmtSeq > 0 && !StringUtil.isEmpty(content))
+	    {
+	        FreeBoardComment comment = freeBoardService.getCommentBySeq(freeBoardCmtSeq);
+
+	        if(comment != null)
+	        {
+	            // 댓글 작성자 본인 확인
+	            if(StringUtil.equals(comment.getUserId(), cookieUserId))
+	            {
+	                comment.setFreeBoardCmtContent(content.trim());
+	                
+	                try
+	                {
+	                    if(freeBoardService.commentUpdate(comment) > 0)
+	                    {
+	                        ajaxResponse.setResponse(0, "success");
+	                    }
+	                    else
+	                    {
+	                        ajaxResponse.setResponse(500, "댓글 수정 실패");
+	                    }
+	                }
+	                catch(Exception e)
+	                {
+	                    logger.error("[FreeBoardController] commentUpdate Exception : ", e);
+	                    ajaxResponse.setResponse(500, "서버 오류 발생");
+	                }
+	            }
+	            else
+	            {
+	                ajaxResponse.setResponse(403, "권한이 없습니다.");
+	            }
+	        }
+	        else
+	        {
+	            ajaxResponse.setResponse(404, "댓글을 찾을 수 없습니다.");
+	        }
+	    }
+	    else
+	    {
+	        ajaxResponse.setResponse(400, "잘못된 요청입니다.");
+	    }
+
+	    return ajaxResponse;
+	}
+
 }
