@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sist.web.dao.RoomWishlistDao">
+<mapper namespace="com.sist.web.dao.WishlistDao">
+	
+	<resultMap id="wishResultMap" type="com.sist.web.model.Wishlist">
+		<id column="WISHLIST_SEQ" property="wishlistSeq" />
+		<result column="USER_ID" property="userId"/>
+		<result column="ROOM_SEQ" property="roomSeq"/>
+		<result column="REG_DT" property="regDt"/>
+	</resultMap>
+
+	<!-- 위시리스트에 추가 -->
+	<insert id="insertWish" parameterType="com.sist.web.model.Wishlist">
+		<selectKey keyProperty="wishlistSeq" resultType="int" order="BEFORE">
+			SELECT SEQ_WISHLIST_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		
+		INSERT INTO WISHLIST (
+	    WISHLIST_SEQ,
+	    USER_ID,
+	    ROOM_SEQ,
+	    REG_DT
+		)
+		VALUES (#{wishlistSeq}, #{userId}, #{roomSeq}, SYSDATE)	
+	</insert>
+	
+	<!-- 위시리스트 중복 체크 -->
+	<select id="countWish" resultType="int">
+	    SELECT COUNT(*) FROM WISHLIST
+	    WHERE ROOM_SEQ = #{roomSeq}
+	    AND USER_ID = #{userId}
+	</select>
+	
+	
 	
 </mapper>

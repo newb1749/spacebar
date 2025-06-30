@@ -4,11 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +21,7 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -39,7 +43,9 @@ public class RoomController {
 	
 	@Autowired
 	private RoomService roomService;
-
+	
+	@Autowired
+	private RoomImgService roomImgService;
 	
     /**
      * 숙소 등록 폼 페이지로 이동
@@ -54,126 +60,176 @@ public class RoomController {
     /**
      * 숙소 등록 처리 (폼 데이터 및 파일 업로드)
      */	
-	 @RequestMapping(value = "/room/addProc", method = RequestMethod.POST)
-	    public String addProc(MultipartHttpServletRequest request) {
+	@RequestMapping(value="/room/addProc", method=RequestMethod.POST)
+	public String addProc(MultipartHttpServletRequest request)
+	{
+		
+//		String hostId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+//		
+//		if(hostId == null || !StringUtil.isEmpty(hostId))
+//		{
+//			return "";
+//		}
+		// 임시!!!!!!!!!!!!!!!!!!!!!!
+		String hostId = "nks";
+		int roomCatSeq = 990;
+		
+		// 1-1. 화면에서 받은 Room 객체 관련 데이터 추출
+		// 임시!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// int roomCatSeq = HttpUtil.get(request, "roomCatSeq", 0);
+		String roomAddr = HttpUtil.get(request, "roomAddr", "");
+		double latitude = HttpUtil.get(request, "latitude", (double)0);
+		double longitude = HttpUtil.get(request, "longitude", (double)0);
+		String region = HttpUtil.get(request, "region", "");
+		String regDt = HttpUtil.get(request, "regDt", "");
+		String updateDt = HttpUtil.get(request, "updateDt", "");
+		String autoConfirmYn = HttpUtil.get(request, "autoConfirmYn", "Y");
+		String roomTitle = HttpUtil.get(request, "roomTitle", "");
+		String roomDesc = HttpUtil.get(request, "roomDesc", "");
+		String cancelPolicy = HttpUtil.get(request, "cancelPolicy", "");		
+		short minTimes = HttpUtil.get(request, "minTimes", (short)0); 
+		short maxTimes = HttpUtil.get(request, "maxTimes", (short)0);
+		double averageRating = HttpUtil.get(request, "averageRating", (double)0);
+		int reviewCount = HttpUtil.get(request, "reviewCount", 0);
+		
+		// 1-2. 객체 만들기
+		Room room = new Room();
+		room.setHostId(hostId);
+		room.setRoomCatSeq(roomCatSeq);
+		room.setRoomAddr(roomAddr);
+		room.setLatitude(latitude);
+		room.setLongitude(longitude);
+		room.setRegion(region);
+		room.setRegDt(regDt);
+		room.setUpdateDt(updateDt);
+		room.setAutoConfirmYn(autoConfirmYn);
+		room.setRoomTitle(roomTitle);
+		room.setRoomDesc(roomDesc);
+		room.setCancelPolicy(cancelPolicy);
+		room.setMinTimes(minTimes);
+		room.setMaxTimes(maxTimes);
+		room.setAverageRating(averageRating);
+		room.setReviewCount(reviewCount);
+		
+		
+		// 2. 숙소 이미지(RoomImage) 처리 (main/detail 분리)
+		List<RoomImage> roomImageList = new ArrayList<>();
+		String roomImgTypeMain = "main";
+		String roomImgTypeDetail = "detail"; 
+		
+		// 2-1. 메인 이미지 처리(단일 파일)
+		FileData mainImageFile = HttpUtil.getFile(request, "roomMainImage", UPLOAD_SAVE_DIR + File.separator + "room" + roomImgTypeMain);
+		if(mainImageFile != null)
+		{
+            RoomImage mainRoomImage = new RoomImage();
+            //mainRoomImage.setRoomImgName(mainImageFile.getFileName());
+            mainRoomImage.setRoomImgOrigName(mainImageFile.getFileOrgName());
+            mainRoomImage.setRoomImgExt(mainImageFile.getFileExt());
+            mainRoomImage.setImgSize((int)mainImageFile.getFileSize());
+            mainRoomImage.setImgType(roomImgTypeMain);
+            mainRoomImage.setSortOrder((short)1);
+            roomImageList.add(mainRoomImage);			
+		}
+		
+		// 2-2. 상세 이미지 처리(파일 여러개)
+		List<FileData> detailImageFiles = HttpUtil.getFiles(request, "roomDetailImages", UPLOAD_SAVE_DIR + File.separator + "room" + roomImgTypeDetail);
+		if(detailImageFiles != null)
+		{
+			short sortOrder = 2;
+			for(FileData fileData : detailImageFiles)
+			{
+				RoomImage detailRoomImage = new RoomImage();
+				//detailRoomImage.setRoomImgName(fileData.getFileName());
+				detailRoomImage.setRoomImgOrigName(fileData.getFileOrgName());
+				detailRoomImage.setRoomImgExt(fileData.getFileExt());
+				detailRoomImage.setImgSize((int)fileData.getFileSize());
+				detailRoomImage.setImgType(roomImgTypeDetail);
+				detailRoomImage.setSortOrder(sortOrder++);
+				roomImageList.add(detailRoomImage);		
+			}
+		}
+		// room에 추가함. List<RoomImage> RoomImageList
+		room.setRoomImageList(roomImageList);
+		
+		
+		// 3. 객실 타입(RoomType) (방1개) 및 해당되는 이미지 처리
+		List<RoomType> roomTypeList = new ArrayList<>();
+		// 데이터 가져오기		
+		String[] roomTypeTitles = HttpUtil.gets(request, "roomTypeTitle");
+		String[] roomTypeDescs = HttpUtil.gets(request, "roomTypeDesc");		
+		int[] weekdayAmts = HttpUtil.getInts(request, "weekdayAmt");
+		int[] weekendAmts = HttpUtil.getInts(request, "weekendAmt");			
+		String[] roomCheckInDts = HttpUtil.gets(request, "roomCheckInDt");
+		String[] roomCheckOutDts = HttpUtil.gets(request, "roomCheckOutDt");
+		String[] roomCheckInTimes = HttpUtil.gets(request, "roomCheckInTime");
+		String[] roomCheckOutTimes = HttpUtil.gets(request, "roomCheckOutTime");
+		
+		short[] maxGuestsArr = HttpUtil.getShorts(request, "maxGuest");
+		short[] minDays = HttpUtil.getShorts(request, "minDay");
+		short[] maxDays = HttpUtil.getShorts(request, "maxDay");
+		
 
-	        //		String hostId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-	        //		
-	        //		if(hostId == null || !StringUtil.isEmpty(hostId))
-	        //		{
-	        //			return "";
-	        //		}
-			// 임시!!!!!!!!!!!!!!!!!!!!!!
+		if (roomTypeTitles != null && roomTypeTitles.length > 0) {
+            for (int i = 0; i < roomTypeTitles.length; i++) {
+                RoomType roomType = new RoomType();
+                // 각 배열의 i번째 값을 가져와 RoomType 객체에 설정합니다.
+                roomType.setRoomTypeTitle(roomTypeTitles[i]);
+                if (roomTypeDescs != null && roomTypeDescs.length > i) roomType.setRoomTypeDesc(roomTypeDescs[i]);
+                if (weekdayAmts != null && weekdayAmts.length > i) roomType.setWeekdayAmt(weekdayAmts[i]);
+                if (weekendAmts != null && weekendAmts.length > i) roomType.setWeekendAmt(weekendAmts[i]);
+                if (roomCheckInDts != null && roomCheckInDts.length > i) roomType.setRoomCheckInDt(roomCheckInDts[i]);
+                if (roomCheckOutDts != null && roomCheckOutDts.length > i) roomType.setRoomCheckOutDt(roomCheckOutDts[i]);
+                if (roomCheckInTimes != null && roomCheckInTimes.length > i) roomType.setRoomCheckInTime(roomCheckInTimes[i]);
+                if (roomCheckOutTimes != null && roomCheckOutTimes.length > i) roomType.setRoomCheckOutTime(roomCheckOutTimes[i]);
+                if (maxGuestsArr != null && maxGuestsArr.length > i) roomType.setMaxGuests(maxGuestsArr[i]);
+                if (minDays != null && minDays.length > i) roomType.setMinDay(minDays[i]);
+                if (maxDays != null && maxDays.length > i) roomType.setMaxDay(maxDays[i]);
 
-	        // 임시 호스트 정보
-	        String hostId = "nks";
-	        int roomCatSeq = 990;
+                // 각 객실 타입의 이미지도 HttpUtil로 처리합니다.
+                List<RoomTypeImage> roomTypeImageList = new ArrayList<>();
+                MultipartFile rtMainImage = request.getFile("roomTypeMainImage_" + i);
+                if (rtMainImage != null) {
+                    RoomTypeImage image = new RoomTypeImage();
+                    
+                    image.setFile(rtMainImage);
+                    image.setImgType("main");
+                    image.setSortOrder((short)1);
+                    roomTypeImageList.add(image);                  
+                }
+                
+                List<MultipartFile> rtDetailImages = request.getFiles("roomTypeDetailImages_" + i);
+                if (rtDetailImages != null && rtDetailImages.size() > 0) {
+                    short sortOrder = 2;
+                    for (MultipartFile file : rtDetailImages) {
+                        if (file != null && !file.isEmpty()) {
+                            RoomTypeImage image = new RoomTypeImage();
+                            image.setFile(file);
+                            image.setImgType("detail");
+                            image.setSortOrder(sortOrder++);
+                            roomTypeImageList.add(image);
+                        }
+                    }
+                }
+                roomType.setRoomTypeImageList(roomTypeImageList);
+                roomTypeList.add(roomType);
+            }
+        }
 
-	        // 1. Room 객체 설정
-	        Room room = new Room();
-	        room.setHostId(hostId);
-	        room.setRoomCatSeq(roomCatSeq);
-	        room.setRoomAddr(HttpUtil.get(request, "roomAddr", ""));
-	        room.setLatitude(HttpUtil.get(request, "latitude", 0.0));
-	        room.setLongitude(HttpUtil.get(request, "longitude", 0.0));
-	        room.setRegion(HttpUtil.get(request, "region", ""));
-	        room.setAutoConfirmYn(HttpUtil.get(request, "autoConfirmYn", "Y"));
-	        room.setRoomTitle(HttpUtil.get(request, "roomTitle", ""));
-	        room.setRoomDesc(HttpUtil.get(request, "roomDesc", ""));
-	        room.setCancelPolicy(HttpUtil.get(request, "cancelPolicy", ""));
-	        room.setMinTimes(HttpUtil.get(request, "minTimes", (short) 0));
-	        room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
-	        room.setAverageRating(HttpUtil.get(request, "averageRating", 0.0));
-	        room.setReviewCount(HttpUtil.get(request, "reviewCount", 0));
+        // 4. 서비스 호출
+        try 
+        {
+			/*
+			 * if(roomService.insertRoomTransaction(room, roomTypeList) > 0) {
+			 * logger.debug("숙소 등록 성공"); } else { logger.error("숙소 등록 실패"); }
+			 */
+        }
+        catch(Exception e)
+        {
+            logger.error("[RoomController] addProc Exception", e);
+        }
 
-
-	        List<RoomImage> roomImageList = new ArrayList<>();
-			// 2-1. 메인 이미지 처리(단일 파일)
-	        MultipartFile mainImage = request.getFile("roomMainImage");
-	        if (mainImage != null && !mainImage.isEmpty()) {
-	            RoomImage image = new RoomImage();
-	            image.setFile(mainImage);
-	            image.setImgType("main");
-	            image.setSortOrder((short) 1);
-	            roomImageList.add(image);
-	        }
-
-			// 2-2. 상세 이미지 처리(파일 여러개)
-	        List<MultipartFile> detailImages = request.getFiles("roomDetailImages");
-	        short sortOrder = 2;
-	        for (MultipartFile file : detailImages) {
-	            if (file != null && !file.isEmpty()) {
-	                RoomImage image = new RoomImage();
-	                image.setFile(file);
-	                image.setImgType("detail");
-	                image.setSortOrder(sortOrder++);
-	                roomImageList.add(image);
-	            }
-	        }
-
-	        room.setRoomImageList(roomImageList);
-
-			// 3. 객실 타입(RoomType) (방1개) 및 해당되는 이미지 처리
-	        // 객실 타입 목록 추출 (인덱스로 순회)
-	        List<RoomType> roomTypeList = new ArrayList<>();
-	        int index = 0;
-	        while (true) {
-	            String prefix = "roomTypeTitle_" + index;
-	            if (request.getParameter(prefix) == null) break;
-
-	            RoomType roomType = new RoomType();
-	            roomType.setRoomTypeTitle(HttpUtil.get(request, "roomTypeTitle_" + index, ""));
-	            roomType.setRoomTypeDesc(HttpUtil.get(request, "roomTypeDesc_" + index, ""));
-	            roomType.setWeekdayAmt(HttpUtil.get(request, "weekdayAmt_" + index, 0));
-	            roomType.setWeekendAmt(HttpUtil.get(request, "weekendAmt_" + index, 0));
-	            roomType.setRoomCheckInDt(HttpUtil.get(request, "roomCheckInDt_" + index, ""));
-	            roomType.setRoomCheckOutDt(HttpUtil.get(request, "roomCheckOutDt_" + index, ""));
-	            roomType.setRoomCheckInTime(HttpUtil.get(request, "roomCheckInTime_" + index, ""));
-	            roomType.setRoomCheckOutTime(HttpUtil.get(request, "roomCheckOutTime_" + index, ""));
-	            roomType.setMaxGuests(HttpUtil.get(request, "maxGuests_" + index, (short) 0));
-	            roomType.setMinDay(HttpUtil.get(request, "minDay_" + index, (short) 0));
-	            roomType.setMaxDay(HttpUtil.get(request, "maxDay_" + index, (short) 0));
-
-	            // 이미지 처리
-	            List<RoomTypeImage> roomTypeImageList = new ArrayList<>();
-	            MultipartFile mainImg = request.getFile("roomTypeMainImage_" + index);
-	            if (mainImg != null && !mainImg.isEmpty()) {
-	                RoomTypeImage image = new RoomTypeImage();
-	                image.setFile(mainImg);
-	                image.setImgType("main");
-	                image.setSortOrder((short) 1);
-	                roomTypeImageList.add(image);
-	            }
-
-	            List<MultipartFile> detailImgs = request.getFiles("roomTypeDetailImages_" + index);
-	            short detailOrder = 2;
-	            for (MultipartFile file : detailImgs) {
-	                if (file != null && !file.isEmpty()) {
-	                    RoomTypeImage image = new RoomTypeImage();
-	                    image.setFile(file);
-	                    image.setImgType("detail");
-	                    image.setSortOrder(detailOrder++);
-	                    roomTypeImageList.add(image);
-	                }
-	            }
-
-	            roomType.setRoomTypeImageList(roomTypeImageList);
-	            roomTypeList.add(roomType);
-	            index++;
-	        }
-
-	        // 저장 처리
-	        // 4. 서비스 호출
-	        try {
-	            if (roomService.insertRoomTransaction(room, roomTypeList) > 0) {
-	                logger.debug("숙소 등록 성공");
-	            } else {
-	                logger.error("숙소 등록 실패");
-	            }
-	        } catch (Exception e) {
-	            logger.error("[RoomController] addProc Exception", e);
-	        }
-
-	        return "redirect:/";
-	    }
-	}
+        return "redirect:/";
+    }
+	
+	
+}
