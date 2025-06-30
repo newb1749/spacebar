@@ -22,7 +22,9 @@ import com.sist.common.util.StringUtil;
 import com.sist.web.model.ChatMessage;
 import com.sist.web.model.ChatRoom;
 import com.sist.web.model.Response;
+import com.sist.web.model.User_mj;
 import com.sist.web.service.ChatService;
+import com.sist.web.service.UserService_mj;
 import com.sist.web.util.SessionUtil;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -36,25 +38,21 @@ public class ChatController {
 	@Autowired
 	private ChatService chatService;
 	
+	@Autowired
+	private UserService_mj userService;
+	
+	private static final String AUTH_SESSION_NAME = "sessionUserId";
 	
 	// 내 채팅 목록 페이지로 이동
 	@RequestMapping(value="/chat/list", method=RequestMethod.GET)
 	public String chatListPage(Model model, HttpServletRequest request)
 	{	
-		
 		HttpSession session = request.getSession();
-		
-        // --- 테스트를 위한 하드코딩 ---
-        // 실제 로그인 기능이 구현되면 이 3줄은 반드시 삭제해야 합니다.
-        // 현재 사용자를 "userA"로 강제 로그인 처리
-        SessionUtil.setSession(session, "USER_ID", "userA");
-        // --- 여기까지 ---
-        
-		String userId = (String) SessionUtil.getSession(session, "USER_ID");
+		String userId = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
 		
 		// 로그인 했는지 확인
 		if(userId == null) {
-			return "redirect:/user/login";
+			return "redirect:/";
 		}
 		
 		List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
@@ -68,14 +66,12 @@ public class ChatController {
 	@RequestMapping(value="/chat/start", method=RequestMethod.GET)
 	public String startChat(@RequestParam("otherUserId") String otherUserId, HttpServletRequest request)
 	{
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession();      
+		String currentUserId  = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
 		
-        // --- 테스트를 위한 하드코딩 ---
-        SessionUtil.setSession(session, "USER_ID", "userA");
-        // --- 여기까지 ---
-        
-		String currentUserId = (String) SessionUtil.getSession(session, "USER_ID");
-		
+       if (currentUserId == null) {
+            return "redirect:/"; 
+        }	
         // 나와 상대방의 아이디가 같으면 채팅을 시작할 수 없음
         if (StringUtil.equals(otherUserId, currentUserId)) {
             return "redirect:/somewhere/error"; // 에러 페이지로 리다이렉트
@@ -92,18 +88,21 @@ public class ChatController {
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
     public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
+        String userId = (String)SessionUtil.getSession(request.getSession(), "AUTH_SESSION_NAME");
         
-        // --- 테스트를 위한 하드코딩 ---
-        SessionUtil.setSession(session, "USER_ID", "userA");    
-        // --- 여기까지 ---
-        
-        String userId = (String) SessionUtil.getSession(session, "USER_ID");
-
         if (userId == null) {
             return "redirect:/user/login";
         }
         
+        User_mj loginUser = userService.userSelect(userId);
+        
         model.addAttribute("chatRoomSeq", chatRoomSeq);
+        
+        if(loginUser != null)
+        {
+        	model.addAttribute("loginUser", loginUser);
+        	model.addAttribute("loginUserNickname", loginUser.getNickName());
+        }
         
         return "/chat/room"; 
     }
@@ -120,14 +119,8 @@ public class ChatController {
 	        // 파라미터가 없다는 명시적인 에러 메시지를 클라이언트로 보냄
 	        return ResponseEntity.badRequest().body(new Response<>(400, "chatRoomSeq 파라미터가 누락되었습니다."));
 	    }
-	    
-	    HttpSession session = request.getSession();
-	    
-        // --- 테스트를 위한 하드코딩 ---
-        SessionUtil.setSession(session, "USER_ID", "userA");
-        // --- 여기까지 ---
         
-	    String userId = (String) SessionUtil.getSession(session, "USER_ID");
+	    String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
 
 	    if (userId == null) {
             // 이 부분은 Response(int code, String msg) 생성자를 사용하므로 기존 코드 유지
@@ -142,6 +135,7 @@ public class ChatController {
 	
 	
 	// 메시지 전송
+	/*
 	@RequestMapping(value="/chat/message", method=RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Response<ChatMessage>> sendMessage(@RequestBody ChatMessage chatMessage, HttpServletRequest request) {
@@ -167,7 +161,7 @@ public class ChatController {
             return ResponseEntity.status(500).body(new Response<>(500, "Failed to send message"));
         }
     }
-	
+	*/
 	
 //    /**
 //     * WebSocket/STOMP를 통해 들어오는 메시지를 처리합니다.

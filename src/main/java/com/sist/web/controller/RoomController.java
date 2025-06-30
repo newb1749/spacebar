@@ -21,6 +21,7 @@ import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.RoomService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
+import com.sist.web.util.SessionUtil;
 import com.sist.common.model.FileData;
 import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
@@ -57,16 +58,14 @@ public class RoomController {
 	 @RequestMapping(value = "/room/addProc", method = RequestMethod.POST)
 	    public String addProc(MultipartHttpServletRequest request) {
 
-	        //		String hostId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-	        //		
-	        //		if(hostId == null || !StringUtil.isEmpty(hostId))
-	        //		{
-	        //			return "";
-	        //		}
-			// 임시!!!!!!!!!!!!!!!!!!!!!!
-
-	        // 임시 호스트 정보
-	        String hostId = "nks";
+	        String hostId = (String)SessionUtil.getSession(request.getSession(), "AUTH_SESSION_NAME");
+	
+	        if(StringUtil.isEmpty(hostId))
+	        {
+	             // 로그인이 안되어 있으면 로그인 페이지로 보냅니다.
+	             return "redirect:/"; // 팀원이 만든 로그인 폼 주소로 변경?
+	        }
+         
 	        int roomCatSeq = HttpUtil.get(request, "roomCatSeq", 0);
 	        // 1-1. Room 객체 설정
 	        Room room = new Room();
