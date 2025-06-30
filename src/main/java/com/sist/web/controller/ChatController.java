@@ -49,12 +49,7 @@ public class ChatController {
 	{	
 		HttpSession session = request.getSession();
 		String userId = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
-		
-		// 로그인 했는지 확인
-		if(userId == null) {
-			return "redirect:/";
-		}
-		
+
 		List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
 		model.addAttribute("myChatRooms", myChatRooms);
 		
@@ -69,9 +64,6 @@ public class ChatController {
 		HttpSession session = request.getSession();      
 		String currentUserId  = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
 		
-       if (currentUserId == null) {
-            return "redirect:/"; 
-        }	
         // 나와 상대방의 아이디가 같으면 채팅을 시작할 수 없음
         if (StringUtil.equals(otherUserId, currentUserId)) {
             return "redirect:/somewhere/error"; // 에러 페이지로 리다이렉트
@@ -88,11 +80,7 @@ public class ChatController {
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
     public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        String userId = (String)SessionUtil.getSession(request.getSession(), "AUTH_SESSION_NAME");
-        
-        if (userId == null) {
-            return "redirect:/user/login";
-        }
+        String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         
         User_mj loginUser = userService.userSelect(userId);
         

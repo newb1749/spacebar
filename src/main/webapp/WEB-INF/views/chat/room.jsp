@@ -20,7 +20,7 @@
     #send-btn { padding: 10px 20px; border: none; background-color: #007bff; color: white; cursor: pointer; }
 </style>
 </head>
-<body>
+<body>	
 
     <div id="chat-container">
         <h1>채팅방 No.${chatRoomSeq}</h1>
@@ -37,7 +37,7 @@
 // [수정] 컨트롤러가 모델에 담아준 사용자 객체에서 ID와 닉네임을 가져와 JS 상수로 선언합니다.
 const CHAT_ROOM_SEQ = "${chatRoomSeq}";
 const USER_ID = "${loginUser.userId}";
-const USER_NICKNAME = "${loginUserNickname}"; // 또는 "${loginUser.nickname}"
+const USER_NICKNAME = "${loginUserNickname}";
 
 let stompClient = null;
 
