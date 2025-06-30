@@ -1,4 +1,4 @@
-# spacebar
+# pacebar
 
 > Spring MVC 기반 공간 렌탈, 예약 플랫폼
 
