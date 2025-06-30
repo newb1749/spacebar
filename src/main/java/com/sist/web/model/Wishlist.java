@@ -15,6 +15,14 @@ public class Wishlist implements Serializable
 	private long startRow;
 	private long endRow;
 	
+	 //room에있는아이들
+    private String roomTitle;
+    private String region;
+    private double averageRating;
+    private int reviewCount;
+	
+    private String roomImageSeq;
+    
 	public Wishlist()
 	{
 		wishlistSeq = 0;		
@@ -24,6 +32,13 @@ public class Wishlist implements Serializable
 		
 		startRow = 0;	
 		endRow = 0;	
+		
+		roomTitle = "";
+		region = "";
+		averageRating = 0;
+		reviewCount = 0;
+		
+		roomImageSeq = "";
 	}
 
 	public long getWishlistSeq() {
@@ -73,5 +88,46 @@ public class Wishlist implements Serializable
 	public void setEndRow(long endRow) {
 		this.endRow = endRow;
 	}
+
+	public String getRoomTitle() {
+		return roomTitle;
+	}
+
+	public void setRoomTitle(String roomTitle) {
+		this.roomTitle = roomTitle;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public double getAverageRating() {
+		return averageRating;
+	}
+
+	public void setAverageRating(double averageRating) {
+		this.averageRating = averageRating;
+	}
+
+	public int getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(int reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
+	public String getRoomImageSeq() {
+		return roomImageSeq;
+	}
+
+	public void setRoomImageSeq(String roomImageSeq) {
+		this.roomImageSeq = roomImageSeq;
+	}
+	
 	
 }

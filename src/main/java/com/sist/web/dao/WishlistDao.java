@@ -1,5 +1,7 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,10 @@ public interface WishlistDao {
 	
 	//위시리스트 중복 체크
 	public int countWish(@Param("roomSeq") int roomSeq, @Param("userId") String userId);
+
+	//위시리스트 조회
+	public List<Wishlist> wishlist(Wishlist wishlist);
+	
+	//위시리스트 개수
+	public int wishlistCount(Wishlist wishlist);
 }

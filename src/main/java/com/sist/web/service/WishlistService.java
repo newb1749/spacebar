@@ -1,5 +1,7 @@
 package com.sist.web.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ public class WishlistService {
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private WishlistDao roomWishlistDao;
+	private WishlistDao wishlistDao;
 	
 	@Autowired
 	private RoomDao roomDao;
@@ -31,7 +33,7 @@ public class WishlistService {
 		
 		try
 		{
-			count = roomWishlistDao.insertWish(roomWishlist);
+			count = wishlistDao.insertWish(roomWishlist);
 		}
 		catch(Exception e)
 		{
@@ -48,7 +50,7 @@ public class WishlistService {
 		
 		try
 		{
-			count = roomWishlistDao.countWish(roomSeq, userId);
+			count = wishlistDao.countWish(roomSeq, userId);
 		}
 		catch(Exception e)
 		{
@@ -58,5 +60,37 @@ public class WishlistService {
 		return count;
 	}
 	
+	//위시리스트 조회
+	public List<Wishlist> wishlist(Wishlist wishlist)
+	{
+		List<Wishlist> list = null;
+		
+		try
+		{
+			list = wishlistDao.wishlist(wishlist);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomWishlistService] wishlist Exception : ", e);
+		}
+		
+		return list;
+	}
 	
+	//위시리스트 개수
+	public int wishlistCount(Wishlist wishlist)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = wishlistDao.wishlistCount(wishlist);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomWishlistService] wishlist Exception : ", e);
+		}
+		
+		return count;
+	}
 }

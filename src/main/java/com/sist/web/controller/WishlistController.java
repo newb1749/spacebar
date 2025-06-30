@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.Wishlist;
@@ -34,7 +35,7 @@ public class WishlistController {
 	private String AUTH_COOKIE_NAME;
 	
 	@Autowired
-	private WishlistService roomWishlistService;
+	private WishlistService wishlistService;
 	
 	@Autowired
 	private RoomService roomService;
@@ -65,9 +66,9 @@ public class WishlistController {
 			        wishlist.setRoomSeq(roomSeq);
 
 					
-			        if(roomWishlistService.countWish(roomSeq, cookieUserId) == 0)
+			        if(wishlistService.countWish(roomSeq, cookieUserId) == 0)
 			        {
-			            roomWishlistService.insertWish(wishlist);
+			            wishlistService.insertWish(wishlist);
 			            ajaxResponse.setResponse(0, "위시리스트 등록 성공");
 			        }
 			        else
@@ -99,14 +100,28 @@ public class WishlistController {
 	public String wishlist(ModelMap model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-		int wishlistSeq = HttpUtil.get(request, "wishlistSeq", (int)0);
+		int roomSeq = HttpUtil.get(request, "roomSeq", (int)0);
 		long curPage = HttpUtil.get(request, "curPage", (int)1);
 		
 		List<Wishlist> list = null;
+		Wishlist wishlist = new Wishlist();
+		long totalCount = 0;
+		Paging paging = null;
 		
+		wishlist.setUserId(cookieUserId);
+		wishlist.setRoomSeq(roomSeq);
 		
+		totalCount = wishlistService.wishlistCount(wishlist);
+		
+		list = wishlistService.wishlist(wishlist);
+		
+		model.addAttribute("list", list);
+		model.addAttribute("curPage", curPage);
+		model.addAttribute("paging", paging);
 		
 		return "/wishlist/list";
 	}
+	
+
 	
 }
