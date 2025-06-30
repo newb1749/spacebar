@@ -1,10 +1,13 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="javax.servlet.http.Cookie" %>
 <%@ page import="com.sist.web.util.CookieUtil" %>
+<%@ page import="com.sist.web.util.SessionUtil"%>
 
 <%
-    Cookie cookie = CookieUtil.getCookie(request, (String)request.getAttribute("AUTH_COOKIE_NAME"));
-    boolean isLoggedIn = cookie != null;
+    //Cookie cookie = CookieUtil.getCookie(request, (String)request.getAttribute("AUTH_COOKIE_NAME"));
+    //boolean isLoggedIn = cookie != null;
+    String sessionId = (String)session.getAttribute("sessionUserId");
+    boolean isLoggedIn = (sessionId != null && !sessionId.isEmpty());
 %>
 
 <!-- Navigation Start -->

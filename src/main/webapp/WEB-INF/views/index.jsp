@@ -177,6 +177,12 @@ function fn_loginCheck()
 		  
 		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인</button>
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
+    	
+    	<div class="d-flex justify-content-between mt-2">
+		    <a href="/user/findIdForm" class="btn btn-lg btn-primary btn-block">아이디 찾기</a>
+		    <a href="/user/findPwdForm" class="btn btn-lg btn-primary btn-block">비밀번호 찾기</a>
+		</div>
+    	
 	</form>
 </div>
 <%@ include file="/WEB-INF/views/include/footer.jsp"%>
