@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.ChatDao">
-      <resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
-        <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
-        <result property="createDate" column="CREATE_DATE"/>
-      </resultMap>
+<resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
+    <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
+    <result property="createDate" column="CREATE_DATE"/>
+    <result property="otherUserNickname" column="OTHER_USER_NICKNAME"/>
+</resultMap>
 
     <resultMap id="chatMessageResultMap" type="com.sist.web.model.ChatMessage">
         <id property="chatMessageSeq" column="CHAT_MESSAGE_SEQ"/>
@@ -41,13 +42,20 @@
     </select>
     
     
-    <select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
-        SELECT R.CHAT_ROOM_SEQ, R.CREATE_DATE
-        FROM CHAT_ROOM R
-        JOIN CHAT_PARTICIPANT P ON R.CHAT_ROOM_SEQ = P.CHAT_ROOM_SEQ
-        WHERE P.USER_ID = #{userId}
-        ORDER BY R.CREATE_DATE DESC
-    </select>
+	<select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
+	    SELECT
+	        A.CHAT_ROOM_SEQ,
+	        A.CREATE_DATE,
+	        C.NICKNAME AS OTHER_USER_NICKNAME
+	    FROM CHAT_ROOM A, CHAT_PARTICIPANT B, SB_USER C
+	    WHERE A.CHAT_ROOM_SEQ = B.CHAT_ROOM_SEQ
+	      AND B.USER_ID = C.USER_ID
+	      AND B.USER_ID != #{userId}
+	      AND A.CHAT_ROOM_SEQ IN (SELECT CHAT_ROOM_SEQ
+	                              FROM CHAT_PARTICIPANT
+	                              WHERE USER_ID = #{userId})
+	    ORDER BY A.CREATE_DATE DESC
+	</select>
 
 
     <select id="findMessagesByRoomSeq" resultMap="chatMessageResultMap" parameterType="int">
@@ -79,6 +87,7 @@
            AND SENDER_ID != #{userId}
            AND READ_COUNT = 1
     </update>
+    
     
     
 </mapper>
