@@ -10,6 +10,10 @@
   color: gray;
   font-style: italic;
 }
+
+body {
+  padding-top: 120px; /* ← 네비게이션 높이만큼 설정 (네비 높이 + 상하 패딩 합산) */
+}
 </style>
 
 
@@ -52,25 +56,54 @@ function fn_list(curPage)
 </head>
 <body>
 
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+
 <div class="container">
    
-   <div class="d-flex">
-      <div style="width:50%;">
-         <h2>게시판</h2>
-      </div>
-      <div class="ml-auto input-group" style="width:50%;">
-         <select name="_searchType" id="_searchType" class="custom-select" style="width:auto;">
-            <option value="">조회 항목</option>
-            <option value="1" <c:if test='${searchType eq "1"}'>selected</c:if>>작성자</option>
-            <option value="2" <c:if test='${searchType eq "2"}'>selected</c:if>>제목</option>
-            <option value="3" <c:if test='${searchType eq "3"}'>selected</c:if>>내용</option>
-            <option value="4" <c:if test='${searchType eq "4"}'>selected</c:if>>제목+내용</option>
-         </select>
-         <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control mx-1" maxlength="20" style="width:auto;ime-mode:active;" placeholder="조회값을 입력하세요." />
-         <button type="button" id="btnSearch" class="btn btn-secondary mb-3 mx-1">조회</button>
-      </div> 
-    </div>
+   <div class="container">
+  <!-- 게시판 제목과 검색창 영역 분리 -->
+  <div class="row align-items-center mb-3">
     
+    <!-- 왼쪽: 제목 -->
+    <div class="col-6">
+      <h2>게시판</h2>
+    </div>
+
+    <!-- 오른쪽: 검색창 전체 우측 정렬 -->
+    <div class="col-6 d-flex justify-content-end">
+      <div class="d-flex align-items-center" style="gap: 10px;">
+
+        <!-- 조회 항목 드롭다운 -->
+        <select name="_searchType" id="_searchType"
+                class="form-select"
+                style="width: 160px; height: 38px; font-size: 14px;">
+          <option value="" disabled selected>조회 항목</option>
+          <option value="1" <c:if test='${searchType eq "1"}'>selected</c:if>>작성자</option>
+          <option value="2" <c:if test='${searchType eq "2"}'>selected</c:if>>제목</option>
+          <option value="3" <c:if test='${searchType eq "3"}'>selected</c:if>>내용</option>
+          <option value="4" <c:if test='${searchType eq "4"}'>selected</c:if>>제목+내용</option>
+        </select>
+
+        <!-- 검색어 입력 -->
+        <input type="text" name="_searchValue" id="_searchValue"
+               value="${searchValue}"
+               class="form-control"
+               maxlength="20"
+               placeholder="조회값을 입력하세요."
+               style="width: 250px; height: 38px; font-size: 14px;" />
+
+        <!-- 조회 버튼 -->
+        <button type="button" id="btnSearch"
+                class="btn"
+                style="background-color: #00564E; color: white; height: 38px; font-size: 14px; padding: 6px 20px;">
+          조회
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+   </div>
    <table class="table table-hover">
       <thead>
       <tr style="background-color: #dee2e6;">
