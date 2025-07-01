@@ -20,9 +20,10 @@ public class Wishlist implements Serializable
     private String region;
     private double averageRating;
     private int reviewCount;
-    
 	
-    private String roomImageSeq;
+    private String roomImgName;
+    
+    private long weekdayAmt;
     
 	public Wishlist()
 	{
@@ -39,7 +40,9 @@ public class Wishlist implements Serializable
 		averageRating = 0;
 		reviewCount = 0;
 		
-		roomImageSeq = "";
+		roomImgName = "";
+		
+		weekdayAmt = 0;
 	}
 
 	public long getWishlistSeq() {
@@ -122,12 +125,20 @@ public class Wishlist implements Serializable
 		this.reviewCount = reviewCount;
 	}
 
-	public String getRoomImageSeq() {
-		return roomImageSeq;
+	public String getRoomImgName() {
+		return roomImgName;
 	}
 
-	public void setRoomImageSeq(String roomImageSeq) {
-		this.roomImageSeq = roomImageSeq;
+	public void setRoomImgName(String roomImgName) {
+		this.roomImgName = roomImgName;
+	}
+
+	public long getWeekdayAmt() {
+		return weekdayAmt;
+	}
+
+	public void setWeekdayAmt(long weekdayAmt) {
+		this.weekdayAmt = weekdayAmt;
 	}
 	
 	

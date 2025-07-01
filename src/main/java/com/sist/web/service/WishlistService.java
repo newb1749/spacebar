@@ -2,6 +2,7 @@ package com.sist.web.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import com.sist.web.dao.WishlistDao;
 import com.sist.web.model.Room;
 import com.sist.web.model.Wishlist;
 
-@Service("roomWishlistService")
+@Service("wishlistService")
 public class WishlistService {
 	private static Logger logger = LoggerFactory.getLogger(WishlistService.class);
 
@@ -78,17 +79,34 @@ public class WishlistService {
 	}
 	
 	//위시리스트 개수
-	public int wishlistCount(Wishlist wishlist)
+	public int wishTotalCount(Wishlist wishlist)
 	{
 		int count = 0;
 		
 		try
 		{
-			count = wishlistDao.wishlistCount(wishlist);
+			count = wishlistDao.wishTotalCount(wishlist);
 		}
 		catch(Exception e)
 		{
 			logger.error("[RoomWishlistService] wishlist Exception : ", e);
+		}
+		
+		return count;
+	}
+	
+	//위시리스트 삭제
+	public int wishRemove(@Param("roomSeq") int roomSeq, @Param("userId") String userId)
+	{
+		int count = 0;
+			
+		try
+		{
+			count = wishlistDao.wishRemove(roomSeq, userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomWishlistService] wishRemove Exception : ", e);
 		}
 		
 		return count;

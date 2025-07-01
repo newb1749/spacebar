@@ -27,7 +27,7 @@ import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 
-@Controller("roomWishlistController")
+@Controller("wishlistController")
 public class WishlistController {
 	private static Logger logger = LoggerFactory.getLogger(WishlistController.class);
 	
@@ -43,6 +43,8 @@ public class WishlistController {
 	private static final int LIST_COUNT = 10; 
 	private static final int PAGE_COUNT = 3;
 	
+	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	
 	//위시리스트 추가
 	@RequestMapping(value="/wishlist/add", method=RequestMethod.POST)
 	@ResponseBody
@@ -50,10 +52,10 @@ public class WishlistController {
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		int roomSeq = HttpUtil.get(request, "roomSeq", (int)0);
 		
-		if(!StringUtil.isEmpty(cookieUserId))
+		if(!StringUtil.isEmpty(sessionUserId))
 		{
 			if(roomSeq > 0)
 			{
@@ -62,11 +64,11 @@ public class WishlistController {
 				if(room != null)
 				{
 					Wishlist wishlist = new Wishlist();
-			        wishlist.setUserId(cookieUserId);
+			        wishlist.setUserId(sessionUserId);
 			        wishlist.setRoomSeq(roomSeq);
 
 					
-			        if(wishlistService.countWish(roomSeq, cookieUserId) == 0)
+			        if(wishlistService.countWish(roomSeq, sessionUserId) == 0)
 			        {
 			            wishlistService.insertWish(wishlist);
 			            ajaxResponse.setResponse(0, "위시리스트 등록 성공");
@@ -99,21 +101,33 @@ public class WishlistController {
 	@RequestMapping(value="/wishlist/list")
 	public String wishlist(ModelMap model ,HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		int roomSeq = HttpUtil.get(request, "roomSeq", (int)0);
 		long curPage = HttpUtil.get(request, "curPage", (int)1);
 		
 		List<Wishlist> list = null;
 		Wishlist wishlist = new Wishlist();
 		long totalCount = 0;
+		int cnt = 0;
 		Paging paging = null;
 		
-		wishlist.setUserId(cookieUserId);
+		wishlist.setUserId(sessionUserId);
 		wishlist.setRoomSeq(roomSeq);
 		
-		totalCount = wishlistService.wishlistCount(wishlist);
+		totalCount = wishlistService.wishTotalCount(wishlist);
 		
+		if(totalCount > 10)
+		{
+			paging = new Paging("/wishlist/list", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
+			
+			wishlist.setStartRow(paging.getStartRow());
+			wishlist.setEndRow(paging.getEndRow());
+		}
+		
+
 		list = wishlistService.wishlist(wishlist);
+		
+
 		
 		model.addAttribute("list", list);
 		model.addAttribute("curPage", curPage);
@@ -122,6 +136,57 @@ public class WishlistController {
 		return "/wishlist/list";
 	}
 	
+	//위시리스트 해제
+	// 수정된 방식 ✅
+	@RequestMapping(value="/wishlist/remove", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> wishlistRemove(HttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		int roomSeq = HttpUtil.get(request, "roomSeq", (int)0);
+
+		if(!StringUtil.isEmpty(sessionUserId))
+		{
+			if(roomSeq > 0)
+			{
+				Room room = roomService.getRoomDetail(roomSeq);
+
+				if(room != null)
+				{
+					Wishlist wishlist = new Wishlist();
+			        wishlist.setUserId(sessionUserId);
+			        wishlist.setRoomSeq(roomSeq);
+
+					
+			        if(wishlistService.wishRemove(roomSeq, sessionUserId) > 0)
+			        {		            
+			            ajaxResponse.setResponse(0, "위시리스트 삭제 성공");
+			        }
+			        else
+			        {
+			            ajaxResponse.setResponse(400, "삭제실패");
+			            return ajaxResponse;
+			        }
+				}
+				else
+				{
+					ajaxResponse.setResponse(404, "존재하지 않는 숙소입니다.");
+				}
+			}
+			else
+			{
+				ajaxResponse.setResponse(99, "숙소번호 전달안됨");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(500, "로그인 후 이용하세요.");
+		}
+
+		return ajaxResponse;
+	}
 
 	
 }

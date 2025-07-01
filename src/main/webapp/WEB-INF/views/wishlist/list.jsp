@@ -3,16 +3,29 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <title>내 위시리스트</title>
 <style>
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.wish-heart.clicked {
+  animation: pulse 0.3s ease;
+}
   body {
-    padding-top: 100px;
+    padding-top: 120px;
     background-color: #f9f9f9;
     font-family: 'Noto Sans KR', sans-serif;
   }
   .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
   }
   h2 {
@@ -20,45 +33,61 @@
     margin-bottom: 30px;
     color: #333;
   }
-  #wishlistBody {
+   #wishlistBody {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 24px;
   }
   .wishlist-item {
-    background-color: #fff;
-    border-radius: 14px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease;
-    cursor: pointer;
-  }
-  .wishlist-item:hover {
-    transform: translateY(-6px);
-  }
-  .wishlist-thumb {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    display: block;
-  }
-  .wishlist-details {
-    padding: 14px 18px;
-  }
-  .wishlist-title {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #222;
-    margin-bottom: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .wishlist-location {
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 8px;
-  }
+  position: relative;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.wishlist-item:hover {
+  transform: translateY(-6px);
+}
+
+
+.wishlist-thumb {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+
+.wishlist-details {
+  padding: 16px;
+  position: relative;
+}
+  
+.wishlist-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  text-decoration: none;
+}
+.wishlist-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+}
+
+.wishlist-location {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 6px;
+}
   .wishlist-price {
     font-weight: 700;
     color: #4a90e2;
@@ -66,45 +95,119 @@
   }
   /* 찜 취소 버튼 */
   .btn-remove-wish {
-    margin-top: 10px;
     display: inline-block;
-    padding: 6px 12px;
+    padding: 7px 14px;
     font-size: 0.85rem;
     color: #fff;
     background-color: #e74c3c;
     border-radius: 8px;
     text-align: center;
-    user-select: none;
     transition: background-color 0.3s ease;
   }
+  
+.room-rating {
+  font-size: 0.9rem;
+  color: #888;
+}
+  
   .btn-remove-wish:hover {
     background-color: #c0392b;
   }
+  
+  .wishlist-title {
+  text-decoration: none;
+  color: #222;
+  font-weight: bold;
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wishlist-title:hover {
+  text-decoration: underline;
+  color: #007acc;
+}
+
+.wishlist-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.wish-heart {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-size: 28px; /* 크게! */
+  color: #e74c3c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+
+.wish-heart:hover {
+  transform: scale(1.2);
+  color: #c0392b;
+}
+
+.wished {
+  color: #e74c3c;
+}
 </style>
 
 <script>
   // 찜 취소 예시 (AJAX)
-  function removeWish(roomSeq, element) {
-    if(!confirm("찜 목록에서 삭제하시겠습니까?")) return;
-    
-    $.ajax({
-      type: "POST",
-      url: "/wishlist/remove",
-      data: { roomSeq: roomSeq },
-      success: function(response) {
-        if(response.code === 0) {
-          alert("찜 목록에서 삭제되었습니다.");
-          // 삭제된 아이템 DOM 제거
-          $(element).closest('.wishlist-item').remove();
-        } else {
-          alert("삭제 실패: " + response.message);
+function removeWish(roomSeq, element) {
+  Swal.fire({
+    title: "찜 해제하시겠습니까?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#e74c3c",
+    cancelButtonColor: "#aaa",
+    confirmButtonText: "네, 삭제할게요",
+    cancelButtonText: "아니요"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "POST",
+        url: "/wishlist/remove",
+        data: { roomSeq: roomSeq },
+        success: function(response) {
+          if(response.code === 0) {
+            Swal.fire("삭제 완료", "찜에서 제거됐습니다.", "success");
+            $(element).closest(".wishlist-item").fadeOut(300, function() {
+              $(this).remove();
+            });
+          }
         }
-      },
-      error: function() {
-        alert("서버 오류가 발생했습니다.");
-      }
-    });
-  }
+      });
+    }
+  });
+}
+  
+function toggleWish(roomSeq, element) {
+	  const $icon = $(element).find('i');
+
+	  const isWished = $icon.hasClass('fas');
+
+	  const url = isWished ? "/wishlist/remove" : "/wishlist/add";
+
+	  $.post(url, { roomSeq: roomSeq }, function(response) {
+	    if(response.code === 0) {
+	      $icon.toggleClass("fas wished").toggleClass("far");
+	    }
+	  });
+	}
+
 </script>
 
 </head>
@@ -120,20 +223,39 @@
 
   <div id="wishlistBody">
     <c:forEach var="room" items="${list}">
-      <div class="wishlist-item">
-        <div class="wishlist-details">
-          <div class="wishlist-title" title="${room.roomTitle}">${room.roomTitle}</div>
-          <div class="wishlist-location">${room.region}</div>
-          <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
-          <div class="room-price">
-          <fmt:formatNumber value="${room.amt}" type="currency" currencySymbol="₩" />
-        </div>
-          
-          <div class="btn-remove-wish" onclick="removeWish(${room.roomSeq}, this)">찜 취소</div>
-        </div>
-      </div>
-    </c:forEach>
-  </div>
+	  <div class="wishlist-item">
+		  <a href="/room/detail?roomSeq=${room.roomSeq}">
+		    <img src="/resources/upload/room/main/${room.roomImgName}" 
+			     onerror="this.src='/resources/images/default-room.png'" 
+			     alt="${room.roomTitle}" 
+			     class="wishlist-thumb">
+		  </a>
+		
+		  <div class="wishlist-details">
+		    <a href="/room/detail?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
+		      ${room.roomTitle}
+		    </a>
+		
+		    <div class="wishlist-info">
+		      <div>
+		        <div class="wishlist-location">
+				  ${room.region} / <strong>${room.weekdayAmt}원~</strong>
+				</div>
+		        <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
+		      </div>
+		      
+		
+		      <!-- ❤️ 우측하단 꽉 찬 빨간 하트 아이콘 (클릭 시 삭제) -->
+				<button class="wish-heart" onclick="removeWish(${room.roomSeq}, this)">
+				  <i class="fas fa-heart wished"></i>
+				</button>
+		    </div>
+		  </div>
+		</div>
+
+	</c:forEach>
+	
+	</div>
 </div>
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
