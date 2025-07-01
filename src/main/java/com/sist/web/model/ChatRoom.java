@@ -14,7 +14,9 @@ public class ChatRoom implements Serializable{
     private Date createDate;
     
     // DB 테이블에 없지만 추가한 필드
-    private String otherUserNickname;			// 마지막 메시지 내용
+    private String otherUserId;					// 상대방 id, 프로필이미지 때문에 필요
+    private String otherUserNickname;			// 다른 사람 닉네임
+    private String lastMessage;  				// 마지막 메시지 내용
     private Date lastMessageDate;				// 마지막 메시지 시간
     private int unreadCount;					// 안읽은 메시지 갯수
     private String otherUserProfileImgExt;		// 상대방 이미지 프로필 확장자
@@ -25,6 +27,27 @@ public class ChatRoom implements Serializable{
     	createDate = null;
     }
     
+    
+    
+	public String getOtherUserId() {
+		return otherUserId;
+	}
+
+
+
+	public void setOtherUserId(String otherUserId) {
+		this.otherUserId = otherUserId;
+	}
+
+
+
+	public String getLastMessage() {
+		return lastMessage;
+	}
+
+	public void setLastMessage(String lastMessage) {
+		this.lastMessage = lastMessage;
+	}
 
 	public Date getLastMessageDate() {
 		return lastMessageDate;

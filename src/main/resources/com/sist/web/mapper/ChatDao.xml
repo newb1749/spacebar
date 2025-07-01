@@ -5,6 +5,7 @@
 	 <resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
         <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
         <result property="createDate" column="CREATE_DATE"/>
+        <result property="otherUserId" column="OTHER_USER_ID"/> 
         <result property="otherUserNickname" column="OTHER_USER_NICKNAME"/>
         <result property="lastMessage" column="LAST_MESSAGE" />
         <result property="lastMessageDate" column="LAST_MESSAGE_DATE" />
@@ -87,6 +88,7 @@
         )
         SELECT
             A.CHAT_ROOM_SEQ,
+            C.USER_ID AS OTHER_USER_ID,  
             C.NICKNAME AS OTHER_USER_NICKNAME,
             C.PROF_IMG_EXT,
             NVL(LM.LAST_MESSAGE, '아직 대화 내용이 없습니다.') AS LAST_MESSAGE,

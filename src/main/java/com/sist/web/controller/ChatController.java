@@ -96,7 +96,9 @@ public class ChatController {
 	public ResponseEntity<Response<ChatRoom>> startChatApi(HttpServletRequest request) {
 	    String otherUserId = HttpUtil.get(request, "otherUserId", "");
 	    String currentUserId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
-
+	    
+	    logger.debug("otherUserId11111111111111111111 : " + otherUserId);
+	    
 	    if (StringUtil.isEmpty(currentUserId)) {
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new Response<ChatRoom>(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다."));
 	    }
