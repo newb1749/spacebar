@@ -127,8 +127,8 @@ public class ChatController {
 	 * @return "/chat/room"
 	 */
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
-    public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) 
+	{
         String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         
         User_mj loginUser = userService.userSelect(userId);
