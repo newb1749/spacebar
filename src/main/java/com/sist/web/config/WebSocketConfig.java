@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 		config.enableSimpleBroker("/topic");
 		
 		// 2. 클라이언트가 서버로 메시지를 보낼 때 사용할 주소의 접두사(prefix)를 설정
-		// ex: 클라이언트 -> 서버 /app/chat.sendMessage
+		// ex: 클라이언트 -> 서버 /app/chat/sendMessage
 		config.setApplicationDestinationPrefixes("/app");
 	}
 	

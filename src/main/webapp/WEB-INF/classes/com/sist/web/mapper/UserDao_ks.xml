@@ -3,16 +3,10 @@
 
 <mapper namespace="com.sist.web.dao.UserDao_ks">
 
-    <resultMap id="userResultMap" type="com.sist.web.model.User_mj">
-        <id property="userId" column="USER_ID" />
-        <result property="userName" column="USER_NAME" />
-        <result property="nickName" column="NICKNAME" />
-        </resultMap>
-
-    <select id="userList" resultMap="userResultMap">
-        SELECT USER_ID,
-               USER_NAME,
-               NICKNAME
+<select id="userList" resultType="com.sist.web.model.User_mj">
+        SELECT USER_ID      AS userId,
+               USER_NAME    AS userName,
+               NICKNAME     AS nickName
           FROM SB_USER
          WHERE USER_STAT = 'Y'
            AND USER_ID != #{userId}
