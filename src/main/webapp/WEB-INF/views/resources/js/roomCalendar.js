@@ -66,12 +66,26 @@ function initRoomCalendar(calId, options) {
       position: config.position,
       
       onReady: function (selectedDates) {
-        if (selectedDates.length === 2) {
-          const [start, end] = selectedDates;
-          const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
-          dateInput.value = displayText;
-        }
-      },
+		  if (selectedDates.length === 2) {
+		    const [start, end] = selectedDates;
+		    const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
+		    dateInput.value = displayText;
+		
+		    // ✅ 추가: hidden input에도 초기값 넣기
+		    const startInput = document.getElementById(calId + '_start');
+		    const endInput = document.getElementById(calId + '_end');
+		    if (startInput && endInput) {
+		      const formatYYYYMMDD = (date) => {
+		        const yyyy = date.getFullYear();
+		        const mm = String(date.getMonth() + 1).padStart(2, '0');
+		        const dd = String(date.getDate()).padStart(2, '0');
+		        return `${yyyy}${mm}${dd}`;
+		      };
+		      startInput.value = formatYYYYMMDD(start);
+		      endInput.value = formatYYYYMMDD(end);
+		    }
+		  }
+		},
       
       onChange: function (selectedDates) {
 		  if (selectedDates.length === 2) {

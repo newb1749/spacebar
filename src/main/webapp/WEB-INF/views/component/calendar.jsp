@@ -42,10 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 1️⃣ 캘린더 초기화
   initRoomCalendar(calendarId, {
-    fetchUrl: fetchUrl,
-    defaultDates: defaultDates,
-    onChange: (dates) => console.log("선택된 날짜:", dates)
-  });
+  fetchUrl: fetchUrl,
+  defaultDates: defaultDates,
+  altInput: true,
+  altFormat: "Y년 m월 d일 (D)", // 사용자용 보기용 날짜 포맷
+  onChange: (dates) => console.log("선택된 날짜:", dates)
+});
 
   // 2️⃣ hidden input을 form 내부로 강제 이동
   const startInput = document.getElementById(calendarId + '_start');

@@ -1,6 +1,8 @@
 package com.sist.web.model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class Room implements Serializable{
@@ -38,10 +40,15 @@ public class Room implements Serializable{
 	
 	private long amt;
 	private String roomImageName;
-	
-	private String checkInDate;
-	private String checkOutDate;
+
 	private String regionList;
+	
+	private String startDate;
+	private String endDate;
+	private String startTime;
+	private String endTime;
+	
+	private String category;
 	
 	public Room()
 	{
@@ -71,36 +78,82 @@ public class Room implements Serializable{
 		roomImageName = "";
 		regionList = "";
 		
-		checkInDate = "";
-		checkOutDate = "";
+		startDate = "";
+		endDate = "";
+		startTime = "";
+		endTime = "";
+		
+		category = "";
 	}
 	
+
 	
-
-
-	public String getCheckInDate() {
-		return checkInDate;
+	
+	public String getCategory() {
+		return category;
 	}
 
 
 
 
-	public void setCheckInDate(String checkInDate) {
-		this.checkInDate = checkInDate;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 
 
 
-	public String getCheckOutDate() {
-		return checkOutDate;
+	public String getStartDate() {
+		return startDate;
 	}
 
 
 
 
-	public void setCheckOutDate(String checkOutDate) {
-		this.checkOutDate = checkOutDate;
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+
+
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+
+
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+
+
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+
+
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+
+
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+
+
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
 	}
 
 

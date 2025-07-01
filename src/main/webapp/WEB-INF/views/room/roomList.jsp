@@ -4,7 +4,7 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
-<title>방 리스트</title>
+<title>숙소 리스트</title>
 <style>
 body {
   padding-top: 100px;
@@ -62,6 +62,55 @@ body {
   color: #6c5ce7;
   font-size: 1rem;
 }
+
+.category-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.category-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  min-width: 80px;
+  color: #2c3e50;
+}
+
+.category-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-btn {
+  background: #f1f1f1;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+  background: #e0e0e0;
+}
+
+.category-btn.active {
+  background: #56ab2f;
+  color: white;
+  border-color: #56ab2f;
+}
 </style>
 <script>
 let curPage = parseInt("${curPage}");
@@ -69,19 +118,85 @@ let maxPage = ${totalPage};
 let loading = false;
 
 $(document).ready(function(){
+	
+	//✅ category 값이 있으면 해당 버튼을 active로 만듦
+	const selectedCategory = $("#category").val();
+	if (selectedCategory) {
+	  $(".category-btn").each(function() {
+	    if ($(this).text().trim() === selectedCategory) {
+	      $(this).addClass("active");
+	    }
+	  });
+	}
+
+	// ✅ 카테고리 버튼 클릭 이벤트
+	$(".category-btn").on("click", function() {
+	  const isActive = $(this).hasClass("active");
+
+	  // 모든 버튼 비활성화
+	  $(".category-btn").removeClass("active");
+
+	  if (!isActive) {
+	    // 현재 버튼만 활성화
+	    $(this).addClass("active");
+	    $("#category").val($(this).text().trim());
+	  } else {
+	    // 다시 누르면 비활성화 및 히든값 초기화
+	    $("#category").val("");
+	  }
+	});
+	
   // 검색 버튼
   $("#btnSearch").on("click", function(){
+
+	  
+	  
+	console.log("선택된 날짜 확인:", window.selectedDates);
     document.roomForm.regionList.value = "";
     document.roomForm.roomSeq.value = "";
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
     
+    
+    
  	// 시간값 설정
-    document.roomForm.startTime.value = $("#startTime").val();
-    document.roomForm.endTime.value = $("#endTime").val();
+    //document.roomForm.startTime.value = $("#startTime").val();
+    //document.roomForm.endTime.value = $("#endTime").val();
+    
+ 	// ✅ 날짜 강제로 hidden input에 넣기
+    const startInput = document.getElementById("calendarTest_start");
+    const endInput = document.getElementById("calendarTest_end");
+    
+
+    if (window.selectedDates && window.selectedDates.length === 2) {
+      const [start, end] = window.selectedDates;
+      const formatYYYYMMDD = (date) => {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+      };
+      if (startInput && endInput) {
+        startInput.value = formatYYYYMMDD(start);
+        endInput.value = formatYYYYMMDD(end);
+      } else {
+        console.warn("hidden input 찾을 수 없음");
+      }
+    } else {
+      console.warn("선택된 날짜 없음");
+    }
     
     document.roomForm.submit();
   });
+  
+	//JavaScript에서 JSP 변수를 비교
+  var startDate = "${startDate}";
+  var endDate = "${endDate}";
+  
+  if (startDate === endDate) {
+    alert("시작일과 종료일이 같을 수 없습니다.");
+    return;
+  }
 
   // 지역 필터 드롭다운 토글
   $("#toggleFilter").on("click", function () {
@@ -107,8 +222,8 @@ $(document).ready(function(){
 		document.roomForm.curPage.value = "1";
 		
 		// 시간값 설정
-	    document.roomForm.startTime.value = $("#startTime").val();
-	    document.roomForm.endTime.value = $("#endTime").val();
+	    //document.roomForm.startTime.value = $("#startTime").val();
+	    //document.roomForm.endTime.value = $("#endTime").val();
 		
 		document.roomForm.submit();
 
@@ -174,13 +289,13 @@ $(window).on("scroll", function () {
 	  
 	  <!-- JSP include로 파라미터 전달 -->
 	  <jsp:include page="/WEB-INF/views/component/calendar.jsp">
-	    <jsp:param name="calId" value="${calId}" />
-	    <jsp:param name="fetchUrl" value="${fetchUrl}" />
+	    <jsp:param name="calId" value="calendar" />
+	    <jsp:param name="fetchUrl" value="" />
 	    <jsp:param name="startDate" value="${startDate}" />
 	    <jsp:param name="endDate" value="${endDate}" />
 	  </jsp:include>
     
-    <!-- ✅ 시간 선택 수평 정렬 -->
+    <!-- ✅ 시간 선택 수평 정렬 
 <div class="d-flex align-items-center gap-3" style="height: 44px;">
   <div class="d-flex align-items-center" style="gap: 8px;">
     <span style="font-weight: bold; white-space: nowrap;">이용시작</span>
@@ -200,7 +315,7 @@ $(window).on("scroll", function () {
 	</select>
   </div>
 </div>
-
+-->
     <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control shadow-sm" maxlength="20"
            style="width: 260px; height: 44px; border-radius: 12px;" placeholder="검색어를 입력하세요" />
     <button type="button" id="btnSearch" class="btn"
@@ -233,6 +348,42 @@ $(window).on("scroll", function () {
 		    </form>
 		  </div>
 		</div>
+		
+<!-- ✅ 카테고리 선택 영역 -->
+<div class="category-wrapper">
+
+  <!-- 🛏 숙박 -->
+  <div class="category-row">
+    <div class="category-label">숙박</div>
+    <div class="category-btn-group">
+      <button type="button" class="category-btn">풀빌라</button>
+      <button type="button" class="category-btn">호텔</button>
+      <button type="button" class="category-btn">팬션</button>
+      <button type="button" class="category-btn">민박</button>
+      <button type="button" class="category-btn">리조트</button>
+      <button type="button" class="category-btn">주택</button>
+      <button type="button" class="category-btn">캠핑장</button>
+    </div>
+  </div>
+
+  <!-- 🏢 공간 대여 
+  <div class="category-row">
+    <div class="category-label">공간 대여</div>
+    <div class="category-btn-group">
+      <button type="button" class="category-btn">파티룸</button>
+      <button type="button" class="category-btn">카페</button>
+      <button type="button" class="category-btn">연습실</button>
+      <button type="button" class="category-btn">스튜디오</button>
+      <button type="button" class="category-btn">회의실</button>
+      <button type="button" class="category-btn">녹음실</button>
+      <button type="button" class="category-btn">운동시설</button>
+    </div>
+  </div>
+-->
+</div>
+
+
+
   </div>
   
 
@@ -285,8 +436,9 @@ $(window).on("scroll", function () {
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
   <input type="hidden" name="regionList" id="regionList" value="${regionList}" />
-  <input type="hidden" name="startTime" id="startTime" value="${startTime}"/>
-  <input type="hidden" name="endTime" id="endTime" value="${endTime}"/>
+  <!-- input type="hidden" name="startTime" id="startTime" value="${startTime}"/ -->
+  <!--input type="hidden" name="endTime" id="endTime" value="${endTime}"/-->
+  <input type="hidden" name="category" id="category" value="${category}"/>
 </form>
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>

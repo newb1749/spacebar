@@ -1,6 +1,8 @@
 package com.sist.web.controller;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,14 +47,14 @@ public class RoomControllerSh {
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private RoomServiceSh roomService;
+	private RoomServiceSh roomService;	
 	
 	private static final int LIST_COUNT = 9; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
 	
-	//방 리스트 페이지
-	@RequestMapping(value="/room/list")
-	public String list(@RequestParam(required = false) String startDate, // "20250626"
+	//숙소 리스트 페이지
+	@RequestMapping(value="/room/roomList")
+	public String roomList(@RequestParam(required = false) String startDate, // "20250626"
 		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//조회값
@@ -61,13 +63,29 @@ public class RoomControllerSh {
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		//필터 값
 		String regionList = HttpUtil.get(request, "regionList","");
-		//체크인 시간(대여공간)
-		int startTime = HttpUtil.get(request, "startTime", 0);
-		//체크아웃 시간(대여공간)
-		int endTime = HttpUtil.get(request, "endTime", 0);
 		
-		System.out.println("startDate: " + startDate);
-	    System.out.println("endDate: " + endDate);
+		//체크인 시간(대여공간)
+		//String startTime = HttpUtil.get(request, "startTime", "");
+		//체크아웃 시간(대여공간)
+		//String endTime = HttpUtil.get(request, "endTime","");
+		
+		//카테고리
+		String category = HttpUtil.get(request, "category","");
+		
+		//리스트 첫페이지 오늘날짜 설정
+		if(StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate))
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			Calendar cal = Calendar.getInstance();
+			
+			startDate = sdf.format(cal.getTime()); // 오늘 날짜
+			
+			cal.add(Calendar.DATE, 1); // 내일 날짜
+			endDate = sdf.format(cal.getTime());
+		}
+		
+		logger.debug("==============startDate : " + startDate);
+		logger.debug("==============endDate : " + endDate);
 		
 		// 게시물 리스트
 		List<Room> list = null;
@@ -86,6 +104,23 @@ public class RoomControllerSh {
 		{
 			search.setRegionList(regionList);
 		}
+		if(!StringUtil.isEmpty(startDate) && !StringUtil.isEmpty(endDate))
+		{
+			search.setStartDate(startDate);
+			search.setEndDate(endDate);
+		}
+//		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+//		{
+//			if(!StringUtil.equals(startTime, endTime))
+//			{
+//				search.setStartTime(startTime);
+//				search.setEndTime(endTime);
+//			}
+//		}
+		if(!StringUtil.isEmpty(category))
+		{
+			search.setCategory(category);
+		}
 
 		
 		totalCount = roomService.roomTotalCount(search);
@@ -98,7 +133,113 @@ public class RoomControllerSh {
 		
 		if(totalCount > 0)
 		{
-			paging = new Paging("/room/list",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			paging = new Paging("/room/roomList",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			
+			totalPage = paging.getTotalPage();
+			
+			search.setStartRow(paging.getStartRow());
+			search.setEndRow(paging.getEndRow());
+			
+			list = roomService.roomList(search);
+		}
+		
+		model.addAttribute("list",list);
+		model.addAttribute("searchValue",searchValue);
+		model.addAttribute("curPage",curPage);
+		model.addAttribute("paging",paging);
+		model.addAttribute("regionList",regionList);
+		model.addAttribute("totalPage",totalPage);
+		//model.addAttribute("startTime",startTime);
+		//model.addAttribute("endTime",endTime);
+		model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("category",category);
+		
+		return "/room/roomList";
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//공간대여 리스트 페이지
+	@RequestMapping(value="/room/spaceList")
+	public String spaceList(@RequestParam(required = false) String startDate, // "20250626"
+		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		//조회값
+		String searchValue = HttpUtil.get(request, "searchValue","");
+		// 현재 페이지
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		//필터 값
+		String regionList = HttpUtil.get(request, "regionList","");
+		//체크인 시간(대여공간)
+		String startTime = HttpUtil.get(request, "startTime", "");
+		//체크아웃 시간(대여공간)
+		String endTime = HttpUtil.get(request, "endTime","");
+		//카테고리
+		String category = HttpUtil.get(request, "category","");
+		
+		//리스트 첫페이지 오늘날짜 설정
+		if(StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate))
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			Calendar cal = Calendar.getInstance();
+			
+			startDate = sdf.format(cal.getTime()); // 오늘 날짜
+			
+			cal.add(Calendar.DATE, 1); // 내일 날짜
+			endDate = sdf.format(cal.getTime());
+		}
+		
+		logger.debug("==============startDate : " + startDate);
+		logger.debug("==============endDate : " + endDate);
+		
+		// 게시물 리스트
+		List<Room> list = null;
+		//조회 객체
+		Room search = new Room();
+		//총 게시물 수
+		long totalCount = 0;
+		//페이징 객체
+		Paging paging = null;
+		
+		if(!StringUtil.isEmpty(searchValue))
+		{
+			search.setSearchValue(searchValue);
+		}
+		if(!StringUtil.isEmpty(regionList))
+		{
+			search.setRegionList(regionList);
+		}
+		if(!StringUtil.isEmpty(startDate) && !StringUtil.isEmpty(endDate))
+		{
+			search.setStartDate(startDate);
+			search.setEndDate(endDate);
+		}
+		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+		{
+			if(!StringUtil.equals(startTime, endTime))
+			{
+				search.setStartTime(startTime);
+				search.setEndTime(endTime);
+			}
+		}
+		if(!StringUtil.isEmpty(category))
+		{
+			search.setCategory(category);
+		}
+
+		
+		totalCount = roomService.roomTotalCount(search);
+		
+		logger.debug("================================");
+		logger.debug("totalCount : " + totalCount);
+		logger.debug("================================");
+		
+		long totalPage = 0;
+		
+		if(totalCount > 0)
+		{
+			paging = new Paging("/room/spaceList",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
 			
 			totalPage = paging.getTotalPage();
 			
@@ -118,8 +259,9 @@ public class RoomControllerSh {
 		model.addAttribute("endTime",endTime);
 		model.addAttribute("startDate", startDate);
 	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("category",category);
 		
-		return "/room/list";
+		return "/room/spaceList";
 	}
 	
 	//방 리스트 페이지
