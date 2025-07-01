@@ -16,7 +16,7 @@ import com.sist.web.service.ChatService;
 import com.sist.web.service.UserService_mj;
 
 @Controller
-public class ChatStompController { // 새로운 컨트롤러 클래스
+public class ChatStompController { 
     private static Logger logger = LoggerFactory.getLogger(ChatStompController.class);
 
     @Autowired
@@ -26,7 +26,7 @@ public class ChatStompController { // 새로운 컨트롤러 클래스
     private UserService_mj userService;
 
     /**
-     * WebSocket/STOMP를 통해 들어오는 메시지를 처리합니다.
+     * WebSocket/STOMP를 통해 들어오는 메시지를 처리.
      */
     @MessageMapping("/chat/sendMessage/{chatRoomSeq}")
     @SendTo("/topic/chat/room/{chatRoomSeq}")
