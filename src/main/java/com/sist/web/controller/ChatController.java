@@ -24,6 +24,7 @@ import com.sist.web.model.ChatRoom;
 import com.sist.web.model.Response;
 import com.sist.web.model.User_mj;
 import com.sist.web.service.ChatService;
+import com.sist.web.service.UserService_ks;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.SessionUtil;
 
@@ -41,9 +42,17 @@ public class ChatController {
 	@Autowired
 	private UserService_mj userService;
 	
+	@Autowired
+	private UserService_ks userService_ks;
+	
 	private static final String AUTH_SESSION_NAME = "sessionUserId";
 	
-	// 내 채팅 목록 페이지로 이동
+	/**
+	 * 
+	 * @param model  ("myChatRooms", myChatRooms)
+	 * @param request
+	 * @return "/chat/list"
+	 */
 	@RequestMapping(value="/chat/list", method=RequestMethod.GET)
 	public String chatListPage(Model model, HttpServletRequest request)
 	{	
@@ -55,9 +64,13 @@ public class ChatController {
 		
 		return "/chat/list";
 	}
-	
-	
-	// 특정 사용자와 1:1 채팅 시작(방 없으면 생성)
+		
+	/**
+	 * 특정 사용자와 1:1 채팅 시작(방 없으면 생성)
+	 * @param otherUserId 상대방 유저
+	 * @param request
+	 * @return 성공 -> 채팅 방으로 / 실패 -> 에러 페이지
+	 */
 	@RequestMapping(value="/chat/start", method=RequestMethod.GET)
 	public String startChat(@RequestParam("otherUserId") String otherUserId, HttpServletRequest request)
 	{
@@ -75,8 +88,13 @@ public class ChatController {
         return "redirect:/chat/room?chatRoomSeq=" + chatRoom.getChatRoomSeq();		
 	}
 	
-	
-	// 채팅방 페이지로 이동
+	/**
+	 * 채팅방 페이지로 이동
+	 * @param chatRoomSeq
+	 * @param model ("chatRoomSeq", chatRoomSeq) ("loginUser", loginUser)  ("loginUserNickname", loginUser.getNickName())
+	 * @param request
+	 * @return "/chat/room"
+	 */
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
     public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -95,9 +113,12 @@ public class ChatController {
         return "/chat/room"; 
     }
 	
-
-	
-	// 특정 채팅방의 메시지 목록을 조회(AJAX)
+	/**
+	 * 특정 채팅방의 메시지 목록을 조회(AJAX)
+	 * @param chatRoomSeq
+	 * @param request
+	 * @return ResponseEntity 상태값
+	 */
 	@RequestMapping(value="/chat/message", method=RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<Response<List<ChatMessage>>> getMessages(@RequestParam(value="chatRoomSeq", required=false) Integer chatRoomSeq, HttpServletRequest request) {
@@ -121,60 +142,23 @@ public class ChatController {
 	    return ResponseEntity.ok(new Response<>(0, "SUCCESS", messages));
 	}
 	
-	
-	// 메시지 전송
-	/*
-	@RequestMapping(value="/chat/message", method=RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<Response<ChatMessage>> sendMessage(@RequestBody ChatMessage chatMessage, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        
-        // --- 테스트를 위한 하드코딩 ---
-        SessionUtil.setSession(session, "USER_ID", "userA");
-        // --- 여기까지 ---
-        
-        String senderId = (String) SessionUtil.getSession(session, "USER_ID");
-
-        if (senderId == null) {
-            return ResponseEntity.status(401).body(new Response<>(401, "Unauthorized"));
-        }
-        
-        chatMessage.setSenderId(senderId);
-        ChatMessage sentMessage = chatService.sendMessage(chatMessage);
-        
-        if (sentMessage != null) {
-            // 성공 시 code(0)와 msg("SUCCESS")를 함께 전달
-            return ResponseEntity.ok(new Response<>(0, "SUCCESS", sentMessage));
-        } else {
-            return ResponseEntity.status(500).body(new Response<>(500, "Failed to send message"));
-        }
-    }
-	*/
-	
-//    /**
-//     * WebSocket/STOMP를 통해 들어오는 메시지를 처리합니다.
-//     * 클라이언트가 "/app/chat.sendMessage/{chatRoomSeq}"로 메시지를 보내면 이 메서드가 호출됨
-//     * * @param chatRoomSeq 메시지를 보낼 채팅방 시퀀스
-//     * @param chatMessage 클라이언트가 보낸 메시지 정보 (JSON)
-//     * @return 모든 구독자에게 전달될 최종 메시지
-//     */
-//	@MessageMapping("/chat/sendMessage/{chatRoomSeq}")
-//	@SendTo("/topic/chat/room/{chatRoomSeq}")	// 이 주소를 구독하는 클라이언트에게 메시지를 브로드캐스트함
-//	public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage)
-//	{
-//		// 보낸 사람, 방 번호 등 추가 정보 설정
-//		// (하드코딩된 세션에서 가져오거나 chatMessage에 담겨온 정보를 신뢰)
-//		chatMessage.setSenderId("userA");	// 실제 인증 정보 필요!! 임시
-//		chatMessage.setChatRoomSeq(chatRoomSeq);
-//		// 서버에서 현재 시간 설정
-//		chatMessage.setSendDate(new Date());
-//		// 메시지를 DB에 저장
-//		chatService.sendMessage(chatMessage);
-//		
-//		// NICKNAME 등 추가 정보를 다시 조회해서 채워넣으면 더 좋음
-//		// 현재는 클라이언트에서 받은 내용을 그대로 다시 보냄
-//		// ex: chatMessage.setSenderName("테스트A");  <-- 닉네임
-//		
-//		return chatMessage;
-//	}
+	/**
+	 *  대화 사용자를 위한 사용자 목록 페이지
+	 * @param searchKeyword
+	 * @param model   세션 아이디 이용("userList", userList)  ("searchKeyword", searchKeyword)
+	 * @param request
+	 * @return "/chat/userList"
+	 */
+	@RequestMapping(value="/chat/userList", method=RequestMethod.GET)
+	public String userList(@RequestParam(value="searchKeyword", required=false) String searchKeyword, Model model, HttpServletRequest request)
+	{
+		String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+		
+		List<User_mj> userList = userService_ks.userList(userId, searchKeyword);
+		
+		model.addAttribute("userList", userList);
+		model.addAttribute("searchKeyword", searchKeyword);
+		
+		return "/chat/userList";
+	}
 }
