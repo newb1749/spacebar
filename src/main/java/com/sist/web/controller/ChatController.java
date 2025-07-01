@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,6 +78,15 @@ public class ChatController {
 		HttpSession session = request.getSession();      
 		String currentUserId  = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
 		
+	    // 유효성 검사 추가
+	    if (otherUserId == null || otherUserId.trim().isEmpty()) {
+	        throw new IllegalArgumentException("상대방 사용자 ID가 필요합니다.");
+	    }
+	    
+	    if (currentUserId == null || currentUserId.trim().isEmpty()) {
+	        throw new IllegalArgumentException("로그인이 필요합니다.");
+	    }
+	    
         // 나와 상대방의 아이디가 같으면 채팅을 시작할 수 없음
         if (StringUtil.equals(otherUserId, currentUserId)) {
             return "redirect:/somewhere/error"; // 에러 페이지로 리다이렉트
@@ -161,4 +171,39 @@ public class ChatController {
 		
 		return "/chat/userList";
 	}
+	
+
+    @RequestMapping(value="/chat/list.json", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Response<List<ChatRoom>>> chatListApi(HttpServletRequest request)
+    {
+    	String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	
+    	if(userId == null)
+    	{
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(
+    				new Response<List<ChatRoom>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
+    	}
+    	
+    	List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
+    	
+    	return ResponseEntity.ok(new Response<List<ChatRoom>>(0, "SUCCESS", myChatRooms));
+    }
+    
+    
+    @RequestMapping(value="/chat/userList.json", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Response<List<User_mj>>> userListApi(@RequestParam(value="searchKeyword", required=false) String searchKeyword, HttpServletRequest request)
+    {
+    	String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	
+    	 if (userId == null) 
+    	 {
+             return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(
+            		 new Response<List<User_mj>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
+         }  
+    	 List<User_mj> userList = userService_ks.userList(userId, searchKeyword);
+    	 
+    	 return ResponseEntity.ok(new Response<List<User_mj>>(0, "SUCCESS", userList));
+    }
 }
