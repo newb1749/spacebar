@@ -140,6 +140,23 @@
 	        opacity: 0.7;
 	        font-size: 0.8em;
 	    }
+
+	.profile-img, .profile-placeholder {
+	    width: 50px;
+	    height: 50px;
+	    border-radius: 50%;
+	    object-fit: cover;
+	    background-color: #eee;
+	}
+	.unread-badge {
+	    background-color: #dc3545;
+	    color: white;
+	    font-size: 12px;
+	    padding: 2px 6px;
+	    border-radius: 10px;
+	    margin-left: 10px;
+	    font-weight: bold;
+	}
 	</style>
 	
 <script>
@@ -166,23 +183,57 @@ $(document).ready(function() {
     // UI 렌더링 함수
     // ========================================================
 
-    function renderChatList(rooms) {
-        chatModalContent.empty();
-        if (!rooms || rooms.length === 0) {
-            chatModalContent.html('<div style="text-align:center; padding-top: 50px; color:#888;">대화중인 방이 없습니다.</div>');
-            return;
-        }
-        let listHtml = '<ul class="chat-list-modal" style="list-style:none; padding:0;">';
-        rooms.forEach(function(room) {
-            listHtml += '<li style="padding:15px; border-bottom:1px solid #eee; cursor:pointer;" class="enter-chat-room" ' +
-                        'data-room-seq="' + room.chatRoomSeq + '" ' +
-                        'data-room-title="' + room.otherUserNickname + '님과의 대화">' +
-                        '<strong style="font-size:16px;">' + room.otherUserNickname + '</strong>' +
-                        '</li>';
-        });
-        listHtml += '</ul>';
-        chatModalContent.html(listHtml);
+
+
+// 1. 채팅방 목록을 그리는 함수 수정
+function renderChatList(rooms) {
+    const chatModalContent = $('#chat-modal-content');
+    chatModalContent.empty();
+    if (!rooms || rooms.length === 0) {
+        chatModalContent.html('<div style="text-align:center; padding-top: 50px; color:#888;">대화중인 방이 없습니다.</div>');
+        return;
     }
+
+    let listHtml = '<ul class="chat-list-modal" style="list-style:none; padding:0;">';
+    rooms.forEach(function(room) {
+        let profileImgHtml = '';
+
+        // [수정] 상대방 프로필 이미지 확장자(otherUserProfileImgExt)가 있는지 확인
+        if (room.otherUserProfileImgExt && room.otherUserProfileImgExt.trim() !== '') {
+            // 확장자가 있으면, 실제 프로필 이미지 경로를 사용합니다.
+            // (주의: otherUserId 필드가 SELECT 쿼리에 포함되어 있어야 합니다.)
+            profileImgHtml = '<img src="/resources/upload/userprofile/' + room.otherUserId + '.' + room.otherUserProfileImgExt + '" class="profile-img" alt="프로필 이미지">';
+        } else {
+            // 확장자가 없으면(null), 기본 이미지 '회원.png'를 사용합니다.
+            // (주의: '/resources/images/' 경로는 실제 프로젝트 구조에 맞게 확인해야 합니다.)
+            profileImgHtml = '<img src="/resources/upload/userprofile/회원.png" class="profile-img" alt="기본 프로필 이미지">';
+        }
+        
+        let unreadBadge = '';
+        if (room.unreadCount > 0) {
+            unreadBadge = '<span class="unread-badge">' + room.unreadCount + '</span>';
+        }
+
+        // [수정] 전체 HTML 구조 변경
+        listHtml += '<li style="display:flex; align-items:center; padding:10px; border-bottom:1px solid #eee; cursor:pointer;" class="enter-chat-room" ' +
+                    'data-room-seq="' + room.chatRoomSeq + '" ' +
+                    'data-room-title="' + room.otherUserNickname + '님과의 대화">' +
+                    profileImgHtml + 
+                    '<div class="chat-room-info" style="flex-grow:1; margin-left:10px;">' +
+                        '<div class="info-header" style="display:flex; justify-content:space-between;">' +
+                            '<strong style="font-size:16px;">' + room.otherUserNickname + '</strong>' +
+                            '<small style="color:#999;">' + new Date(room.lastMessageDate).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}) + '</small>' +
+                        '</div>' +
+                        '<div class="last-message" style="display:flex; justify-content:space-between; margin-top:4px;">' +
+                            '<span style="color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + room.lastMessage + '</span>' +
+                            unreadBadge +
+                        '</div>' +
+                    '</div>' +
+                    '</li>';
+    });
+    listHtml += '</ul>';
+    chatModalContent.html(listHtml);
+}
 
     function renderUserList(users) {
         const userListDiv = $('#user-search-results');
