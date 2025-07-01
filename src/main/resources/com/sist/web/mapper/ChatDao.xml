@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.ChatDao">
-<resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
-    <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
-    <result property="createDate" column="CREATE_DATE"/>
-    <result property="otherUserNickname" column="OTHER_USER_NICKNAME"/>
-</resultMap>
 
+	 <resultMap id="chatRoomResultMap" type="com.sist.web.model.ChatRoom">
+        <id property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
+        <result property="createDate" column="CREATE_DATE"/>
+        <result property="otherUserNickname" column="OTHER_USER_NICKNAME"/>
+        <result property="lastMessage" column="LAST_MESSAGE" />
+        <result property="lastMessageDate" column="LAST_MESSAGE_DATE" />
+        <result property="unreadCount" column="UNREAD_COUNT" />
+        <result property="otherUserProfileImgExt" column="PROF_IMG_EXT" />
+    </resultMap>
+    
+    
     <resultMap id="chatMessageResultMap" type="com.sist.web.model.ChatMessage">
         <id property="chatMessageSeq" column="CHAT_MESSAGE_SEQ"/>
         <result property="chatRoomSeq" column="CHAT_ROOM_SEQ"/>
@@ -58,22 +64,50 @@
     </select>
     
 <select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
-		SELECT
-		    A.CHAT_ROOM_SEQ,
-		    A.CREATE_DATE,
-		    C.NICKNAME AS OTHER_USER_NICKNAME
-		FROM
-		    CHAT_PARTICIPANT ME 
-		JOIN 
-		    CHAT_PARTICIPANT OTHER ON ME.CHAT_ROOM_SEQ = OTHER.CHAT_ROOM_SEQ AND ME.USER_ID != OTHER.USER_ID
-		JOIN 
-		    CHAT_ROOM A ON ME.CHAT_ROOM_SEQ = A.CHAT_ROOM_SEQ
-		JOIN 
-		    SB_USER C ON OTHER.USER_ID = C.USER_ID
-		WHERE
-		    ME.USER_ID = #{userId}
-		ORDER BY 
-		    A.CREATE_DATE DESC
+ WITH LAST_MSG AS (
+            SELECT
+                CHAT_ROOM_SEQ,
+                MESSAGE_CONTENT AS LAST_MESSAGE,
+                SEND_DATE AS LAST_MESSAGE_DATE,
+                ROW_NUMBER() OVER (PARTITION BY CHAT_ROOM_SEQ ORDER BY SEND_DATE DESC) AS RN
+            FROM
+                CHAT_MESSAGE
+        ),
+        UNREAD_CNT AS (
+            SELECT
+                CHAT_ROOM_SEQ,
+                COUNT(*) AS UNREAD_COUNT
+            FROM
+                CHAT_MESSAGE
+            WHERE
+                READ_COUNT = 1
+                AND SENDER_ID != #{userId}
+            GROUP BY
+                CHAT_ROOM_SEQ
+        )
+        SELECT
+            A.CHAT_ROOM_SEQ,
+            C.NICKNAME AS OTHER_USER_NICKNAME,
+            C.PROF_IMG_EXT,
+            NVL(LM.LAST_MESSAGE, '아직 대화 내용이 없습니다.') AS LAST_MESSAGE,
+            COALESCE(LM.LAST_MESSAGE_DATE, A.CREATE_DATE) AS LAST_MESSAGE_DATE,
+            NVL(UC.UNREAD_COUNT, 0) AS UNREAD_COUNT
+        FROM
+            CHAT_PARTICIPANT ME 
+        JOIN 
+            CHAT_PARTICIPANT OTHER ON ME.CHAT_ROOM_SEQ = OTHER.CHAT_ROOM_SEQ AND ME.USER_ID != OTHER.USER_ID
+        JOIN 
+            CHAT_ROOM A ON ME.CHAT_ROOM_SEQ = A.CHAT_ROOM_SEQ
+        JOIN 
+            SB_USER C ON OTHER.USER_ID = C.USER_ID
+        LEFT JOIN
+            LAST_MSG LM ON A.CHAT_ROOM_SEQ = LM.CHAT_ROOM_SEQ AND LM.RN = 1
+        LEFT JOIN
+            UNREAD_CNT UC ON A.CHAT_ROOM_SEQ = UC.CHAT_ROOM_SEQ
+        WHERE
+            ME.USER_ID = #{userId}
+        ORDER BY
+            LAST_MESSAGE_DATE DESC
 	</select>
 
     <insert id="saveMessage" parameterType="com.sist.web.model.ChatMessage">
