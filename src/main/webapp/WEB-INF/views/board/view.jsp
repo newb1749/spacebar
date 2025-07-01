@@ -252,7 +252,7 @@ textarea {
 		          <div class="comment-buttons"> <%-- 버튼들을 묶는 div --%>
 		            <button type="button" class="btn-clean btn-reply btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
 		
-		            <c:if test="${boardMe eq 'Y'}">
+		            <c:if test="${sessionUserId eq freeBoardComment.userId}">
 		              <button type="button" class="btn-clean btn-edit btn-edit" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">수정</button>
 		              <button type="button" class="btn-clean btn-delete btn-cmt-delete" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">삭제</button>
 		            </c:if>

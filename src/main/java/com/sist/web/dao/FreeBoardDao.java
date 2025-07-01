@@ -22,7 +22,7 @@ public interface FreeBoardDao {
 	public int boardCntPlus(long freeBoardSeq);
 	
 	//본인게시물 조회수 증가안되게구현
-	public FreeBoard boardView(long freeBoardSeq, String cookieUserId);
+	public FreeBoard boardView(long freeBoardSeq, String sessionUserId);
 	
 	//게시물 등록
 	public int boardInsert(FreeBoard freeBoard);

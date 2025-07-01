@@ -49,6 +49,8 @@ public class FreeBoardController {
 	@Autowired
 	private UserService userService;
 	
+	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	
 	private static final int LIST_COUNT = 5; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
 	
@@ -121,7 +123,7 @@ public class FreeBoardController {
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
 		String boardMe = "N";
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		
 		FreeBoard freeBoard = null;
 		
@@ -129,18 +131,18 @@ public class FreeBoardController {
 		
 		if(freeBoardSeq > 0)
 		{
-			freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			freeBoard = freeBoardService.boardView(freeBoardSeq, sessionUserId);
 			freeBoardComment = freeBoardService.commentList(freeBoardSeq);
 			
-			if(freeBoard != null && StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+			if(freeBoard != null && StringUtil.equals(freeBoard.getUserId(), sessionUserId))
 			{
 				logger.debug("userId : " + freeBoard.getUserId());
-				logger.debug("cookieUserId : " + cookieUserId);
+				logger.debug("sessionUserId : " + sessionUserId);
 				boardMe = "Y";
 			}
 		}
 		
-		
+		model.addAttribute("sessionUserId", sessionUserId);
 		model.addAttribute("freeBoardComment", freeBoardComment);
 		model.addAttribute("freeBoardSeq", freeBoardSeq);
 		model.addAttribute("searchType", searchType);
@@ -157,7 +159,7 @@ public class FreeBoardController {
 	public String writeForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		// 쿠키값
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		// 조회항목
 		String searchType = HttpUtil.get(request, "searchType");
 		// 조회값
@@ -170,7 +172,7 @@ public class FreeBoardController {
 		model.addAttribute("curPage", curPage);
 		
 		// 사용자정보 조회
-		User user = userService.userSelect(cookieUserId);
+		User user = userService.userSelect(sessionUserId);
 		
 		model.addAttribute("user", user);
 		
@@ -184,7 +186,7 @@ public class FreeBoardController {
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		String freeBoardTitle = HttpUtil.get(request, "freeBoardTitle", "");
 		String freeBoardContent = HttpUtil.get(request, "freeBoardContent", "");
 		
@@ -192,7 +194,7 @@ public class FreeBoardController {
 		{
 			FreeBoard freeBoard = new FreeBoard();
 			
-			freeBoard.setUserId(cookieUserId);
+			freeBoard.setUserId(sessionUserId);
 			freeBoard.setFreeBoardTitle(freeBoardTitle);
 			freeBoard.setFreeBoardContent(freeBoardContent);
 			
@@ -223,12 +225,12 @@ public class FreeBoardController {
 	public Response<Object> commentInsert(HttpServletRequest request) {
 	    Response<Object> ajaxResponse = new Response<Object>();
 
-	    String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 	    long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
 	    long parentCmtSeq = HttpUtil.get(request, "parentCmtSeq", (long)0); // 부모댓글 seq (0이면 최상위)
 	    String content = HttpUtil.get(request, "freeBoardCmtContent", "");
 	    
-	    if (cookieUserId == null || cookieUserId.isEmpty()) {
+	    if (sessionUserId == null || sessionUserId.isEmpty()) {
 	        ajaxResponse.setResponse(401, "로그인이 필요합니다.");
 	        return ajaxResponse;
 	    }
@@ -244,7 +246,7 @@ public class FreeBoardController {
 	    try {
 	        FreeBoardComment comment = new FreeBoardComment();
 	        comment.setFreeBoardSeq(freeBoardSeq);
-	        comment.setUserId(cookieUserId);
+	        comment.setUserId(sessionUserId);
 	        comment.setFreeBoardCmtContent(content.trim());
 	        comment.setFreeBoardCmtStat("Y"); // 보통 정상 상태
 	        comment.setParentCmtSeq(parentCmtSeq);
@@ -306,15 +308,15 @@ public class FreeBoardController {
 		Response<Object> ajaxResponse = new Response<Object>();
 		
 		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		
 		if(freeBoardSeq > 0)
 		{
-			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, sessionUserId);
 			
 			if(freeBoard != null)
 			{
-				if(StringUtil.equals(cookieUserId, freeBoard.getUserId()))
+				if(StringUtil.equals(sessionUserId, freeBoard.getUserId()))
 				{
 					try
 					{
@@ -361,7 +363,7 @@ public class FreeBoardController {
 		Response<Object> ajaxResponse = new Response<Object>();
 		
 		long freeBoardCmtSeq = HttpUtil.get(request, "freeBoardCmtSeq", (long)0);
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		
 		if(freeBoardCmtSeq > 0)
 		{
@@ -369,7 +371,7 @@ public class FreeBoardController {
 			
 			if(freeBoardComment != null)
 			{
-				if(StringUtil.equals(cookieUserId, freeBoardComment.getUserId()))
+				if(StringUtil.equals(sessionUserId, freeBoardComment.getUserId()))
 				{
 					try
 					{
@@ -413,7 +415,7 @@ public class FreeBoardController {
 	public String updateForm(ModelMap model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		// 쿠키값
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		// 게시물번호
 		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
 		// 조회항목
@@ -427,11 +429,11 @@ public class FreeBoardController {
 		
 		if(freeBoardSeq > 0)
 		{
-			freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			freeBoard = freeBoardService.boardView(freeBoardSeq, sessionUserId);
 			
 			if(freeBoard != null)
 			{
-				if(!StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+				if(!StringUtil.equals(freeBoard.getUserId(), sessionUserId))
 				{
 					freeBoard = null;
 				}
@@ -453,14 +455,14 @@ public class FreeBoardController {
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		long freeBoardSeq = HttpUtil.get(request, "freeBoardSeq", (long)0);
 		String freeBoardTitle = HttpUtil.get(request, "freeBoardTitle", "");
 		String freeBoardContent = HttpUtil.get(request, "freeBoardContent", "");
 		
 		if(freeBoardSeq > 0 && !StringUtil.isEmpty(freeBoardTitle) && !StringUtil.isEmpty(freeBoardContent))
 		{
-			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, cookieUserId);
+			FreeBoard freeBoard = freeBoardService.boardView(freeBoardSeq, sessionUserId);
 			
 			if(freeBoard != null)
 			{
@@ -505,7 +507,7 @@ public class FreeBoardController {
 
 	    long freeBoardCmtSeq = HttpUtil.get(request, "freeBoardCmtSeq", (long)0);
 	    String content = HttpUtil.get(request, "freeBoardCmtContent", "");
-	    String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 
 	    if(freeBoardCmtSeq > 0 && !StringUtil.isEmpty(content))
 	    {
@@ -514,7 +516,7 @@ public class FreeBoardController {
 	        if(comment != null)
 	        {
 	            // 댓글 작성자 본인 확인
-	            if(StringUtil.equals(comment.getUserId(), cookieUserId))
+	            if(StringUtil.equals(comment.getUserId(), sessionUserId))
 	            {
 	                comment.setFreeBoardCmtContent(content.trim());
 	                
