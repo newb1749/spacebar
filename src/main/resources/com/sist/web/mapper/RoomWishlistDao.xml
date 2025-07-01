@@ -40,7 +40,6 @@
 	</select>
 	
 	<!-- 위시리스트 조회 -->
-	
 	<select id="wishlist" parameterType="com.sist.web.model.Wishlist" resultMap="wishResultMap">
 	  SELECT w.wishlist_seq, w.user_id, w.room_seq, w.reg_dt,
 		       r.room_title, r.room_addr, r.average_rating, r.review_count,

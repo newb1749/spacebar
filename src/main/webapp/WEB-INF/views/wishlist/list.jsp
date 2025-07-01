@@ -124,6 +124,10 @@
         <div class="wishlist-details">
           <div class="wishlist-title" title="${room.roomTitle}">${room.roomTitle}</div>
           <div class="wishlist-location">${room.region}</div>
+          <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
+          <div class="room-price">
+          <fmt:formatNumber value="${room.amt}" type="currency" currencySymbol="₩" />
+        </div>
           
           <div class="btn-remove-wish" onclick="removeWish(${room.roomSeq}, this)">찜 취소</div>
         </div>

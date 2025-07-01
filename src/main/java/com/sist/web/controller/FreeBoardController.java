@@ -49,6 +49,8 @@ public class FreeBoardController {
 	@Autowired
 	private UserService userService;
 	
+	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	
 	private static final int LIST_COUNT = 5; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
 	

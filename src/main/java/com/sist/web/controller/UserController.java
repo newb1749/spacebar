@@ -40,6 +40,8 @@ public class UserController
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
+	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	
 	//로그인
 	@RequestMapping(value="/user/login", method=RequestMethod.POST)
 	@ResponseBody
@@ -60,10 +62,12 @@ public class UserController
 				{
 					if(StringUtil.equals(user.getUserStat(), "Y"))
 					{
-						CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, CookieUtil.stringToHex(userId));
+						request.getSession().setAttribute(AUTH_SESSION_NAME, userId);
+						
+						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 						
 						logger.debug("userId : " + userId);
-						logger.debug("userId : " + CookieUtil.stringToHex(userId));
+						logger.debug("sessionUserId : " + sessionUserId);
 						logger.debug("userPwd : " + userPwd);
 						ajaxRes.setResponse(0, "success");
 					}
@@ -99,17 +103,17 @@ public class UserController
 	@RequestMapping(value="/user/regForm", method=RequestMethod.GET)
 	public String regForm(HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-		logger.debug("cookieUserId : " + cookieUserId);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		if(!StringUtil.isEmpty(cookieUserId))
+		if(!StringUtil.isEmpty(sessionUserId))
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			request.getSession().invalidate();
 			return "redirect:/";
 		}
 		else
 		{
-			return "/user/regForm";
+			return "/user/regForm_mj";
 		}	
 	}
 	
@@ -262,9 +266,15 @@ public class UserController
 	@RequestMapping(value="/user/updateForm", method=RequestMethod.GET)
 	public String updateFrom(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		User user = userService.userSelect(cookieUserId);
+		if(StringUtil.isEmpty(sessionUserId))
+		{
+			return "redirect:/";
+		}
+		
+		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/updateForm";
@@ -285,13 +295,14 @@ public class UserController
 		String userAddr = HttpUtil.get(request, "userAddr");
 		String nickName = HttpUtil.get(request, "nickName");
 		
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		if(!StringUtil.isEmpty(cookieUserId))
+		if(!StringUtil.isEmpty(sessionUserId))
 		{
-			if(StringUtil.equals(userId, cookieUserId))
+			if(StringUtil.equals(userId, sessionUserId))
 			{
-				User user = userService.userSelect(cookieUserId);
+				User user = userService.userSelect(sessionUserId);
 				
 				if(user != null)
 				{
@@ -348,10 +359,7 @@ public class UserController
 	@RequestMapping(value="/user/loginOut", method=RequestMethod.GET)
 	public String loginOut(HttpServletRequest request, HttpServletResponse response)
 	{
-		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null)
-		{
-			CookieUtil.deleteCookie(request, response,"/", AUTH_COOKIE_NAME);
-		}
+		request.getSession().invalidate();
 		
 		return "redirect:/";
 	}

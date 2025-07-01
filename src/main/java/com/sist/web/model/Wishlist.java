@@ -20,6 +20,7 @@ public class Wishlist implements Serializable
     private String region;
     private double averageRating;
     private int reviewCount;
+    
 	
     private String roomImageSeq;
     
