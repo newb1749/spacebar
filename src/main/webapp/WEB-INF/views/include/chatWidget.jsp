@@ -346,9 +346,36 @@ $(document).ready(function() {
     chatModalContent.on('click', '.enter-chat-room', function() {
         enterChatRoom($(this).data('room-seq'), $(this).data('room-title'));
     });
-
+	
+    /*
     chatModalContent.on('click', '.start-chat-with-user', function() {
         window.location.href = "/chat/start?otherUserId=" + $(this).data('user-id');
+    });
+    */
+    chatModalContent.on('click', '.start-chat-with-user', function() {
+        const otherUserId = $(this).data('user-id');
+        
+        // [수정] 페이지 이동 대신 AJAX로 채팅방 생성을 요청합니다.
+        $.ajax({
+            url: "/chat/start.json",
+            type: "POST",
+            data: {
+                otherUserId: otherUserId
+            },
+            success: function(response) {
+                if (response.code === 0 && response.data) {
+                    const chatRoom = response.data;
+                    // 채팅방이 성공적으로 생성/조회되면, enterChatRoom 함수를 호출하여
+                    // 모달 안에서 바로 채팅방으로 들어갑니다.
+                    enterChatRoom(chatRoom.chatRoomSeq, chatRoom.otherUserNickname + "님과의 대화");
+                } else {
+                    alert(response.msg || "대화방 입장에 실패했습니다.");
+                }
+            },
+            error: function() {
+                alert("오류가 발생했습니다.");
+            }
+        });
     });
 
     $('#chat-send-btn').on('click', sendStompMessage);
