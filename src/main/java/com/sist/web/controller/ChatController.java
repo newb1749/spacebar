@@ -27,6 +27,7 @@ import com.sist.web.model.User_mj;
 import com.sist.web.service.ChatService;
 import com.sist.web.service.UserService_ks;
 import com.sist.web.service.UserService_mj;
+import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -48,24 +49,7 @@ public class ChatController {
 	
 	private static final String AUTH_SESSION_NAME = "sessionUserId";
 	
-	/**
-	 * 
-	 * @param model  ("myChatRooms", myChatRooms)
-	 * @param request
-	 * @return "/chat/list"
-	 */
-	@RequestMapping(value="/chat/list", method=RequestMethod.GET)
-	public String chatListPage(Model model, HttpServletRequest request)
-	{	
-		HttpSession session = request.getSession();
-		String userId = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
 
-		List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
-		model.addAttribute("myChatRooms", myChatRooms);
-		
-		return "/chat/list";
-	}
-		
 	/**
 	 * 특정 사용자와 1:1 채팅 시작(방 없으면 생성)
 	 * @param otherUserId 상대방 유저
@@ -98,6 +82,43 @@ public class ChatController {
         return "redirect:/chat/room?chatRoomSeq=" + chatRoom.getChatRoomSeq();		
 	}
 	
+
+	/**
+	 * <pre>
+	 * 메소드명: startChatApi
+	 * 설명: 사용자와의 채팅을 시작하고, 생성된 채팅방 정보를 JSON으로 반환합니다. (모달용)
+	 * </pre>
+	 * @param request HttpServletRequest
+	 * @return ResponseEntity<Response<ChatRoom>>
+	 */
+	@RequestMapping(value="/chat/start.json", method=RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Response<ChatRoom>> startChatApi(HttpServletRequest request) {
+	    String otherUserId = HttpUtil.get(request, "otherUserId", "");
+	    String currentUserId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+
+	    if (StringUtil.isEmpty(currentUserId)) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(new Response<ChatRoom>(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다."));
+	    }
+	    
+	    if (StringUtil.isEmpty(otherUserId)) {
+	        return ResponseEntity.badRequest().body(new Response<ChatRoom>(400, "상대방 정보가 없습니다."));
+	    }
+
+	    if (StringUtil.equals(otherUserId, currentUserId)) {
+	        return ResponseEntity.badRequest().body(new Response<ChatRoom>(400, "자기 자신과는 대화할 수 없습니다."));
+	    }
+	    
+	    ChatRoom chatRoom = chatService.findOrCreateChatRoom(currentUserId, otherUserId);
+	    
+	    // 상대방 닉네임을 찾아서 ChatRoom 객체에 추가해줍니다.
+	    User_mj otherUser = userService.userSelect(otherUserId);
+	    if(otherUser != null) {
+	        chatRoom.setOtherUserNickname(otherUser.getNickName());
+	    }
+
+	    return ResponseEntity.ok(new Response<ChatRoom>(0, "SUCCESS", chatRoom));
+	}
 	/**
 	 * 채팅방 페이지로 이동
 	 * @param chatRoomSeq
@@ -106,8 +127,8 @@ public class ChatController {
 	 * @return "/chat/room"
 	 */
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
-    public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) 
+	{
         String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         
         User_mj loginUser = userService.userSelect(userId);
@@ -124,10 +145,13 @@ public class ChatController {
     }
 	
 	/**
-	 * 특정 채팅방의 메시지 목록을 조회(AJAX)
-	 * @param chatRoomSeq
-	 * @param request
-	 * @return ResponseEntity 상태값
+	 * <pre>
+	 * 메소드명: getMessages
+	 * 설명: 특정 채팅방의 메시지 목록을 조회합니다. (AJAX)
+	 * </pre>
+	 * @param chatRoomSeq 채팅방 시퀀스
+	 * @param request HttpServletRequest
+	 * @return ResponseEntity<Response<List<ChatMessage>>>
 	 */
 	@RequestMapping(value="/chat/message", method=RequestMethod.GET)
 	@ResponseBody
@@ -152,6 +176,51 @@ public class ChatController {
 	    return ResponseEntity.ok(new Response<>(0, "SUCCESS", messages));
 	}
 	
+	
+	/**
+	 * 
+	 * @param model  ("myChatRooms", myChatRooms)
+	 * @param request
+	 * @return "/chat/list"
+	 */
+	@RequestMapping(value="/chat/list", method=RequestMethod.GET)
+	public String chatListPage(Model model, HttpServletRequest request)
+	{	
+		HttpSession session = request.getSession();
+		String userId = (String) SessionUtil.getSession(session, AUTH_SESSION_NAME);
+
+		List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
+		model.addAttribute("myChatRooms", myChatRooms);
+		
+		return "/chat/list";
+	}
+		
+	
+    /**
+     * <pre>
+     * 메소드명: chatListApi
+     * 설명: 내 채팅방 목록을 JSON으로 반환합니다. (모달용)
+     * </pre>
+     * @param request HttpServletRequest
+     * @return ResponseEntity<Response<List<ChatRoom>>>
+     */
+    @RequestMapping(value="/chat/list.json", method=RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Response<List<ChatRoom>>> chatListApi(HttpServletRequest request)
+    {
+    	String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	
+    	if(userId == null)
+    	{
+    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(
+    				new Response<List<ChatRoom>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
+    	}
+    	
+    	List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
+    	
+    	return ResponseEntity.ok(new Response<List<ChatRoom>>(0, "SUCCESS", myChatRooms));
+    }
+    
 	/**
 	 *  대화 사용자를 위한 사용자 목록 페이지
 	 * @param searchKeyword
@@ -172,25 +241,15 @@ public class ChatController {
 		return "/chat/userList";
 	}
 	
-
-    @RequestMapping(value="/chat/list.json", method=RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<Response<List<ChatRoom>>> chatListApi(HttpServletRequest request)
-    {
-    	String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
-    	
-    	if(userId == null)
-    	{
-    		return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(
-    				new Response<List<ChatRoom>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
-    	}
-    	
-    	List<ChatRoom> myChatRooms = chatService.findMyChatRooms(userId);
-    	
-    	return ResponseEntity.ok(new Response<List<ChatRoom>>(0, "SUCCESS", myChatRooms));
-    }
-    
-    
+    /**
+     * <pre>
+     * 메소드명: userListApi
+     * 설명: 사용자 목록을 JSON으로 반환합니다. (모달의 사용자 검색용)
+     * </pre>
+     * @param searchKeyword 검색어
+     * @param request HttpServletRequest
+     * @return ResponseEntity<Response<List<User_mj>>>
+     */
     @RequestMapping(value="/chat/userList.json", method=RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Response<List<User_mj>>> userListApi(@RequestParam(value="searchKeyword", required=false) String searchKeyword, HttpServletRequest request)
