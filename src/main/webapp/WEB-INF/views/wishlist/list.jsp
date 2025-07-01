@@ -239,7 +239,7 @@ function toggleWish(roomSeq, element) {
 		    <div class="wishlist-info">
 		      <div>
 		        <div class="wishlist-location">
-				  ${room.region} / <strong>${room.weekdayAmt}원~</strong>
+				    ${room.region} / <strong><fmt:formatNumber value="${room.weekdayAmt}" pattern="#,###" />원~</strong>
 				</div>
 		        <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
 		      </div>
