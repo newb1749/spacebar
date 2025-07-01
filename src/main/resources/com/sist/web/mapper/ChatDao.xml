@@ -41,22 +41,6 @@
           AND (SELECT COUNT(*) FROM CHAT_PARTICIPANT WHERE CHAT_ROOM_SEQ = T1.CHAT_ROOM_SEQ) = 2
     </select>
     
-    
-	<select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
-	    SELECT
-	        A.CHAT_ROOM_SEQ,
-	        A.CREATE_DATE,
-	        C.NICKNAME AS OTHER_USER_NICKNAME
-	    FROM CHAT_ROOM A, CHAT_PARTICIPANT B, SB_USER C
-	    WHERE A.CHAT_ROOM_SEQ = B.CHAT_ROOM_SEQ
-	      AND B.USER_ID = C.USER_ID
-	      AND B.USER_ID != #{userId}
-	      AND A.CHAT_ROOM_SEQ IN (SELECT CHAT_ROOM_SEQ
-	                              FROM CHAT_PARTICIPANT
-	                              WHERE USER_ID = #{userId})
-	    ORDER BY A.CREATE_DATE DESC
-	</select>
-
 
     <select id="findMessagesByRoomSeq" resultMap="chatMessageResultMap" parameterType="int">
         SELECT
@@ -72,7 +56,25 @@
         WHERE M.CHAT_ROOM_SEQ = #{chatRoomSeq}
         ORDER BY M.SEND_DATE ASC
     </select>
-
+    
+<select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
+		SELECT
+		    A.CHAT_ROOM_SEQ,
+		    A.CREATE_DATE,
+		    C.NICKNAME AS OTHER_USER_NICKNAME
+		FROM
+		    CHAT_PARTICIPANT ME 
+		JOIN 
+		    CHAT_PARTICIPANT OTHER ON ME.CHAT_ROOM_SEQ = OTHER.CHAT_ROOM_SEQ AND ME.USER_ID != OTHER.USER_ID
+		JOIN 
+		    CHAT_ROOM A ON ME.CHAT_ROOM_SEQ = A.CHAT_ROOM_SEQ
+		JOIN 
+		    SB_USER C ON OTHER.USER_ID = C.USER_ID
+		WHERE
+		    ME.USER_ID = #{userId}
+		ORDER BY 
+		    A.CREATE_DATE DESC
+	</select>
 
     <insert id="saveMessage" parameterType="com.sist.web.model.ChatMessage">
         INSERT INTO CHAT_MESSAGE (CHAT_MESSAGE_SEQ, CHAT_ROOM_SEQ, SENDER_ID, MESSAGE_CONTENT, SEND_DATE, READ_COUNT)

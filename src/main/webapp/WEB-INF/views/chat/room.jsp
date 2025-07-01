@@ -6,9 +6,6 @@
 <head>
 <meta charset="UTF-8">
 <title>채팅방</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <style>
     #chat-container { width: 500px; margin: auto; border: 1px solid #ccc; padding: 10px; }
     #chat-messages { height: 600px; border: 1px solid #eee; overflow-y: scroll; padding: 10px; margin-bottom: 10px; }

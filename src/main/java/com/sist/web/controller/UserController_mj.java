@@ -63,6 +63,8 @@ public class UserController_mj
 						request.getSession().setAttribute(AUTH_SESSION_NAME, userId);
 						
 						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+						// "loginUser" 라는 이름으로 사용자 객체 전체를 세션에 추가로 저장
+						request.getSession().setAttribute("loginUser", user);
 						
 						logger.debug("userId : " + userId);
 						logger.debug("sessionUserId : " + sessionUserId);
