@@ -39,7 +39,9 @@ public class ChatStompController {
         
         if(sender != null)
         {
+        	// 별명, 이미지확장자 
         	chatMessage.setSenderName(sender.getNickName());
+        	chatMessage.setSenderProfileImgExt(sender.getProfImgExt());
         }
         else
         {

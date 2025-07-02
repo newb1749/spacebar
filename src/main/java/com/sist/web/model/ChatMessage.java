@@ -18,10 +18,11 @@ public class ChatMessage implements Serializable{
 	private String messageContent;
 	private Date sendDate;
 	private int readCount;
-	
-	// JOIN 결과로 받아올 필드 추가
-	private String senderName;
-	
+
+    // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
+	private String senderName;				// 보낸 사람 이름
+    private String senderProfileImgExt;		// 보낸 사람의 프로필 이미지 확장자 필드
+    
 	public ChatMessage()
 	{
 		chatMessageSeq = 0;
@@ -33,18 +34,21 @@ public class ChatMessage implements Serializable{
 	}
 
 	
-	
+	public String getSenderProfileImgExt() {
+		return senderProfileImgExt;
+	}
+
+	public void setSenderProfileImgExt(String senderProfileImgExt) {
+		this.senderProfileImgExt = senderProfileImgExt;
+	}
+
 	public String getSenderName() {
 		return senderName;
 	}
 
-
-
 	public void setSenderName(String senderName) {
 		this.senderName = senderName;
 	}
-
-
 
 	public int getChatMessageSeq() {
 		return chatMessageSeq;
