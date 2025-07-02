@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.ReviewImageDao">
+  	<resultMap id="reviewImageResultMap" type="com.sist.web.model.ReviewImage">
+		<id property="reviewSeq" column="REVIEW_SEQ" />
+		<id property="reviewImgSeq" column="REVIEW_IMG_SEQ" />
+		<result property="reviewImgOrigName" column="REVIEW_IMG_ORIG_NAME" />
+		<result property="reviewImgName" column="REVIEW_IMG_NAME" />
+		<result property="reviewImgExt" column="REVIEW_IMG_EXT" />
+		<result property="imgSize" column="IMG_SIZE" />
+		<result property="regDt" column="REG_DT" />
+    </resultMap>
+    
+
+  	<select id="selectMaxReviewImgSeq" parameterType="int" resultType="short">
+  		SELECT NVL(MAX(REVIEW_IMG_SEQ), 0)
+		FROM REVIEW_IMAGE
+		WHERE REVIEW_SEQ = #{reviewSeq} 
+  	</select>
+  	
+  	<!-- 리뷰 이미지 등록 -->
+  	<insert id="insertReviewImage" parameterType="com.sist.web.model.ReviewImage">
+  			INSERT INTO REVIEW_IMAGE 
+  			(
+		    REVIEW_SEQ,
+		    REVIEW_IMG_SEQ,
+		    REVIEW_IMG_ORIG_NAME,
+		    REVIEW_IMG_NAME,
+		    REVIEW_IMG_EXT,
+		    IMG_SIZE,
+		    REG_DT
+		) VALUES ( #{reviewSeq},
+		           #{reviewImgSeq},
+		           #{reviewImgOrigName},
+		           #{reviewImgName},
+		           #{reviewImgExt},
+		           #{imgSize},
+		           SYSDATE)
+  	
+  	</insert>
+</mapper>

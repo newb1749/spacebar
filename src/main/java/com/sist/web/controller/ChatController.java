@@ -49,13 +49,13 @@ public class ChatController {
 	
 	private static final String AUTH_SESSION_NAME = "sessionUserId";
 	
-
+	
 	/**
 	 * 특정 사용자와 1:1 채팅 시작(방 없으면 생성)
 	 * @param otherUserId 상대방 유저
 	 * @param request
 	 * @return 성공 -> 채팅 방으로 / 실패 -> 에러 페이지
-	 */
+	 
 	@RequestMapping(value="/chat/start", method=RequestMethod.GET)
 	public String startChat(@RequestParam("otherUserId") String otherUserId, HttpServletRequest request)
 	{
@@ -81,7 +81,7 @@ public class ChatController {
         // 생성,조회된 채팅방 페이지로 리다이렉트
         return "redirect:/chat/room?chatRoomSeq=" + chatRoom.getChatRoomSeq();		
 	}
-	
+	*/
 
 	/**
 	 * <pre>
@@ -127,7 +127,7 @@ public class ChatController {
 	 * @param model ("chatRoomSeq", chatRoomSeq) ("loginUser", loginUser)  ("loginUserNickname", loginUser.getNickName())
 	 * @param request
 	 * @return "/chat/room"
-	 */
+	 
 	@RequestMapping(value="/chat/room", method=RequestMethod.GET)
     public String chatRoomPage(@RequestParam("chatRoomSeq") int chatRoomSeq, Model model, HttpServletRequest request) 
 	{
@@ -145,7 +145,7 @@ public class ChatController {
         
         return "/chat/room"; 
     }
-	
+	*/
 	/**
 	 * <pre>
 	 * 메소드명: getMessages
@@ -184,7 +184,7 @@ public class ChatController {
 	 * @param model  ("myChatRooms", myChatRooms)
 	 * @param request
 	 * @return "/chat/list"
-	 */
+	 
 	@RequestMapping(value="/chat/list", method=RequestMethod.GET)
 	public String chatListPage(Model model, HttpServletRequest request)
 	{	
@@ -196,7 +196,7 @@ public class ChatController {
 		
 		return "/chat/list";
 	}
-		
+	*/	
 	
     /**
      * <pre>

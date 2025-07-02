@@ -1,0 +1,145 @@
+package com.sist.web.model;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+public class Review implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7696173612932529706L;
+	
+	private int reviewSeq;						// 리뷰 시퀀스 (기본키)
+	private int rsvSeq;							// 예약 시퀀스 (외래키)
+	private String userId;						// 작성자, 사용자 ID (외래키)
+	private String reviewTitle;					// 리뷰 제목
+	private String reviewContent;				// 리뷰 내용
+	private double rating;						// 평점(0.5 ~ 5.0)
+	private String reviewStat;					// 리뷰 상태 (Y: 활성, N: 비활성/블라인드)
+	private Date regDt;							// 등록일
+	private Date updateDt;						// 마지막 업데이트 일시
+	
+	private List<ReviewImage> ReviewImageList;  // 리스트로 ReviewImage
+	
+	public Review()
+	{
+		reviewSeq = 0;
+		rsvSeq = 0;
+		userId = "";
+		reviewTitle = "";
+		reviewContent = "";
+		rating = 0;
+		reviewStat = "";
+		regDt = null;
+		updateDt = null;
+	}
+
+	
+	
+	public List<ReviewImage> getReviewImageList() {
+		return ReviewImageList;
+	}
+
+
+
+	public void setReviewImageList(List<ReviewImage> reviewImageList) {
+		ReviewImageList = reviewImageList;
+	}
+
+
+
+	public int getReviewSeq() {
+		return reviewSeq;
+	}
+
+
+	public void setReviewSeq(int reviewSeq) {
+		this.reviewSeq = reviewSeq;
+	}
+
+
+	public int getRsvSeq() {
+		return rsvSeq;
+	}
+
+
+	public void setRsvSeq(int rsvSeq) {
+		this.rsvSeq = rsvSeq;
+	}
+
+
+	public String getUserId() {
+		return userId;
+	}
+
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+
+	public String getReviewTitle() {
+		return reviewTitle;
+	}
+
+
+	public void setReviewTitle(String reviewTitle) {
+		this.reviewTitle = reviewTitle;
+	}
+
+
+	public String getReviewContent() {
+		return reviewContent;
+	}
+
+
+	public void setReviewContent(String reviewContent) {
+		this.reviewContent = reviewContent;
+	}
+
+
+	public double getRating() {
+		return rating;
+	}
+
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+
+	public String getReviewStat() {
+		return reviewStat;
+	}
+
+
+	public void setReviewStat(String reviewStat) {
+		this.reviewStat = reviewStat;
+	}
+
+
+	public Date getRegDt() {
+		return regDt;
+	}
+
+
+	public void setRegDt(Date regDt) {
+		this.regDt = regDt;
+	}
+
+
+	public Date getUpdateDt() {
+		return updateDt;
+	}
+
+
+	public void setUpdateDt(Date updateDt) {
+		this.updateDt = updateDt;
+	}
+	
+	
+	
+}
+

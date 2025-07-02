@@ -9,7 +9,7 @@ public interface RoomImageDao {
      * ROOM_IMAGE 테이블에서 사용할 새로운 시퀀스 값을 조회
      * @return short 새로 발행된 시퀀스 번호
      */
-    public short getRoomImageSeq();
+    //public short getRoomImageSeq();
 
     
     /**

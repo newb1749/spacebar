@@ -134,7 +134,7 @@ public class RoomServiceImpl implements RoomService {
 	            	}
 	            	catch(Exception e)
 	            	{
-	                    logger.error("[insertRoomTransaction] RoomType 처리 중 오류 발생", e);
+	                    logger.error("[RoomServiceImpl] insertRoomTransaction 처리 중 오류 발생", e);
 	                    throw e;	            		
 	            	}
 	            }
@@ -173,7 +173,7 @@ public class RoomServiceImpl implements RoomService {
 	    		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
 	    		FileUtil.createDirectory(saveDir);
 	    		logger.debug(">> saveRoomImageFile() set roomSeq1111: {}", roomImage.getRoomSeq());
-
+	    		
 	    		// RoomImage의 Seq 값 조회
 	            // short newRoomImgSeq = roomImageDao.getRoomImageSeq();
 	            short maxSeq = roomImageDao.selectMaxRoomImgSeq(roomSeq); // ex: 2
