@@ -141,22 +141,29 @@
 	        font-size: 0.8em;
 	    }
 
-	.profile-img, .profile-placeholder {
-	    width: 50px;
-	    height: 50px;
-	    border-radius: 50%;
-	    object-fit: cover;
-	    background-color: #eee;
-	}
-	.unread-badge {
-	    background-color: #dc3545;
-	    color: white;
-	    font-size: 12px;
-	    padding: 2px 6px;
-	    border-radius: 10px;
-	    margin-left: 10px;
-	    font-weight: bold;
-	}
+		.profile-img, .profile-placeholder {
+		    width: 50px;
+		    height: 50px;
+		    border-radius: 50%;
+		    object-fit: cover;
+		    background-color: #eee;
+		}
+		.unread-badge {
+		    background-color: #dc3545;
+		    color: white;
+		    font-size: 12px;
+		    padding: 2px 6px;
+		    border-radius: 10px;
+		    margin-left: 10px;
+		    font-weight: bold;
+		}
+		
+		    .chat-profile-img {
+	        width: 40px;
+	        height: 40px;
+	        border-radius: 50%;
+	        object-fit: cover;
+	    }
 	</style>
 	
 <script>
@@ -256,10 +263,38 @@ function renderChatList(rooms) {
         const sendDate = new Date(message.sendDate);
         const formattedDate = sendDate.toLocaleString('ko-KR');
         let messageClass = message.senderId === USER_ID ? 'my-message' : 'other-message';
-        return '<div class="message ' + messageClass + '">' +
-               '    <strong>' + message.senderName + '</strong>: ' + message.messageContent +
-               '    <br/><small>' + formattedDate + '</small>' +
-               '</div>';
+
+        let profileImgHtml = '';
+        // 보낸 사람의 프로필 확장자 정보(message.senderProfileImgExt)가 있는지 확인합니다.
+        if (message.senderProfileImgExt) {
+            // 확장자가 있으면, 실제 프로필 이미지 경로를 사용합니다.
+            profileImgHtml = '<img src="/resources/upload/userprofile/' + message.senderId + '.' + message.senderProfileImgExt + '" class="chat-profile-img">';
+        } else {
+            // 확장자가 없으면(null), 기본 이미지를 사용합니다.
+            profileImgHtml = '<img src="/resources/upload/userprofile/회원.png" class="chat-profile-img">';
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        // [수정] flexbox를 이용해 이미지와 메시지 내용을 감싸도록 HTML 구조 변경
+        if (messageClass === 'my-message') {
+            // 내가 보낸 메시지 (내용이 먼저, 이미지는 나중에)
+            return '<div class="message ' + messageClass + '" style="display:flex; justify-content:flex-end; align-items:flex-start; gap:8px;">' +
+                   '  <div class="message-content">' +
+                   '    <strong>' + message.senderName + '</strong><br>' + message.messageContent +
+                   '    <br><small>' + formattedDate + '</small>' +
+                   '  </div>' +
+                   '  ' + profileImgHtml + // 프로필 이미지 추가
+                   '</div>';
+        } else {
+            // 상대방이 보낸 메시지 (이미지가 먼저, 내용은 나중에)
+            return '<div class="message ' + messageClass + '" style="display:flex; justify-content:flex-start; align-items:flex-start; gap:8px;">' +
+                   '  ' + profileImgHtml + // 프로필 이미지 추가
+                   '  <div class="message-content">' +
+                   '    <strong>' + message.senderName + '</strong><br>' + message.messageContent +
+                   '    <br><small>' + formattedDate + '</small>' +
+                   '  </div>' +
+                   '</div>';
+        }
     }
 
     function renderChatRoom(roomSeq, roomTitle, messages) {
