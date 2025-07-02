@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.sist.web.model.Cart;
 import com.sist.web.model.Response;
 import com.sist.web.service.CartService;
+import com.sist.web.service.RoomTypeServiceJY;
 import com.sist.web.util.HttpUtil;
 
 @Controller("cartController")
@@ -24,38 +25,43 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    
+    @Autowired
+    private RoomTypeServiceJY roomTypeService;
 
     private static Logger logger = LoggerFactory.getLogger(CartController.class);
     
     public static final String AUTH_SESSION_NAME = "sessionUserId";
     
-    //장바구니 등록
+    //장바구니 등록 (AJAX)
+    // ✅ 일반 HttpServletRequest 로 변경
     @RequestMapping(value="/cart/add", method=RequestMethod.POST)
     @ResponseBody
-    public Response<Object> addCart(MultipartHttpServletRequest request) {
+    public Response<Object> addCart(HttpServletRequest request) {
         String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-        int roomTypeSeq = HttpUtil.get(request, "roomTypeSeq", (int)0);
-        String checkIn = HttpUtil.get(request, "checkIn", "");
-        String checkOut = HttpUtil.get(request, "checkOut", "");
-        int guests = HttpUtil.get(request, "guests", (int)1);
-        int totalAmt = HttpUtil.get(request, "totalAmt", (int)0);
+        int    roomTypeSeq    = HttpUtil.get(request, "roomTypeSeq",    0);
+        String checkIn        = HttpUtil.get(request, "checkIn",       "");
+        String checkOut       = HttpUtil.get(request, "checkOut",      "");
+        int    guests         = HttpUtil.get(request, "guests",        1);
+        int    totalAmt       = HttpUtil.get(request, "totalAmt",      0);
 
         Cart cart = new Cart();
-        cart.setUserId(sessionUserId);
-        cart.setRoomTypeSeq(roomTypeSeq);
-        cart.setCartCheckIn(checkIn);
-        cart.setCartCheckOut(checkOut);
-        cart.setCartGuestsNum(guests);
-        cart.setCartTotalAmt(totalAmt);
+        cart.setUserId         (sessionUserId);
+        cart.setRoomTypeSeq    (roomTypeSeq);
+        cart.setCartCheckInDt  (checkIn);
+        cart.setCartCheckOutDt (checkOut);
+        cart.setCartGuestsNum  (guests);
+        cart.setCartTotalAmt   (totalAmt);
 
         Response<Object> ajaxResponse = new Response<>();
-        if(cartService.insertCart(cart) > 0) {
+        if (cartService.insertCart(cart) > 0) {
             ajaxResponse.setResponse(0, "장바구니에 추가되었습니다.");
         } else {
             ajaxResponse.setResponse(500, "장바구니 추가 실패");
         }
         return ajaxResponse;
     }
+
     
     //장바구니 리스트
     @RequestMapping(value="/cart/list")

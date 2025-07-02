@@ -20,6 +20,7 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+      <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
@@ -34,29 +35,16 @@
 		<result column="REG_DT" property="regDt" />
   </resultMap>
   
-	<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
-		SELECT 
-			ROOM_SEQ, 
-			ROOM_CAT_SEQ, 
-			HOST_ID, 
-			ROOM_ADDR, 
-			LATITUDE, 
-			LONGITUDE, 
-			REGION, 
-			AUTO_CONFIRM_YN, 
-			ROOM_TITLE, 
-			ROOM_DESC, 
-			CANCEL_POLICY, 
-			MIN_TIMES, 
-			MAX_TIMES,
-			AVERAGE_RATING,
-			REVIEW_COUNT, 
-			TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, 
-			TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
-		FROM ROOM
-		WHERE ROOM_SEQ = #{roomSeq}
-	</select>
-  
+	<select id="getRoomDetail" resultType="com.sist.web.model.Room">
+    SELECT ROOM_SEQ, ROOM_CAT_SEQ, HOST_ID, ROOM_ADDR, LATITUDE, LONGITUDE, REGION, AUTO_CONFIRM_YN, ROOM_TITLE, ROOM_DESC, CANCEL_POLICY, MIN_TIMES, MAX_TIMES, AVERAGE_RATING, REVIEW_COUNT, TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
+    FROM ROOM
+    WHERE ROOM_SEQ = #{roomSeq}
+</select>
+
+<select id="getRoomTypesByRoomSeq" resultType="com.sist.web.model.RoomTypeJY">
+    SELECT * FROM ROOM_TYPE WHERE ROOM_SEQ = #{roomSeq}
+</select>
+
 	<select id="getRoomImgDetail" resultMap="roomImgResultMap" parameterType="int">
 		SELECT 
 		    ROOM_IMG_SEQ, 
@@ -84,4 +72,11 @@
 		WHERE ROOM_SEQ = #{roomSeq}
 		ORDER BY SORT_ORDER ASC
 	</select>	
+	
+	<select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
+	    SELECT HOST_ID 
+	    FROM ROOM 
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</select>
+	
 </mapper>

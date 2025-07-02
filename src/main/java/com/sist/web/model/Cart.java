@@ -12,8 +12,12 @@ public class Cart implements Serializable
 	
 	private int cartSeq;			//장바구니 시퀀스 (기본키)
     private String userId;			//사용자 ID (외래키)
-    private String cartCheckIn;		//장바구니에 담긴 체크인 날짜
-    private String cartCheckOut;	//장바구니에 담긴 체크아웃 날짜
+    private String cartCheckInDt;		//장바구니에 담긴 체크인 날짜
+    private String cartCheckOutDt;	//장바구니에 담긴 체크아웃 날짜
+    
+    private String cartCheckInTime;		//장바구니에 담긴 체크인 날짜
+    private String cartCheckOutTime;	//장바구니에 담긴 체크아웃 날짜
+    
     private int cartGuestsNum;		//장바구니에 담긴 인원수
     private int cartTotalAmt;		//장바구니 총 금액
     private String regDt;			//등록일
@@ -23,12 +27,17 @@ public class Cart implements Serializable
     private String roomTypeTitle;	//룸타입 제목
     private String roomTypeImgName; //룸타입 이미지이름
 	
+    private String roomTitle;		//룸 제목
+    private String roomAddr;		//룸 주소
+    private String cancelPolicy;	//취소정책
+    private String roomCatName;		//룸카테고리이름
+    
     public Cart()
     {
     	cartSeq = 0;
         userId = "";			
-        cartCheckIn = "";			
-        cartCheckOut = "";		
+        cartCheckInDt = "";			
+        cartCheckOutDt = "";		
         cartGuestsNum = 0;	
         cartTotalAmt = 0;	
         regDt = "";					
@@ -36,6 +45,14 @@ public class Cart implements Serializable
         roomTypeSeq = 0;
         roomTypeTitle = "";
         roomTypeImgName = "";
+        
+        cartCheckInTime = "";
+        cartCheckOutTime = "";
+        
+        roomTitle = "";
+        roomAddr = "";
+        cancelPolicy = "";
+        roomCatName = "";
     }
 
 	public int getCartSeq() {
@@ -54,20 +71,20 @@ public class Cart implements Serializable
 		this.userId = userId;
 	}
 
-	public String getCartCheckIn() {
-		return cartCheckIn;
+	public String getCartCheckInDt() {
+		return cartCheckInDt;
 	}
 
-	public void setCartCheckIn(String cartCheckIn) {
-		this.cartCheckIn = cartCheckIn;
+	public void setCartCheckInDt(String cartCheckInDt) {
+		this.cartCheckInDt = cartCheckInDt;
 	}
 
-	public String getCartCheckOut() {
-		return cartCheckOut;
+	public String getCartCheckOutDt() {
+		return cartCheckOutDt;
 	}
 
-	public void setCartCheckOut(String cartCheckOut) {
-		this.cartCheckOut = cartCheckOut;
+	public void setCartCheckOutDt(String cartCheckOutDt) {
+		this.cartCheckOutDt = cartCheckOutDt;
 	}
 
 	public int getCartGuestsNum() {
@@ -124,6 +141,54 @@ public class Cart implements Serializable
 
 	public void setRoomTypeImgName(String roomTypeImgName) {
 		this.roomTypeImgName = roomTypeImgName;
+	}
+
+	public String getCartCheckInTime() {
+		return cartCheckInTime;
+	}
+
+	public void setCartCheckInTime(String cartCheckInTime) {
+		this.cartCheckInTime = cartCheckInTime;
+	}
+
+	public String getCartCheckOutTime() {
+		return cartCheckOutTime;
+	}
+
+	public void setCartCheckOutTime(String cartCheckOutTime) {
+		this.cartCheckOutTime = cartCheckOutTime;
+	}
+
+	public String getRoomTitle() {
+		return roomTitle;
+	}
+
+	public void setRoomTitle(String roomTitle) {
+		this.roomTitle = roomTitle;
+	}
+
+	public String getRoomAddr() {
+		return roomAddr;
+	}
+
+	public void setRoomAddr(String roomAddr) {
+		this.roomAddr = roomAddr;
+	}
+
+	public String getCancelPolicy() {
+		return cancelPolicy;
+	}
+
+	public void setCancelPolicy(String cancelPolicy) {
+		this.cancelPolicy = cancelPolicy;
+	}
+
+	public String getRoomCatName() {
+		return roomCatName;
+	}
+
+	public void setRoomCatName(String roomCatName) {
+		this.roomCatName = roomCatName;
 	}
     
     

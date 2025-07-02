@@ -57,4 +57,19 @@ public class RoomServiceJY
 		
 		return room;
 	}
+	
+	// roomSeq로 hostId 조회 메서드 추가
+    public String getHostIdByRoomSeq(int roomSeq) 
+    {
+        try
+        {
+            return roomDao.selectHostIdByRoomSeq(roomSeq);
+        }
+        catch(Exception e)
+        {
+            logger.error("[RoomService] getHostIdByRoomSeq Exception", e);
+            return null;
+        }
+    }
+    
 }
