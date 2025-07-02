@@ -21,7 +21,8 @@
         <result property="messageContent" column="MESSAGE_CONTENT"/>
         <result property="sendDate" column="SEND_DATE"/>
         <result property="readCount" column="READ_COUNT"/>
-        <result property="senderName" column="NICKNAME"/>
+        <result property="senderName" column="SENDER_NAME"/>
+        <result property="senderProfileImgExt" column="SENDER_PROF_IMG_EXT" /> 
     </resultMap>
 	
 
@@ -54,7 +55,8 @@
             M.CHAT_MESSAGE_SEQ AS CHAT_MESSAGE_SEQ,
             M.CHAT_ROOM_SEQ AS CHAT_ROOM_SEQ,
             M.SENDER_ID AS SENDER_ID,
-            U.NICKNAME AS NICKNAME,
+            U.NICKNAME AS SENDER_NAME,
+            U.PROF_IMG_EXT AS SENDER_PROF_IMG_EXT,
             M.MESSAGE_CONTENT AS MESSAGE_CONTENT,
             M.SEND_DATE AS SEND_DATE,
             M.READ_COUNT AS READ_COUNT
