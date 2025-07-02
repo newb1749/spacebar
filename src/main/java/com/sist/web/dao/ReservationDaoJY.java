@@ -23,4 +23,8 @@ public interface ReservationDaoJY
 
     // 예약 취소 처리 시 예약 정보 일부를 업데이트하는 메서드, 예약 객체를 받아 처리
     int cancelReservation(ReservationJY reservation);
+
+    ReservationJY selectReservationById(int rsvSeq);
+
+    String selectHostIdByRoomSeq(int roomSeq);
 }

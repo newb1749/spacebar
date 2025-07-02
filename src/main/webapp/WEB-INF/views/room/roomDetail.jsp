@@ -1,12 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>${room.roomTitle}-상세페이지</title>
+  <title>${room.roomTitle} - 상세페이지</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/tiny-slider.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/aos.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
@@ -37,7 +36,7 @@
       <div class="col-lg-7">
         <div class="property-slider-wrap">
           <div class="property-slider tiny-slider">
-            <c:forEach var="roomImg" items="${detailImages}" varStatus="status">
+            <c:forEach var="roomImg" items="${detailImages}">
               <div class="item">
                 <img src="/resources/upload/room/detail/${roomImg.roomImgName}" class="img-fluid" alt="${roomImg.imgType}" />
               </div>
@@ -64,18 +63,29 @@
             <li><strong>평점:</strong> ${room.averageRating} / 리뷰 수: ${room.reviewCount}</li>
           </ul>
 
+          <%-- 지도 모듈 포함 --%>
           <jsp:include page="/WEB-INF/views/component/mapModule.jsp">
-            <jsp:param name="address" value="${room.roomAddr}"/>
-            <jsp:param name="roomName" value="${room.roomTitle}"/>
+            <jsp:param name="address" value="${room.roomAddr}" />
+            <jsp:param name="roomName" value="${room.roomTitle}" />
           </jsp:include>
 
-          <!-- 달력 포함 -->
+          <%-- 달력 모듈 포함 --%>
           <jsp:include page="/WEB-INF/views/component/calendar.jsp">
             <jsp:param name="calId" value="roomDetailCalendar" />
             <jsp:param name="fetchUrl" value="" />
           </jsp:include>
 
-          <!-- 인원 선택 UI 추가 -->
+          <%-- 객실 타입 선택 --%>
+          <label for="roomTypeSelect" class="mt-3">객실 타입 선택:</label>
+          <select id="roomTypeSelect" class="form-select" style="width:100%;">
+            <c:forEach var="rt" items="${roomTypes}">
+              <option value="${rt.roomTypeSeq}">
+                ${rt.roomTypeTitle} - 주중: ${rt.weekdayAmt}원 / 주말: ${rt.weekendAmt}원
+              </option>
+            </c:forEach>
+          </select>
+
+          <%-- 인원 수 선택 --%>
           <label for="numGuests" class="mt-3">인원 수 선택:</label>
           <select id="numGuests" class="form-select" style="width:100px;">
             <c:forEach begin="1" end="10" var="i">
@@ -83,7 +93,7 @@
             </c:forEach>
           </select>
 
-          <!-- 예약하기 버튼 -->
+          <%-- 예약하기 버튼 --%>
           <button id="reserveBtn" class="btn btn-primary mt-3">예약하기</button>
         </div>
       </div>
@@ -101,7 +111,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // 캘린더 초기화 - 날짜 선택 시 window.selectedDates에 저장
+    // 캘린더 초기화
     initRoomCalendar("roomDetailCalendar", {
       fetchUrl: "",
       onChange: (dates) => {
@@ -115,14 +125,13 @@
         alert("예약할 날짜를 선택해주세요.");
         return;
       }
-      // 날짜를 yyyy-MM-dd 형식으로 변환
       const startDate = window.selectedDates[0].toISOString().split("T")[0];
       const endDate = window.selectedDates[1].toISOString().split("T")[0];
-      const roomTypeSeq = '<c:out value="${room.roomTypeSeq}" />';
+      const roomTypeSelect = document.getElementById("roomTypeSelect");
+      const selectedRoomTypeSeq = roomTypeSelect.value;
       const numGuests = document.getElementById("numGuests").value;
 
-      // 예약 1단계 페이지로 이동
-      location.href = "/reservation/step1JY?roomTypeSeq=" + encodeURIComponent(roomTypeSeq)
+      location.href = "/reservation/step1JY?roomTypeSeq=" + encodeURIComponent(selectedRoomTypeSeq)
                     + "&checkIn=" + encodeURIComponent(startDate)
                     + "&checkOut=" + encodeURIComponent(endDate)
                     + "&numGuests=" + encodeURIComponent(numGuests);

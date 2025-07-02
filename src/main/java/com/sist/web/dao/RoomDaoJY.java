@@ -12,4 +12,6 @@ public interface RoomDaoJY
     public List<RoomImage> getRoomImgDetail(int roomSeq);
     
     List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  // 세미콜론으로 끝나야 함
+    
+    String selectHostIdByRoomSeq(int roomSeq);
 }

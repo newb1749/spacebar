@@ -16,9 +16,9 @@
 
         <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
           <li><a href="/">Home</a></li>
-          <li><a href="/room/list">숙소목록</a></li>
+          <li><a href="/room/roomDetail?roomSeq=119">숙소목록</a></li>
           <li><a href="/board/list">게시판</a></li>
-          <li><a href="/kakao/pay2">카카오페이</a></li>
+          <li><a href="/payment/paymentConfirm">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
             <li><a href="/user/updateForm">회원정보수정</a></li>
             <li><a href="/user/loginOut">로그아웃</a></li>

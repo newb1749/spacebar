@@ -14,23 +14,25 @@
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-<!-- 카드 위·아래로 여백 추가 -->
 <section class="bg-light" style="margin-top: 100px; padding-top: 60px; padding-bottom: 60px;">
   <div class="container">
     <div class="card mx-auto" style="max-width: 500px;">
       <div class="card-body">
         <h3 class="card-title mb-4">예약 정보 확인</h3>
         <ul class="list-unstyled mb-4">
-          <li><strong>인원:</strong> ${numGuests}명</li>
-          <li><strong>체크인:</strong> ${checkIn}</li>
-          <li><strong>체크아웃:</strong> ${checkOut}</li>
-          <li><strong>객실 타입 ID:</strong> ${roomTypeSeq}</li>
+          <li><strong>객실 타입:</strong> ${roomTypeSeq}</li>
+          <li><strong>체크인 날짜:</strong> ${checkIn}</li>
+          <li><strong>체크아웃 날짜:</strong> ${checkOut}</li>
+          <li><strong>인원 수:</strong> ${numGuests}명</li>
         </ul>
-        <form action="${pageContext.request.contextPath}/reservation/insert" method="post">
+
+        <!-- 예약 확인 페이지로 POST 전송 -->
+        <form action="${pageContext.request.contextPath}/reservation/detailJY" method="post">
           <input type="hidden" name="roomTypeSeq" value="${roomTypeSeq}" />
           <input type="hidden" name="rsvCheckInDt" value="${checkIn}" />
           <input type="hidden" name="rsvCheckOutDt" value="${checkOut}" />
           <input type="hidden" name="numGuests" value="${numGuests}" />
+
           <div class="mb-3">
             <label class="form-label">체크인 시간</label>
             <input type="time" name="rsvCheckInTime" class="form-control" required />
@@ -41,9 +43,9 @@
           </div>
           <div class="mb-3">
             <label class="form-label">요청사항</label>
-            <textarea name="guestMsg" class="form-control" rows="3"></textarea>
+            <textarea name="guestMsg" class="form-control" rows="3" placeholder="요청사항을 입력하세요."></textarea>
           </div>
-          <button type="submit" class="btn btn-primary w-100">예약 완료</button>
+          <button type="submit" class="btn btn-primary w-100">예약 내용 확인</button>
         </form>
       </div>
     </div>

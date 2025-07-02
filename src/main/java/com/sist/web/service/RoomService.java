@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomDao;
+import com.sist.web.dao.RoomDaoJY;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 
@@ -18,7 +18,7 @@ public class RoomService
 	private static Logger logger = LoggerFactory.getLogger(RoomService.class);
 	
 	@Autowired
-	private RoomDao roomDao;
+	private RoomDaoJY roomDao;
     /**
      * 숙소 등록에 관련된 모든 데이터(숙소, 객실타입, 편의시설, 이미지)를
      * 하나의 트랜잭션으로 묶어 DB에 저장 by nks

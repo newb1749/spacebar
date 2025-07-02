@@ -2,7 +2,7 @@ package com.sist.web.model;
 
 import java.io.Serializable;
 
-public class User implements Serializable
+public class User_mj implements Serializable
 {
 	private static final long serialVersionUID = 2015965517661120001L;
 	
@@ -24,7 +24,7 @@ public class User implements Serializable
 	private int	mile;			//마일리지
 	private String	updateDt;	//마지막 업데이트 일시
 	
-	public User()
+	public User_mj()
 	{
 		userId = "";
 		userPwd = "";	
@@ -182,3 +182,4 @@ public class User implements Serializable
 	}
 	
 }
+

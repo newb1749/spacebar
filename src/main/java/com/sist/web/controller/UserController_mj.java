@@ -15,30 +15,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.model.FileData;
+import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Response;
-import com.sist.web.model.User;
-import com.sist.web.service.UserService;
-import com.sist.web.util.CookieUtil;
+import com.sist.web.model.User_mj;
+import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.JsonUtil;
+import com.sist.web.util.SessionUtil;
 
-@Controller("userController")
-public class UserController 
+@Controller("userController_mj")
+public class UserController_mj 
 {
-	private static Logger logger = LoggerFactory.getLogger(UserController.class);
+	private static Logger logger = LoggerFactory.getLogger(UserController_mj.class);
 	
 	@Autowired
-	private UserService userService;
-	
-	@Value("#{env['auth.cookie.name']}")
-	private String AUTH_COOKIE_NAME;
+	private UserService_mj userService_mj;
 	
 	@Value("#{env['upload.save.dir']}")
 	private String UPLOAD_SAVE_DIR;
 	
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
+	
+	public static final String AUTH_SESSION_NAME = "sessionUserId";
 	
 	//로그인
 	@RequestMapping(value="/user/login", method=RequestMethod.POST)
@@ -52,7 +52,7 @@ public class UserController
 		
 		if(!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd))
 		{
-			User user = userService.userSelect(userId);
+			User_mj user = userService_mj.userSelect(userId);
 			
 			if(user != null)
 			{
@@ -60,10 +60,12 @@ public class UserController
 				{
 					if(StringUtil.equals(user.getUserStat(), "Y"))
 					{
-						CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, CookieUtil.stringToHex(userId));
-						request.getSession().setAttribute("userId", userId); // 추가!
+						request.getSession().setAttribute(AUTH_SESSION_NAME, userId);
+						
+						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+						
 						logger.debug("userId : " + userId);
-						logger.debug("userId : " + CookieUtil.stringToHex(userId));
+						logger.debug("sessionUserId : " + sessionUserId);
 						logger.debug("userPwd : " + userPwd);
 						ajaxRes.setResponse(0, "success");
 					}
@@ -96,20 +98,20 @@ public class UserController
 	}
 	
 	//회원가입 화면
-	@RequestMapping(value="/user/regForm", method=RequestMethod.GET)
+	@RequestMapping(value="/user/regForm_mj", method=RequestMethod.GET)
 	public String regForm(HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-		logger.debug("cookieUserId : " + cookieUserId);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		if(!StringUtil.isEmpty(cookieUserId))
+		if(!StringUtil.isEmpty(sessionUserId))
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			request.getSession().invalidate();
 			return "redirect:/";
 		}
 		else
 		{
-			return "/user/regForm";
+			return "/user/regForm_mj";
 		}	
 	}
 	
@@ -124,7 +126,7 @@ public class UserController
 		
 		if(!StringUtil.isEmpty(userId))
 		{
-			if(userService.userSelect(userId) == null)
+			if(userService_mj.userSelect(userId) == null)
 			{
 				ajaxRes.setResponse(0, "success");
 			}
@@ -157,7 +159,7 @@ public class UserController
 		
 		if(!StringUtil.isEmpty(nickName))
 		{
-			if(userService.nickNameSelect(nickName) == null)
+			if(userService_mj.nickNameSelect(nickName) == null)
 			{
 				ajaxRes.setResponse(0, "success");
 			}
@@ -202,9 +204,9 @@ public class UserController
 		if(!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd) && !StringUtil.isEmpty(userName) && !StringUtil.isEmpty(nickName) && !StringUtil.isEmpty(email) && 
 				!StringUtil.isEmpty(phone) && !StringUtil.isEmpty(gender) && !StringUtil.isEmpty(birthDt) && !StringUtil.isEmpty(userAddr) && !StringUtil.isEmpty(userType))
 		{
-			if(userService.userSelect(userId) == null)
+			if(userService_mj.userSelect(userId) == null)
 			{
-				User user = new User();
+				User_mj user = new User_mj();
 				
 				user.setUserId(userId);
 				user.setUserPwd(userPwd);
@@ -225,12 +227,12 @@ public class UserController
 				{
 					user.setProfImgExt(fileData.getFileExt());
 				}
-				else
-				{
-					user.setProfImgExt("none");
-				}
+//				else
+//				{
+//					user.setProfImgExt("none");
+//				}
 				
-				if(userService.userInsert(user) > 0)
+				if(userService_mj.userInsert(user) > 0)
 				{
 					ajaxRes.setResponse(0, "success");
 				}
@@ -259,21 +261,27 @@ public class UserController
 	}
 	
 	//회원정보수정화면
-	@RequestMapping(value="/user/updateForm", method=RequestMethod.GET)
+	@RequestMapping(value="/user/updateForm_mj", method=RequestMethod.GET)
 	public String updateFrom(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		User user = userService.userSelect(cookieUserId);
+		if(StringUtil.isEmpty(sessionUserId))
+		{
+			return "redirect:/";
+		}
+		
+		User_mj user = userService_mj.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
-		return "/user/updateForm";
+		return "/user/updateForm_mj";
 	}
 	
 	//회원정보수정
 	@RequestMapping(value="/user/updateProc", method=RequestMethod.POST)
 	@ResponseBody
-	public Response<Object> updateProc(HttpServletRequest request, HttpServletResponse response)
+	public Response<Object> updateProc(MultipartHttpServletRequest request, HttpServletResponse response)
 	{
 		Response<Object> ajaxRes = new Response<Object>();
 		
@@ -285,13 +293,16 @@ public class UserController
 		String userAddr = HttpUtil.get(request, "userAddr");
 		String nickName = HttpUtil.get(request, "nickName");
 		
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
 		
-		if(!StringUtil.isEmpty(cookieUserId))
+		FileData fileData = HttpUtil.getFile(request, "profImgExt", UPLOAD_PROFILE_DIR, userId);
+		
+		if(!StringUtil.isEmpty(sessionUserId))
 		{
-			if(StringUtil.equals(userId, cookieUserId))
+			if(StringUtil.equals(userId, sessionUserId))
 			{
-				User user = userService.userSelect(cookieUserId);
+				User_mj user = userService_mj.userSelect(sessionUserId);
 				
 				if(user != null)
 				{
@@ -305,7 +316,25 @@ public class UserController
 						user.setUserAddr(userAddr);
 						user.setNickName(nickName);
 						
-						if(userService.userUpdate(user) > 0)
+						if(fileData != null && fileData.getFileSize() > 0)
+						{
+							if(!StringUtil.isEmpty(user.getProfImgExt()) && !StringUtil.equals(user.getProfImgExt(), "") && !StringUtil.equals(user.getProfImgExt(), fileData.getFileExt()))
+							{
+								FileUtil.deleteFile(UPLOAD_PROFILE_DIR + FileUtil.getFileSeparator() + userId + "." + user.getProfImgExt());
+							}
+								
+						}
+						
+						if(fileData != null && !StringUtil.isEmpty(fileData.getFileExt()))
+						{
+							user.setProfImgExt(fileData.getFileExt());
+						}
+//						else
+//						{
+//							user.setProfImgExt("none");
+//						}
+						
+						if(userService_mj.userUpdate(user) > 0)
 						{
 							ajaxRes.setResponse(0, "success");
 						}
@@ -321,19 +350,19 @@ public class UserController
 				}
 				else
 				{
-					CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+					request.getSession().invalidate();
 					ajaxRes.setResponse(404, "not found");
 				}
 			}
 			else
 			{
-				CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
-				ajaxRes.setResponse(430, "id information is dirrerent");
+				request.getSession().invalidate();
+				ajaxRes.setResponse(430, "id information is different");
 			}
 		}
 		else
 		{
-			ajaxRes.setResponse(410, "loging failed");
+			ajaxRes.setResponse(410, "login failed");
 		}
 		
 		if(logger.isDebugEnabled())
@@ -347,13 +376,101 @@ public class UserController
 	//로그아웃
 	@RequestMapping(value="/user/loginOut", method=RequestMethod.GET)
 	public String loginOut(HttpServletRequest request, HttpServletResponse response)
-	{
-		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null)
-		{
-			CookieUtil.deleteCookie(request, response,"/", AUTH_COOKIE_NAME);
-		}
+	{	
+		request.getSession().invalidate();
 		
 		return "redirect:/";
+	}
+	
+	//회원탈퇴 화면
+	@RequestMapping(value="/user/deleteForm_mj", method=RequestMethod.GET)
+	public String deleteForm(Model model, HttpServletRequest request, HttpServletResponse response)
+	{
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
+		
+		if(StringUtil.isEmpty(sessionUserId))
+		{
+			return "redirete:/";
+		}
+		
+		User_mj user = userService_mj.userSelect(sessionUserId);
+		model.addAttribute("user", user);
+		
+		return "/user/deleteForm_mj";
+	}
+	
+	//회원탈퇴 
+	@RequestMapping(value="/user/deleteProc", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> userDelete(MultipartHttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxRes = new Response<Object>();
+		
+		String userId = HttpUtil.get(request, "userId");
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		FileData fileData = HttpUtil.getFile(request, "profImgExt", UPLOAD_PROFILE_DIR, userId);
+		
+		logger.debug("sessionUserId : " + sessionUserId);
+		
+		if(!StringUtil.isEmpty(sessionUserId))
+		{
+			//userId와 sessionUserId가 같이 않을때
+			if(!StringUtil.equals(userId, sessionUserId))
+			{
+				 ajaxRes.setResponse(430, "id information is different");
+				 request.getSession().invalidate();
+				 return ajaxRes;
+			}
+			
+			User_mj user = userService_mj.userSelect(sessionUserId);
+			
+			if(user != null)
+			{
+				if(fileData != null && fileData.getFileSize() > 0)
+				{
+					if(!StringUtil.isEmpty(user.getProfImgExt()) && !StringUtil.equals(user.getProfImgExt(), "") && !StringUtil.equals(user.getProfImgExt(), fileData.getFileExt()))
+					{
+						FileUtil.deleteFile(UPLOAD_PROFILE_DIR + FileUtil.getFileSeparator() + userId + "." + user.getProfImgExt());
+					}					
+				}
+				
+				if(userService_mj.userDelete(user) > 0)
+				{
+					request.getSession().invalidate();
+					ajaxRes.setResponse(0, "success");
+				}
+				else
+				{
+					ajaxRes.setResponse(500, "internal server error");
+				}
+			}
+			else
+			{
+				request.getSession().invalidate();
+				ajaxRes.setResponse(404, "not found");
+			}
+		}
+		else
+		{
+			ajaxRes.setResponse(410, "loging failed");
+		}
+		
+		return ajaxRes;
+	}
+	
+	//아이디 찾기 
+	@RequestMapping(value="/user/findIdForm", method=RequestMethod.GET)
+	public String findIdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/user/findIdForm_mj";
+	}
+	
+	//비밀번호 찾기 
+	@RequestMapping(value="/user/findPwdForm", method=RequestMethod.GET)
+	public String findPwdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/user/findPwdForm";
 	}
 }
 

@@ -15,6 +15,8 @@ public class ReservationServiceJY
 
 	    @Autowired
 	    private ReservationDaoJY reservationDao;
+	    @Autowired
+	    private RoomServiceJY roomService;  // 🔥 roomService 주입
 
 	    /**
 	     * 예약 등록
@@ -65,5 +67,5 @@ public class ReservationServiceJY
 	    {
 	        reservationDao.cancelReservation(reservation);
 	    }
-	
+
 }
