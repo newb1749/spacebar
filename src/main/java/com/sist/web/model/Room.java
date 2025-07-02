@@ -49,6 +49,10 @@ public class Room implements Serializable{
 	private String endTime;
 	
 	private String category;
+	private int personCount;
+	private int minPrice;
+	private int maxPrice;
+	private List<String> facilityList;
 	
 	public Room()
 	{
@@ -84,11 +88,70 @@ public class Room implements Serializable{
 		endTime = "";
 		
 		category = "";
+		personCount = 0;
+		minPrice = 0;
+		maxPrice = 0;
 	}
 	
+	
+	
+	
+	public int getMinPrice() {
+		return minPrice;
+	}
 
-	
-	
+
+
+
+	public void setMinPrice(int minPrice) {
+		this.minPrice = minPrice;
+	}
+
+
+
+
+	public int getMaxPrice() {
+		return maxPrice;
+	}
+
+
+
+
+	public void setMaxPrice(int maxPrice) {
+		this.maxPrice = maxPrice;
+	}
+
+
+
+
+	public List<String> getFacilityList() {
+		return facilityList;
+	}
+
+
+
+
+	public void setFacilityList(List<String> facilityList) {
+		this.facilityList = facilityList;
+	}
+
+
+
+
+	public int getPersonCount() {
+		return personCount;
+	}
+
+
+
+
+	public void setPersonCount(int personCount) {
+		this.personCount = personCount;
+	}
+
+
+
+
 	public String getCategory() {
 		return category;
 	}

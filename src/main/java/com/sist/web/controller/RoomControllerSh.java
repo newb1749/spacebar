@@ -2,8 +2,11 @@ package com.sist.web.controller;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +52,7 @@ public class RoomControllerSh {
 	@Autowired
 	private RoomServiceSh roomService;	
 	
-	private static final int LIST_COUNT = 9; 	// 한 페이지의 게시물 수
+	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
 	
 	//숙소 리스트 페이지
@@ -63,6 +66,22 @@ public class RoomControllerSh {
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		//필터 값
 		String regionList = HttpUtil.get(request, "regionList","");
+		//인원수
+		int personCount = HttpUtil.get(request, "personCount", 0);
+		//최소 금액
+		int minPrice = HttpUtil.get(request, "minPrice", 0);
+		//최대 금액
+		int maxPrice = HttpUtil.get(request, "maxPrice", 0);
+		//편의시설 리스트
+		String facilityListStr = HttpUtil.get(request, "facilityList", ""); // "와이파이,주차"	
+		List<String> facilityList = new ArrayList<>();
+		if (!facilityListStr.isEmpty()) 
+		{ 
+			facilityList = Arrays.stream(facilityListStr.split(","))
+		                         .map(String::trim)
+		                         .filter(s -> !s.isEmpty()) // Java 8에서도 사용 가능
+		                         .collect(Collectors.toList());
+		}
 		
 		//체크인 시간(대여공간)
 		//String startTime = HttpUtil.get(request, "startTime", "");
@@ -121,6 +140,24 @@ public class RoomControllerSh {
 		{
 			search.setCategory(category);
 		}
+		if(personCount != 0)
+		{
+			search.setPersonCount(personCount);
+		}
+		
+		if(minPrice != 0)
+		{
+			search.setMinPrice(minPrice);
+		}
+		if(maxPrice != 0)
+		{
+			search.setMaxPrice(maxPrice);
+		}
+		if(!facilityList.isEmpty())
+		{
+			search.setFacilityList(facilityList);
+		}
+		
 
 		
 		totalCount = roomService.roomTotalCount(search);
@@ -154,7 +191,10 @@ public class RoomControllerSh {
 		model.addAttribute("startDate", startDate);
 	    model.addAttribute("endDate", endDate);
 	    model.addAttribute("category",category);
-		
+	    model.addAttribute("personCount",personCount);
+	    model.addAttribute("minPrice",minPrice);
+	    model.addAttribute("maxPrice",maxPrice);
+	    model.addAttribute("facilityList",facilityList);
 		return "/room/roomList";
 	}
 	
@@ -265,15 +305,55 @@ public class RoomControllerSh {
 	}
 	
 	//방 리스트 페이지
-	@RequestMapping(value="/room/listFragment")
-	public String listFragment(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	@RequestMapping(value="/room/roomListFragment")
+	public String roomListFragment(@RequestParam(required = false) String startDate, // "20250626"
+		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//조회값
 		String searchValue = HttpUtil.get(request, "searchValue","");
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		//필터 값
-		String regionList = HttpUtil.get(request, "regionList", "");
+		String regionList = HttpUtil.get(request, "regionList","");
+		//인원수
+		int personCount = HttpUtil.get(request, "personCount", 0);
+		//최소 금액
+		int minPrice = HttpUtil.get(request, "minPrice", 0);
+		//최대 금액
+		int maxPrice = HttpUtil.get(request, "maxPrice", 0);
+		//편의시설 리스트
+		String facilityListStr = HttpUtil.get(request, "facilityList", ""); // "와이파이,주차"	
+		List<String> facilityList = new ArrayList<>();
+		if (!facilityListStr.isEmpty()) 
+		{ 
+			facilityList = Arrays.stream(facilityListStr.split(","))
+		                         .map(String::trim)
+		                         .filter(s -> !s.isEmpty()) // Java 8에서도 사용 가능
+		                         .collect(Collectors.toList());
+		}
+		
+		//체크인 시간(대여공간)
+		//String startTime = HttpUtil.get(request, "startTime", "");
+		//체크아웃 시간(대여공간)
+		//String endTime = HttpUtil.get(request, "endTime","");
+		
+		//카테고리
+		String category = HttpUtil.get(request, "category","");
+		
+		//리스트 첫페이지 오늘날짜 설정
+		if(StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate))
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			Calendar cal = Calendar.getInstance();
+			
+			startDate = sdf.format(cal.getTime()); // 오늘 날짜
+			
+			cal.add(Calendar.DATE, 1); // 내일 날짜
+			endDate = sdf.format(cal.getTime());
+		}
+		
+		logger.debug("==============startDate : " + startDate);
+		logger.debug("==============endDate : " + endDate);
 		
 		// 게시물 리스트
 		List<Room> list = null;
@@ -284,8 +364,6 @@ public class RoomControllerSh {
 		//페이징 객체
 		Paging paging = null;
 		
-		logger.debug(regionList);
-		
 		if(!StringUtil.isEmpty(searchValue))
 		{
 			search.setSearchValue(searchValue);
@@ -294,6 +372,42 @@ public class RoomControllerSh {
 		{
 			search.setRegionList(regionList);
 		}
+		if(!StringUtil.isEmpty(startDate) && !StringUtil.isEmpty(endDate))
+		{
+			search.setStartDate(startDate);
+			search.setEndDate(endDate);
+		}
+//		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+//		{
+//			if(!StringUtil.equals(startTime, endTime))
+//			{
+//				search.setStartTime(startTime);
+//				search.setEndTime(endTime);
+//			}
+//		}
+		if(!StringUtil.isEmpty(category))
+		{
+			search.setCategory(category);
+		}
+		if(personCount != 0)
+		{
+			search.setPersonCount(personCount);
+		}
+		
+		if(minPrice != 0)
+		{
+			search.setMinPrice(minPrice);
+		}
+		if(maxPrice != 0)
+		{
+			search.setMaxPrice(maxPrice);
+		}
+		if(!facilityList.isEmpty())
+		{
+			search.setFacilityList(facilityList);
+		}
+		
+
 		
 		totalCount = roomService.roomTotalCount(search);
 		
@@ -305,7 +419,7 @@ public class RoomControllerSh {
 		
 		if(totalCount > 0)
 		{
-			paging = new Paging("/room/list",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			paging = new Paging("/room/roomListFragment",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
 			
 			totalPage = paging.getTotalPage();
 			
@@ -321,8 +435,16 @@ public class RoomControllerSh {
 		model.addAttribute("paging",paging);
 		model.addAttribute("regionList",regionList);
 		model.addAttribute("totalPage",totalPage);
-		
-		return "/room/listFragment";
+		//model.addAttribute("startTime",startTime);
+		//model.addAttribute("endTime",endTime);
+		model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("category",category);
+	    model.addAttribute("personCount",personCount);
+	    model.addAttribute("minPrice",minPrice);
+	    model.addAttribute("maxPrice",maxPrice);
+	    model.addAttribute("facilityList",facilityList);
+		return "/room/roomListFragment";
 	}
 	
 	@RequestMapping(value="/room/testSearch", method=RequestMethod.GET)
