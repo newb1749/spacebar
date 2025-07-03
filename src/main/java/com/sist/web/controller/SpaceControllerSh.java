@@ -31,6 +31,7 @@ import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.SpaceServiceSh;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
@@ -38,10 +39,10 @@ import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
 
 
-@Controller("roomControllerSh")
-public class RoomControllerSh {
+@Controller("spaceControllerSh")
+public class SpaceControllerSh {
 	
-	private static Logger logger = LoggerFactory.getLogger(RoomControllerSh.class);
+	private static Logger logger = LoggerFactory.getLogger(SpaceControllerSh.class);
 	
 	@Value("#{env['auth.cookie.name']}")
 	private String AUTH_COOKIE_NAME;
@@ -50,14 +51,14 @@ public class RoomControllerSh {
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private RoomServiceSh roomService;	
+	private SpaceServiceSh spaceService;	
 	
 	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
 	
 	//숙소 리스트 페이지
-	@RequestMapping(value="/room/roomList")
-	public String roomList(@RequestParam(required = false) String startDate, // "20250626"
+	@RequestMapping(value="/room/spaceList")
+	public String spaceList(@RequestParam(required = false) String startDate, // "20250626"
 		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//조회값
@@ -84,9 +85,9 @@ public class RoomControllerSh {
 		}
 		
 		//체크인 시간(대여공간)
-		//String startTime = HttpUtil.get(request, "startTime", "");
+		String startTime = HttpUtil.get(request, "startTime", "");
 		//체크아웃 시간(대여공간)
-		//String endTime = HttpUtil.get(request, "endTime","");
+		String endTime = HttpUtil.get(request, "endTime","");
 		
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
@@ -128,14 +129,14 @@ public class RoomControllerSh {
 			search.setStartDate(startDate);
 			search.setEndDate(endDate);
 		}
-//		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
-//		{
-//			if(!StringUtil.equals(startTime, endTime))
-//			{
-//				search.setStartTime(startTime);
-//				search.setEndTime(endTime);
-//			}
-//		}
+		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+		{
+			if(!StringUtil.equals(startTime, endTime))
+			{
+				search.setStartTime(startTime);
+				search.setEndTime(endTime);
+			}
+		}
 		if(!StringUtil.isEmpty(category))
 		{
 			search.setCategory(category);
@@ -160,7 +161,7 @@ public class RoomControllerSh {
 		
 
 		
-		totalCount = roomService.roomTotalCount(search);
+		totalCount = spaceService.spaceTotalCount(search);
 		
 		logger.debug("================================");
 		logger.debug("totalCount : " + totalCount);
@@ -170,14 +171,14 @@ public class RoomControllerSh {
 		
 		if(totalCount > 0)
 		{
-			paging = new Paging("/room/roomList",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			paging = new Paging("/room/spaceList",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
 			
 			totalPage = paging.getTotalPage();
 			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
 			
-			list = roomService.roomList(search);
+			list = spaceService.spaceList(search);
 		}
 		
 		model.addAttribute("list",list);
@@ -186,8 +187,8 @@ public class RoomControllerSh {
 		model.addAttribute("paging",paging);
 		model.addAttribute("regionList",regionList);
 		model.addAttribute("totalPage",totalPage);
-		//model.addAttribute("startTime",startTime);
-		//model.addAttribute("endTime",endTime);
+		model.addAttribute("startTime",startTime);
+		model.addAttribute("endTime",endTime);
 		model.addAttribute("startDate", startDate);
 	    model.addAttribute("endDate", endDate);
 	    model.addAttribute("category",category);
@@ -195,14 +196,14 @@ public class RoomControllerSh {
 	    model.addAttribute("minPrice",minPrice);
 	    model.addAttribute("maxPrice",maxPrice);
 	    model.addAttribute("facilityList",facilityList);
-		return "/room/roomList";
+		return "/room/spaceList";
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//방 리스트 페이지
-	@RequestMapping(value="/room/roomListFragment")
-	public String roomListFragment(@RequestParam(required = false) String startDate, // "20250626"
+	@RequestMapping(value="/room/spaceListFragment")
+	public String spaceListFragment(@RequestParam(required = false) String startDate, // "20250626"
 		    @RequestParam(required = false) String endDate, ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//조회값
@@ -229,9 +230,9 @@ public class RoomControllerSh {
 		}
 		
 		//체크인 시간(대여공간)
-		//String startTime = HttpUtil.get(request, "startTime", "");
+		String startTime = HttpUtil.get(request, "startTime", "");
 		//체크아웃 시간(대여공간)
-		//String endTime = HttpUtil.get(request, "endTime","");
+		String endTime = HttpUtil.get(request, "endTime","");
 		
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
@@ -273,14 +274,14 @@ public class RoomControllerSh {
 			search.setStartDate(startDate);
 			search.setEndDate(endDate);
 		}
-//		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
-//		{
-//			if(!StringUtil.equals(startTime, endTime))
-//			{
-//				search.setStartTime(startTime);
-//				search.setEndTime(endTime);
-//			}
-//		}
+		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+		{
+			if(!StringUtil.equals(startTime, endTime))
+			{
+				search.setStartTime(startTime);
+				search.setEndTime(endTime);
+			}
+		}
 		if(!StringUtil.isEmpty(category))
 		{
 			search.setCategory(category);
@@ -305,7 +306,7 @@ public class RoomControllerSh {
 		
 
 		
-		totalCount = roomService.roomTotalCount(search);
+		totalCount = spaceService.spaceTotalCount(search);
 		
 		logger.debug("================================");
 		logger.debug("totalCount : " + totalCount);
@@ -315,14 +316,14 @@ public class RoomControllerSh {
 		
 		if(totalCount > 0)
 		{
-			paging = new Paging("/room/roomListFragment",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+			paging = new Paging("/room/spaceListFragment",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
 			
 			totalPage = paging.getTotalPage();
 			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
 			
-			list = roomService.roomList(search);
+			list = spaceService.spaceList(search);
 		}
 		
 		model.addAttribute("list",list);
@@ -331,8 +332,8 @@ public class RoomControllerSh {
 		model.addAttribute("paging",paging);
 		model.addAttribute("regionList",regionList);
 		model.addAttribute("totalPage",totalPage);
-		//model.addAttribute("startTime",startTime);
-		//model.addAttribute("endTime",endTime);
+		model.addAttribute("startTime",startTime);
+		model.addAttribute("endTime",endTime);
 		model.addAttribute("startDate", startDate);
 	    model.addAttribute("endDate", endDate);
 	    model.addAttribute("category",category);
@@ -340,7 +341,7 @@ public class RoomControllerSh {
 	    model.addAttribute("minPrice",minPrice);
 	    model.addAttribute("maxPrice",maxPrice);
 	    model.addAttribute("facilityList",facilityList);
-		return "/room/roomListFragment";
+		return "/room/spaceListFragment";
 	}
 	
 //	@RequestMapping(value="/room/testSearch", method=RequestMethod.GET)

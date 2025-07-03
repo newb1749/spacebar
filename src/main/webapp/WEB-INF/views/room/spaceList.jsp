@@ -4,7 +4,7 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
-<title>방 리스트</title>
+<title>공간대여 리스트</title>
 <style>
 body {
   padding-top: 100px;
@@ -14,6 +14,72 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
 }
+#toggleFilter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 필터 드롭다운 늘리기 */
+  #filterDropdown {
+    width: 520px !important;
+  }
+  /* 편의시설 그리드 레이아웃 */
+#filterDropdown .facilities-grid {
+  display: grid;
+  /* 한 칸 최소 140px, 최대 1fr (자동 채우기) */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px 12px;
+  margin-top: 8px;
+}
+
+/* 각 아이템은 flex로 체크박스+라벨 가운데 정렬 */
+#filterDropdown .facilities-grid .form-check {
+  display: flex;
+  align-items: center;
+}
+
+/* 라벨 텍스트 줄바꿈 방지 */
+#filterDropdown .facilities-grid .form-check-label {
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+  /* 가격 입력창 너비 조정 */
+  #filterDropdown .form-control {
+    width: 180px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+  }
+
+  /* 입력창 사이 ~ 기호 간격 */
+  #filterDropdown .price-range {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* 체크박스 리스트 한 줄 더 늘리기 (3열 그리드) */
+  #filterDropdown .mb-3:nth-child(2) .d-flex {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 12px;
+  }
+
+  /* 적용 버튼 스타일 */
+  #filterDropdown .btn-success {
+    background: linear-gradient(to right, #56ab2f, #a8e063);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background 0.2s;
+  }
+  #filterDropdown .btn-success:hover {
+    background: linear-gradient(to right, #48a026, #94c558);
+  }
 
 .room-list-item {
   background-color: #fff;
@@ -22,6 +88,9 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease-in-out;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .room-list-item:hover {
   transform: translateY(-4px);
@@ -37,6 +106,9 @@ body {
 .room-details {
   padding: 16px;
   font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .room-title {
@@ -59,8 +131,9 @@ body {
 
 .room-price {
   font-weight: bold;
-  color: #6c5ce7;
+  color: #28a745;
   font-size: 1rem;
+  margin-top: auto;
 }
 
 .category-wrapper {
@@ -111,6 +184,12 @@ body {
   color: white;
   border-color: #56ab2f;
 }
+
+.container.mt-5 {
+  /* 기존 margin-top:100px; 은 inline style 에서 처리 중이니, 
+     여백만 bottom 쪽으로 더 주세요 */
+  margin-bottom: 60px;  /* 원하는 값으로 조절 */
+}
 </style>
 <script>
 let curPage = parseInt("${curPage}");
@@ -148,19 +227,34 @@ $(document).ready(function(){
 	
   // 검색 버튼
   $("#btnSearch").on("click", function(){
+
 	  
-	  console.log("선택된 날짜 확인:", window.selectedDates);
-    document.roomForm.regionList.value = "";
+	  
+	console.log("선택된 날짜 확인:", window.selectedDates);
+    document.roomForm.regionList.value = $("#_regionList").val();
     document.roomForm.roomSeq.value = "";
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
+    document.roomForm.personCount.value = $("#_personCount").val();
+    
+    const facilities = [];
+    $("input[name='_facilityList']:checked").each(function(){
+      facilities.push($(this).val());
+    });
+    document.roomForm.facilityList.value = facilities.length > 0 ? facilities.join(',') : "";
+      document.roomForm.minPrice.value = $("#_minPrice").val();
+	  document.roomForm.maxPrice.value = $("#_maxPrice").val();
+
+    
+    
  	// 시간값 설정
-    document.roomForm.startTime.value = $("#startTime").val();
-    document.roomForm.endTime.value = $("#endTime").val();
+    document.roomForm.startTime.value = $("#_startTime").val();
+    document.roomForm.endTime.value = $("#_endTime").val();
     
  	// ✅ 날짜 강제로 hidden input에 넣기
     const startInput = document.getElementById("calendarTest_start");
     const endInput = document.getElementById("calendarTest_end");
+    
 
     if (window.selectedDates && window.selectedDates.length === 2) {
       const [start, end] = window.selectedDates;
@@ -182,72 +276,105 @@ $(document).ready(function(){
     
     document.roomForm.submit();
   });
+  
+	//JavaScript에서 JSP 변수를 비교
+  var startDate = "${startDate}";
+  var endDate = "${endDate}";
+  var startTime = "${_startTime}";
+  var endTime = "${_endTime}";
+  
+  const st = parseInt(startTime, 10);
+  const et = parseInt(endTime, 10);
+  
+  if (startDate === endDate && st >= et) {
+    alert("올바른 시간대를 입력해주세요.");
+    return;
+  }
 
-  // 지역 필터 드롭다운 토글
+	//필터 드롭다운 토글
   $("#toggleFilter").on("click", function () {
-    $("#regionDropdown").toggle();
+    $("#filterDropdown").toggle();
   });
 
-  // 필터 적용 -> hidden 추가
-  $("#applyFilter").on("click", function(){
-	  const selectedRegion = $("#regionForm input[name='region']:checked").val();
-	  // 기존 hidden 제거
-	  //$("input[name='regionList']").remove();
-	  if (selectedRegion) {
-	    //$("<input>").attr({
-	      //type: "hidden",
-	      //name: "regionList",
-	      //value: selectedRegion
-	    //}).appendTo("#roomForm");
-	    document.roomForm.regionList.value = selectedRegion;
-	  }
-	  
-		document.roomForm.roomSeq.value = "";
-		document.roomForm.searchValue.value = $("#_searchValue").val();
-		document.roomForm.curPage.value = "1";
-		
-		// 시간값 설정
-	    document.roomForm.startTime.value = $("#startTime").val();
-	    document.roomForm.endTime.value = $("#endTime").val();
-		
-		document.roomForm.submit();
+  // 필터 적용
+  $("#applyFilter").on("click", function () {
 
-	  $("#regionDropdown").hide();
+	  document.roomForm.minPrice.value = $("#_minPrice").val();
+	  document.roomForm.maxPrice.value = $("#_maxPrice").val();
+
+    // 체크된 편의시설 값을 모두 수집
+    const facilities = [];
+	$("input[name='_facilityList']:checked").each(function () {
+	  facilities.push($(this).val());
 	});
+	document.roomForm.facilityList.value = facilities.length > 0 ? facilities.join(',') : "";
+
+    
+    document.roomForm.regionList.value = $("#_regionList").val();
+    document.roomForm.roomSeq.value = "";
+    document.roomForm.searchValue.value = $("#_searchValue").val();
+    document.roomForm.curPage.value = "1";
+    document.roomForm.personCount.value = $("#_personCount").val();
+    document.roomForm.submit();
+  });
 });
 	
-function fn_list(curPage) {
-  document.roomForm.curPage.value = curPage;
-  document.roomForm.action = "/room/list";
-  document.roomForm.submit();
-}
+//function fn_list(curPage) {
+//  document.roomForm.curPage.value = curPage;
+//  document.roomForm.action = "/room/roomList";
+//  document.roomForm.submit();
+//}
 
 //마우스 스크롤 처리를 위함 시작
 //스크롤 도달 시 Ajax로 다음 페이지 게시글만 추가 조회
 function fn_list_scroll(nextPage) {
-	if (nextPage > maxPage || loading) return;
-	loading = true;
+  if (nextPage > maxPage || loading) return;
+  loading = true;
 
-	$.ajax({
-		url: "/room/listFragment",
-		type: "POST",
-		data: {
-			curPage: nextPage,
-			searchValue: $("#_searchValue").val(),
-			regionList: $("#regionList").val()
-		},
-		success: function(data) {
-			if (data.trim().length > 0) {
-				$("#roomListBody").append(data);
-				curPage = nextPage;
-			}
-			loading = false;
-		},
-		error: function() {
-			alert("목록을 불러오는 데 실패했습니다.");
-			loading = false;
-		}
-	});
+  // 1) 보낼 파라미터 객체를 만듭니다.
+  const payload = {
+    curPage:      nextPage,
+    searchValue:  $("#_searchValue").val()   || "",
+    regionList:   $("#_regionList").val()    || "",
+    personCount:  $("#_personCount").val()   || "",
+    minPrice:     $("#_minPrice").val()      || "",
+    maxPrice:     $("#_maxPrice").val()      || "",
+    startTime:    $("#_startTime").val()     || 0,
+    endTime :     $("#_endTime").val()       || 0,
+    startDate:    $("#calendar_start").val() || "",
+    endDate:      $("#calendar_end").val()   || "",
+    category:     $("#category").val()       || ""
+  };
+
+  // 2) 체크된 편의시설만 따로 수집해서, 실제로 하나라도 있을 때만 payload에 넣습니다.
+  const facs = [];
+  $("input[name='_facilityList']:checked").each(function(){
+    facs.push(this.value);
+  });
+  if (facs.length > 0) {
+    payload.facilityList = facs.join(",");
+  }
+
+  // 3) URL 은 반드시 컨트롤러 매핑( @RequestMapping("/room/roomListFragment") ) 과
+  //    일치시켜야 200 OK 가 찍힙니다.
+  $.ajax({
+    url:      "/room/spaceListFragment",
+    type:     "POST",
+    data:     payload,
+    dataType: "html",    // fragment HTML 을 기대할 때
+    success: function(data) {
+      if (data.trim().length) {
+        $("#roomListBody").append(data);
+        curPage = nextPage;
+      }
+      loading = false;
+    },
+    error: function(xhr, status, err) {
+      console.error("스크롤 AJAX 에러:", status, err, xhr.responseText);
+      alert("추가 데이터를 불러오는 데 실패했습니다.");
+      loading = false;
+    }
+  });
 }
 
 
@@ -283,23 +410,40 @@ $(window).on("scroll", function () {
     <!-- ✅ 시간 선택 수평 정렬 -->
 <div class="d-flex align-items-center gap-3" style="height: 44px;">
   <div class="d-flex align-items-center" style="gap: 8px;">
-    <span style="font-weight: bold; white-space: nowrap;">이용시작</span>
-		<select id="startTime" name="startTime" class="form-select" style="width: 100px; height: 44px; border-radius: 12px;">
+    <span style="font-weight: bold; white-space: nowrap;">이용시간</span>
+		<select id="_startTime" name="_startTime" class="form-select" style="width: 80px; height: 44px; border-radius: 12px;">
 		  <c:forEach var="i" begin="0" end="24">
-		    <option value="${i}" <c:if test="${i == param.startTime}">selected</c:if>>${i}시</option>
+		    <option value="${i}" <c:if test="${i == startTime}">selected</c:if>>${i}시</option>
 		  </c:forEach>
 		</select>
   </div>
 
   <div class="d-flex align-items-center" style="gap: 8px;">
-    <span style="font-weight: bold; white-space: nowrap;">이용끝</span>
-    <select id="endTime" name="endTime" class="form-select" style="width: 100px; height: 44px; border-radius: 12px;">
+    <span style="font-weight: bold; white-space: nowrap;">~</span>
+    <select id="_endTime" name="_endTime" class="form-select" style="width: 80px; height: 44px; border-radius: 12px;">
 	  <c:forEach var="i" begin="0" end="24">
-	    <option value="${i}" <c:if test="${i == param.endTime}">selected</c:if>>${i}시</option>
+	    <option value="${i}" <c:if test="${i == endTime}">selected</c:if>>${i}시</option>
 	  </c:forEach>
 	</select>
   </div>
 </div>
+
+<!-- ✅ 지역 선택 -->
+<select name="_regionList" id="_regionList" class="form-select shadow-sm" style="width: 120px; height: 44px; border-radius: 12px;">
+  <option value="">지역</option>
+  <c:forEach var="region" items="${fn:split('서울,경기,인천,부산,대구,광주,대전,울산,제주,강원,경남,경북,전남,전북,충남,충북', ',')}">
+    <option value="${region}" <c:if test="${regionList eq region}">selected</c:if>>${region}</option>
+  </c:forEach>
+</select>
+
+
+<!-- ✅ 인원수 선택 -->
+<select name="_personCount" id="_personCount" class="form-select shadow-sm" style="width: 120px; height: 44px; border-radius: 12px;">
+  <option value="">인원수</option>
+  <c:forEach var="i" begin="1" end="10">
+    <option value="${i}" <c:if test="${personCount == i}">selected</c:if>>${i}명</option>
+  </c:forEach>
+</select>
 
     <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control shadow-sm" maxlength="20"
            style="width: 260px; height: 44px; border-radius: 12px;" placeholder="검색어를 입력하세요" />
@@ -309,35 +453,59 @@ $(window).on("scroll", function () {
     </button>
 
     <!-- 필터 버튼 -->
-		<div class="position-relative" style="min-width: 120px;">
-		  <button type="button" id="toggleFilter"
-			        class="btn"
-			        style="height: 44px; background: linear-gradient(to right, #a8e063, #56ab2f);
-			               color: white; font-weight: bold; border-radius: 12px;
-			               display: flex; align-items: center; justify-content: center;">
-			  지역 필터
-			</button>
-		  <div id="regionDropdown" style="display:none; position: absolute; top: 52px; right: 0; z-index: 999;
-		       background: white; border: 1px solid #ccc; border-radius: 10px; padding: 12px;
-		       box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 240px;">
-		    <form id="regionForm">
-		      <c:forEach var="region" items="${fn:split('서울,경기,인천,부산,대구,광주,대전,울산,제주,강원,경남,경북,전남,전북,충남,충북', ',')}">
-		        <div class="form-check mb-1">
-		          <input class="form-check-input" type="radio" name="region" value="${region}" id="region_${region}" />
-		          <label class="form-check-label" for="region_${region}">${region}</label>
-		        </div>
-		      </c:forEach>
-		      <div class="text-end mt-2">
-		        <button type="button" id="applyFilter" class="btn btn-sm btn-success">적용</button>
+<div class="position-relative" style="min-width: 120px;">
+  <button type="button" id="toggleFilter" class="btn"
+    style="height: 44px; background: linear-gradient(to right, #a8e063, #56ab2f); color: white; font-weight: bold; border-radius: 12px;">
+    ▼ 필터 
+  </button>
+
+  <div id="filterDropdown" style="display:none; position: absolute; top: 52px; right: 0; z-index: 999;
+       background: white; border: 1px solid #ccc; border-radius: 10px; padding: 16px;
+       box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 320px;">
+
+	    <!-- 가격 필터 -->
+	<div class="mb-3">
+	  <label class="fw-bold">가격</label>
+	  <p style="font-size:0.8rem;color:#999;">가격을 설정해주세요.</p>
+	  <div class="price-range">
+	    <input type="number" id="_minPrice" name="_minPrice" placeholder="최소가격"
+	           value="${minPrice != 0 ? minPrice : ''}" min="0" step="10000" class="form-control" />
+	    <span>~</span>
+	    <input type="number" id="_maxPrice" name="_maxPrice" placeholder="최대가격"
+	           value="${maxPrice != 0 ? maxPrice : ''}" min="0" step="10000" class="form-control" />
+	  </div>
+	</div>
+
+    <!-- 편의시설 필터 -->
+		<div class="mb-3">
+		  <label class="fw-bold">편의시설</label>
+		  <!-- 기존 d-flex 대신 facilities-grid 사용 -->
+		  <div class="facilities-grid">
+		    <c:forEach var="facility" items="${fn:split('와이파이,냉장고,전자레인지,정수기,에어컨 / 난방기,드라이기,다리미,거울 (전신거울 포함),침구,욕실용품,옷걸이 / 행거,TV (OTT 가능),세탁기 / 건조기,취사도구,바베큐 시설,수영장,방음 시설,마이크 / 오디오 장비,앰프 / 스피커,조명 장비,삼각대 / 촬영 장비,블루투스 스피커,악기류 (피아노 드럼 등),빔프로젝터 / 스크린,TV 모니터,화이트보드,프린터 / 복합기,사무용 의자 / 책상,커피머신,화장실 / 샤워실,취사장 / 개수대,전기 공급,텐트 / 타프,캠프파이어 구역,야외 테이블 / 의자,벌레퇴치용품', ',')}">
+		      <div class="form-check">
+		        <input class="form-check-input" type="checkbox"
+		               name="_facilityList" value="${facility}"
+		               id="facility_${facility}"
+		               <c:if test="${fn:contains(facilityList, facility)}">checked</c:if> />
+		        <label class="form-check-label" for="facility_${facility}">
+		          ${facility}
+		        </label>
 		      </div>
-		    </form>
+		    </c:forEach>
 		  </div>
 		</div>
-		
+
+    <div class="text-end">
+      <button type="button" id="applyFilter" class="btn btn-sm btn-success">적용</button>
+    </div>
+  </div>
+</div>
+
+
 <!-- ✅ 카테고리 선택 영역 -->
 <div class="category-wrapper">
 
-  <!-- 🛏 숙박 -->
+  <!-- 🛏 숙박 
   <div class="category-row">
     <div class="category-label">숙박</div>
     <div class="category-btn-group">
@@ -350,7 +518,7 @@ $(window).on("scroll", function () {
       <button type="button" class="category-btn">캠핑장</button>
     </div>
   </div>
-
+-->
   <!-- 🏢 공간 대여 -->
   <div class="category-row">
     <div class="category-label">공간 대여</div>
@@ -421,10 +589,15 @@ $(window).on("scroll", function () {
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
   <input type="hidden" name="regionList" id="regionList" value="${regionList}" />
-  <input type="hidden" name="startTime" id="startTime" value="${startTime}"/>
+  <input type="hidden" name="startTime" id="startTime" value="${startTime}" />
   <input type="hidden" name="endTime" id="endTime" value="${endTime}"/>
   <input type="hidden" name="category" id="category" value="${category}"/>
+  <input type="hidden" name="personCount" id="personCount" value="${personCount}" />
+  <input type="hidden" name="minPrice" id="minPrice" value="${minPrice}" />
+  <input type="hidden" name="maxPrice" id="maxPrice" value="${maxPrice}" />
+  <input type="hidden" name="facilityList" id="facilityList" value="${facilityList}" />
 </form>
+
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 
