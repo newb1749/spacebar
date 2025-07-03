@@ -25,14 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Service("reviewService")
 public class ReviewService {
 	
-			// 1. 예약 테이블에서 RSV_STAT = 'CONFIRMED'
-			// and RSV_PAYMENT_STAT = 'PIAD' 인지 확인
-
-			// 2. 리뷰 등록
-
-			// 3. 리뷰 이미지 등록
-
-			// 4. 리뷰 평점 등록
 	private static Logger logger = LoggerFactory.getLogger(ReviewService.class);
 	
 	@Value("#{env['upload.review.dir']}")
@@ -169,5 +161,87 @@ public class ReviewService {
 			logger.error("[ReviewService] saveReviewImageFile 처리 중 오류 발생", e);
 			throw new RuntimeException("이미지 파일 저장 중 오류가 발생했습니다.", e);
 		}
+	}
+	
+	/**
+	 * 내 목록 조회
+	 * @param userId 회원 고유아이디
+	 * @return 본인의 리뷰 목록
+	 */
+	public List<Review> selectMyReviews(String userId)
+	{
+		return reviewDao.selectMyReviews(userId);
+	}
+	
+	/**
+	 * 수정할 리뷰 1건 조회 (이미지 포함)
+	 * @param reviewSeq 리뷰 고유아이디
+	 * @return 선택한 리뷰 객체
+	 */
+	public Review selectReviewForEdit(int reviewSeq)
+	{
+		return reviewDao.selectReviewForEdit(reviewSeq);
+	}
+	
+	
+	
+    /**
+     * 리뷰 수정 (텍스트, 평점, 이미지)
+     * @param review 수정할 내용이 담긴 객체
+     * @param deleteImgSeqs 삭제할 이미지의 번호(reviewImgSeq) 목록
+     * @return 성공 시 1 이상
+     */
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	public int updateReviewTransaction(Review review, List<Short> deleteImgSeqs) throws Exception
+	{
+		int result = 0;
+		
+		// 1. 텍스트 정보 수정 (제목, 내용, 평점)
+		result += reviewDao.updateReview(review);
+		
+		// 2. 선택된 기존 이미지 삭제
+		if(deleteImgSeqs != null && !deleteImgSeqs.isEmpty())
+		{	
+			// 선택된 이미지들 삭제
+			for(short imgSeq : deleteImgSeqs)
+			{	
+				ReviewImage delImage = new ReviewImage();
+				delImage.setReviewSeq(review.getReviewSeq());
+				delImage.setReviewImgSeq(imgSeq);
+				
+                // 업로드한 파일을 실제로 삭제하기 위해 파일명 조회
+				ReviewImage imageToDelete = reviewImageDao.selectReviewImage(delImage);
+                if (imageToDelete != null) {
+                    FileUtil.deleteFile(UPLOAD_REVIEW_DIR + File.separator + imageToDelete.getReviewImgName());
+                }
+				// DB에서 선택된 이미지 1개 삭제
+				reviewImageDao.deleteReviewImage(delImage);			
+			}
+		}
+		
+		// 3. 새로 첨부된 이미지 추가
+		List<ReviewImage> newImageList = review.getReviewImageList();
+		if(newImageList != null && !newImageList.isEmpty())
+		{
+			for(ReviewImage newImage : newImageList)
+			{
+				newImage.setReviewSeq(review.getReviewSeq());
+				saveReviewImageFile(newImage, review.getReviewSeq());
+				result += reviewImageDao.insertReviewImage(newImage);
+			}
+		}
+		
+		return result;
+	}
+
+    /**
+     * 리뷰 비활성화 (소프트 삭제)
+     * @param review reviewSeq와 userId 포함
+     * @return 성공 시 1
+     */
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor = Exception.class)
+	public int inactiveReview(Review review) throws Exception
+	{
+		return reviewDao.inactiveReview(review);
 	}
 }

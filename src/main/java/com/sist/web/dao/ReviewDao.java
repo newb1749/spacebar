@@ -9,26 +9,59 @@ import com.sist.web.model.Review;
 
 public interface ReviewDao {
 	
-	
-	// 1. 리뷰 쓰기 전 예약 상태, 결제 상태 확인 
-	public Reservation findStatbyRsvSeq(@Param("rsvSeq")int rsvSeq);
-	
-	// 2. 리뷰 등록
-	public int insertReview(Review review);
-	
-	// 3. 본인 리뷰 목록 조회 
-	public List<Review> selectMyReviews(String userId);
-	
-	// 4. 수정할 리뷰 1건 조회 (이미지 포함)
-    public Review selectReview(int reviewSeq);
-	
-	// 5. 리뷰 조회
-	public int selectReview(Review review);
-	
-	// 6. 리뷰 상태 비활성화(삭제)
-	public int inactiveReview(Review review);
-	
+
+	/**
+	 * 내 리뷰 목록 조회
+	 * @param userId
+	 * @return 리뷰 리스트
+	 */
+    public List<Review> selectMyReviews(String userId);
 
     
+    /**
+     * 수정할 리뷰 1건 조회 (이미지 포함)
+     * @param reviewSeq 리뷰시퀀스
+     * @return  
+     */
+    public Review selectReviewForEdit(int reviewSeq);
+
+     
+    /**
+     * 리뷰 수정 (제목, 내용, 평점)
+     * @param review 수정할 정보를 담은 객체
+     * @return 건수
+     */
+    public int updateReview(Review review);
+    
+    
+    /**
+     * 리뷰 상태 'N'으로 변경 (소프트 삭제)
+     * @param review 리뷰 객체
+     * @return 건수 
+     */
+    public int inactiveReview(Review review);
+    
+ 
+    /**
+     * 리뷰 중복 등록 방지용
+     * @param rsvSeq 예약 시퀀스
+     * @param userId 
+     * @return 예약과 유저로 리뷰 수 조회
+     */
+    public int countReviewByRsvAndUser(@Param("rsvSeq") int rsvSeq, @Param("userId") String userId);
+
+    /**
+     * 리뷰 등록용
+     * @param review 등록할 정보를 담은 객체
+     * @return 건수
+     */
+    public int insertReview(Review review);
+
+    /**
+     * 예약 상태 조회용
+     * @param rsvSeq 예약 객체 확인을 위한 값
+     * @return 예약 객체
+     */
+    public Reservation findStatbyRsvSeq(int rsvSeq);
 
 }

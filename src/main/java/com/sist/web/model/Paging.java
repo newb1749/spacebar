@@ -29,35 +29,35 @@ public class Paging implements Serializable
 {
 	private static final long serialVersionUID = -6316602959627374690L;
 	
-	private String url;         // url
-	private String formName;    // 폼 이름
-	private long totalCount;    // 총 게시물 수
-	private long totalPage;      // 총 페이지 수
-	private long startRow;      // 게시물 시작 ROW (ORACLE ROWNUM)
-	private long endRow;        // 게시물 끝 ROW (ORACLE ROWNUM)
-	private long listCount;      // 한 페이지의 게시물 수
-	private long pageCount;      // 페이징 범위 수
-	private long curPage;        // 현재 페이지
+	private String url;         		// url
+	private String formName;    		// 폼 이름
+	private long totalCount;    		// 총 게시물 수
+	private long totalPage;      		// 총 페이지 수
+	private long startRow;      		// 게시물 시작 ROW (ORACLE ROWNUM)
+	private long endRow;        		// 게시물 끝 ROW (ORACLE ROWNUM)
+	private long listCount;     		// 한 페이지의 게시물 수
+	private long pageCount;     		// 페이징 범위 수
+	private long curPage;        		// 현재 페이지
 	
-	private long startPage;      // 시작 페이지 번호
-	private long endPage;        // 종료 페이지 번호
+	private long startPage;      		// 시작 페이지 번호
+	private long endPage;        		// 종료 페이지 번호
 	
-	private long firstPage;      // 첫 번째 페이지 번호
-	private long lastPage;       // 마지막 페이지 번호
+	private long firstPage;      		// 첫 번째 페이지 번호
+	private long lastPage;       		// 마지막 페이지 번호
 	
-	private long totalBlock;     // 총 블럭 수
-	private long curBlock;       // 현재 블럭
+	private long totalBlock;    		// 총 블럭 수
+	private long curBlock;      		// 현재 블럭
 	
-	private long prevBlockPage;  // 이전 블럭 페이지
-	private long nextBlockPage;  // 다음 블럭 페이지
+	private long prevBlockPage;  		// 이전 블럭 페이지
+	private long nextBlockPage; 		// 다음 블럭 페이지
 	
-	private long startNum;      // 시작 번호 (게시물 번호 적용 DESC)
+	private long startNum;      		// 시작 번호 (게시물 번호 적용 DESC)
 	
-	private String pageTagName; // 페이지번호 태그명
+	private String pageTagName; 		// 페이지번호 태그명
 	
 	private String scriptFuncName;      // 함수명
 	
-	private Map<String, Object> param; // 파라미터 맵
+	private Map<String, Object> param;  // 파라미터 맵
 	
 	/**
 	 * 생성자 
