@@ -300,6 +300,11 @@ public class ReservationControllerJY {
 
         model.addAttribute("reservation", reservation);
         model.addAttribute("status", "SUCCESS");
+
+        // 남은 마일리지 추가
+        int remainingMileage = userService.getCurrentMileage(reservation.getGuestId());
+        model.addAttribute("remainingMileage", remainingMileage);
+
         return "/payment/paymentConfirm";
     }
 

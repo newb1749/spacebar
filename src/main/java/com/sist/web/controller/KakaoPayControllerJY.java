@@ -1,6 +1,5 @@
 package com.sist.web.controller;
 
-import com.google.gson.JsonObject;
 import com.sist.web.model.*;
 import com.sist.web.service.KakaoPayServiceJY;
 import com.sist.web.service.ReservationServiceJY;
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.*;
 
 import java.beans.PropertyEditorSupport;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -64,9 +64,9 @@ public class KakaoPayControllerJY
     // 카카오페이 결제 준비 (Ajax)
     @PostMapping("/readyAjax")
     @ResponseBody
-    public Response<JsonObject> readyAjax(HttpServletRequest req) 
+    public Response<Map<String, String>> readyAjax(HttpServletRequest req) 
     {
-        Response<JsonObject> res = new Response<>();
+        Response<Map<String, String>> res = new Response<>();
         try 
         {
             String userId = (String) req.getSession().getAttribute("sessionUserId");
@@ -83,9 +83,9 @@ public class KakaoPayControllerJY
                 SessionUtil.setSession(session, ORDER_SESSION, orderId);
                 session.setAttribute("chargeAmount", amount);
 
-                JsonObject j = new JsonObject();
-                j.addProperty("next_redirect_pc_url", rp.getNext_redirect_pc_url());
-                res.setResponse(0, "success", j);
+                Map<String, String> data = new HashMap<>();
+                data.put("next_redirect_pc_url", rp.getNext_redirect_pc_url());
+                res.setResponse(0, "success", data);
             }
             else 
             {

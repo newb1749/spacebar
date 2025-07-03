@@ -13,9 +13,9 @@ public class KakaoPayReadyRequest {
     private int total_amount;
     private int tax_free_amount = 0;
 
-    private String approval_url = "http://localhost:8080/payment/success";
-    private String cancel_url = "http://localhost:8080/payment/cancel";
-    private String fail_url = "http://localhost:8080/payment/fail";
+    private String approval_url = "http://spacebar.sist.co.kr:8088/payment/success";
+    private String cancel_url = "http://spacebar.sist.co.kr:8088/payment/cancel";
+    private String fail_url = "http://spacebar.sist.co.kr:8088/payment/fail";
 
     public KakaoPayReadyRequest() {}
 

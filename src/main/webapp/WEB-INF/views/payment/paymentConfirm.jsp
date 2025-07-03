@@ -54,8 +54,8 @@
 
         <div class="info-box">
           <h5>결제 정보</h5>
-          <p><strong>총 금액:</strong> <fmt:formatNumber value="${reservation.totalAmt}" type="number" /> 원</p>
-          <p><strong>결제 금액 (마일리지):</strong> <fmt:formatNumber value="${reservation.finalAmt}" type="number" /> 원</p>
+          <p><strong>결제 금액(마일리지):</strong> <fmt:formatNumber value="${reservation.finalAmt}" type="number" /> 원</p>
+          <p><strong>남은 마일리지:</strong> <fmt:formatNumber value="${remainingMileage}" type="number" /> 원</p>
         </div>
       </c:when>
 

@@ -26,21 +26,33 @@
       word-wrap: break-word;
       text-align: left;
     }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
   </style>
+  <script>
+    setTimeout(function() {
+      window.location.href = "/reservation/detailJY";
+    }, 3000);
+  </script>
 </head>
 <body>
-  <div class="message ${result == 'success' ? 'success' : 'fail'}">
+  <div class="message ${code == 0 ? 'success' : 'fail'}">
     <c:choose>
-      <c:when test="${result == 'success'}">
+      <c:when test="${code == 0}">
         <h2>결제가 완료되었습니다!</h2>
         <p>마일리지가 정상적으로 충전되었습니다.</p>
-        <pre>${info}</pre> <!-- 필요 시 상세정보 출력 -->
+        <pre>${msg}</pre>
       </c:when>
       <c:otherwise>
         <h2>결제에 실패하였습니다.</h2>
-        <p>${message}</p>
+        <p>${msg}</p>
       </c:otherwise>
     </c:choose>
+    <button onclick="window.location.href='/reservation/detailJY'">결제 페이지로 돌아가기</button>
   </div>
 </body>
 </html>
