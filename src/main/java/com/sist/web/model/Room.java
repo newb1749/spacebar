@@ -11,24 +11,25 @@ public class Room implements Serializable{
 	private static final long serialVersionUID = 1239575109179546912L;
 	
 	
-	private int roomSeq;				// 숙소 시퀀스 (기본키)
-	private int roomCatSeq;				// 숙소 카테고리 시퀀스 (외래키)
-	private String hostId;				// 호스트 ID (외래키)
-	private String roomAddr;			// 숙소 주소
-	private double latitude;			// 위도 (11,9)
-	private double longitude;			// 경도 (12,9)
-	private String region;				// 지역
-	private String regDt;				// 숙소 등록일
-	private String updateDt;			// 마지막 업데이트 일시
-	private String autoConfirmYn;		// 자동 예약 확정 여부 (Y: 예, N: 아니오)
-	private String roomTitle;			// 숙소 제목
-	private String roomDesc;			// 숙소 상세 설명
-	private String cancelPolicy;		// 취소 정책
-	private short minTimes;				// 최소 이용시간
-	private short maxTimes;				// 최대 이용시간
-	private double averageRating;		// 숙소 평균 평점 (2,1)
-	private int reviewCount;			// 숙소 전체 리뷰수
+	private int roomSeq;					// 숙소 시퀀스 (기본키)
+	private int roomCatSeq;					// 숙소 카테고리 시퀀스 (외래키)
+	private String hostId;					// 호스트 ID (외래키)
+	private String roomAddr;				// 숙소 주소
+	private double latitude;				// 위도 (11,9)
+	private double longitude;				// 경도 (12,9)
+	private String region;					// 지역
+	private String regDt;					// 숙소 등록일
+	private String updateDt;				// 마지막 업데이트 일시
+	private String autoConfirmYn;			// 자동 예약 확정 여부 (Y: 예, N: 아니오)
+	private String roomTitle;				// 숙소 제목
+	private String roomDesc;				// 숙소 상세 설명
+	private String cancelPolicy;			// 취소 정책
+	private short minTimes;					// 최소 이용시간
+	private short maxTimes;					// 최대 이용시간
+	private double averageRating;			// 숙소 평균 평점 (2,1)
+	private int reviewCount;				// 숙소 전체 리뷰수
 	
+    // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
 	private List<Integer> facilityNos;	   // 리스트로 FacilitySeq 값 저장
 	
