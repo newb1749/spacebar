@@ -4,11 +4,10 @@
 <%@ page import="com.sist.web.util.SessionUtil"%>
 
 <%
-    //Cookie cookie = CookieUtil.getCookie(request, (String)request.getAttribute("AUTH_COOKIE_NAME"));
-    //boolean isLoggedIn = cookie != null;
-    String sessionId = (String)session.getAttribute("sessionUserId");
+    String sessionId = (String)session.getAttribute("SESSION_USER_ID"); // 세션 키 정확히!
     boolean isLoggedIn = (sessionId != null && !sessionId.isEmpty());
 %>
+
 
 <!-- Navigation Start -->
 <nav class="site-nav">

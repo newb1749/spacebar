@@ -60,37 +60,50 @@ public class ReviewService {
 			{
 				int rsvSeq = review.getRsvSeq();
 				review.setRsvSeq(rsvSeq);
-				// 리뷰 등록 전 예약 및 결제 상태 확인을 위해
+				// 1. 리뷰 등록 전 예약 및 결제 상태 확인을 위해
 				Reservation reservation = reviewDao.findStatbyRsvSeq(rsvSeq);
+				if(reservation == null) {
+					logger.warn("예약 정보를 찾을 수 없습니다. rsvSeq: {}", rsvSeq);
+					return 0;
+				}
 				
-				// 1. 예약 확정, 결제 완료 일 떄
+				// 2. 예약 확정, 결제 완료 일 떄
 				if(StringUtil.equals(reservation.getRsvStat(), "CONFIRMED") 
 						&& StringUtil.equals(reservation.getRsvPaymentStat(), "PAID"))
 				{
 					result += reviewDao.insertReview(review);
 					// 리뷰이미지한테 건네주기
 					int newReviewSeq = review.getReviewSeq();
+					logger.debug("새로 생성된 리뷰 시퀀스: {}", newReviewSeq);
 					
-					// 2. 리뷰 이미지 저장
+					// 3. 리뷰 이미지 저장
 					List<ReviewImage> reviewImageList = review.getReviewImageList();
 					if(reviewImageList != null && reviewImageList.size() > 0)
 					{
 						for(ReviewImage reviewImage : reviewImageList)
 						{	
+							// 이게 흠??
+							reviewImage.setReviewSeq(newReviewSeq);
+							
 							// 위에서 받은 값들 넣어서 리뷰 이미지 객체에 데이터 넣기
 							saveReviewImageFile(reviewImage, newReviewSeq);
 							
-							result += reviewImageDao.insertReviewImage(reviewImage);
+							int imageResult = reviewImageDao.insertReviewImage(reviewImage);
+							result += imageResult;
+							logger.debug("리뷰 이미지 저장 결과: {}, 파일명: {}", imageResult, reviewImage.getReviewImgName());
 						}
 					}
 					else
 					{
-						logger.debug("roomImageList == null 혹은 roomImageList.size()가 0이거나 이하");
+						logger.debug("첨부된 이미지가 없습니다....roomImageList == null 혹은 roomImageList.size()가 0이거나 이하");
 					}
 				}
 				else
 				{
 					// 예약 확정, 결제 완료 아닐 떄!
+					logger.warn("리뷰 등록 조건 미충족 - 예약상태: {}, 결제상태: {}", 
+							reservation.getRsvStat(), reservation.getRsvPaymentStat());
+					return 0;
 				}
 			}
 		}
@@ -119,8 +132,10 @@ public class ReviewService {
 				logger.debug(">> 파일 없음: reviewImage 또는 file 이 null/empty");
 				return;
 			}
-			// 이미지 얻기?
+			// 이미지 파일 정보 가져오기
 			MultipartFile file = reviewImage.getFile();
+			// 원본이름 
+			String originalFileName = file.getOriginalFilename();
 			// 확장자 추출
 			String reviewImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
 			// 업로드 경로
@@ -129,11 +144,11 @@ public class ReviewService {
     		// 디렉토리가 존재하면 구분하는 코드가 포함되어 있음
     		FileUtil.createDirectory(saveDir);
     		
-    		// reviewImgSeq 부여하기 위해서
-    		short reviewImgSeq = reviewImageDao.selectMaxReviewImgSeq(newReviewSeq);
-    		reviewImgSeq++; // 이게 맞나? 2부터 시작이면 안되는데? 1부터 시작되게!!!!
+    		// reviewImgSeq 부여하기 위해서 (1부터 시작)
+    		short maxReviewImgSeq = reviewImageDao.selectMaxReviewImgSeq(newReviewSeq);
+    		short reviewImgSeq = (short)(maxReviewImgSeq + 1);
     		
-    		// 파일 이름 설정
+    		// 파일 이름 설정(리뷰시퀀스_이미지시퀀스.확장자)
     		String fileName = newReviewSeq + "_" + reviewImgSeq + "." + reviewImgExt;
     		// 파일저장
     		File saveFile = new File(saveDir + File.separator + fileName);
@@ -141,15 +156,18 @@ public class ReviewService {
     		
     		// 나머지 데이터 채우기
     		reviewImage.setReviewImgSeq(reviewImgSeq);
-    		reviewImage.setReviewImgOrigName(file.getOriginalFilename());
+    		reviewImage.setReviewImgOrigName(originalFileName);
     		reviewImage.setReviewImgName(fileName); // 바꾼 이름
     		reviewImage.setReviewImgExt(reviewImgExt);
     		reviewImage.setImgSize((int)file.getSize());
-   
+    		
+			logger.debug("이미지 파일 저장 완료 - 원본명: {}, 저장명: {}, 크기: {}", 
+					originalFileName, fileName, file.getSize());
 		}
 		catch(Exception e)
 		{
 			logger.error("[ReviewService] saveReviewImageFile 처리 중 오류 발생", e);
+			throw new RuntimeException("이미지 파일 저장 중 오류가 발생했습니다.", e);
 		}
 	}
 }

@@ -35,6 +35,9 @@ public class RoomController {
 	@Value("#{env['auth.cookie.name']}")
 	private String AUTH_COOKIE_NAME;
 	
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
 	@Value("#{env['upload.save.dir']}") // env.xml에 있음
 	private String UPLOAD_SAVE_DIR;
 	
@@ -58,7 +61,7 @@ public class RoomController {
 	 @RequestMapping(value = "/room/addProc", method = RequestMethod.POST)
 	    public String addProc(MultipartHttpServletRequest request) {
 
-	        String hostId = (String)SessionUtil.getSession(request.getSession(), "AUTH_SESSION_NAME");
+	        String hostId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
 	
 	        if(StringUtil.isEmpty(hostId))
 	        {
