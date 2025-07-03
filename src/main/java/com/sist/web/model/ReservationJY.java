@@ -7,8 +7,8 @@ public class ReservationJY
     private int rsvSeq;
     private String guestId;
     private String hostId;
-    private String rsvCheckInDt;
-    private String rsvCheckOutDt;
+    private String rsvCheckInDt;   // 변경
+    private String rsvCheckOutDt;  // 변경
     private String rsvCheckInTime;
     private String rsvCheckOutTime;
     private int numGuests;
@@ -59,23 +59,23 @@ public class ReservationJY
         this.hostId = hostId;
     }
 
-    public String getRsvCheckInDt() {
-        return rsvCheckInDt;
-    }
+	public String getRsvCheckInDt() {
+		return rsvCheckInDt;
+	}
 
-    public void setRsvCheckInDt(String rsvCheckInDt) {
-        this.rsvCheckInDt = rsvCheckInDt;
-    }
+	public void setRsvCheckInDt(String rsvCheckInDt) {
+		this.rsvCheckInDt = rsvCheckInDt;
+	}
 
-    public String getRsvCheckOutDt() {
-        return rsvCheckOutDt;
-    }
+	public String getRsvCheckOutDt() {
+		return rsvCheckOutDt;
+	}
 
-    public void setRsvCheckOutDt(String rsvCheckOutDt) {
-        this.rsvCheckOutDt = rsvCheckOutDt;
-    }
+	public void setRsvCheckOutDt(String rsvCheckOutDt) {
+		this.rsvCheckOutDt = rsvCheckOutDt;
+	}
 
-    public String getRsvCheckInTime() {
+	public String getRsvCheckInTime() {
         return rsvCheckInTime;
     }
 

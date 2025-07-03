@@ -79,7 +79,7 @@
     <tr><th>보유 마일리지</th><td><strong><fmt:formatNumber value="${userMileage}" type="currency"/></strong></td></tr>
   </table>
 
-  <form id="paymentForm" action="/payment/chargeMileage" method="post">
+  <form id="paymentForm" action="/reservation/payment/chargeMileage" method="post">
     <input type="hidden" name="roomTypeSeq" value="${reservation.roomTypeSeq}" />
     <input type="hidden" name="rsvCheckInDt" value="${reservation.rsvCheckInDt}" />
     <input type="hidden" name="rsvCheckOutDt" value="${reservation.rsvCheckOutDt}" />
@@ -96,11 +96,9 @@
 <script>
 	function confirmPayment() 
 	{
-		// EL 치환 후 불필요한 문자가 없는지 확실히 하려면 숫자만 남기기
 		const finalAmtStr = "${reservation.finalAmt}";
 		const mileageStr = "${userMileage}";
 		
-		// 숫자로 변환 (숫자 아니면 0 처리)
 		const finalAmt = Number(finalAmtStr) || 0;
 		const mileage = Number(mileageStr) || 0;
 		
@@ -108,7 +106,7 @@
 		{
 			if(confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) 
 			{
-		    	location.href = "/payment/chargeMileage"; // 혹은 마일리지 충전 페이지 URL
+				location.href = "${pageContext.request.contextPath}/reservation/payment/chargeMileage";
 		  	}
 		}
 		else 

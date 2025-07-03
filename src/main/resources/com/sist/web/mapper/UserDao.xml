@@ -144,20 +144,21 @@
 
 <!-- 마일리지 이력 추가 -->
 <insert id="insertMileageHistory" parameterType="com.sist.web.model.MiliageHistory">
-	INSERT INTO MILEAGE_HISTORY (
-		MILE_HISTORY_SEQ,
-		USER_ID,
-		TRX_TYPE,
-		TRX_AMT,
-		BALANCE_AFTER_TRX,
-		TRX_DT
+	INSERT INTO MILEAGE_HISTORY 
+	(
+	    MILE_HISTORY_SEQ,
+	    USER_ID,
+	    TRX_TYPE,
+	    TRX_AMT,
+	    BALANCE_AFTER_TRX,
+	    TRX_DT
 	) VALUES (
-		MILEAGE_HISTORY_SEQ.NEXTVAL,
-		#{userId},
-		#{trxType},
-		#{trxAmt},
-		#{balanceAfterTrx},
-		SYSDATE
+	    SEQ_MILEAGE_HISTORY_SEQ.NEXTVAL, 
+	    #{userId},
+	    #{trxType},
+	    #{trxAmt},
+	    #{balanceAfterTrx},
+	    SYSDATE
 	)
 </insert>
   	

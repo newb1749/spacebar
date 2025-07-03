@@ -41,6 +41,10 @@
       WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
     </select>
 
+    <select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
+      SELECT HOST_ID FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
+    </select>
+
     <insert id="insertRoomType" parameterType="com.sist.web.model.RoomTypeJY">
         <selectKey keyProperty="roomTypeSeq" resultType="int" order="BEFORE">
              SELECT SEQ_ROOM_TYPE_SEQ.NEXTVAL FROM DUAL
@@ -69,10 +73,10 @@
         )
     </insert>
     
-	    
-	<select id="selectRoomTypesByRoomSeq" parameterType="int" resultMap="roomTypeResultMap">
-	    SELECT * 
-	    FROM ROOM_TYPE 
-	    WHERE ROOM_SEQ = #{roomSeq}
-	</select>
+    <select id="selectRoomTypesByRoomSeq" parameterType="int" resultMap="roomTypeResultMap">
+        SELECT * 
+        FROM ROOM_TYPE 
+        WHERE ROOM_SEQ = #{roomSeq}
+    </select>
+
 </mapper>
