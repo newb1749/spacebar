@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,9 @@ public class ChatController {
 	@Autowired
 	private UserService_ks userService_ks;
 	
-	private static final String AUTH_SESSION_NAME = "sessionUserId";
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
 	
 	
 	/**

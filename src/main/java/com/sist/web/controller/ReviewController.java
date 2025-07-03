@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,25 +29,37 @@ public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
 	
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
+
+	
 	// 리뷰 작성 폼으로 이동하는 메서드
     @GetMapping("/review/writeForm")
     public String reviewWriteForm(@RequestParam("rsvSeq") int rsvSeq, Model model) 
     {
         // 테스트를 위해 예약번호(rsvSeq)를 파라미터로 받아서 view로 전달
+    	logger.debug("[ReviewController] reviewWriteForm 호출 - rsvSeq: {}", rsvSeq);
         model.addAttribute("rsvSeq", rsvSeq);
-        return "review/writeForm"; 
+        return "/review/writeForm"; 
     }
     
     // 리뷰 작성 처리 메소드
     @PostMapping("/review/writeProc")
     public String reviewWriteProc(Review review, @RequestParam("files") List<MultipartFile> files, HttpServletRequest request, Model model)
     {
-    	String userId = (String)SessionUtil.getSession(request.getSession(), "AUTH_SESSION_NAME");
+        logger.debug("[ReviewController] reviewWriteProc 시작");
+        logger.debug("받은 데이터 - rsvSeq: {}, rating: {}, title: {}", review.getRsvSeq(), review.getRating(), review.getReviewTitle());
+        logger.debug("파일 개수: {}", files != null ? files.size() : 0);
+        
+    	String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         if (userId == null || userId.isEmpty()) {
             // 비로그인 상태일 경우 로그인 페이지로 리디렉션
+        	logger.warn("비로그인 사용자 접근 시도");
             return "redirect:/user/loginForm_mj"; 
         }
         
+        logger.debug("로그인 사용자: {}", userId);
         review.setUserId(userId);
         
     	// 파일 처리 로직
@@ -63,25 +76,47 @@ public class ReviewController {
     			}
     		}
     		review.setReviewImageList(reviewImageList);
+    		logger.debug("처리할 이미지 개수: {}", reviewImageList.size());
+    	}
+    	else
+    	{
+    		logger.debug("첨부된 파일이 없습니다.");
     	}
     	
     	try
     	{
-    		int result =  reviewService.insertReviewTransaction(review);
+    		logger.debug("ReviewService.insertReviewTransaction 호출 시작");
+    		int result = reviewService.insertReviewTransaction(review);
+    		logger.debug("ReviewService.insertReviewTransaction 결과: {}", result);
+    		
     		if(result > 0)
     		{
-    			logger.debug("리뷰 및 이미지 등록 성공");
+    			logger.info("리뷰 및 이미지 등록 성공 (rsvSeq: {}, userId: {}, result: {})", review.getRsvSeq(), userId, result);
+    			 model.addAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
+    			 return "redirect:/user/myPage_mj"; 
     		}
     		else
     		{
-    			logger.warn("리뷰 등록 대상이 아님 (예약/결제 상태 불일치 또는 기타 사유)");
+    			logger.warn("리뷰 등록 대상이 아님 (rsvSeq: {}, userId: {})", review.getRsvSeq(), userId);
+    			model.addAttribute("errorMessage", "리뷰 등록 조건을 만족하지 않습니다. (예약 확정 및 결제 완료 상태가 아님)");
+    			model.addAttribute("rsvSeq", review.getRsvSeq());
+    			return "/review/writeForm";
     		}
     	}
     	catch(Exception e)
     	{
     		logger.error("[ReviewController] reviewWriteProc Exception", e);
+       		model.addAttribute("errorMessage", "리뷰 등록 중 오류가 발생했습니다.");
+       		model.addAttribute("rsvSeq", review.getRsvSeq());
+    		return "/review/writeForm"; // 오류 시 다시 작성 폼으로
     	}
-
-    	return "redirect:/"; // 등록 후 어디로?
+    	
+    }
+    
+    // 메인 페이지 (404 방지용)
+    @GetMapping("/")
+    public String index() {
+        logger.debug("[ReviewController] 루트 경로 접근");
+        return "redirect:/index"; // 또는 실제 메인 페이지 경로
     }
 }

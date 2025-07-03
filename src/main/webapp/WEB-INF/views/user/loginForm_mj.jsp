@@ -1,23 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-
 <!DOCTYPE html>
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title><spring:eval expression="@env['site.title']" /></title>
-<link rel="shortcut icon" href="/resources/images/favicon.ico" type="image/x-icon">
-<link rel="stylesheet" href="/resources/css/bootstrap.min.css" type="text/css">
-<script type="text/javascript" src="/resources/js/jquery-3.5.1.min.js"></script>
-<script type="text/javascript" src="/resources/js/icia.common.js"></script>
-<script type="text/javascript" src="/resources/js/icia.ajax.js"></script>
-
 <style>
 body {
   /* padding-top: 40px; */
@@ -29,6 +14,7 @@ body {
   max-width: 330px;
   padding: 15px;
   margin: 0 auto;
+  text-align: center; 
 }
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
@@ -59,6 +45,18 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.links a {
+    margin-right: 20px;
+    color: #6c757d; /* 회색 */
+    /* 방문했을 때 색상 변경 방지 (선택 사항) */
+    &:visited {
+        color: #6c757d;
+    } 
+    /* 마우스 오버 시 색상 변경 (선택 사항) */
+    &:hover {
+        color: #5a6268;
+    } 
+}
 </style>
 
 <script type="text/javascript">
@@ -84,7 +82,7 @@ $(document).ready(function(){
 	});
 	
 	$("#btnReg").on("click",function(){
-		location.href = "/user/regForm";
+		location.href = "/user/regForm_mj";
 	});
 });
 
@@ -175,13 +173,13 @@ function fn_loginCheck()
 		<label for="userPwd" class="sr-only">비밀번호</label>
 		<input type="password" id="userPwd" name="userPwd" class="form-control" maxlength="20" placeholder="비밀번호">
 		  
-		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인???</button>
+		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인</button>
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
-    	
-    	<div class="d-flex justify-content-between mt-2">
-		    <a href="/user/findIdForm" class="btn btn-lg btn-primary btn-block">아이디 찾기</a>
-		    <a href="/user/findPwdForm" class="btn btn-lg btn-primary btn-block">비밀번호 찾기</a>
-		</div>
+		
+		<div class="links mt-3">
+            <a href="/user/findIdForm_mj">아이디 찾기</a>
+            <a href="/user/findPwdForm_mj">비밀번호 찾기</a>
+        </div>
     	
 	</form>
 </div>
