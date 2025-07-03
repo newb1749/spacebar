@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<spring:eval expression="@env['auth.session.name']" var="AUTH_SESSION_NAME" />
 
-<c:if test="${sessionScope.sessionUserId != null}">
+<c:if test="${not empty sessionScope[AUTH_SESSION_NAME]}">
 	<%-- ======================================================== --%>
 	<%-- ===========  채팅 위젯 HTML, CSS, JAVASCRIPT 시작   =========== --%>
 	<%-- ======================================================== --%>

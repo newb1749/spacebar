@@ -5,6 +5,19 @@
 <meta charset="UTF-8">
 <title>리뷰 작성</title>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+
+<c:if test="${not empty message}">
+    <script>
+        alert('${message}');
+    </script>
+</c:if>
+
+<c:if test="${not empty errorMessage}">
+    <script>
+        alert('${errorMessage}');
+    </script>
+</c:if>
+
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -35,27 +48,41 @@
         border-color: #007bff;
     }
     
-    /* 별점 UI를 위한 CSS (중복 제거) */
-    .rating {
-        display: inline-block;
-        direction: rtl; /* 별을 오른쪽부터 채우기 위함 */
-        border: 0;
-        vertical-align: middle;
-    }
-    .rating > input {
-        display: none;
-    }
-    .rating > label {
-        font-size: 2rem;
-        color: #ddd;
-        cursor: pointer;
-    }
-    /* 선택되거나 마우스가 올라간 별과 그 이전 별들 색상 변경 */
-    .rating > input:checked ~ label,
-    .rating > label:hover,
-    .rating > label:hover ~ label {
-        color: #f7b731;
-    }
+    
+		/* 별점 컨테이너 */
+		.rating{
+		    display:inline-flex;
+		    flex-direction:row;      /* 왼→오 */
+		    gap:4px;
+		}
+		
+		/* radio 숨김 */
+		.rating input{
+		    display:none;
+		}
+		
+		/* 빈 별 아이콘(☆) – 원하는 폰트/이미지로 교체 가능 */
+		.rating label::before{
+		    content:"☆";
+		    font-size:2.3rem;
+		    color:#ddd;
+		    cursor:pointer;
+		    transition:color .15s;
+		}
+		
+		/* 마우스 hover ─ 현재 label 과 그 이전 label 들 */
+		.rating label:hover::before,
+		.rating label:hover~label::before{
+		    color:#f7b731;           /* 채워질 색 */
+		    content:"★";
+		}
+		
+		/* 선택(checked)  ─ 현재 radio 다음부터 모든 label */
+		.rating input:checked~label::before{
+		    color:#f7b731;
+		    content:"★";
+		}
+
 </style>
 </head>
 <body>
@@ -75,16 +102,28 @@
         <%-- 컨트롤러로부터 받은 rsvSeq를 hidden input으로 가지고 있다가 폼 전송 시 서버로 보냅니다. --%>
         <input type="hidden" name="rsvSeq" value="${rsvSeq}" />
 
-        <p>
-            <strong>평점:</strong>
-            <fieldset class="rating">
-                <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">⭐</label>
-                <input type="radio" id="star4" name="rating" value="4" /><label for="star4">⭐</label>
-                <input type="radio" id="star3" name="rating" value="3" /><label for="star3">⭐</label>
-                <input type="radio" id="star2" name="rating" value="2" /><label for="star2">⭐</label>
-                <input type="radio" id="star1" name="rating" value="1" /><label for="star1">⭐</label>
-            </fieldset>
-        </p>
+		<!-- ────────── ⭐ 별점 영역 ────────── -->
+		<p>
+		    <strong>평점:</strong>
+		    <div id="starRating" class="rating">
+		        <!-- radio → hidden, label 순서를 왼→오 1~5 → CSS는 LTR -->
+		        <input type="radio" id="rate1" name="rating" value="1" required>
+		        <label for="rate1" title="1점"></label>
+		
+		        <input type="radio" id="rate2" name="rating" value="2">
+		        <label for="rate2" title="2점"></label>
+		
+		        <input type="radio" id="rate3" name="rating" value="3">
+		        <label for="rate3" title="3점"></label>
+		
+		        <input type="radio" id="rate4" name="rating" value="4">
+		        <label for="rate4" title="4점"></label>
+		
+		        <input type="radio" id="rate5" name="rating" value="5">
+		        <label for="rate5" title="5점"></label>
+		    </div>
+		</p>
+
 
         <p>
             <strong>제목:</strong><br/>
