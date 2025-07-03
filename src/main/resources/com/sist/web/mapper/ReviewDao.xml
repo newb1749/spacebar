@@ -16,10 +16,13 @@
 	
 	<!-- 1. 리뷰 쓰기 전 예약 상태, 결제 상태 확인 -->
 	<select id="findStatbyRsvSeq" resultType="com.sist.web.model.Reservation" parameterType="int">
-		SELECT 
-		RSV_STAT, RSV_PAYMENT_STAT
-		 FROM reservation
-		where RSV_SEQ = #{rsvSeq}
+	    SELECT 
+	        RSV_STAT         AS rsvStat,        
+	        RSV_PAYMENT_STAT AS rsvPaymentStat  
+	    FROM 
+	        reservation
+	    WHERE 
+	        RSV_SEQ = #{rsvSeq}
 	</select>
 	
 	<!-- 2. 리뷰 등록 -->
