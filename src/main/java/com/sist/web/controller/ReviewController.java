@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sist.web.model.Review;
 import com.sist.web.model.ReviewImage;
@@ -46,7 +47,7 @@ public class ReviewController {
     
     // 리뷰 작성 처리 메소드
     @PostMapping("/review/writeProc")
-    public String reviewWriteProc(Review review, @RequestParam("files") List<MultipartFile> files, HttpServletRequest request, Model model)
+    public String reviewWriteProc(Review review, @RequestParam("files") List<MultipartFile> files, HttpServletRequest request, RedirectAttributes redirectAttributes)
     {
         logger.debug("[ReviewController] reviewWriteProc 시작");
         logger.debug("받은 데이터 - rsvSeq: {}, rating: {}, title: {}", review.getRsvSeq(), review.getRating(), review.getReviewTitle());
@@ -91,32 +92,30 @@ public class ReviewController {
     		
     		if(result > 0)
     		{
-    			logger.info("리뷰 및 이미지 등록 성공 (rsvSeq: {}, userId: {}, result: {})", review.getRsvSeq(), userId, result);
-    			 model.addAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
-    			 return "redirect:/user/myPage_mj"; 
+    			 logger.info("리뷰 및 이미지 등록 성공 (rsvSeq: {}, userId: {}, result: {})", review.getRsvSeq(), userId, result);
+    			 // model.addAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
+    			 //return "redirect:/user/myPage_mj";
+    			 redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
+    			 
     		}
     		else
     		{
     			logger.warn("리뷰 등록 대상이 아님 (rsvSeq: {}, userId: {})", review.getRsvSeq(), userId);
-    			model.addAttribute("errorMessage", "리뷰 등록 조건을 만족하지 않습니다. (예약 확정 및 결제 완료 상태가 아님)");
+    			/* model.addAttribute("errorMessage", "리뷰 등록 조건을 만족하지 않습니다. (예약 확정 및 결제 완료 상태가 아님)");
     			model.addAttribute("rsvSeq", review.getRsvSeq());
-    			return "/review/writeForm";
+    			return "/review/writeForm"; */
+    			redirectAttributes.addFlashAttribute("errorMessage", "리뷰 등록 조건을 만족하지 않습니다.");
     		}
     	}
     	catch(Exception e)
     	{
     		logger.error("[ReviewController] reviewWriteProc Exception", e);
-       		model.addAttribute("errorMessage", "리뷰 등록 중 오류가 발생했습니다.");
+       		/* model.addAttribute("errorMessage", "리뷰 등록 중 오류가 발생했습니다.");
        		model.addAttribute("rsvSeq", review.getRsvSeq());
-    		return "/review/writeForm"; // 오류 시 다시 작성 폼으로
+    		return "/review/writeForm"; // 오류 시 다시 작성 폼으로 */
+    		redirectAttributes.addFlashAttribute("errorMessage", "리뷰 등록 중 오류가 발생했습니다.");
     	}
-    	
-    }
-    
-    // 메인 페이지 (404 방지용)
-    @GetMapping("/")
-    public String index() {
-        logger.debug("[ReviewController] 루트 경로 접근");
-        return "redirect:/index"; // 또는 실제 메인 페이지 경로
+ 
+    return "redirect:/user/myPage_mj";
     }
 }

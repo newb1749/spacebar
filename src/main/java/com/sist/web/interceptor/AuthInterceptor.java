@@ -192,7 +192,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter
 			else
 			{
 				// 일반 페이지 요청일 경우 로그인 페이지로 리다이렉트
-				response.sendRedirect("/user/login"); // [수정] 로그인 페이지 경로로 변경
+				response.sendRedirect("/user/loginForm_mj"); // [수정] 로그인 페이지 경로로 변경
 			}
 		}
 		
