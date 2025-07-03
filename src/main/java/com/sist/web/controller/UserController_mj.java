@@ -70,7 +70,7 @@ public class UserController_mj
 				{
 					if(StringUtil.equals(user.getUserStat(), "Y"))
 					{
-						request.getSession().setAttribute(AUTH_SESSION_NAME, userId);
+						request.getSession().setAttribute("SESSION_USER_ID", userId);
 						
 						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 						// "loginUser" 라는 이름으로 사용자 객체 전체를 세션에 추가로 저장

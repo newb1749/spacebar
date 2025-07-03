@@ -22,5 +22,6 @@ public interface RoomDao {
      * @return 추가된 행의 수
      */
     public int insertRoomFacility(@Param("roomSeq") int roomSeq, @Param("facSeq") int facSeq);
+
     
 }
