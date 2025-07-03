@@ -21,8 +21,12 @@ public class Review implements Serializable{
 	private Date regDt;							// 등록일
 	private Date updateDt;						// 마지막 업데이트 일시
 	
+    // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<ReviewImage> ReviewImageList;  // 리스트로 ReviewImage
-	
+
+    private String roomTitle;       			// 숙소명 (JOIN)
+    private String roomTypeTitle;   			// 객실명 (JOIN)
+    
 	public Review()
 	{
 		reviewSeq = 0;

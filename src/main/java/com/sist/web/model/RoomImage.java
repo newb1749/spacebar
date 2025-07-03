@@ -22,8 +22,8 @@ public class RoomImage implements Serializable{
 	private short sortOrder;				// 정렬 순서
 	private String regDt;					// 등록일
 	
-	// [추가] 파일 데이터 운반을 위한 임시 필드 (DB 컬럼 아님)
-	private MultipartFile file;
+    // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
+	private MultipartFile file;				// 파일 데이터 운반을 위한 임시 필드 
 	
 	public RoomImage()
 	{
