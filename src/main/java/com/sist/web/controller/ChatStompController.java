@@ -9,7 +9,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import com.sist.common.util.StringUtil;
 import com.sist.web.model.ChatMessage;
 import com.sist.web.model.User_mj;
 import com.sist.web.service.ChatService;
@@ -23,35 +22,33 @@ public class ChatStompController {
     private ChatService chatService;
     
     @Autowired
-    private UserService_mj userService;
+    private UserService_mj userService_mj; // 이름을 userService_mj로 명확히 함
 
     /**
      * WebSocket/STOMP를 통해 들어오는 메시지를 처리.
      */
     @MessageMapping("/chat/sendMessage/{chatRoomSeq}")
     @SendTo("/topic/chat/room/{chatRoomSeq}")
+    // [최종 수정] 오류를 유발하는 HttpServletRequest 파라미터를 완전히 제거합니다.
     public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage) {
-        logger.debug("STOMP Message Received: ", chatMessage.getMessageContent());
-
+        
+        logger.debug("STOMP Message Received: {}", chatMessage.getMessageContent());
+        
+        // [수정] senderId는 클라이언트가 보낸 chatMessage 객체에서 직접 가져옵니다.
         String senderId = chatMessage.getSenderId();
-
-        User_mj sender = userService.userSelect(senderId);
+        
+        // (보안 강화) senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
+        User_mj sender = userService_mj.userSelect(senderId);
         
         if(sender != null)
         {
-        	// 별명, 이미지확장자 
-        	chatMessage.setSenderName(sender.getNickName());
-        	chatMessage.setSenderProfileImgExt(sender.getProfImgExt());
+            chatMessage.setSenderName(sender.getNickName());
+            chatMessage.setSenderProfileImgExt(sender.getProfImgExt()); // 이전에 추가한 프로필 이미지 확장자 설정
         }
         else
         {
-        	// 비정상적인 접근일 수 있으므로 로깅 및 예외처리
-        	logger.warn("Cannot find user with ID: " + senderId + ". Using senderName from client.");
-        	// 클라이언트가 보낸 닉네임이 없다면 '일 수 없음'으로 처리
-        	if(StringUtil.equals(chatMessage.getSenderName(), "") || StringUtil.isEmpty(chatMessage.getSenderName()))
-        	{
-        		chatMessage.setSenderName("알수없음");
-        	}
+            logger.warn("Cannot find user with ID: " + senderId);
+            chatMessage.setSenderName("알수없음");
         }
 
         // 방 번호와 서버 시간 설정

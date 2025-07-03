@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <spring:eval expression="@env['auth.session.name']" var="AUTH_SESSION_NAME" />
+<c:set var="userId" value="${sessionScope['SESSION_USER_ID']}" />
 
 <c:if test="${not empty sessionScope[AUTH_SESSION_NAME]}">
 	<%-- ======================================================== --%>
@@ -185,7 +186,8 @@ $(document).ready(function() {
     const backToListBtn = $('#back-to-list-btn');
     
     // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)
-    const USER_ID = "${sessionScope.sessionUserId}";
+    //const USER_ID = "${sessionScope.sessionUserId}";
+    const USER_ID = "${userId}";
     const USER_NICKNAME = "<%= ((com.sist.web.model.User_mj)session.getAttribute("loginUser")) != null ? ((com.sist.web.model.User_mj)session.getAttribute("loginUser")).getNickName() : "" %>";
 
     // ========================================================

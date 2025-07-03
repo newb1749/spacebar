@@ -52,4 +52,45 @@
 	</insert>
 	
 	
+	<select id="selectMyReviews" parameterType="string" resultType="com.sist.web.model.Review">
+    SELECT
+        R.REVIEW_SEQ,
+        R.RSV_SEQ,
+        R.REVIEW_TITLE,
+        R.RATING,
+        TO_CHAR(R.REG_DT, 'YYYY-MM-DD') AS REG_DT,
+        RM.ROOM_NAME AS roomName
+    FROM
+        REVIEW R
+    INNER JOIN RESERVATION RS ON R.RSV_SEQ = RS.RSV_SEQ
+    INNER JOIN ROOM RM ON RS.ROOM_SEQ = RM.ROOM_SEQ
+    WHERE
+        R.USER_ID = #{userId}
+        AND R.REVIEW_STAT = 'Y'
+    ORDER BY
+        R.REVIEW_SEQ DESC
+	</select>
+	
+	<!--  1:N (일대다) 매핑 -->
+	<resultMap id="reviewWithImagesResultMap" type="com.sist.web.model.Review" extends="reviewResultMap">
+	    <collection property="reviewImageList" ofType="com.sist.web.model.ReviewImage" 
+	                select="com.sist.web.dao.ReviewImageDao.selectReviewImages" column="REVIEW_SEQ" />
+	</resultMap>
+	
+	<select id="selectReview" parameterType="int" resultMap="reviewWithImagesResultMap">
+	    SELECT * FROM REVIEW WHERE REVIEW_SEQ = #{reviewSeq}
+	</select>
+	
+	<update id="inactiveReview" parameterType="com.sist.web.model.Review">
+	    UPDATE REVIEW
+	    SET
+	        REVIEW_STAT = 'N',
+	        UPDATE_DT = SYSDATE
+	    WHERE
+	        REVIEW_SEQ = #{reviewSeq}
+	    AND 
+	        USER_ID = #{userId}
+	</update>
+	
+
 </mapper>

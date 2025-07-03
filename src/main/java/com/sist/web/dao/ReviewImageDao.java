@@ -1,5 +1,7 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.model.ReviewImage;
@@ -11,4 +13,10 @@ public interface ReviewImageDao {
 	
 	// 리뷰 등록
 	public int insertReviewImage(ReviewImage reviewImage);
+	
+    // 리뷰에 포함된 이미지 목록 조회
+    public List<ReviewImage> selectReviewImages(int reviewSeq);
+
+    // 리뷰에 포함된 이미지 모두 삭제
+    public int deleteReviewImages(int reviewSeq);
 }
