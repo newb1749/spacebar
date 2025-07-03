@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,8 @@ public class CartController {
 
     private static Logger logger = LoggerFactory.getLogger(CartController.class);
     
-    public static final String AUTH_SESSION_NAME = "sessionUserId";
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
     
     //장바구니 등록 (AJAX)
     // ✅ 일반 HttpServletRequest 로 변경
@@ -40,16 +42,20 @@ public class CartController {
     public Response<Object> addCart(HttpServletRequest request) {
         String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
         int    roomTypeSeq    = HttpUtil.get(request, "roomTypeSeq",    0);
-        String checkIn        = HttpUtil.get(request, "checkIn",       "");
-        String checkOut       = HttpUtil.get(request, "checkOut",      "");
-        int    guests         = HttpUtil.get(request, "guests",        1);
+        String checkInDt       = HttpUtil.get(request, "rsvCheckInDt",       "");
+        String checkOutDt      = HttpUtil.get(request, "rsvCheckOutDt",      "");
+        String checkInTime        = HttpUtil.get(request, "rsvCheckInTime",       "");
+        String checkOutTime       = HttpUtil.get(request, "rsvCheckOutTime",      "");
+        int    guests         = HttpUtil.get(request, "numGuests",        1);
         int    totalAmt       = HttpUtil.get(request, "totalAmt",      0);
 
         Cart cart = new Cart();
         cart.setUserId         (sessionUserId);
         cart.setRoomTypeSeq    (roomTypeSeq);
-        cart.setCartCheckInDt  (checkIn);
-        cart.setCartCheckOutDt (checkOut);
+        cart.setCartCheckInDt  (checkInDt);
+        cart.setCartCheckOutDt (checkOutDt);
+        cart.setCartCheckOutDt (checkInTime);
+        cart.setCartCheckOutDt (checkOutTime);
         cart.setCartGuestsNum  (guests);
         cart.setCartTotalAmt   (totalAmt);
 

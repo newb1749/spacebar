@@ -35,6 +35,9 @@ public class CouponControllerJY
 
     @Value("#{env['auth.cookie.name']}") // ⬅️ 추가
     private String AUTH_COOKIE_NAME;     // ⬅️ 추가
+    
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 
     @GetMapping("/listJY")
     public String couponList(Model model)  

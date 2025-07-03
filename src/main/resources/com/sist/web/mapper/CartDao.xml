@@ -47,7 +47,7 @@
 	        )
 	        VALUES (
 	            #{cartSeq}, #{userId}, #{cartGuestsNum}, #{cartTotalAmt}, 
-	            SYSDATE, SYSDATE, #{roomTypeSeq}, #{cartCheckInDt}, #{cartCheckOutDt}, #{cartCheckInTime}, #{cartCheckOutDt}
+	            SYSDATE, SYSDATE, #{roomTypeSeq}, #{cartCheckInDt}, #{cartCheckOutDt}, #{cartCheckInTime}, #{cartCheckOutTime}
 	        )
 	    </insert>
     

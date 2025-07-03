@@ -10,6 +10,7 @@ import com.sist.web.service.RoomTypeServiceJY;
 import com.sist.web.service.UserService_mj;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,8 @@ public class ReservationControllerJY
     
     @Autowired
     private RoomServiceJY roomService;
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 
 
     /**

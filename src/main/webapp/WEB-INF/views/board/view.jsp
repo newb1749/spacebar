@@ -6,192 +6,140 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
-<style>
-	
-<style>
-/* 네비게이션 바 배경색 (어두운 녹색 계열, #00으로 시작, 순차적으로) */
-:root {
-  --nav-base-color: #005000;   /* 기본 중간 녹색 (약간 어두운 편) */
-  --nav-dark-color: #003300;   /* 가장 어두운 녹색 (삭제 버튼) */
-  --nav-light-color: #008000;  /* 기본보다 약간 밝은 녹색 (답글, 수정 등) */
-  --nav-lighter-color: #009900; /* 가장 밝은 녹색 (리스트, 취소 등) */
-  --white-text: #ffffff;      /* 버튼 텍스트 색상 */
-}
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <style>
+  /*----------------------------------
+    1. 공통 변수
+  -----------------------------------*/
+  :root {
+    --clr-primary:    #007bff;  /* 답글·수정 */
+    --clr-danger:     #dc3545;  /* 삭제 */
+    --clr-border:     #dee2e6;
+    --clr-text:       #212529;
+    --clr-muted:      #6c757d;
+    --space:          0.5rem;
+    --small:          0.75rem;
+  }
 
-/* 네비게이션 높이만큼 본문 전체를 아래로 밀기 */
-body {
-  padding-top: 80px; /* ← 네비게이션 높이만큼 설정 (네비 높이 + 상하 패딩 합산) */
-}
-.view-wrapper {
-  margin-top: 50px;
-}
+  /*----------------------------------
+    2. 기존 스타일 유지 부분
+  -----------------------------------*/
+  body {
+    padding-top: 120px;
+    background: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--clr-text);
+    line-height: 1.4;
+  }
+  .container { max-width: 1300px; margin: 0 auto; padding: var(--space); }
+  .view-card {
+    background: #fff;
+    border: 1px solid var(--clr-border);
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .view-title { font-size: 1.5rem; color: var(--clr-primary); margin-bottom: .25rem; }
+  .view-meta {
+    font-size: var(--small);
+    color: var(--clr-muted);
+    margin-bottom: .75rem;
+  }
+  .view-content {
+    background: #fdfdfe;
+    border: 1px solid var(--clr-border);
+    border-radius: 0.25rem;
+    padding: .75rem;
+    font-size: 1rem;
+  }
 
-.view-card {
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  padding: 25px;
-  margin-bottom: 30px;
-}
+  /* 액션 버튼 (리스트/최상위 답글) */
+  .action-buttons-wrapper .btn-clean {
+    background: var(--clr-primary);
+    color: #fff !important;
+    font-size: .75rem;
+    padding: .25rem .6rem;
+    margin-right: var(--space);
+  }
+  .action-buttons-wrapper .btn-list { background: var(--clr-muted); }
+  .action-buttons-wrapper .btn-clean:hover { opacity: .85; }
 
-.view-title {
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #003c57;
-  margin-bottom: 10px;
-}
+  /*----------------------------------
+    3. 댓글 구분선만
+  -----------------------------------*/
+  .comment-box { margin-top: 1rem; }
+  .comment-item {
+    background: none;
+    border: none;
+    border-bottom: 1px dotted var(--clr-border);
+    padding: .75rem 0;
+    margin: 0;
+  }
 
-.view-meta {
-  font-size: 0.95rem;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.view-content {
-  font-size: 1.1rem;
-  padding: 1px 1px; /* 전체 여백 최소화 */
-  padding-left: 7px; /* ← 왼쪽 여백만 따로 부여 */
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  min-height: 150px;
-  white-space: pre-line;
-  margin: 0;
-  line-height: 0.7;
-}
-
-.deleted-comment {
-  color: #999;
-  font-style: italic;
-  margin-bottom: 5px;
-}
-  
-/* 공통 버튼 스타일 */
-.btn-clean {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: all 0.2s ease-in-out; /* 부드러운 전환 효과 */
-  color: var(--white-text) !important; /* 글자색 흰색 강제 적용 */
-  white-space: nowrap; /* 버튼 내용이 길어져도 줄바꿈되지 않도록 방지 */
-}
-
-.btn-clean:hover {
-  filter: brightness(1.1); /* 호버 시 10% 더 밝게 */
-}
-
-/* 버튼별 컬러 */
-.btn-list {
-  background-color: var(--nav-lighter-color) !important; /* 리스트 버튼: 가장 밝은 톤 */
-}
-.btn-reply {
-  background-color: var(--nav-light-color) !important; /* 답글 버튼: 약간 밝은 톤 */
-}
-.btn-edit {
-  background-color: var(--nav-light-color) !important; /* 수정 버튼: 약간 밝은 톤 */
-}
-.btn-delete {
-  background-color: var(--nav-dark-color) !important; /* 삭제 버튼: 가장 어두운 톤 */
-}
-.btn-cancel {
-  background-color: var(--nav-lighter-color) !important; /* 취소 버튼: 가장 밝은 톤 */
-}
-
-.btn-reply-submit,
-.btn-edit-submit {
-  background-color: var(--nav-light-color) !important; /* 답글/수정 완료 버튼: 약간 밝은 톤 */
-  color: var(--white-text) !important;
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 6px;
-  border: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-reply-submit:hover,
-.btn-edit-submit:hover {
-  filter: brightness(1.1);
-}
-
-/* 답글 입력창 */
-textarea {
-  border: 1px solid #ced4da;
-  border-radius: 6px;
-  padding: 6px;
-  font-size: 14px;
-  resize: vertical; /* 세로로만 크기 조절 가능하도록 */
-  box-sizing: border-box; /* 패딩, 보더가 width에 포함되도록 */
-  width: 100%; /* 너비 100% 명시 */
-}
-
-/* 댓글 줄여쓰기 및 정렬 */
-.comment-item {
-  border-bottom: 1px solid #f1f1f1;
-  padding: 10px 0;
-  margin-bottom: 5px;
-}
-
-.comment-author {
-  font-weight: bold;
-  margin-right: 8px;
-}
-
-.comment-date {
-  color: #999;
-  font-size: 13px;
-}
-
-.comment-content {
-  margin: 5px 0;
-  font-size: 14px;
-  white-space: pre-wrap;
-}
-
-/* 댓글 정보(작성자, 날짜)와 버튼을 같은 줄에 배치하고 정렬하기 위한 컨테이너 */
-.comment-info-and-buttons {
+  .comment-info-and-buttons {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
-}
+  }
+  .comment-author { font-weight: bold; color: var(--clr-primary); }
+  .comment-date   { font-size: var(--small); color: var(--clr-muted); }
 
-/* 버튼 그룹을 묶을 컨테이너 */
-.comment-buttons {
-    display: flex;
-    gap: 6px;
-    white-space: nowrap; /* 버튼들이 줄바꿈되지 않도록 방지 */
-}
+  /*----------------------------------
+    4. 댓글 버튼 → 텍스트 링크 형태
+  -----------------------------------*/
+  .comment-buttons button {
+    background: none !important;
+    border: none;
+    padding: 0;
+    margin-left: var(--space);
+    font-size: var(--small);
+    cursor: pointer;
+    transition: color .15s;
+  }
+  .comment-buttons .btn-reply { color: var(--clr-primary); }
+  .comment-buttons .btn-edit  { color: var(--clr-primary); }
+  .comment-buttons .btn-delete{ color: var(--clr-danger); }
 
-/* 게시물 하단 액션 버튼들을 감싸는 컨테이너 */
-.action-buttons-wrapper {
-    display: flex; /* 버튼들을 가로로 나열 */
-    gap: 8px; /* 버튼들 사이 간격 */
-    margin-top: 20px;
-    flex-wrap: wrap; /* 공간이 부족하면 다음 줄로 넘어가도록 설정 */
-}
+  .comment-buttons button:hover {
+    text-decoration: underline;
+    opacity: .8;
+  }
 
-/* 답글/수정 입력 폼 영역의 공통 스타일 */
-.reply-edit-form-wrapper {
-    margin-top: 10px; /* 위쪽 요소와의 간격 */
-    margin-bottom: 10px; /* 아래쪽 요소와의 간격 */
-}
+  /*----------------------------------
+    5. 답글/수정 textarea + 버튼
+  -----------------------------------*/
+  .reply-edit-form-wrapper {
+    margin-top: var(--space);
+  }
+  textarea {
+    width: 100%;
+    padding: .5rem;
+    font-size: .9rem;
+    border: 1px solid var(--clr-border);
+    border-radius: 0.25rem;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .reply-edit-form-buttons {
+    text-align: right;
+    margin-top: .5rem;
+  }
+  .reply-edit-form-buttons .btn-clean {
+    background: var(--clr-primary);
+    color: #fff !important;
+    font-size: .75rem;
+    padding: .25rem .6rem;
+    margin-left: var(--space);
+  }
+  .reply-edit-form-buttons .btn-cancel {
+    background: var(--clr-muted);
+  }
 
-/* 답글/수정 폼 내부에 있는 버튼들을 위한 컨테이너 */
-.reply-edit-form-buttons {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px; /* textarea 아래 여백 */
-    justify-content: flex-end; /* 버튼들을 오른쪽으로 정렬 */
-}
-</style>
-	  
-</style>
-
+  </style>
 </head>
+
+
 <body>
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -252,8 +200,8 @@ textarea {
 		          <div class="comment-buttons"> <%-- 버튼들을 묶는 div --%>
 		            <button type="button" class="btn-clean btn-reply btn-reply" data-parent="${freeBoardComment.freeBoardCmtSeq}">답글</button>
 		
-		            <c:if test="${boardMe eq 'Y'}">
-		              <button type="button" class="btn-clean btn-edit btn-edit" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">수정</button>
+		            <c:if test="${sessionUserId eq freeBoardComment.userId}">
+		              <button type="button" class="btn-clean btn-edit btn-cmt-edit" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">수정</button>
 		              <button type="button" class="btn-clean btn-delete btn-cmt-delete" data-cmt-seq="${freeBoardComment.freeBoardCmtSeq}">삭제</button>
 		            </c:if>
 		          </div>
@@ -301,8 +249,8 @@ $(document).ready(function() {
 	
     // 최상위 댓글 "답글" 버튼
     $("#btnReply").on("click", function() {
-        $("#topReplyArea").slideDown();
-    });
+	  $("#topReplyArea").slideToggle();
+	});
 
     // 최상위 댓글 "취소" 버튼
     $("#btnReplyCancel").on("click", function() {
@@ -311,13 +259,13 @@ $(document).ready(function() {
     
     // 대댓글 "답글" 버튼 → 해당 입력창만 보여줌
     $(document).on("click", ".btn-reply", function() {
-	    var parentCmtSeq = $(this).data("parent");
-	    // 1. 모든 replyArea 감춤
-	    $(".reply-area").slideUp();
-		
-	    // 2. 해당 댓글의 입력창만 보여줌
-	    $('#replyArea-' + parentCmtSeq).slideDown();
-		});
+    	var parentCmtSeq = $(this).data("parent");
+	    var $areas  = $('#replyArea-' + parentCmtSeq);
+	    // 다른 열려 있는 editArea 닫기
+	   $("[id^='replyArea-']").not($areas).slideUp();
+	    // 이 댓글의 editArea 토글
+	   $areas.slideToggle();
+	  });
 	
 	    // 대댓글 "취소" 버튼
 	    $(document).on("click", ".btn-reply-cancel", function() {
@@ -356,45 +304,51 @@ $(document).ready(function() {
             }
         });
     });
+    
+    $(function(){
+    	  // (1) “수정” 버튼 클릭 → 해당 댓글만 토글
+    	  $(document).on('click', '.btn-cmt-edit', function(){
+    	    var cmtSeq = $(this).data('cmt-seq');
+    	    var $area  = $('#editArea-' + cmtSeq);
+    	    // 다른 열려 있는 editArea 닫기
+    	   $("[id^='editArea-']").not($area).slideUp();
+    	    // 이 댓글의 editArea 토글
+    	   $area.slideToggle();
+    	  });
 
+    	  // (2) “취소” 버튼 클릭 → 해당 댓글 editArea 닫기
+    	  $(document).on('click', '.btn-edit-cancel', function(){
+    	    var cmtSeq = $(this).data('cmt-seq');
+    	    $("#editArea-" + cmtSeq).slideUp();
+    	  });
 
+    	  // (3) “수정 완료” 버튼 클릭 → AJAX 호출
+    	  $(document).on('click', '.btn-edit-submit', function(){
+    	    const cmtSeq    = $(this).data('cmt-seq');
+    	    const newContent = $("#editContent-" + cmtSeq).val().trim();
+    	    if (!newContent) {
+    	      alert("수정할 내용을 입력하세요.");
+    	      return;
+    	    }
+    	    $.post("/board/commentUpdate", {
+    	      freeBoardCmtSeq:      cmtSeq,
+    	      freeBoardCmtContent:  newContent
+    	    }, function(res){
+    	      if (res.code === 0) {
+    	        alert("댓글이 수정되었습니다.");
+    	        location.reload();
+    	      } else {
+    	        alert("수정 실패: " + res.message);
+    	      }
+    	    }, "json").fail(function(xhr, status, err){
+    	      alert("오류 발생: " + err);
+    	    });
+    	  });
+    	});
     
    $("#btnList").on("click", function(){
       document.bbsForm.action = "/board/list";
       document.bbsForm.submit();
-   });
-
-   <c:if test="${boardMe eq 'Y'}">
-   $("#btnUpdate").on("click", function(){
-      document.bbsForm.action = "/board/updateForm";
-      document.bbsForm.submit();
-   });
-
-   $("#btnDelete").on("click", function(){
-      if(confirm("해당 게시물을 삭제하시겠습니까?")) {
-         $.ajax({
-            type: "POST",
-            url: "/board/delete",
-            data: {
-               freeBoardSeq: <c:out value="${freeBoardSeq}" />
-            },
-            dataType: "JSON",
-            beforeSend: function(xhr) {
-               xhr.setRequestHeader("AJAX", "true");
-            },
-            success: function(response) {
-               if(response.code == 0) {
-                  alert("게시물이 삭제되었습니다.");
-                  location.href = "/board/list";
-               } else {
-                  alert("삭제에 실패했습니다. 코드: " + response.code);
-               }
-            },
-            error: function(xhr, status, error) {
-               alert("오류 발생: " + error);
-            }
-         });
-      }
    });
    
    $(document).on("click", ".btn-cmt-delete", function(){
@@ -424,55 +378,40 @@ $(document).ready(function() {
 	        });
 	    }
 	});
-   
-   $(document).on("click", ".btn-edit", function() {
-	    var cmtSeq = $(this).data("cmt-seq");
-	    
-	    // 다른 수정 폼 닫기
-	    $("[id^='editArea-']").slideUp();
-	    
-	    // 해당 수정 폼 열기
-	    $('#editArea-' + cmtSeq).slideDown();
-	});
-   $(document).off("click", ".btn-edit-cancel").on("click", ".btn-edit-cancel", function() {
-	    var cmtSeq = $(this).data("cmt-seq");
-	    $('#editArea-' + cmtSeq).stop(true, true).slideUp();
-	});
+  
+
+	   $("#btnUpdate").on("click", function(){
+	      document.bbsForm.action = "/board/updateForm";
+	      document.bbsForm.submit();
+	   });
 	
-   $(document).on("click", ".btn-edit-submit", function() {
-	    var cmtSeq = $(this).data("cmt-seq");
-	    var newContent = $('#editContent-' + cmtSeq).val().trim();
-
-	    if (newContent === "") {
-	        alert("수정할 내용을 입력하세요.");
-	        return;
-	    }
-
-	    $.ajax({
-	        type: "POST",
-	        url: "/board/commentUpdate",  // Controller 매핑
-	        data: {
-	            freeBoardCmtSeq: cmtSeq,
-	            freeBoardCmtContent: newContent
-	        },
-	        dataType: "json",
-	        success: function(res) {
-	            if (res.code === 0) {
-	                alert("댓글이 수정되었습니다.");
-	                location.reload();
-	            } else {
-	                alert("수정 실패: " + res.message);
+	   $("#btnDelete").on("click", function(){
+	      if(confirm("해당 게시물을 삭제하시겠습니까?")) {
+	         $.ajax({
+	            type: "POST",
+	            url: "/board/delete",
+	            data: {
+	               freeBoardSeq: <c:out value="${freeBoardSeq}" />
+	            },
+	            dataType: "JSON",
+	            beforeSend: function(xhr) {
+	               xhr.setRequestHeader("AJAX", "true");
+	            },
+	            success: function(response) {
+	               if(response.code == 0) {
+	                  alert("게시물이 삭제되었습니다.");
+	                  location.href = "/board/list";
+	               } else {
+	                  alert("삭제에 실패했습니다. 코드: " + response.code);
+	               }
+	            },
+	            error: function(xhr, status, error) {
+	               alert("오류 발생: " + error);
 	            }
-	        },
-	        error: function(xhr, status, error) {
-	            alert("오류 발생: " + error);
-	        }
-	    });
-	});
+	         });
+	      }
+	   });
 
-
-
-   </c:if>
 });
 
 </script>

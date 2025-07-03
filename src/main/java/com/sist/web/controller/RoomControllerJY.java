@@ -5,7 +5,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,8 @@ import com.sist.web.util.HttpUtil;
 @Controller("roomControllerJY")
 public class RoomControllerJY 
 {
+	private static Logger logger = LoggerFactory.getLogger(RoomControllerJY.class);
+	
     @Autowired
     private RoomService roomService;
 
@@ -30,6 +35,10 @@ public class RoomControllerJY
 
     @Autowired
     private RoomTypeServiceJY roomTypeService;
+    
+    
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 
     @RequestMapping(value = "/room/roomDetail", method = RequestMethod.GET)
     public String roomDetail(HttpServletRequest request, Model model) 
@@ -66,7 +75,11 @@ public class RoomControllerJY
                 }
 
                 model.addAttribute("room", room);
-
+                
+                model.addAttribute("roomCatSeq", room.getRoomCatSeq());
+                
+                logger.debug("roomCatSeq = " + room.getRoomCatSeq());
+                
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
                 List<RoomTypeJY> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
                 model.addAttribute("roomTypes", roomTypes);

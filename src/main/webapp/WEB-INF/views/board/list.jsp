@@ -188,5 +188,3 @@ function fn_list(curPage)
 </html>
 
 
-
-

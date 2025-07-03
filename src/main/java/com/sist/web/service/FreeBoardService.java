@@ -61,7 +61,7 @@ public class FreeBoardService {
 	}
 	
 	//게시물 상세 조회
-	public FreeBoard boardView(long freeBoardSeq, String cookieUserId)
+	public FreeBoard boardView(long freeBoardSeq, String sessionUserId)
 	{
 		FreeBoard freeBoard = null;
 		
@@ -71,7 +71,7 @@ public class FreeBoardService {
 			
 			if(freeBoard != null)
 			{
-				if(cookieUserId != null && !StringUtil.equals(freeBoard.getUserId(), cookieUserId))
+				if(sessionUserId != null && !StringUtil.equals(freeBoard.getUserId(), sessionUserId))
 				{
 					//조회수 증가
 					freeBoardDao.boardCntPlus(freeBoardSeq);	

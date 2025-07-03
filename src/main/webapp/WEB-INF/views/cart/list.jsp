@@ -169,50 +169,34 @@
           <div class="divider"></div>
           <div class="type-title">${cart.roomTypeTitle}</div>
 
-          <!-- 날짜/시간 파싱 -->
-          <fmt:parseDate
-            var="inDate"
-            value="${cart.cartCheckInDt}"
-            pattern="yyyyMMdd"
-          />
-          <fmt:parseDate
-            var="outDate"
-            value="${cart.cartCheckOutDt}"
-            pattern="yyyyMMdd"
-          />
-          <fmt:parseDate
-            var="inTime"
-            value="${cart.cartCheckInTime}"
-            pattern="HHmm"
-          />
-          <fmt:parseDate
-            var="outTime"
-            value="${cart.cartCheckOutTime}"
-            pattern="HHmm"
-          />
+      
+		  <fmt:parseDate var="inDate"
+               value="${cart.cartCheckInDt}"
+               pattern="yyyyMMdd" />
 
-          <div class="cart-meta">
-            <fmt:formatDate
-              value="${inDate}"
-              pattern="yyyy년 M월 d일"
-            />
-            &nbsp;~&nbsp;
-            <fmt:formatDate
-              value="${outDate}"
-              pattern="yyyy년 M월 d일"
-            />
-            &nbsp;|&nbsp;
-            <fmt:formatDate
-              value="${inTime}"
-              pattern="a h시"
-            />
-            &nbsp;~&nbsp;
-            <fmt:formatDate
-              value="${outTime}"
-              pattern="a h시"
-            />
-            &nbsp;|&nbsp; ${cart.cartGuestsNum}명
-          </div>
+		<fmt:parseDate var="outDate"
+		               value="${cart.cartCheckOutDt}"
+		               pattern="yyyyMMdd" />
+		
+		<fmt:parseDate var="inTime"
+		               value="${cart.cartCheckInTime}"
+		               pattern="HHmm" />
+		
+		<fmt:parseDate var="outTime"
+		               value="${cart.cartCheckOutTime}"
+		               pattern="HHmm" />
+
+         
+		  <div class="cart-meta">
+		    <fmt:formatDate value="${inDate}"  pattern="yyyy년 M월 d일" />
+		    &nbsp;~&nbsp;
+		    <fmt:formatDate value="${outDate}" pattern="yyyy년 M월 d일" />
+		    &nbsp;|&nbsp;
+		    <fmt:formatDate value="${inTime}"  pattern="a h시" />
+		    &nbsp;~&nbsp;
+		    <fmt:formatDate value="${outTime}" pattern="a h시" />
+		    &nbsp;|&nbsp; ${cart.cartGuestsNum}명
+		  </div>
 
           <div class="cart-price">
             <fmt:formatNumber value="${cart.cartTotalAmt}" type="number"/>원

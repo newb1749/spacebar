@@ -43,7 +43,8 @@ public class WishlistController {
 	private static final int LIST_COUNT = 10; 
 	private static final int PAGE_COUNT = 3;
 	
-	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	@Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 	
 	//위시리스트 추가
 	@RequestMapping(value="/wishlist/add", method=RequestMethod.POST)

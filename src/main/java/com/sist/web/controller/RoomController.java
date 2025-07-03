@@ -47,6 +47,9 @@ public class RoomController {
 	@Autowired
 	private RoomImgService roomImgService;
 	
+	@Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
+	
     /**
      * 숙소 등록 폼 페이지로 이동
      */
