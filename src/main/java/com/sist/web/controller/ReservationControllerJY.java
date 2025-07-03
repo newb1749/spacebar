@@ -52,7 +52,6 @@ public class ReservationControllerJY {
     @Autowired
     private RoomServiceJY roomService;
 
-    // 예약 1단계 페이지 호출
     @GetMapping("/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
@@ -79,7 +78,6 @@ public class ReservationControllerJY {
         return "/reservation/step1JY";
     }
 
-    // 예약 저장 시 HostId 자동 설정 후 저장
     private void insertReservation(ReservationJY reservation) throws Exception {
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
@@ -94,7 +92,6 @@ public class ReservationControllerJY {
 
             String hostId = roomType.getHostId();
             if (hostId == null || hostId.trim().isEmpty()) {
-                // hostId가 없으면 roomSeq로 DAO에서 직접 조회
                 int roomSeq = roomType.getRoomSeq();
                 hostId = reservationDao.selectHostIdByRoomSeq(roomSeq);
                 if (hostId == null || hostId.trim().isEmpty()) {
@@ -112,7 +109,6 @@ public class ReservationControllerJY {
         reservationDao.insertReservation(reservation);
     }
 
-    // 예약 목록 조회
     @GetMapping("/list")
     public String reservationList(HttpServletRequest request, Model model) {
         String guestId = (String) request.getSession().getAttribute("sessionUserId");
@@ -125,7 +121,6 @@ public class ReservationControllerJY {
         return "/reservation/list";
     }
 
-    // 예약 상세 조회 (GET) - rsvSeq 필수
     @GetMapping("/detailJY")
     public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq, Model model) {
         if (rsvSeq == null || rsvSeq <= 0) {
@@ -137,7 +132,6 @@ public class ReservationControllerJY {
         return "/reservation/detailJY";
     }
 
-    // 예약 취소 (POST)
     @PostMapping("/cancel")
     public String cancelReservation(@ModelAttribute ReservationJY reservation, RedirectAttributes redirectAttrs) {
         try {
@@ -149,7 +143,6 @@ public class ReservationControllerJY {
         return "redirect:/reservation/list";
     }
 
-    // 예약 총 금액 계산 (주중/주말 요금 구분)
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
         if (roomType == null) {
@@ -174,7 +167,6 @@ public class ReservationControllerJY {
         return totalAmount;
     }
 
-    // 예약 상세 정보 확인용 POST 처리
     @PostMapping("/detailJY")
     public String reservationDetailJY(@ModelAttribute ReservationJY reservation,
                                       HttpServletRequest request,
@@ -206,7 +198,6 @@ public class ReservationControllerJY {
         return "/reservation/detailJY";
     }
 
-    // 마일리지 차감 후 예약 확정
     @PostMapping("/payment/chargeMileage")
     public String chargeMileageAndReserve(@ModelAttribute ReservationJY reservation,
                                           HttpServletRequest request,
@@ -248,8 +239,12 @@ public class ReservationControllerJY {
 
         int userMileage = mileageService.getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
+            int shortage = reservation.getFinalAmt() - userMileage;
             redirectAttrs.addFlashAttribute("error", "마일리지가 부족합니다.");
-            return "redirect:/payment/chargeMileage";
+            redirectAttrs.addFlashAttribute("userMileage", userMileage);
+            redirectAttrs.addFlashAttribute("finalAmt", reservation.getFinalAmt());
+            redirectAttrs.addFlashAttribute("shortage", shortage);
+            return "redirect:/reservation/payment/chargeMileage";
         }
 
         boolean success = mileageService.deductMileage(userId, reservation.getFinalAmt());
@@ -273,7 +268,6 @@ public class ReservationControllerJY {
         return timeStr.replace(":", "");
     }
 
-    // 예약 완료 확인 페이지
     @GetMapping("/confirm")
     public String confirmReservation(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                      @RequestParam(value = "error", required = false) String error,
@@ -301,17 +295,31 @@ public class ReservationControllerJY {
         model.addAttribute("reservation", reservation);
         model.addAttribute("status", "SUCCESS");
 
-        // 남은 마일리지 추가
         int remainingMileage = userService.getCurrentMileage(reservation.getGuestId());
         model.addAttribute("remainingMileage", remainingMileage);
 
         return "/payment/paymentConfirm";
     }
 
-    // 마일리지 충전 페이지 호출 (GET)
     @GetMapping("/payment/chargeMileage")
-    public String showChargeMileagePage() {
-        return "/payment/chargeMileage"; // JSP 파일 위치가 /WEB-INF/views/payment/chargeMileage.jsp인 경우
+    public String showChargeMileagePage(@RequestParam(value = "finalAmt", required = false) Integer finalAmt,
+                                        @RequestParam(value = "userMileage", required = false) Integer userMileage,
+                                        @RequestParam(value = "shortage", required = false) Integer shortage,
+                                        HttpSession session,
+                                        Model model) {
+        String userId = (String) session.getAttribute("sessionUserId");
+        if (userId != null) {
+            if (userMileage == null) {
+                userMileage = userService.getCurrentMileage(userId);
+            }
+            if (finalAmt != null && shortage == null) {
+                shortage = Math.max(0, finalAmt - userMileage);
+            }
+            model.addAttribute("finalAmt", finalAmt);
+            model.addAttribute("userMileage", userMileage);
+            model.addAttribute("shortage", shortage);
+        }
+        return "/payment/chargeMileage";
     }
 
 }
