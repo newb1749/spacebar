@@ -38,4 +38,16 @@
 		           SYSDATE)
   	
   	</insert>
+  	
+  	<select id="selectReviewImages" parameterType="int" resultType="com.sist.web.model.ReviewImage">
+    SELECT * FROM REVIEW_IMAGE WHERE REVIEW_SEQ = #{reviewSeq} ORDER BY REVIEW_IMG_SEQ ASC
+	</select>
+	
+	
+	<delete id="deleteReviewImages" parameterType="int">
+	    DELETE FROM REVIEW_IMAGE WHERE REVIEW_SEQ = #{reviewSeq}
+	</delete>
+	
+	
+	
 </mapper>
