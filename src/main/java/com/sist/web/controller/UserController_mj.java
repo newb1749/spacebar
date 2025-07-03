@@ -38,10 +38,20 @@ public class UserController_mj
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
-	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
+	
+	//로그인 화면
+	@RequestMapping(value="/user/loginForm_mj", method=RequestMethod.GET)
+	public String loginForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/user/loginForm_mj";
+	}
+	
 	
 	//로그인
-	@RequestMapping(value="/user/login", method=RequestMethod.POST)
+	@RequestMapping(value="/user/loginProc", method=RequestMethod.POST)
 	@ResponseBody
 	public Response<Object> longin(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -473,6 +483,28 @@ public class UserController_mj
 	public String findPwdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		return "/user/findPwdForm";
+	}
+	
+	
+	
+	
+	
+	//마이페이지
+	@RequestMapping(value="/user/myPage_mj", method=RequestMethod.GET)
+	public String myPageForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		logger.debug("sessionUserId : " + sessionUserId);
+		
+		if(StringUtil.isEmpty(sessionUserId))
+		{
+			return "redirect:/";
+		}
+		
+		User_mj user = userService_mj.userSelect(sessionUserId);
+		model.addAttribute("user", user);
+		
+		return "/user/myPage_mj";
 	}
 }
 
