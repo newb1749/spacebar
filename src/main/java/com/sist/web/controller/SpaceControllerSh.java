@@ -87,7 +87,7 @@ public class SpaceControllerSh {
 		//체크인 시간(대여공간)
 		String startTime = HttpUtil.get(request, "startTime", "");
 		//체크아웃 시간(대여공간)
-		String endTime = HttpUtil.get(request, "endTime","");
+		String endTime = HttpUtil.get(request, "endTime", "");
 		
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
@@ -99,8 +99,6 @@ public class SpaceControllerSh {
 			Calendar cal = Calendar.getInstance();
 			
 			startDate = sdf.format(cal.getTime()); // 오늘 날짜
-			
-			cal.add(Calendar.DATE, 1); // 내일 날짜
 			endDate = sdf.format(cal.getTime());
 		}
 		

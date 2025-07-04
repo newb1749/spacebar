@@ -51,8 +51,55 @@
 			         	   AND A.ROOM_CAT_SEQ IN(1,2,3,4,5,6,7) 
 			         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 				                                FROM ROOM_TYPE
-				                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[>=]]> MIN_DAY
-				                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[<=]]> MAX_DAY)
+				                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') + 1 <![CDATA[>=]]> MIN_DAY
+				                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') + 1 <![CDATA[<=]]> MAX_DAY  
+                                 <if test='startTime != null and startTime != "" and endTime != null and endTime != ""'>
+                                 	<choose>
+                                 		<when test="@java.lang.Integer@parseInt(startTime) &gt; @java.lang.Integer@parseInt(endTime)">
+				                                 AND TO_DATE(#{startTime},'HH24MI')
+                                            BETWEEN
+                                              TO_DATE(LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),'HH24MI')
+                                            AND
+                                              TO_DATE(
+                                                DECODE(
+                                                  TRIM(ROOM_CHECK_OUT_TIME),
+                                                  '2400','2359',
+                                                  LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+                                                ),
+                                                'HH24MI'
+                                              )
+                                        AND TO_DATE(#{endTime},'HH24MI')
+                                            BETWEEN
+                                              TO_DATE(LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),'HH24MI')
+                                            AND
+                                              TO_DATE(
+                                                DECODE(
+                                                  TRIM(ROOM_CHECK_OUT_TIME),
+                                                  '2400','2359',
+                                                  LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+                                                ),
+                                                'HH24MI'
+                                              )
+                                              </when>
+                                              <when test="@java.lang.Integer@parseInt(startTime) &lt; @java.lang.Integer@parseInt(endTime)">
+                                              AND (
+                                                     TO_DATE(
+                                                       DECODE(TRIM(ROOM_CHECK_OUT_TIME),
+                                                              '2400','2359',
+                                                              LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+                                                       ),
+                                                       'HH24MI'
+                                                     ) <![CDATA[>=]]> TO_DATE(#{endTime},'HH24MI')
+                                                   AND  
+                                                     TO_DATE(
+                                                       LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),
+                                                       'HH24MI'
+                                                     ) <![CDATA[<=]]> TO_DATE(#{startTime},'HH24MI')
+                                                    )
+                                            </when>
+                                       </choose>
+                                   </if>
+                                                    )
 					         <if test='searchValue != null and searchValue != ""'>
 					           AND (
 					             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
@@ -85,7 +132,7 @@
 			                SELECT TO_DATE(#{startDate},'YYYYMMDD') + LEVEL - 1 AS DAY
 			                  FROM DUAL
 			               CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate},'YYYYMMDD')
-			                                - TO_DATE(#{startDate},'YYYYMMDD')
+			                                - TO_DATE(#{startDate},'YYYYMMDD') + 1
 			               ) DATES2
 			              , ROOM_TYPE RT2
 			         WHERE RT2.ROOM_TYPE_SEQ = (
@@ -124,7 +171,23 @@
 							      )
 							    </foreach>
 							  )     
-							</if>                  
+							</if>
+							<if test='startTime != null and startTime != "" and endTime != null and endTime != ""'>
+								<choose>
+									<when test="@java.lang.Integer@parseInt(endDate) == @java.lang.Integer@parseInt(startDate)">
+								        AND (#{endTime} - #{startTime}) * 60
+								              BETWEEN MIN_TIMES AND MAX_TIMES
+								    </when>
+								    <when test="@java.lang.Integer@parseInt(endDate) - @java.lang.Integer@parseInt(startDate) == 1">
+								        AND (24 - #{startTime} + #{endTime}) * 60
+								              BETWEEN MIN_TIMES AND MAX_TIMES
+								    </when>
+								    <when test="@java.lang.Integer@parseInt(endDate) - @java.lang.Integer@parseInt(startDate) > 1">					              
+								        AND (#{startTime} + #{endTime}) * 60 + ((TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') - 1) * 24 * 60)
+								              BETWEEN MIN_TIMES AND MAX_TIMES   
+								    </when>					              
+								</choose>
+							</if>                     
 					     ORDER BY ROOM_SEQ DESC
 					  ) INNER
 				) OUTER
@@ -163,7 +226,7 @@
 	              FROM (
 	                SELECT TO_DATE(#{startDate}, 'YYYYMMDD') + LEVEL - 1 AS DAY
 	                FROM DUAL
-	                CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD')
+	                CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') + 1
 	              ) DATES, ROOM_TYPE RT
 	              WHERE RT.ROOM_TYPE_SEQ = (
 	                SELECT ROOM_TYPE_SEQ
@@ -201,8 +264,55 @@
          	   AND A.ROOM_CAT_SEQ IN(1,2,3,4,5,6,7) 
          	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 	                                FROM ROOM_TYPE
-	                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[>=]]> MIN_DAY
-	                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[<=]]> MAX_DAY)
+	                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') + 1<![CDATA[>=]]> MIN_DAY
+	                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') + 1<![CDATA[<=]]> MAX_DAY
+	                                 <if test='startTime != null and startTime != "" and endTime != null and endTime != ""'>
+	                                 	<choose>
+	                                 		<when test="@java.lang.Integer@parseInt(startTime) &gt; @java.lang.Integer@parseInt(endTime)">
+					                                 AND TO_DATE(#{startTime},'HH24MI')
+	                                            BETWEEN
+	                                              TO_DATE(LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),'HH24MI')
+	                                            AND
+	                                              TO_DATE(
+	                                                DECODE(
+	                                                  TRIM(ROOM_CHECK_OUT_TIME),
+	                                                  '2400','2359',
+	                                                  LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+	                                                ),
+	                                                'HH24MI'
+	                                              )
+	                                        AND TO_DATE(#{endTime},'HH24MI')
+	                                            BETWEEN
+	                                              TO_DATE(LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),'HH24MI')
+	                                            AND
+	                                              TO_DATE(
+	                                                DECODE(
+	                                                  TRIM(ROOM_CHECK_OUT_TIME),
+	                                                  '2400','2359',
+	                                                  LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+	                                                ),
+	                                                'HH24MI'
+	                                              )
+	                                              </when>
+	                                              <when test="@java.lang.Integer@parseInt(startTime) &lt; @java.lang.Integer@parseInt(endTime)">
+	                                              AND (
+	                                                     TO_DATE(
+	                                                       DECODE(TRIM(ROOM_CHECK_OUT_TIME),
+	                                                              '2400','2359',
+	                                                              LPAD(TRIM(ROOM_CHECK_OUT_TIME),4,'0')
+	                                                       ),
+	                                                       'HH24MI'
+	                                                     ) <![CDATA[>=]]> TO_DATE(#{endTime},'HH24MI')
+	                                                   AND  
+	                                                     TO_DATE(
+	                                                       LPAD(TRIM(ROOM_CHECK_IN_TIME),4,'0'),
+	                                                       'HH24MI'
+	                                                     ) <![CDATA[<=]]> TO_DATE(#{startTime},'HH24MI')
+	                                                    )
+	                                            </when>
+	                                       </choose>
+	                                   </if>
+	                                 )
 		         <if test='searchValue != null and searchValue != ""'>
 		           AND (
 		             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
@@ -235,7 +345,7 @@
                 SELECT TO_DATE(#{startDate},'YYYYMMDD') + LEVEL - 1 AS DAY
                   FROM DUAL
                CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate},'YYYYMMDD')
-                                - TO_DATE(#{startDate},'YYYYMMDD')
+                                - TO_DATE(#{startDate},'YYYYMMDD') + 1
                ) DATES2
               , ROOM_TYPE RT2
          WHERE RT2.ROOM_TYPE_SEQ = (
@@ -274,6 +384,22 @@
 				      )
 				    </foreach>
 				  )     
+				</if>
+				<if test='startTime != null and startTime != "" and endTime != null and endTime != ""'>
+					<choose>
+						<when test="@java.lang.Integer@parseInt(endDate) == @java.lang.Integer@parseInt(startDate)">
+					        AND (#{endTime} - #{startTime}) * 60
+					              BETWEEN MIN_TIMES AND MAX_TIMES
+					    </when>
+					    <when test="@java.lang.Integer@parseInt(endDate) - @java.lang.Integer@parseInt(startDate) == 1">
+					        AND (24 - #{startTime} + #{endTime}) * 60
+					              BETWEEN MIN_TIMES AND MAX_TIMES
+					    </when>
+					    <when test="@java.lang.Integer@parseInt(endDate) - @java.lang.Integer@parseInt(startDate) > 1">					              
+					        AND (#{startTime} + #{endTime}) * 60 + ((TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') - 1) * 24 * 60)
+					              BETWEEN MIN_TIMES AND MAX_TIMES   
+					    </when>					              
+					</choose>
 				</if>                  
 		     ORDER BY ROOM_SEQ DESC
 		  ) INNER

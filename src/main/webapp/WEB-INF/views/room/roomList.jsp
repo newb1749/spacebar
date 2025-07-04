@@ -325,6 +325,8 @@ $(document).ready(function(){
 function fn_list_scroll(nextPage) {
   if (nextPage > maxPage || loading) return;
   loading = true;
+  
+  $("#loadingIndicator").show();
 
   // 1) 보낼 파라미터 객체를 만듭니다.
   const payload = {
@@ -361,11 +363,13 @@ function fn_list_scroll(nextPage) {
         curPage = nextPage;
       }
       loading = false;
+      $("#loadingIndicator").hide();
     },
     error: function(xhr, status, err) {
       console.error("스크롤 AJAX 에러:", status, err, xhr.responseText);
       alert("추가 데이터를 불러오는 데 실패했습니다.");
       loading = false;
+      $("#loadingIndicator").hide();
     }
   });
 }
@@ -430,13 +434,12 @@ $(window).on("scroll", function () {
 </select>
 
 
-<!-- ✅ 인원수 선택 -->
-<select name="_personCount" id="_personCount" class="form-select shadow-sm" style="width: 120px; height: 44px; border-radius: 12px;">
-  <option value="">인원수</option>
-  <c:forEach var="i" begin="1" end="10">
-    <option value="${i}" <c:if test="${personCount == i}">selected</c:if>>${i}명</option>
-  </c:forEach>
-</select>
+<!-- ✅ 인원수 선택 (수정) -->
+<div style="display: inline-flex; align-items: center; gap: 8px;">
+<input type="number" id="_personCount" name="_personCount" class="form-control shadow-sm" style="width: 100px; height: 44px; border-radius: 12px; text-align: center;"
+    placeholder="인원수" value="${personCount != 0 ? personCount : ''}" min="0" step="1"/>
+  <span style="font-size: 0.95rem; color: #555; white-space: nowrap;">명</span>
+</div>
 
     <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control shadow-sm" maxlength="20"
            style="width: 260px; height: 44px; border-radius: 12px;" placeholder="검색어를 입력하세요" />
@@ -548,6 +551,11 @@ $(window).on("scroll", function () {
       </div>
     </div>
   </c:forEach>
+</div>
+
+<!-- 여기에 로딩 메시지 -->
+<div id="loadingIndicator" style="display:none; text-align:center; padding:16px; color:#555;">
+  로딩중… 잠시만 기다려주세요
 </div>
   <!-- ✅ 페이지네이션 
   <nav>

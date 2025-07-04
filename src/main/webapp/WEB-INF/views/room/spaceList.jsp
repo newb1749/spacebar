@@ -251,6 +251,9 @@ $(document).ready(function(){
     document.roomForm.startTime.value = $("#_startTime").val();
     document.roomForm.endTime.value = $("#_endTime").val();
     
+    
+    
+    
  	// ✅ 날짜 강제로 hidden input에 넣기
     const startInput = document.getElementById("calendarTest_start");
     const endInput = document.getElementById("calendarTest_end");
@@ -277,19 +280,6 @@ $(document).ready(function(){
     document.roomForm.submit();
   });
   
-	//JavaScript에서 JSP 변수를 비교
-  var startDate = "${startDate}";
-  var endDate = "${endDate}";
-  var startTime = "${_startTime}";
-  var endTime = "${_endTime}";
-  
-  const st = parseInt(startTime, 10);
-  const et = parseInt(endTime, 10);
-  
-  if (startDate === endDate && st >= et) {
-    alert("올바른 시간대를 입력해주세요.");
-    return;
-  }
 
 	//필터 드롭다운 토글
   $("#toggleFilter").on("click", function () {
@@ -308,6 +298,33 @@ $(document).ready(function(){
 	  facilities.push($(this).val());
 	});
 	document.roomForm.facilityList.value = facilities.length > 0 ? facilities.join(',') : "";
+	
+ 	// 시간값 설정
+    document.roomForm.startTime.value = $("#_startTime").val();
+    document.roomForm.endTime.value = $("#_endTime").val();
+    
+ 	// ✅ 날짜 강제로 hidden input에 넣기
+    const startInput = document.getElementById("calendarTest_start");
+    const endInput = document.getElementById("calendarTest_end");
+    
+
+    if (window.selectedDates && window.selectedDates.length === 2) {
+      const [start, end] = window.selectedDates;
+      const formatYYYYMMDD = (date) => {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}`;
+      };
+      if (startInput && endInput) {
+        startInput.value = formatYYYYMMDD(start);
+        endInput.value = formatYYYYMMDD(end);
+      } else {
+        console.warn("hidden input 찾을 수 없음");
+      }
+    } else {
+      console.warn("선택된 날짜 없음");
+    }
 
     
     document.roomForm.regionList.value = $("#_regionList").val();
@@ -317,6 +334,28 @@ $(document).ready(function(){
     document.roomForm.personCount.value = $("#_personCount").val();
     document.roomForm.submit();
   });
+  
+	//JavaScript에서 JSP 변수를 비교
+  var startDate = "${startDate}";
+  var endDate = "${endDate}";
+  var startTime = "${startTime}";
+  var endTime = "${endTime}";
+  
+  const st = parseInt(startTime, 10);
+  const et = parseInt(endTime, 10);
+  
+
+  if (startDate === endDate && st >= et) {
+    alert("올바른 시간대를 입력해주세요.");
+    return;
+  }
+  
+  if ((startTime === "" && endTime !== "") || (startTime !== "" && endTime === ""))
+	  {
+	  	alert("시작과 끝 시간은 같이 입력해주세요.");
+	  	return;
+	  }
+  
 });
 	
 //function fn_list(curPage) {
@@ -330,6 +369,8 @@ $(document).ready(function(){
 function fn_list_scroll(nextPage) {
   if (nextPage > maxPage || loading) return;
   loading = true;
+  
+  $("#loadingIndicator").show();
 
   // 1) 보낼 파라미터 객체를 만듭니다.
   const payload = {
@@ -339,8 +380,8 @@ function fn_list_scroll(nextPage) {
     personCount:  $("#_personCount").val()   || "",
     minPrice:     $("#_minPrice").val()      || "",
     maxPrice:     $("#_maxPrice").val()      || "",
-    startTime:    $("#_startTime").val()     || 0,
-    endTime :     $("#_endTime").val()       || 0,
+    startTime:    $("#_startTime").val()     || "",
+    endTime :     $("#_endTime").val()       || "",
     startDate:    $("#calendar_start").val() || "",
     endDate:      $("#calendar_end").val()   || "",
     category:     $("#category").val()       || ""
@@ -368,11 +409,13 @@ function fn_list_scroll(nextPage) {
         curPage = nextPage;
       }
       loading = false;
+      $("#loadingIndicator").hide();
     },
     error: function(xhr, status, err) {
       console.error("스크롤 AJAX 에러:", status, err, xhr.responseText);
       alert("추가 데이터를 불러오는 데 실패했습니다.");
       loading = false;
+      $("#loadingIndicator").hide();
     }
   });
 }
@@ -391,7 +434,7 @@ $(window).on("scroll", function () {
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <div class="container mt-5" style="margin-top: 100px;">
-  <h2 class="fw-bold mb-4">숙소 목록</h2>
+  <h2 class="fw-bold mb-4">공간 대여 목록</h2>
 
   <!-- ✅ 검색 + 날짜 + 필터 -->
   <div class="d-flex justify-content-center align-items-center mb-5" style="gap: 12px; flex-wrap: wrap;">
@@ -412,8 +455,9 @@ $(window).on("scroll", function () {
   <div class="d-flex align-items-center" style="gap: 8px;">
     <span style="font-weight: bold; white-space: nowrap;">이용시간</span>
 		<select id="_startTime" name="_startTime" class="form-select" style="width: 80px; height: 44px; border-radius: 12px;">
+		<option value="" <c:if test="${empty startTime}">selected</c:if>>시작</option>
 		  <c:forEach var="i" begin="0" end="24">
-		    <option value="${i}" <c:if test="${i == startTime}">selected</c:if>>${i}시</option>
+		    <option value="${i}"<c:if test="${not empty startTime and i == startTime}">selected</c:if>>${i}시</option>
 		  </c:forEach>
 		</select>
   </div>
@@ -421,8 +465,9 @@ $(window).on("scroll", function () {
   <div class="d-flex align-items-center" style="gap: 8px;">
     <span style="font-weight: bold; white-space: nowrap;">~</span>
     <select id="_endTime" name="_endTime" class="form-select" style="width: 80px; height: 44px; border-radius: 12px;">
+    <option value="" <c:if test="${empty endTime}">selected</c:if>>끝</option>
 	  <c:forEach var="i" begin="0" end="24">
-	    <option value="${i}" <c:if test="${i == endTime}">selected</c:if>>${i}시</option>
+	    <option value="${i}"<c:if test="${not empty endTime and i == endTime}">selected</c:if>>${i}시</option>
 	  </c:forEach>
 	</select>
   </div>
@@ -437,13 +482,13 @@ $(window).on("scroll", function () {
 </select>
 
 
-<!-- ✅ 인원수 선택 -->
-<select name="_personCount" id="_personCount" class="form-select shadow-sm" style="width: 120px; height: 44px; border-radius: 12px;">
-  <option value="">인원수</option>
-  <c:forEach var="i" begin="1" end="10">
-    <option value="${i}" <c:if test="${personCount == i}">selected</c:if>>${i}명</option>
-  </c:forEach>
-</select>
+<!-- ✅ 인원수 선택 (수정) -->
+<div style="display: inline-flex; align-items: center; gap: 8px;">
+<input type="number" id="_personCount" name="_personCount" class="form-control shadow-sm" style="width: 100px; height: 44px; border-radius: 12px; text-align: center;"
+    placeholder="인원수" value="${personCount != 0 ? personCount : ''}" min="0" step="1"/>
+  <span style="font-size: 0.95rem; color: #555; white-space: nowrap;">명</span>
+</div>
+
 
     <input type="text" name="_searchValue" id="_searchValue" value="${searchValue}" class="form-control shadow-sm" maxlength="20"
            style="width: 260px; height: 44px; border-radius: 12px;" placeholder="검색어를 입력하세요" />
@@ -555,6 +600,11 @@ $(window).on("scroll", function () {
       </div>
     </div>
   </c:forEach>
+</div>
+
+<!-- 여기에 로딩 메시지 -->
+<div id="loadingIndicator" style="display:none; text-align:center; padding:16px; color:#555;">
+  로딩중… 잠시만 기다려주세요
 </div>
   <!-- ✅ 페이지네이션 
   <nav>
