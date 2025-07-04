@@ -38,7 +38,8 @@ public class UserController_mj
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
-	public static final String AUTH_SESSION_NAME = "sessionUserId";
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 	
 	//로그인 화면
 	@RequestMapping(value="/user/loginForm_mj", method=RequestMethod.GET)
@@ -70,6 +71,7 @@ public class UserController_mj
 						request.getSession().setAttribute(AUTH_SESSION_NAME, userId);
 						
 						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+						request.getSession().setAttribute("loginUser", user);
 						
 						logger.debug("userId : " + userId);
 						logger.debug("sessionUserId : " + sessionUserId);

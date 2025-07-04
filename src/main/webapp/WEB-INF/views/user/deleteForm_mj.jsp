@@ -147,8 +147,8 @@ $(document).ready(function(){
 				</div>
 
                 <div class="form-group mt-3">
-                    <button type="button" id="btnDelete" class="btn btn-danger">회원탈퇴</button>
-                    <a href="/user/updateForm" class="btn btn-secondary">취소</a>
+                	<button type="button" id="btnBack" onclick="history.back()" class="btn btn-primary">뒤로가기</button>
+                    <button type="button" id="btnDelete" class="btn btn-danger">회원탈퇴</button>               
                 </div>
             </form>
         </div>

@@ -21,6 +21,8 @@ public class UserService_mj
 	@Autowired
 	private UserDao_mj userDao_mj;
 	
+    @Value("#{env['auth.session.name']}")
+    private String AUTH_SESSION_NAME;
 	
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;

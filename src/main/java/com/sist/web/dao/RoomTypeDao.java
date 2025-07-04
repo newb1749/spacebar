@@ -1,8 +1,11 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import com.sist.web.model.RoomType;
 
 public interface RoomTypeDao {
+
 
     /**
      * @param roomType DB에 저장할 객실 타입 정보가 담긴 RoomType 객체.
@@ -13,5 +16,11 @@ public interface RoomTypeDao {
      */
     public int insertRoomType(RoomType roomType);
 
+    /**
+     * roomTypeSeq로 객실 타입 정보 조회
+     */
+    RoomType selectRoomTypeBySeq(int roomTypeSeq);
+
+    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
 
 }

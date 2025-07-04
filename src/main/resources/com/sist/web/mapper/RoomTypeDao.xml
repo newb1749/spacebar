@@ -50,4 +50,10 @@
         )
         
   	</insert>
+  	
+  	<select id="selectRoomTypesByRoomSeq" parameterType="int" resultMap="roomTypeResultMap">
+	    SELECT * 
+	    FROM ROOM_TYPE 
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</select>
 </mapper>
