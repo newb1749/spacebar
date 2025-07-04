@@ -4,7 +4,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>결제 결과</title>
+  <title>마일리지 결제 결과</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 50px; }
     .message {
@@ -33,11 +33,17 @@
       cursor: pointer;
     }
   </style>
+<script>
+  console.log("rsvSeq from JSP: ${rsvSeq}");
+</script>
+
+  <%-- 자동 이동 제거됨
   <script>
     setTimeout(function() {
-      window.location.href = "/reservation/detailJY";
+      window.location.href = "/reservation/detailJY?rsvSeq=${rsvSeq}";
     }, 3000);
   </script>
+  --%>
 </head>
 <body>
   <div class="message ${code == 0 ? 'success' : 'fail'}">
@@ -52,7 +58,9 @@
         <p>${msg}</p>
       </c:otherwise>
     </c:choose>
-    <button onclick="window.location.href='/reservation/detailJY'">결제 페이지로 돌아가기</button>
+    <button onclick="window.location.href='/reservation/detailJY?rsvSeq=${rsvSeq}'">
+      결제 페이지로 돌아가기
+    </button>
   </div>
 </body>
 </html>
