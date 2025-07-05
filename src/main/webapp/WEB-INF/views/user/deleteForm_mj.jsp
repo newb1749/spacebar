@@ -102,11 +102,14 @@ $(document).ready(function(){
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 <div class="container">
     <div class="row mt-5">
-        <h1>회원탈퇴</h1>
+        <h1>회원탈퇴</h1>       
     </div>
     <div class="row mt-2">
         <div class="col-12">
-            <form name="withdrawForm" id="withdrawForm" method="post" enctype="multipart/form-data">
+            <form name="withdrawForm" id="withdrawForm" method="post" enctype="multipart/form-data">     
+            
+            <h3>회원 탈퇴</h3> <p class="text-danger">회원 탈퇴 시 모든 정보가 삭제되며 복구할 수 없습니다. 신중하게 결정해주세요.</p>
+                  
                 <div class="form-group">
                     <label for="userId">사용자 아이디</label>
                     <input type="text" class="form-control" id="userId" name="userId" value="${user.userId}" readonly />
@@ -144,8 +147,8 @@ $(document).ready(function(){
 				</div>
 
                 <div class="form-group mt-3">
-                    <button type="button" id="btnDelete" class="btn btn-danger">회원탈퇴</button>
-                    <a href="/user/updateForm" class="btn btn-secondary">취소</a>
+                	<button type="button" id="btnBack" onclick="history.back()" class="btn btn-primary">뒤로가기</button>
+                    <button type="button" id="btnDelete" class="btn btn-danger">회원탈퇴</button>               
                 </div>
             </form>
         </div>
