@@ -22,7 +22,7 @@ import com.sist.web.model.User_mj;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.JsonUtil;
-import com.sist.web.util.SessionUtil;
+
 
 @Controller("userController_mj")
 public class UserController_mj 
@@ -38,9 +38,10 @@ public class UserController_mj
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
+
 	@Value("#{env['auth.session.name']}")
 	private String AUTH_SESSION_NAME;
-	
+
 	
 	//로그인 화면
 	@RequestMapping(value="/user/loginForm_mj", method=RequestMethod.GET)
@@ -48,7 +49,6 @@ public class UserController_mj
 	{
 		return "/user/loginForm_mj";
 	}
-	
 	
 	//로그인
 	@RequestMapping(value="/user/loginProc", method=RequestMethod.POST)
@@ -73,6 +73,7 @@ public class UserController_mj
 						request.getSession().setAttribute("SESSION_USER_ID", userId);
 						
 						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+
 						// "loginUser" 라는 이름으로 사용자 객체 전체를 세션에 추가로 저장
 						request.getSession().setAttribute("loginUser", user);
 						
@@ -471,23 +472,70 @@ public class UserController_mj
 		return ajaxRes;
 	}
 	
-	//아이디 찾기 
-	@RequestMapping(value="/user/findIdForm", method=RequestMethod.GET)
+	//아이디 찾기 화면
+	@RequestMapping(value="/user/findIdForm_mj", method=RequestMethod.GET)
 	public String findIdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		return "/user/findIdForm_mj";
 	}
 	
-	//비밀번호 찾기 
-	@RequestMapping(value="/user/findPwdForm", method=RequestMethod.GET)
-	public String findPwdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	//아이디 찾기
+	@RequestMapping(value="/user/searchResultId_mj", method=RequestMethod.POST)
+	public String searchResultId(Model model,HttpServletRequest request, HttpServletResponse response)
 	{
-		return "/user/findPwdForm";
+		String userName = HttpUtil.get(request, "userName");
+		String phone = HttpUtil.get(request, "phone");
+				
+		User_mj user = new User_mj();
+		user.setUserName(userName);
+		user.setPhone(phone);
+		
+		User_mj result = userService_mj.searchId(user);
+
+		if(result != null)
+		{			
+			model.addAttribute("userId", result.getUserId());
+		}
+		else
+		{
+			model.addAttribute("msg", "일치하는 회원정보가 없습니다.");
+		}
+		return "/user/searchResultId_mj";
 	}
 	
-	
-	
-	
+	//비밀번호 찾기 
+	@RequestMapping(value="/user/findPwdForm_mj", method=RequestMethod.GET)
+	public String findPwdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/user/findPwdForm_mj";
+	}
+
+	//비밀번호 찾기
+	@RequestMapping(value="/user/searchResultPwd_mj", method=RequestMethod.POST)
+	public String searchResultPwd(Model model,HttpServletRequest request, HttpServletResponse response)
+	{
+		String userId = HttpUtil.get(request, "userId");
+		String userName = HttpUtil.get(request, "userName");
+		String phone = HttpUtil.get(request, "phone");
+				
+		User_mj user = new User_mj();
+		user.setUserId(userId);
+		user.setUserName(userName);
+		user.setPhone(phone);
+		
+		User_mj result = userService_mj.searchPwd(user);
+
+		if(result != null)
+		{			
+			model.addAttribute("userPwd", result.getUserPwd());
+		}
+		else
+		{
+			model.addAttribute("msg", "일치하는 회원정보가 없습니다.");
+		}
+		return "/user/searchResultPwd_mj";
+	}
+
 	
 	//마이페이지
 	@RequestMapping(value="/user/myPage_mj", method=RequestMethod.GET)
@@ -506,6 +554,7 @@ public class UserController_mj
 		
 		return "/user/myPage_mj";
 	}
+	
 }
 
 

@@ -2,7 +2,8 @@
  * 룸 캘린더 초기화 함수
  * ES6 모듈 대신 전역 함수로 노출
  */
-function initRoomCalendar(calId, options) {
+function initRoomCalendar(calId, options) 
+{
   const dateInput = document.getElementById(calId);
   
   if (!dateInput) {

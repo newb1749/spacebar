@@ -165,7 +165,6 @@ function fn_loginCheck()
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
-
 <div class="container"><br/><br/><br/><br/><br/>
 
 	<form class="form-signin">
@@ -175,7 +174,7 @@ function fn_loginCheck()
 		<label for="userPwd" class="sr-only">비밀번호</label>
 		<input type="password" id="userPwd" name="userPwd" class="form-control" maxlength="20" placeholder="비밀번호">
 		  
-		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인???</button>
+		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인</button>
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
     	
     	<div class="d-flex justify-content-between mt-2">
