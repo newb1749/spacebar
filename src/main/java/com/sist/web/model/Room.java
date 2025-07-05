@@ -121,19 +121,19 @@ public class Room implements Serializable{
 	public void setMaxPrice(int maxPrice) {
 		this.maxPrice = maxPrice;
 	}
-	
-	
-	
 
-	public String getCategory() {
-		return category;
+
+
+
+	public List<String> getFacilityList() {
+		return facilityList;
 	}
 
 
 
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setFacilityList(List<String> facilityList) {
+		this.facilityList = facilityList;
 	}
 
 
@@ -153,50 +153,22 @@ public class Room implements Serializable{
 
 
 
-	public int getMinPrice() {
-		return minPrice;
+	public String getCategory() {
+		return category;
 	}
 
 
 
 
-	public void setMinPrice(int minPrice) {
-		this.minPrice = minPrice;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 
 
 
-	public int getMaxPrice() {
-		return maxPrice;
-	}
-
-
-
-
-	public void setMaxPrice(int maxPrice) {
-		this.maxPrice = maxPrice;
-	}
-
-
-
-
-	public List<String> getFacilityList() {
-		return facilityList;
-	}
-
-
-
-
-	public void setFacilityList(List<String> facilityList) {
-		this.facilityList = facilityList;
-	}
-
-
-
-
-	public String getCheckInDate() {
-		return checkInDate;
+	public String getStartDate() {
+		return startDate;
 	}
 
 
@@ -330,17 +302,9 @@ public class Room implements Serializable{
 	public void setSearchValue(String searchValue) {
 		this.searchValue = searchValue;
 	}
-	
-		public List<Integer> getFacilityNos() {
-		return facilityNos;
-	}
 
 
 
-	public void setFacilityNos(List<Integer> facilityNos) {
-		this.facilityNos = facilityNos;
-	}
-	
 	public List<RoomImage> getRoomImageList() {
 		return RoomImageList;
 	}

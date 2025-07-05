@@ -56,3 +56,4 @@
 </div>
 
 <jsp:include page="/WEB-INF/views/include/chatWidget.jsp" />
+
