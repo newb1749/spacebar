@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sist.common.util.StringUtil;
 import com.sist.web.model.Review;
 import com.sist.web.model.ReviewImage;
 import com.sist.web.service.ReviewService;
@@ -35,17 +36,30 @@ public class ReviewController {
 	
 
 	
-	// 리뷰 작성 폼으로 이동하는 메서드
+	/**
+	 * 리뷰 작성 페이지
+	 * @param rsvSeq 예약 시퀀스
+	 * @param model ("rsvSeq", rsvSeq)
+	 * @return
+	 */
     @GetMapping("/review/writeForm")
     public String reviewWriteForm(@RequestParam("rsvSeq") int rsvSeq, Model model) 
     {
         // 테스트를 위해 예약번호(rsvSeq)를 파라미터로 받아서 view로 전달
     	logger.debug("[ReviewController] reviewWriteForm 호출 - rsvSeq: {}", rsvSeq);
-        model.addAttribute("rsvSeq", rsvSeq);
+        model.addAttribute("rsvSeq", rsvSeq) ;
         return "/review/writeForm"; 
     }
     
-    // 리뷰 작성 처리 메소드
+  
+    /**
+     * 리뷰 작성 처리 메소드
+     * @param review 데이터를 담은 리뷰 객체
+     * @param files 리뷰의 이미지
+     * @param request 
+     * @param redirectAttributes
+     * @return 리다이렉션 페이지
+     */
     @PostMapping("/review/writeProc")
     public String reviewWriteProc(Review review, @RequestParam("files") List<MultipartFile> files, HttpServletRequest request, RedirectAttributes redirectAttributes)
     {
@@ -115,7 +129,150 @@ public class ReviewController {
     		return "/review/writeForm"; // 오류 시 다시 작성 폼으로 */
     		redirectAttributes.addFlashAttribute("errorMessage", "리뷰 등록 중 오류가 발생했습니다.");
     	}
- 
-    return "redirect:/user/myPage_mj";
+    	
+        // 실패 시 다시 작성폼으로, 성공 시 마이페이지로 이동
+        if (redirectAttributes.getFlashAttributes().containsKey("errorMessage")) 
+        {
+            return "redirect:/review/writeForm?rsvSeq=" + review.getRsvSeq();
+        } 
+        else 
+        {
+            return "redirect:/user/myPage_mj";
+        }
+    }
+    
+    
+    /**
+     * 나의 리뷰 목록 페이지
+     * @param model ("myReviews", myReviews)
+     * @param request
+     * @return 리다이렉션 페이지
+     */
+    @GetMapping("/review/myList")
+    public String myList(Model model, HttpServletRequest request)
+    {
+    	String sessionUserId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	if(StringUtil.isEmpty(sessionUserId))
+    	{
+    		return "redirect:/user/loginForm_mj";
+    	}
+    	
+    	List<Review> myReviews = reviewService.selectMyReviews(sessionUserId);
+    	model.addAttribute("myReviews", myReviews);
+    	
+    	return "/review/myList";
+    }
+    
+    /**
+     * 리뷰 수정 페이지
+     * @param reviewSeq 수정할 리뷰 시퀀스
+     * @param model  ("review", review)
+     * @param request
+     * @return 리다이렉션 페이지
+     */
+    @GetMapping("/review/updateForm")
+    public String updateForm(@RequestParam("reviewSeq") int reviewSeq, Model model, HttpServletRequest request)
+    {
+    	String sessionUserId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	if(StringUtil.isEmpty(sessionUserId))
+    	{
+    		return "redirect:/user/loginForm_mj";
+    	}
+    	
+    	Review review = reviewService.selectReviewForEdit(reviewSeq);
+    	
+    	if(review == null || !StringUtil.equals(review.getUserId(), sessionUserId))
+    	{
+    		return "redirect:/review/myList";
+    	}
+    	
+    	model.addAttribute("review", review);
+    	return "/review/updateForm";
+    }
+    
+    
+    /**
+     * 리뷰 수정 처리
+     * @param review 수정할 리뷰 객체
+     * @param deleteImgSeqs 삭제할 이미지들(list)
+     * @param files 새로 업로드할 파일
+     * @param redirectAttributes
+     * @param request
+     * @return 리다이렉션 페이지
+     */
+    @PostMapping("/review/updateProc")
+    public String updateProc(Review review, @RequestParam(value="deleteImgSeqs", required=false) List<Short> deleteImgSeqs,
+    		@RequestParam("files") List<MultipartFile> files, RedirectAttributes redirectAttributes, HttpServletRequest request)
+    {
+    	String sessionUserId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	if(StringUtil.isEmpty(sessionUserId))
+    	{
+    		return "redirect:/user/loginForm_mj";
+    	}
+    	
+    	review.setUserId(sessionUserId);
+    	
+    	// 새로 추가된 파일 처리
+    	if(files != null && !files.isEmpty())
+    	{
+    		List<ReviewImage> newImageList = new ArrayList<>();
+    		for(MultipartFile file : files)
+    		{
+    			if(!file.isEmpty())
+    			{
+    				ReviewImage newImage =  new ReviewImage();
+    				newImage.setFile(file);
+    				newImageList.add(newImage);
+    			}
+    		}
+    		review.setReviewImageList(newImageList);
+    	}
+    	
+    	try
+    	{
+    		reviewService.updateReviewTransaction(review, deleteImgSeqs);
+    		redirectAttributes.addFlashAttribute("message", "리뷰가 수정되었습니다.");
+    	}
+    	catch(Exception e)
+    	{
+    		 logger.error("[ReviewController] updateProc Exception", e);
+             redirectAttributes.addFlashAttribute("errorMessage", "수정 중 오류가 발생했습니다.");	
+    	}
+    	
+    	return "redirect:/review/myList";
+    }
+    
+    /**
+     * 리뷰 비활성화(삭제) 처리 
+     * @param reviewSeq 삭제할 리뷰 시퀀스
+     * @param redirectAttributes
+     * @param request 
+     * @return 리다이렉션 페이지
+     */
+    @PostMapping("/review/inactiveProc")
+    public String inactiveProc(@RequestParam("reviewSeq") int reviewSeq, RedirectAttributes redirectAttributes, HttpServletRequest request)
+    {
+    	String sessionUserId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+    	if(StringUtil.isEmpty(sessionUserId))
+    	{
+    		return "redirect:/user/loginForm_mj";
+    	}
+    	
+    	Review review = new Review();
+    	review.setReviewSeq(reviewSeq);
+    	review.setUserId(sessionUserId);
+    	
+    	try
+    	{
+    		reviewService.inactiveReview(review);
+    		redirectAttributes.addFlashAttribute("message", "리뷰가 삭제되었습니다.");
+    	}
+    	catch(Exception e)
+    	{
+            logger.error("[ReviewController] inactiveProc Exception", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "삭제 중 오류가 발생했습니다.");   		
+    	}
+    	
+    	return "redirect:/review/myList";
     }
 }

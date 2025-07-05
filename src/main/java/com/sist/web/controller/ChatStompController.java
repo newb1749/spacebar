@@ -29,21 +29,20 @@ public class ChatStompController {
      */
     @MessageMapping("/chat/sendMessage/{chatRoomSeq}")
     @SendTo("/topic/chat/room/{chatRoomSeq}")
-    // [최종 수정] 오류를 유발하는 HttpServletRequest 파라미터를 완전히 제거합니다.
     public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage) {
         
         logger.debug("STOMP Message Received: {}", chatMessage.getMessageContent());
         
-        // [수정] senderId는 클라이언트가 보낸 chatMessage 객체에서 직접 가져옵니다.
+        // senderId는 클라이언트가 보낸 chatMessage 객체에서 직접 가져옵니다.
         String senderId = chatMessage.getSenderId();
         
-        // (보안 강화) senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
+        // senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
         User_mj sender = userService_mj.userSelect(senderId);
         
         if(sender != null)
         {
             chatMessage.setSenderName(sender.getNickName());
-            chatMessage.setSenderProfileImgExt(sender.getProfImgExt()); // 이전에 추가한 프로필 이미지 확장자 설정
+            chatMessage.setSenderProfileImgExt(sender.getProfImgExt()); // 프로필 이미지 확장자 설정
         }
         else
         {
