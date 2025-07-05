@@ -127,4 +127,53 @@
 		 WHERE USER_ID = #{userId}
   	</update>
   	
+  	<!-- 아이디 찾기 -->
+  	<select id="searchId" parameterType="com.sist.web.model.User_mj" resultMap="userResultMap">
+  		SELECT USER_ID,
+		       NVL(USER_PWD,'') USER_PWD,
+		       NVL(USER_NAME, '') USER_NAME,
+		       NVL(EMAIL,'') EMAIL,
+		       NVL(PHONE,'') PHONE,
+		       NVL(USER_ADDR,'') USER_ADDR,
+		       NVL(TO_CHAR(JOIN_DT,'YYYY.MM.DD HH24:MI:SS'),'') JOIN_DT,
+		       NVL(NICKNAME,'') NICKNAME,
+		       NVL(GRADE,'') GRADE,
+		       NVL(PROF_IMG_EXT,'') PROF_IMG_EXT,
+		       NVL(GENDER,'') GENDER,
+		       NVL(TO_CHAR(BIRTH_DT,'YYYY.MM.DD'),'') BIRTH_DT,
+		       NVL(USER_TYPE,'G') USER_TYPE,
+		       NVL(APPROV_STAT,'Y') APPROV_STAT,
+		       NVL(USER_STAT,'Y') USER_STAT,
+		       NVL(MILE,0) MILE,
+		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
+		  FROM SB_USER
+		 WHERE USER_NAME = #{userName}
+		   AND PHONE = #{phone}
+  	</select>
+  	
+  	<!-- 비밀번호 찾기 -->
+  	<select id="searchPwd" parameterType="com.sist.web.model.User_mj" resultMap="userResultMap">
+  		SELECT USER_ID,
+		       NVL(USER_PWD,'') USER_PWD,
+		       NVL(USER_NAME, '') USER_NAME,
+		       NVL(EMAIL,'') EMAIL,
+		       NVL(PHONE,'') PHONE,
+		       NVL(USER_ADDR,'') USER_ADDR,
+		       NVL(TO_CHAR(JOIN_DT,'YYYY.MM.DD HH24:MI:SS'),'') JOIN_DT,
+		       NVL(NICKNAME,'') NICKNAME,
+		       NVL(GRADE,'') GRADE,
+		       NVL(PROF_IMG_EXT,'') PROF_IMG_EXT,
+		       NVL(GENDER,'') GENDER,
+		       NVL(TO_CHAR(BIRTH_DT,'YYYY.MM.DD'),'') BIRTH_DT,
+		       NVL(USER_TYPE,'G') USER_TYPE,
+		       NVL(APPROV_STAT,'Y') APPROV_STAT,
+		       NVL(USER_STAT,'Y') USER_STAT,
+		       NVL(MILE,0) MILE,
+		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
+		  FROM SB_USER
+		 WHERE USER_ID = #{userId}
+		   AND USER_NAME = #{userName}
+		   AND PHONE = #{phone}
+  	</select>
+  	
 </mapper>

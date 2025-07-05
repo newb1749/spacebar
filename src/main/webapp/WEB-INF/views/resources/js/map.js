@@ -1,6 +1,6 @@
 /**
  * mapModule.jsp와 함께 사용되는 지도 스크립트
- * id="map"인 div의 data-address 값과 data-roomName을 읽어와 지도를 표시한다.
+ * id="map"인 div의 data-address 값과 data-room-name을 읽어와 지도를 표시한다.
  */
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -31,6 +31,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 주소-좌표 변환 객체를 생성합니다
     const geocoder = new kakao.maps.services.Geocoder();
+
+	const cleanAddress = address.replace(/,/g, '').trim();
+	console.log("변환용 주소:", cleanAddress);
 
     // 주소로 좌표를 검색합니다
     geocoder.addressSearch(address, function(result, status) {
@@ -66,6 +69,9 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             map.setCenter(coords);
-        }
+        }else {
+        console.error("주소 변환 실패:", status);
+        mapContainer.innerHTML = "주소를 찾을 수 없습니다.";
+    }
     });
 });

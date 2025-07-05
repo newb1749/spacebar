@@ -2,7 +2,10 @@
  * 룸 캘린더 초기화 함수
  * ES6 모듈 대신 전역 함수로 노출
  */
-function initRoomCalendar(calId, options) {
+
+function initRoomCalendar(calId, options) 
+{
+
   const dateInput = document.getElementById(calId);
   
   if (!dateInput) {
@@ -66,25 +69,56 @@ function initRoomCalendar(calId, options) {
       position: config.position,
       
       onReady: function (selectedDates) {
-        if (selectedDates.length === 2) {
-          const [start, end] = selectedDates;
-          const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
-          dateInput.value = displayText;
-        }
-      },
+
+		  if (selectedDates.length === 2) {
+		    const [start, end] = selectedDates;
+		    const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
+		    dateInput.value = displayText;
+		
+		    // ✅ 추가: hidden input에도 초기값 넣기
+		    const startInput = document.getElementById(calId + '_start');
+		    const endInput = document.getElementById(calId + '_end');
+		    if (startInput && endInput) {
+		      const formatYYYYMMDD = (date) => {
+		        const yyyy = date.getFullYear();
+		        const mm = String(date.getMonth() + 1).padStart(2, '0');
+		        const dd = String(date.getDate()).padStart(2, '0');
+		        return `${yyyy}${mm}${dd}`;
+		      };
+		      startInput.value = formatYYYYMMDD(start);
+		      endInput.value = formatYYYYMMDD(end);
+		    }
+		  }
+		},
       
       onChange: function (selectedDates) {
-        if (selectedDates.length === 2) {
-          const [start, end] = selectedDates;
-          const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
-          dateInput.value = displayText;
-        }
-        
-        // 콜백 함수 실행
-        if (config.onChange && typeof config.onChange === 'function') {
-          config.onChange(selectedDates);
-        }
-      }
+		  if (selectedDates.length === 2) {
+		    const [start, end] = selectedDates;
+		    const displayText = `${formatDateForDisplay(start)} - ${formatDateForDisplay(end)}`;
+		    dateInput.value = displayText;
+		
+		    // 날짜 포맷: yyyy-MM-dd
+		    const startInput = document.getElementById(calId + '_start');
+		    const endInput = document.getElementById(calId + '_end');
+		    if (startInput && endInput) {
+			  // yyyyMMdd 형식으로 포맷해서 hidden input에 넣기
+			  const formatYYYYMMDD = (date) => {
+			    const yyyy = date.getFullYear();
+			    const mm = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+			    const dd = String(date.getDate()).padStart(2, '0');
+			    return `${yyyy}${mm}${dd}`;
+			  };
+			
+			  startInput.value = formatYYYYMMDD(start);
+			  endInput.value = formatYYYYMMDD(end);
+			}
+		  }
+		
+		  if (config.onChange && typeof config.onChange === 'function') {
+		    config.onChange(selectedDates);
+		  }
+		}
+
     };
 
     // Flatpickr 초기화

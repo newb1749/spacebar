@@ -5,6 +5,12 @@
 src/main/webapp/resources/
 /upload/
 
+
+# 클래스 파일
+*.class
+
+
+
 # Build files
 # Maven 빌드 결과물
 /target/
