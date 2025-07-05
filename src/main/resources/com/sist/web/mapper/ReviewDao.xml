@@ -54,19 +54,19 @@
 	</insert>
 	
 	<!-- 3. 내 리뷰 목록 조회 -->
-	<select id="selectMyReviews" parameterType="string" resultType="com.sist.web.model.Review">
+	<select id="selectMyReviews" parameterType="string" resultMap="reviewResultMap">
 		        SELECT
-		            R.REVIEW_SEQ,
-		            R.REVIEW_TITLE,
-		            R.RATING,
-		            TO_CHAR(R.REG_DT, 'YYYY-MM-DD') AS REG_DT,
-		            RM.ROOM_TITLE,      
-		            RT.ROOM_TYPE_TITLE 
+		            R.REVIEW_SEQ AS REVIEW_SEQ,
+		            R.REVIEW_TITLE AS REVIEW_TITLE,
+		            R.RATING AS RATING,
+		            R.REG_DT AS REG_DT,
+		            RM.ROOM_TITLE AS ROOM_TITLE,      
+		            RT.ROOM_TYPE_TITLE AS ROOM_TYPE_TITLE
 		        FROM
 		            REVIEW R
 		        INNER JOIN RESERVATION RS ON R.RSV_SEQ = RS.RSV_SEQ
-		        INNER JOIN ROOM RM ON RS.ROOM_SEQ = RM.ROOM_SEQ
-		        INNER JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
+			    INNER JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
+			    INNER JOIN ROOM RM ON RT.ROOM_SEQ = RM.ROOM_SEQ
 		        WHERE
 		            R.USER_ID = #{userId}
 		        AND R.REVIEW_STAT = 'Y'

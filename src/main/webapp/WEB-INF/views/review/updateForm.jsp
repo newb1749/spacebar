@@ -1,53 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>리뷰 작성</title>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
-
-<c:if test="${not empty message}">
-    <script>
-        alert('${message}');
-    </script>
-</c:if>
-
-<c:if test="${not empty errorMessage}">
-    <script>
-        alert('${errorMessage}');
-    </script>
-</c:if>
-
+<title>리뷰 수정</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-    }
-    h1 {
-        margin-bottom: 20px;
-    }
-    form p {
-        margin-bottom: 15px;
-    }
-    input[type="text"], textarea {
-        width: 100%;
-        max-width: 500px;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-    button {
-        padding: 10px 20px;
-        cursor: pointer;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f0f0f0;
-    }
-    button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-    
+    /* writeForm.jsp와 동일한 스타일을 적용하여 일관성을 유지합니다. */
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    form p { margin-bottom: 15px; }
+    input[type="text"], textarea { width: 100%; max-width: 500px; padding: 8px; box-sizing: border-box; }
+    button { padding: 10px 20px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background-color: #f0f0f0; }
+    button[type="submit"] { background-color: #007bff; color: white; border-color: #007bff; }
     
     .rating {
         display: inline-block;
@@ -75,25 +40,18 @@
     .rating > label:hover svg {
         fill: #f7b731; /* 채워진 별 색상 */
     }
-
+    
+    .image-list-item { display: inline-block; text-align: center; margin: 10px; border: 1px solid #eee; padding: 5px; }
 </style>
 </head>
 <body>
 
-    <h1>리뷰 작성 📝</h1>
+    <h1>리뷰 수정 ✏️</h1>
     
-        <!-- 성공/오류 메시지 표시 -->
-    <c:if test="${not empty message}">
-        <div class="message success-message">${message}</div>
-    </c:if>
-    <c:if test="${not empty errorMessage}">
-        <div class="message error-message">${errorMessage}</div>
-    </c:if>
+    <form action="/review/updateProc" method="post" enctype="multipart/form-data">
     
-    <form action="/review/writeProc" method="post" enctype="multipart/form-data">
-    
-        <%-- 컨트롤러로부터 받은 rsvSeq를 hidden input으로 가지고 있다가 폼 전송 시 서버로 보냅니다. --%>
-        <input type="hidden" name="rsvSeq" value="${rsvSeq}" />
+        <%-- 수정할 리뷰의 reviewSeq를 hidden 값으로 반드시 포함해야 합니다. --%>
+        <input type="hidden" name="reviewSeq" value="${review.reviewSeq}" />
 
 		<!-- ────────── ⭐ 별점 영역 ────────── -->
         <p>
@@ -129,24 +87,39 @@
 
         <p>
             <strong>제목:</strong><br/>
-            <input type="text" name="reviewTitle" placeholder="리뷰 제목을 입력하세요" required />
+            <%-- value 속성에 기존 제목을 채워줍니다. --%>
+            <input type="text" name="reviewTitle" value="${review.reviewTitle}" placeholder="리뷰 제목을 입력하세요" required />
         </p>
         
         <p>
             <strong>내용:</strong><br/>
-            <textarea name="reviewContent" rows="10" placeholder="리뷰 내용을 입력하세요" required></textarea>
+            <%-- textarea는 태그 사이에 기존 내용을 채워줍니다. --%>
+            <textarea name="reviewContent" rows="10" placeholder="리뷰 내용을 입력하세요" required>${review.reviewContent}</textarea>
         </p>
         
+        <c:if test="${not empty review.reviewImageList}">
+            <p>
+                <strong>기존 이미지 (삭제할 이미지 체크):</strong><br/>
+                <c:forEach var="img" items="${review.reviewImageList}">
+                    <div class="image-list-item">
+                        <img src="/resources/upload/review/${img.reviewImgName}" alt="${img.reviewImgOrigName}" style="width:100px; height:100px; object-fit:cover;">
+                        <br>
+                        <%-- 삭제를 위해 컨트롤러로 이미지 시퀀스(reviewImgSeq)를 넘겨줍니다. --%>
+                        <input type="checkbox" name="deleteImgSeqs" value="${img.reviewImgSeq}"> 삭제
+                    </div>
+                </c:forEach>
+            </p>
+        </c:if>
+        
         <p>
-            <strong>리뷰 사진 첨부 (여러 장 가능):</strong><br/>
+            <strong>새 이미지 추가:</strong><br/>
             <input type="file" name="files" multiple="multiple" />
         </p>
         
         <br/>
-        <button type="submit">리뷰 등록</button>
-        <button type="button" onclick="history.back();">취소</button>
+        <button type="submit">수정 완료</button>
+        <button type="button" onclick="location.href='/review/myList'">취소</button>
         
     </form>
-
 </body>
 </html>
