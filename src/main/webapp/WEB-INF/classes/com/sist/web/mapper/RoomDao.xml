@@ -52,14 +52,4 @@
 			)
   </insert>
   
-  <insert id="insertRoomFacility">
-    INSERT INTO ROOM_FACILITY (
-        ROOM_SEQ, 
-        FAC_SEQ
-    ) VALUES (
-        #{roomSeq}, 
-        #{facSeq}
-    )
-  </insert>
-  
 </mapper>
