@@ -42,6 +42,35 @@ public class Review implements Serializable{
 
 	
 	
+	
+	public String getRoomTitle() {
+		return roomTitle;
+	}
+
+
+
+
+	public void setRoomTitle(String roomTitle) {
+		this.roomTitle = roomTitle;
+	}
+
+
+
+
+	public String getRoomTypeTitle() {
+		return roomTypeTitle;
+	}
+
+
+
+
+	public void setRoomTypeTitle(String roomTypeTitle) {
+		this.roomTypeTitle = roomTypeTitle;
+	}
+
+
+
+
 	public List<ReviewImage> getReviewImageList() {
 		return ReviewImageList;
 	}

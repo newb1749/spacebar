@@ -239,7 +239,6 @@ public class ReviewService {
      * @param review reviewSeq와 userId 포함
      * @return 성공 시 1
      */
-	@Transactional(propagation=Propagation.REQUIRED, rollbackFor = Exception.class)
 	public int inactiveReview(Review review) throws Exception
 	{
 		return reviewDao.inactiveReview(review);

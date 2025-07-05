@@ -55,9 +55,11 @@ public class RoomController {
 	}
 	
 	
-    /**
-     * 숙소 등록 처리 (폼 데이터 및 파일 업로드)
-     */	
+	 /**
+	  * 숙소 등록 처리 (폼 데이터 및 파일 업로드)
+	  * @param request
+	  * @return
+	  */
 	 @RequestMapping(value = "/room/addProc", method = RequestMethod.POST)
 	    public String addProc(MultipartHttpServletRequest request) {
 
@@ -146,7 +148,7 @@ public class RoomController {
 	        while (true) {
 	            String prefix = "roomTypeTitle_" + index;
 	            if (request.getParameter(prefix) == null) break;
-
+	            // jsp에 맞게 데이터 처리
 	            RoomType roomType = new RoomType();
 	            roomType.setRoomTypeTitle(HttpUtil.get(request, "roomTypeTitle_" + index, ""));
 	            roomType.setRoomTypeDesc(HttpUtil.get(request, "roomTypeDesc_" + index, ""));
@@ -170,7 +172,7 @@ public class RoomController {
 	                image.setSortOrder((short) 1);
 	                roomTypeImageList.add(image);
 	            }
-
+	            // 이미지시퀀스 부여
 	            List<MultipartFile> detailImgs = request.getFiles("roomTypeDetailImages_" + index);
 	            short detailOrder = 2;
 	            for (MultipartFile file : detailImgs) {
