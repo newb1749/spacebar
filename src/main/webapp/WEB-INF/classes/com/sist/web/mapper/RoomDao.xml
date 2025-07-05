@@ -20,6 +20,8 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+      <result column="AMT" property="amt" />
+      <result column="ROOM_IMAGE_NAME" property="roomImageName" />
   </resultMap>
   
   
@@ -52,14 +54,19 @@
 			)
   </insert>
   
-  <insert id="insertRoomFacility">
-    INSERT INTO ROOM_FACILITY (
-        ROOM_SEQ, 
-        FAC_SEQ
-    ) VALUES (
-        #{roomSeq}, 
-        #{facSeq}
-    )
-  </insert>
   
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

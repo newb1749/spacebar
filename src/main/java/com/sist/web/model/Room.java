@@ -1,6 +1,8 @@
 package com.sist.web.model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 public class Room implements Serializable{
@@ -32,6 +34,26 @@ public class Room implements Serializable{
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
 	private List<Integer> facilityNos;	   // 리스트로 FacilitySeq 값 저장
+	private String searchValue;
+	
+	private long startRow;
+	private long endRow;
+	
+	private long amt;
+	private String roomImageName;
+
+	private String regionList;
+	
+	private String startDate;
+	private String endDate;
+	private String startTime;
+	private String endTime;
+	
+	private String category;
+	private int personCount;
+	private int minPrice;
+	private int maxPrice;
+	private List<String> facilityList;
 	
 	public Room()
 	{
@@ -52,18 +74,233 @@ public class Room implements Serializable{
 		maxTimes = 0;
 		averageRating = 0;
 		reviewCount = 0;
+		
+		searchValue = "";
+		startRow = 0;
+		endRow = 0;
+		
+		amt = 0;
+		roomImageName = "";
+		regionList = "";
+		
+		startDate = "";
+		endDate = "";
+		startTime = "";
+		endTime = "";
+		
+		category = "";
+		personCount = 0;
+		minPrice = 0;
+		maxPrice = 0;
 	}
 	
 	
 	
-	public List<Integer> getFacilityNos() {
-		return facilityNos;
+	
+	public int getMinPrice() {
+		return minPrice;
 	}
 
 
 
-	public void setFacilityNos(List<Integer> facilityNos) {
-		this.facilityNos = facilityNos;
+
+	public void setMinPrice(int minPrice) {
+		this.minPrice = minPrice;
+	}
+
+
+
+
+	public int getMaxPrice() {
+		return maxPrice;
+	}
+
+
+
+
+	public void setMaxPrice(int maxPrice) {
+		this.maxPrice = maxPrice;
+	}
+
+
+
+
+	public List<String> getFacilityList() {
+		return facilityList;
+	}
+
+
+
+
+	public void setFacilityList(List<String> facilityList) {
+		this.facilityList = facilityList;
+	}
+
+
+
+
+	public int getPersonCount() {
+		return personCount;
+	}
+
+
+
+
+	public void setPersonCount(int personCount) {
+		this.personCount = personCount;
+	}
+
+
+
+
+	public String getCategory() {
+		return category;
+	}
+
+
+
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+
+
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+
+
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+
+
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+
+
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+
+
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+
+
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+
+
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+
+
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+
+
+
+	public String getRegionList() {
+		return regionList;
+	}
+
+
+
+
+	public void setRegionList(String regionList) {
+		this.regionList = regionList;
+	}
+
+
+
+
+	public String getRoomImageName() {
+		return roomImageName;
+	}
+
+
+
+
+	public void setRoomImageName(String roomImageName) {
+		this.roomImageName = roomImageName;
+	}
+
+
+
+
+	public long getAmt() {
+		return amt;
+	}
+
+
+
+
+	public void setAmt(long amt) {
+		this.amt = amt;
+	}
+
+
+
+
+	public long getStartRow() {
+		return startRow;
+	}
+
+
+
+
+	public void setStartRow(long startRow) {
+		this.startRow = startRow;
+	}
+
+
+
+
+	public long getEndRow() {
+		return endRow;
+	}
+
+
+
+
+	public void setEndRow(long endRow) {
+		this.endRow = endRow;
+	}
+
+
+
+
+	public String getSearchValue() {
+		return searchValue;
+	}
+
+
+
+	public void setSearchValue(String searchValue) {
+		this.searchValue = searchValue;
 	}
 
 

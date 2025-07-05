@@ -20,6 +20,8 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+      <result column="AMT" property="amt" />
+      <result column="ROOM_IMAGE_NAME" property="roomImageName" />
   </resultMap>
   
   
@@ -52,4 +54,19 @@
 			)
   </insert>
   
+  
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
