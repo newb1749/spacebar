@@ -10,13 +10,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   		<java-version>1.8</java-version>
-<<<<<<< HEAD
 		<org.springframework-version>5.2.12.RELEASE </org.springframework-version> 
 		<org.aspectj-version>1.6.10</org.aspectj-version> 
-=======
-		<org.springframework-version>5.2.12.RELEASE</org.springframework-version>
-		<org.aspectj-version>1.6.10</org.aspectj-version>
->>>>>>> origin/feature/mileage
 		<org.slf4j-version>1.7.30</org.slf4j-version>
 		<com.google.code.gson-version>2.8.6</com.google.code.gson-version>
 		<org.mybatis-version>3.5.6</org.mybatis-version>
@@ -26,11 +21,7 @@
 		<com.zaxxer.HikariCP-version>3.4.5</com.zaxxer.HikariCP-version>
 		<com.oracle.ojdbc6-version>11.2.0.4</com.oracle.ojdbc6-version>
 		<ch.qos.logback-version>1.2.3</ch.qos.logback-version>
-<<<<<<< HEAD
 		<jackson-version>2.12.1</jackson-version> 
-=======
-		<jackson-version>2.12.1</jackson-version>
->>>>>>> origin/feature/mileage
 	</properties>
 	<dependencies>
 		<!-- Spring -->
@@ -140,7 +131,6 @@
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
 		</dependency-->
-<<<<<<< HEAD
 		
 		<!-- 웹소켓 설정 추가 시작 -->
 		<dependency>
@@ -162,8 +152,6 @@
 		</dependency>
 		
 		<!-- 웹소켓 설정 추가 종료 -->
-=======
->>>>>>> origin/feature/mileage
 				
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -171,14 +159,9 @@
 			<version>1.2</version>
 		</dependency>
 	</dependencies>
-<<<<<<< HEAD
 	
     <build>
     	
-=======
-    <build>
-    	<sourceDirectory>src/java</sourceDirectory>
->>>>>>> origin/feature/mileage
     	<plugins>
 	      	<plugin>
 		        <artifactId>maven-compiler-plugin</artifactId>
@@ -188,11 +171,7 @@
 		          	<target>1.8</target>
 		        </configuration>
 	      	</plugin>
-<<<<<<< HEAD
 		      	
-=======
-	      	
->>>>>>> origin/feature/mileage
 	      	<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		      	<artifactId>maven-dependency-plugin</artifactId>
@@ -209,24 +188,12 @@
 		               		<overWriteReleases>false</overWriteReleases>
 		               		<overWriteSnapshots>false</overWriteSnapshots>
 		               		<overWriteIfNewer>true</overWriteIfNewer>
-<<<<<<< HEAD
-=======
-		               		<includeScope>runtime</includeScope>
-		               		<excludeScope>provided</excludeScope> 
->>>>>>> origin/feature/mileage
 		            	</configuration>
 		        	</execution>
 		      	</executions>
 	    	</plugin>
-<<<<<<< HEAD
 		  </plugins>
 	    <finalName>${project.artifactId}</finalName>
   	</build>
 </project>
 
-=======
-	    </plugins>
-	    <finalName>${project.artifactId}</finalName>
-  	</build>
-</project>
->>>>>>> origin/feature/mileage
