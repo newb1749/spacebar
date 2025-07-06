@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sist.web.dao.RoomTypeDaoJY">
+<mapper namespace="com.sist.web.dao.RoomTypeDao">
 
-    <resultMap id="roomTypeResultMap" type="com.sist.web.model.RoomTypeJY">
+    <resultMap id="roomTypeResultMap" type="com.sist.web.model.RoomType">
         <id column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
         <result column="ROOM_SEQ" property="roomSeq" />
         <result column="ROOM_TYPE_TITLE" property="roomTypeTitle" />
@@ -20,32 +20,13 @@
         <result column="UPDATE_DT" property="updateDt" />
     </resultMap>
     
-    <select id="selectRoomTypeBySeq" parameterType="int" resultMap="roomTypeResultMap">
-      SELECT 
-          ROOM_TYPE_SEQ,
-          ROOM_SEQ,
-          ROOM_TYPE_TITLE,
-          ROOM_TYPE_DESC,
-          WEEKDAY_AMT,
-          WEEKEND_AMT,
-          ROOM_CHECK_IN_DT,
-          ROOM_CHECK_OUT_DT,
-          ROOM_CHECK_IN_TIME,
-          ROOM_CHECK_OUT_TIME,
-          MAX_GUESTS,
-          MIN_DAY,
-          MAX_DAY,
-          REG_DT,
-          UPDATE_DT
-      FROM ROOM_TYPE
-      WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
-    </select>
-
-    <insert id="insertRoomType" parameterType="com.sist.web.model.RoomTypeJY">
-        <selectKey keyProperty="roomTypeSeq" resultType="int" order="BEFORE">
-             SELECT SEQ_ROOM_TYPE_SEQ.NEXTVAL FROM DUAL
-        </selectKey>
-        INSERT INTO ROOM_TYPE (
+  	<insert id="insertRoomType" parameterType="com.sist.web.model.RoomType">
+  	
+		<selectKey keyProperty="roomTypeSeq" resultType="int" order="BEFORE">
+			 SELECT SEQ_ROOM_TYPE_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+  		
+  	   INSERT INTO ROOM_TYPE (
             ROOM_TYPE_SEQ, ROOM_SEQ, ROOM_TYPE_TITLE, ROOM_TYPE_DESC,
             WEEKDAY_AMT, WEEKEND_AMT, ROOM_CHECK_IN_DT, ROOM_CHECK_OUT_DT,
             ROOM_CHECK_IN_TIME, ROOM_CHECK_OUT_TIME, MAX_GUESTS, MIN_DAY, MAX_DAY,
@@ -67,9 +48,14 @@
             SYSDATE, 
             SYSDATE
         )
+        
   	</insert>
-  	
-	<select id="selectAvailableRoomType" resultType="int">
+
+    <select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
+      SELECT HOST_ID FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
+    </select>
+
+    <select id="selectAvailableRoomType" resultType="int">
 	    SELECT ROOM_TYPE_SEQ
 	    FROM ROOM_TYPE
 	    WHERE 

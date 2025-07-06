@@ -31,10 +31,13 @@ public class Room implements Serializable{
 	private double averageRating;			// 숙소 평균 평점 (2,1)
 	private int reviewCount;				// 숙소 전체 리뷰수
 	
+
+	
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
 	private List<Integer> facilityNos;	   // 리스트로 FacilitySeq 값 저장
 	private String searchValue;
+	private int roomTypeSeq;
 	
 	private long startRow;
 	private long endRow;
@@ -93,8 +96,16 @@ public class Room implements Serializable{
 		minPrice = 0;
 		maxPrice = 0;
 	}
-	
-	
+
+    // getter / setter
+    public int getRoomTypeSeq() {
+        return roomTypeSeq;
+    }
+
+    public void setRoomTypeSeq(int roomTypeSeq) {
+        this.roomTypeSeq = roomTypeSeq;
+    }
+
 	
 	
 	public List<Integer> getFacilityNos() {
@@ -324,12 +335,9 @@ public class Room implements Serializable{
 	}
 
 
-
 	public void setRoomImageList(List<RoomImage> roomImageList) {
 		RoomImageList = roomImageList;
 	}
-
-
 
 	public int getRoomSeq() {
 		return roomSeq;

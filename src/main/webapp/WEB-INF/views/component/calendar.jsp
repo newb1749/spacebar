@@ -1,4 +1,5 @@
 <!-- /WEB-INF/views/component/calendar.jsp -->
+<!-- UNPKG CDN 사용 (CORS 문제가 적음) -->
 <link rel="stylesheet" href="https://unpkg.com/flatpickr/dist/flatpickr.min.css">
 <script src="https://unpkg.com/flatpickr"></script>
 <script src="https://unpkg.com/flatpickr/dist/l10n/ko.js"></script>
