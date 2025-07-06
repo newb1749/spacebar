@@ -97,6 +97,20 @@ public class Room implements Serializable{
 	
 	
 	
+	public List<Integer> getFacilityNos() {
+		return facilityNos;
+	}
+
+
+
+
+	public void setFacilityNos(List<Integer> facilityNos) {
+		this.facilityNos = facilityNos;
+	}
+
+
+
+
 	public int getMinPrice() {
 		return minPrice;
 	}
