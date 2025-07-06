@@ -1,7 +1,11 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import com.sist.web.model.MiliageHistory;
 import com.sist.web.model.User_mj;
 
 @Repository("userDao_mj")
@@ -27,4 +31,14 @@ public interface UserDao_mj
 	
 	//비밀번호 찾기
 	public User_mj searchPwd(User_mj user);
+
+
+
+    int updateMileage(@Param("userId") String userId, @Param("amount") int amount);
+
+    int insertMileageHistory(MiliageHistory history);
+    
+    int selectMileage(String userId); // 현재 마일리지 조회
+    
+    List<MiliageHistory> selectMileageHistory(String userId);
 }

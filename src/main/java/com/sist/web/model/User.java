@@ -181,4 +181,6 @@ public class User implements Serializable
 		this.updateDt = updateDt;
 	}
 	
+
 }
+

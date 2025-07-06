@@ -48,9 +48,14 @@
             SYSDATE, 
             SYSDATE
         )
+        
   	</insert>
-  	
-	<select id="selectAvailableRoomType" resultType="int">
+
+    <select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
+      SELECT HOST_ID FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
+    </select>
+
+    <select id="selectAvailableRoomType" resultType="int">
 	    SELECT ROOM_TYPE_SEQ
 	    FROM ROOM_TYPE
 	    WHERE 

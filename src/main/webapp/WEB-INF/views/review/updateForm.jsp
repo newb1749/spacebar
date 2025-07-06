@@ -16,7 +16,7 @@
     
     .rating {
         display: inline-block;
-        direction: rtl; /* 별을 오른쪽부터 채우도록 설정 (중요) */
+        direction: rtl; /* 별을 오른쪽부터 채우도록 설정 (중요ㅋ) */
         border: 0;
         vertical-align: middle;
     }

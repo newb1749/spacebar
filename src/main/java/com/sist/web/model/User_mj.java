@@ -182,4 +182,3 @@ public class User_mj implements Serializable
 	}
 	
 }
-
