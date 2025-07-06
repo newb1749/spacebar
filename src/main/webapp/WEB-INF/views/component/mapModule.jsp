@@ -31,8 +31,4 @@
 <p>latitude: ${room.latitude}</p>
 <p>longitude: ${room.longitude}</p>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/cart
 <script src="<c:url value='/resources/js/map.js' />"></script>
