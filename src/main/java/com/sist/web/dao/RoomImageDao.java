@@ -11,14 +11,6 @@ public interface RoomImageDao {
      */
     //public short getRoomImageSeq();
 
-    
-    /**
-     * ROOM_IMAGE_SEQ에 넣을 숫자 부여
-     * @return short 숙소 이미지에 넣을 숫자 부여
-     */   
-    public short selectMaxRoomImgSeq(int roomSeq);
-    
-    
     /**
      * 숙소 등록 시 업로드된 숙소 이미지들을 저장할 때 사용
      * @param roomImage DB에 저장할 숙소 이미지 정보가 담긴 RoomImage 객체.

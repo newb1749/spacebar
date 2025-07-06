@@ -127,6 +127,7 @@
 		 WHERE USER_ID = #{userId}
   	</update>
   	
+<<<<<<< HEAD
   	<!-- 아이디 찾기 -->
   	<select id="searchId" parameterType="com.sist.web.model.User_mj" resultMap="userResultMap">
   		SELECT USER_ID,
@@ -177,3 +178,53 @@
   	</select>
   	
 </mapper>
+=======
+  	<!-- 현재 마일리지 조회 -->
+<select id="selectMileage" resultType="int">
+	SELECT NVL(MILE, 0)
+	FROM SB_USER
+	WHERE USER_ID = #{userId}
+</select>
+
+<!-- 마일리지 충전 -->
+<update id="updateMileage">
+	UPDATE SB_USER
+	SET MILE = NVL(MILE, 0) + #{amount},
+	    UPDATE_DT = SYSDATE
+	WHERE USER_ID = #{userId}
+</update>
+
+<!-- 마일리지 이력 추가 -->
+<insert id="insertMileageHistory" parameterType="com.sist.web.model.MiliageHistory">
+	INSERT INTO MILEAGE_HISTORY (
+		MILE_HISTORY_SEQ,
+		USER_ID,
+		TRX_TYPE,
+		TRX_AMT,
+		BALANCE_AFTER_TRX,
+		TRX_DT
+	) VALUES (
+		MILEAGE_HISTORY_SEQ.NEXTVAL,
+		#{userId},
+		#{trxType},
+		#{trxAmt},
+		#{balanceAfterTrx},
+		SYSDATE
+	)
+</insert>
+  	
+  	<select id="selectMileageHistory" parameterType="string" resultType="com.sist.web.model.MiliageHistory">
+    SELECT 
+        MILE_HISTORY_SEQ AS mileHistorySeq,
+        USER_ID,
+        TRX_TYPE,
+        TRX_AMT,
+        BALANCE_AFTER_TRX,
+        TO_CHAR(TRX_DT, 'YYYY-MM-DD HH24:MI:SS') AS trxDt
+    FROM MILEAGE_HISTORY
+    WHERE USER_ID = #{userId}
+    ORDER BY TRX_DT DESC
+</select>
+
+</mapper>
+>>>>>>> feature/cart

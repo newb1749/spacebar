@@ -2,6 +2,7 @@ package com.sist.web.dao;
 
 import org.springframework.stereotype.Repository;
 
+
 import com.sist.web.model.User_mj;
 
 @Repository("userDao_mj")
@@ -28,3 +29,4 @@ public interface UserDao_mj
 	//비밀번호 찾기
 	public User_mj searchPwd(User_mj user);
 }
+
