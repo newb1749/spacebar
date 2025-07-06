@@ -24,7 +24,7 @@ import com.sist.web.util.HttpUtil;
 
 @Controller("roomControllerJY")
 public class RoomControllerJY 
-{
+{	
 	private static Logger logger = LoggerFactory.getLogger(RoomControllerJY.class);
 	
     @Autowired

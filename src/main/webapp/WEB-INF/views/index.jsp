@@ -124,7 +124,7 @@ function fn_loginCheck()
 			if(res.code == 0)
 			{
 				alert("로그인되었습니다.");
-				location.href = "/index";
+				location.href = "/coupon/listJY";
 			}
 			else if(res.code == -1)
 			{
@@ -165,10 +165,7 @@ function fn_loginCheck()
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> feature/cart
 <div class="container"><br/><br/><br/><br/><br/>
 
 	<form class="form-signin">
