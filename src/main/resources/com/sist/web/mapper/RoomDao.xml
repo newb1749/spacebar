@@ -20,12 +20,20 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
-      <result column="AMT" property="amt" />
-      <result column="ROOM_IMAGE_NAME" property="roomImageName" />
   </resultMap>
   
-  
-
+  <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
+		<id column="ROOM_IMG_SEQ" property="roomImgSeq" />
+		<result column="ROOM_SEQ" property="roomSeq" />
+		<result column="ROOM_IMG_ORIG_NAME" property="roomImgOrigName" />
+		<result column="ROOM_IMG_EXT" property="roomImgExt" />
+		<result column="IMG_SIZE" property="imgSize" />
+		<result column="IMG_TYPE" property="imgType" />
+		<result column="SORT_ORDER" property="sortOrder" />
+		<result column="ROOM_IMG_NAME" property="roomImgName" />
+		<result column="REG_DT" property="regDt" />
+  </resultMap>
+    
   <insert id="insertRoom" parameterType="com.sist.web.model.Room">
   		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
   			SELECT SEQ_ROOM_SEQ.NEXTVAL FROM DUAL
@@ -55,23 +63,6 @@
 			)
   </insert>
   
-  
-</mapper>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 	<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
 		SELECT 
 			ROOM_SEQ, 
@@ -124,4 +115,3 @@
 	</select>	
   
 </mapper>
->>>>>>> feature/cart
