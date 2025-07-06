@@ -7,12 +7,6 @@
         SELECT SEQ_ROOM_IMAGE_SEQ.NEXTVAL FROM DUAL
     </select>
     
-	<select id="selectMaxRoomImgSeq" parameterType="int" resultType="short">
-		SELECT NVL(MAX(ROOM_IMG_SEQ), 0)
-		FROM ROOM_IMAGE
-		WHERE ROOM_SEQ = #{roomSeq}
-			
-	</select>
 	
     <insert id="insertRoomImage" parameterType="com.sist.web.model.RoomImage">
         INSERT INTO ROOM_IMAGE (

@@ -25,6 +25,7 @@
   </resultMap>
   
   
+
   <insert id="insertRoom" parameterType="com.sist.web.model.Room">
   		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
   			SELECT SEQ_ROOM_SEQ.NEXTVAL FROM DUAL

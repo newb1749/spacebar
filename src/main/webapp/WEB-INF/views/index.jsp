@@ -165,6 +165,10 @@ function fn_loginCheck()
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature/cart
 <div class="container"><br/><br/><br/><br/><br/>
 
 	<form class="form-signin">

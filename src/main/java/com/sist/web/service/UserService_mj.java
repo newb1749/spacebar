@@ -1,5 +1,9 @@
 package com.sist.web.service;
 
+import java.util.Collections;
+import java.util.List;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.dao.UserDao_mj;
+
 import com.sist.web.model.User_mj;
 
 @Service("userService_mj")
@@ -21,8 +26,10 @@ public class UserService_mj
 	@Autowired
 	private UserDao_mj userDao_mj;
 	
+
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
+
 	
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
@@ -112,6 +119,7 @@ public class UserService_mj
 		
 		return count;
 	}
+
 	
 	//아이디 찾기
 	public User_mj searchId(User_mj user)
@@ -147,3 +155,4 @@ public class UserService_mj
 		return result;
 	}
 }
+

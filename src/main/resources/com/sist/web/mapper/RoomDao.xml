@@ -25,6 +25,7 @@
   </resultMap>
   
   
+
   <insert id="insertRoom" parameterType="com.sist.web.model.Room">
   		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
   			SELECT SEQ_ROOM_SEQ.NEXTVAL FROM DUAL
@@ -70,3 +71,57 @@
 
 
 
+=======
+	<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
+		SELECT 
+			ROOM_SEQ, 
+			ROOM_CAT_SEQ, 
+			HOST_ID, 
+			ROOM_ADDR, 
+			LATITUDE, 
+			LONGITUDE, 
+			REGION, 
+			AUTO_CONFIRM_YN, 
+			ROOM_TITLE, 
+			ROOM_DESC, 
+			CANCEL_POLICY, 
+			MIN_TIMES, 
+			MAX_TIMES,
+			AVERAGE_RATING,
+			REVIEW_COUNT, 
+			TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, 
+			TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
+		FROM ROOM
+		WHERE ROOM_SEQ = #{roomSeq}
+	</select>
+  
+	<select id="getRoomImgDetail" resultMap="roomImgResultMap" parameterType="int">
+		SELECT 
+		    ROOM_IMG_SEQ, 
+		    ROOM_SEQ, 
+		    ROOM_IMG_ORIG_NAME, 
+		    ROOM_IMG_EXT, 
+		    IMG_SIZE, 
+		    IMG_TYPE, 
+		    SORT_ORDER, 
+		    ROOM_IMG_NAME,
+		    TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT
+		FROM ROOM_IMAGE
+		WHERE ROOM_SEQ = #{roomSeq}
+	</select>
+  
+	<select id="getRoomImagesByRoomSeq" parameterType="int" resultType="com.sist.web.model.RoomImage">
+		SELECT 
+			ROOM_IMG_SEQ, 
+			ROOM_SEQ, 
+			ROOM_IMG_ORIG_NAME, 
+			ROOM_IMG_EXT, 
+			IMG_SIZE, IMG_TYPE, 
+			SORT_ORDER, ROOM_IMG_NAME
+		FROM ROOM_IMAGE
+		WHERE ROOM_SEQ = #{roomSeq}
+		ORDER BY SORT_ORDER ASC
+	</select>	
+  
+</mapper>
+>>>>>>> feature/cart
