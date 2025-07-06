@@ -1,3 +1,4 @@
+/*
 package com.sist.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
@@ -365,7 +366,7 @@ public class UserController
 	}
 }
 
-
+*/
 
 
 
