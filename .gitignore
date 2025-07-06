@@ -1,38 +1,30 @@
 # User specified
-# 사용자가 지정한 이미지 업로드 폴더 제외
 /src/main/webapp/WEB-INF/views/resources/upload/
 /src/main/webapp/WEB-INF/lib/
 src/main/webapp/resources/
 /upload/
 
-
-# 클래스 파일
-*.class
-# ← 루트 바로 밑의 잘못된 폴더 무시
-/spacebar/          
-
-
-
-# Build files
-# Maven 빌드 결과물
+# 빌드 결과물 무시
 /target/
-# Gradle 빌드 결과물
 /build/
 .gradle/
+*.class
+*.jar
 
+# ❗ 중복 폴더 방지 (팀원이 잘못 커밋한 것 차단)
+spacebar/
+project/
 
-# Eclipse
+# Eclipse 설정
 .classpath
 .project
 .settings/
 
-# Log and temporary files
+# 로그/임시파일 무시
 *.log
 logs/
 *.tmp
 hs_err_pid*
 
-# Sensitive configuration files (Example)
-# 실제 DB 정보나 API 키가 담긴 파일은 여기에 등록하고,
-# .example 파일을 대신 커밋하는 것을 권장합니다.
-# /src/main/resources/config/db.properties
+# 민감한 설정파일 (예: 실제 DB 비번 등)
+/src/main/resources/config/db.properties
