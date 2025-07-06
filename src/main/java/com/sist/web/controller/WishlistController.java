@@ -23,6 +23,7 @@ import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.Wishlist;
 import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomServiceJY;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -38,7 +39,7 @@ public class WishlistController {
 	private WishlistService wishlistService;
 	
 	@Autowired
-	private RoomService roomService;
+	private RoomServiceJY roomService;
 	
 	private static final int LIST_COUNT = 10; 
 	private static final int PAGE_COUNT = 3;

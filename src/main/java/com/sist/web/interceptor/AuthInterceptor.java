@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,8 +192,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter
 			}
 			else
 			{
-				// 일반 페이지 요청일 경우 로그인 페이지로 리다이렉트
-				response.sendRedirect("/user/loginForm_mj"); // [수정] 로그인 페이지 경로로 변경
+				response.sendRedirect("/");
 			}
 		}
 		

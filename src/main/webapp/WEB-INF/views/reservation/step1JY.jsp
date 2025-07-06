@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>예약 – 1단계</title>
+  <title>예약상세</title>
   <!-- Bootstrap5 CSS -->
   <link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet" />
   <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" />
