@@ -1,5 +1,6 @@
 package com.sist.web.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -110,5 +111,15 @@ public class WishlistService {
 		}
 		
 		return count;
+	}
+	
+	public List<Integer> getWishRoomSeqs(String userId) {
+	    List<Integer> seqs = new ArrayList<>();
+	    try {
+	      seqs = wishlistDao.getWishRoomSeqs(userId);
+	    } catch(Exception e) {
+	      logger.error("[WishlistService] getWishRoomSeqs Exception:", e);
+	    }
+	    return seqs;
 	}
 }

@@ -23,4 +23,7 @@ public interface WishlistDao {
 	
 	//위시리스트 삭제
 	public int wishRemove(@Param("roomSeq") int roomSeq, @Param("userId") String userId);
+	
+	//위시리스트 하나 조회
+	public List<Integer> getWishRoomSeqs(@Param("userId") String userId);
 }

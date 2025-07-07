@@ -89,5 +89,46 @@
 	    <delete id="deleteCart" parameterType="int">
 	        DELETE FROM CART WHERE CART_SEQ = #{cartSeq}
 	    </delete>
+	    
+	    
+	     <select id="getCartsBySeqs" resultMap="cartResultMap" parameterType="map">
+    SELECT A.CART_SEQ,
+           A.USER_ID,
+           A.REG_DT,
+           A.ROOM_TYPE_SEQ,
+           A.CART_CHECK_IN_DT,
+           A.CART_CHECK_OUT_DT,
+           A.CART_CHECK_IN_TIME,
+           A.CART_CHECK_OUT_TIME,
+           A.CART_GUESTS_NUM,
+           A.CART_TOTAL_AMT,
+           B.ROOM_TYPE_TITLE,
+           C.ROOM_TYPE_IMG_NAME,
+           D.ROOM_TITLE,
+           D.ROOM_ADDR,
+           D.CANCEL_POLICY,
+           E.ROOM_CAT_NAME
+      FROM CART A
+      JOIN ROOM_TYPE B       ON A.ROOM_TYPE_SEQ = B.ROOM_TYPE_SEQ
+      JOIN ROOM_TYPE_IMAGE C ON B.ROOM_TYPE_SEQ = C.ROOM_TYPE_SEQ AND C.IMG_TYPE = 'main'
+      JOIN ROOM D            ON B.ROOM_SEQ      = D.ROOM_SEQ
+      JOIN ROOM_CATEGORY E   ON D.ROOM_CAT_SEQ  = E.ROOM_CAT_SEQ
+     WHERE A.USER_ID = #{userId}
+       AND A.CART_SEQ IN
+       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
+         #{seq}
+       </foreach>
+     ORDER BY A.REG_DT DESC
+  </select>
+
+  <!-- 2) 일괄 삭제 -->
+  <delete id="deleteCarts" parameterType="map">
+    DELETE FROM CART
+     WHERE USER_ID = #{userId}
+       AND CART_SEQ IN
+       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
+         #{seq}
+       </foreach>
+  </delete>
     
 </mapper>

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.model.RoomType;
+import com.sist.web.model.RoomTypeJY;
 
 public interface RoomTypeDao {
 
