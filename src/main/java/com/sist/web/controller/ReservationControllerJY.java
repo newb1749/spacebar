@@ -79,7 +79,7 @@ public class ReservationControllerJY
 	 * @param numGuests 투숙 인원 수 (기본값: 1)
 	 * @param model JSP에 데이터 전달을 위한 모델 객체
 	 * @param request 로그인 여부 확인을 위한 HTTP 요청 객체
-	 * @return 예약 1단계 페이지 뷰 이름 또는 리디렉션 경로
+	 * @return 예약 1단계 페이지 뷰 이름 또는 리디렉션 경로 
      */
     @GetMapping("/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
