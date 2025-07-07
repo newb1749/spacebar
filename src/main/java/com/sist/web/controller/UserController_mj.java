@@ -22,7 +22,6 @@ import com.sist.web.model.User_mj;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.JsonUtil;
-import com.sist.web.util.SessionUtil;
 
 @Controller("userController_mj")
 public class UserController_mj 
