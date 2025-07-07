@@ -46,7 +46,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter
 	
 	private String AUTH_COOKIE_NAME;
 	
-	private static final String AUTH_SESSION_NAME = "sessionUserId";
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
+	/* public static final String AUTH_SESSION_NAME = "sessionUserId"; */
 	
 	private String AJAX_HEADER_NAME;
 	

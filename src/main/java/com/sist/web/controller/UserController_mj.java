@@ -38,7 +38,10 @@ public class UserController_mj
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
-	public static final String AUTH_SESSION_NAME = "sessionUserId";
+	@Value("#{env['auth.session.name']}")
+	private String AUTH_SESSION_NAME;
+	
+	/* public static final String AUTH_SESSION_NAME = "sessionUserId"; */
 	
 	//로그인
 	@RequestMapping(value="/user/login", method=RequestMethod.POST)
