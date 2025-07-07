@@ -26,7 +26,7 @@
   </c:otherwise>
 </c:choose>
   <div class="container text-center mt-5">
-    <h1 class="heading" data-aos="fade-up">${room.roomTitle}</h1>
+    <h1 class="heading" data-aos="fade-up">${room.roomTitle}ㅁㄴㅇㄹ</h1>
   </div>
 </div>
 
