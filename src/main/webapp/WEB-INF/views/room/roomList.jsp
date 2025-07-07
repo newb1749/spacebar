@@ -381,8 +381,16 @@ $(window).on("scroll", function () {
 		fn_list_scroll(curPage + 1);
 	}
 });
-</script>
 
+function fn_roomDetail(roomSeq)
+{
+	document.roomForm.roomSeq.value = roomSeq;
+	document.roomForm.action = "/room/roomDetailSh";
+	document.roomForm.submit();
+}
+
+
+</script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -539,6 +547,7 @@ $(window).on("scroll", function () {
   <!-- ✅ 리스트 출력 -->
   <div id="roomListBody">
   <c:forEach var="room" items="${list}">
+   <a href="#" class="room-link d-block text-decoration-none" onclick="fn_roomDetail(${room.roomSeq}); event.preventDefault();">
     <div class="room-list-item">
       <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail">
       <div class="room-details">
@@ -550,6 +559,7 @@ $(window).on("scroll", function () {
         </div>
       </div>
     </div>
+    </a>
   </c:forEach>
 </div>
 
@@ -586,7 +596,7 @@ $(window).on("scroll", function () {
 
 <!-- ✅ 폼 -->
 <form name="roomForm" id="roomForm" method="post">
-  <input type="hidden" name="roomSeq" value="${roomSeq}" />
+  <input type="hidden" name="roomSeq" value="" />
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
   <input type="hidden" name="regionList" id="regionList" value="${regionList}" />

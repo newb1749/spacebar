@@ -29,7 +29,7 @@ public class RoomServiceSh
 		}
 		catch(Exception e)
 		{
-			logger.error("[RoomServiceList]roomTotalCount : ",e);
+			logger.error("[RoomServiceSh]roomTotalCount : ",e);
 		}
 		
 		return count;
@@ -46,10 +46,27 @@ public class RoomServiceSh
 		}
 		catch(Exception e)
 		{
-			logger.error("[RoomServiceList]roomList : ",e);
+			logger.error("[RoomServiceSh]roomList : ",e);
 		}
 		
 		return list;
+	}
+	
+	//방 조회
+	public Room getRoomDetail(int roomSeq)
+	{
+		Room room = null;
+		
+		try
+		{
+			room = roomDao.getRoomDetail(roomSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceSh]getRookDetail : ",e);
+		}
+		
+		return room;
 	}
 	
 }

@@ -29,8 +29,10 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.service.RoomImgServiceSh;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.RoomTypeServiceSh;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
@@ -50,7 +52,13 @@ public class RoomControllerSh {
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private RoomServiceSh roomService;	
+	private RoomServiceSh roomService;
+	
+	@Autowired
+	private RoomImgServiceSh roomImgService;
+	
+	@Autowired
+	private RoomTypeServiceSh roomTypeService;
 	
 	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
@@ -356,6 +364,54 @@ public class RoomControllerSh {
 //        
 //        return "/room/testSearch"; // search.jsp
 //    }
+	
+	
+	//////////////////////////////////////////////
+	@RequestMapping(value="/room/roomDetailSh")
+	public String roomDetailSh(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		//방 Seq
+		int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+		
+		if(roomSeq > 0)
+		{
+			Room room = roomService.getRoomDetail(roomSeq);
+			
+			if(room != null)
+			{
+				List<RoomImage> roomImg = roomImgService.getRoomImgDetail(roomSeq);
+				if(roomImg != null)
+				{
+					room.setRoomImageList(roomImg);
+					RoomImage mainImages = null;
+					List<RoomImage> detailImages = new ArrayList<>();
+					
+					for(RoomImage img : roomImg)
+					{
+						if("main".equals(img.getImgType()))
+						{
+							mainImages = img;
+						}
+						else
+						{
+							detailImages.add(img);
+						}
+					}
+					
+					model.addAttribute("mainImages",mainImages);
+					model.addAttribute("detailImages",detailImages);
+				}
+				
+				model.addAttribute("room",room);
+				model.addAttribute("roomCatSeq",room.getRoomCatSeq());
+				
+				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
+				model.addAttribute("roomTypes",roomTypes);
+			}
+		}
+		
+		return "/room/roomDetailSh";
+	}
 
 }
 
