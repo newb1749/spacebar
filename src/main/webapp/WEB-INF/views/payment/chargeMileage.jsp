@@ -61,12 +61,14 @@
 
   <script>
     // 로그인 여부 체크
-    $(document).ready(function() {
-      var sessionUserId = '<%= session.getAttribute("sessionUserId") != null ? session.getAttribute("sessionUserId") : "" %>';
-      if (!sessionUserId) {
-        alert("로그인이 필요합니다.");
-        window.location.href = '${pageContext.request.contextPath}/index.jsp';
-      }
+    $(document).ready(function() 
+    {
+		var sessionUserId = '<%= session.getAttribute("sessionUserId") != null ? session.getAttribute("sessionUserId") : "" %>';
+      	if (!sessionUserId) 
+      	{
+        	alert("로그인이 필요합니다.");
+        	window.location.href = '${pageContext.request.contextPath}/index.jsp';
+      	}
     });
   </script>
 </head>
@@ -98,30 +100,37 @@
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  $('#chargeBtn').on('click', function () {
-    const amount = $('#amount').val();
-    if (!amount || parseInt(amount) < 1000) {
-      alert('최소 1,000원 이상 입력해주세요.');
-      return;
-    }
+	$('#chargeBtn').on('click', function () 
+	{
+	    const amount = $('#amount').val();
+	    if (!amount || parseInt(amount) < 1000) 
+	    {
+	      alert('최소 1,000원 이상 입력해주세요.');
+	      return;
+	    }
 
-    $.ajax({
-      type: 'POST',
-      url: '${pageContext.request.contextPath}/payment/readyAjax',
-      data: { chargeAmount: amount },
-      success: function (res) {
-        if (res.code === 0 && res.data && res.data.next_redirect_pc_url) {
-          window.location.href = res.data.next_redirect_pc_url;
-        } else {
-          alert("카카오페이 요청에 실패했습니다: " + (res.msg || ""));
-        }
-      },
-      error: function () {
-        alert("서버 통신에 실패했습니다.");
-      }
-    });
-  });
+	    $.ajax(
+		{
+			type: 'POST',
+	      	url: '${pageContext.request.contextPath}/payment/readyAjax',
+	      	data: { chargeAmount: amount },
+	      	success: function (res) 
+	      	{
+		        if (res.code === 0 && res.data && res.data.next_redirect_pc_url) 
+		        {
+		          window.location.href = res.data.next_redirect_pc_url;
+		        } 
+		        else 
+		        {
+		          alert("카카오페이 요청에 실패했습니다: " + (res.msg || ""));
+		        }
+	      	},
+	      	error: function ()
+	      	{
+	        	alert("서버 통신에 실패했습니다.");
+			}
+		});
+	});
 </script>
-
 </body>
 </html>

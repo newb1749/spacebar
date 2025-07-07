@@ -115,18 +115,23 @@
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 <script>
-  function confirmPayment() {
-    const finalAmt = Number("${reservation.finalAmt}") || 0;
-    const mileage = Number("${userMileage}") || 0;
+	function confirmPayment() 
+	{
+    	const finalAmt = Number("${reservation.finalAmt}") || 0;
+    	const mileage = Number("${userMileage}") || 0;
 
-    if (mileage < finalAmt) {
-      if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
-        location.href = "${pageContext.request.contextPath}/reservation/payment/chargeMileage";
-      }
-    } else {
-      document.getElementById("paymentForm").submit();
-    }
-  }
+    	if(mileage < finalAmt) 
+    	{
+			if(confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?"))
+	      	{
+				location.href = "${pageContext.request.contextPath}/reservation/payment/chargeMileage";
+	      	}
+    	}
+    	else 
+    	{
+			document.getElementById("paymentForm").submit();
+    	}
+  	}
 </script>
 </body>
 </html>

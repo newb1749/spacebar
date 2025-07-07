@@ -55,17 +55,23 @@ public class KakaoPayControllerJY
     public void initBinder(WebDataBinder binder) 
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
+        binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() 
+        {
             @Override
-            public void setAsText(String text) throws IllegalArgumentException {
-                if (text == null || text.trim().isEmpty()) {
+            public void setAsText(String text) throws IllegalArgumentException
+            {
+                if (text == null || text.trim().isEmpty()) 
+                {
                     setValue(null);
-                } else {
+                } 
+                else 
+                {
                     setValue(LocalDate.parse(text, formatter));
                 }
             }
             @Override
-            public String getAsText() {
+            public String getAsText() 
+            {
                 LocalDate value = (LocalDate) getValue();
                 return (value != null ? value.format(formatter) : "");
             }
@@ -132,21 +138,27 @@ public class KakaoPayControllerJY
         KakaoPayApproveRequest ar = new KakaoPayApproveRequest(tid, orderId, userId, pg);
         KakaoPayApproveResponse ap = kakaoService.approve(ar);
 
-        if (ap != null && ap.getAmount() != null) {
+        if (ap != null && ap.getAmount() != null) 
+        {
             userService.chargeMileage(userId, ap.getAmount().getTotal());
             model.addAttribute("code", 0);
             model.addAttribute("msg", "충전 완료: " + ap.getAmount().getTotal() + "원");
 
             ReservationJY pending = (ReservationJY) session.getAttribute("pendingReservation");
-            if (pending != null) {
+            if (pending != null)
+            {
                 model.addAttribute("reservation", pending);
                 session.removeAttribute("pendingReservation");
                 return "/reservation/detailJY";
-            } else {
+            } 
+            else 
+            {
                 model.addAttribute("msg", "예약 정보가 없어 메인으로 이동합니다.");
                 return "redirect:/reservation/detailJY";
             }
-        } else {
+        }
+        else 
+        {
             model.addAttribute("code", -1);
             model.addAttribute("msg", "결제 승인 실패");
         }
@@ -182,7 +194,7 @@ public class KakaoPayControllerJY
         return "/payment/chargeMileage";
     }
 
-    // 마일리지 차감 후 예약 결제 처리 (POST)
+    // 마일리지 차감 후 예약 결제 처리(POST)
     /**
      * @param reservation
      * @param request
@@ -195,12 +207,14 @@ public class KakaoPayControllerJY
                                       Model model) 
     {
         String guestId = (String) request.getSession().getAttribute("sessionUserId");
-        if (guestId == null || guestId.isEmpty()) {
+        if (guestId == null || guestId.isEmpty())
+        {
             model.addAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
 
-        try {
+        try 
+        {
             String checkIn = request.getParameter("rsvCheckInDt");
             String checkOut = request.getParameter("rsvCheckOutDt");
             String checkInTime = request.getParameter("rsvCheckInTime");   // "HH:mm"
@@ -222,13 +236,15 @@ public class KakaoPayControllerJY
             int userMileage = userService.getCurrentMileage(guestId);
             int finalAmt = reservation.getFinalAmt();
 
-            if (userMileage < finalAmt) {
+            if (userMileage < finalAmt) 
+            {
                 model.addAttribute("error", "마일리지가 부족합니다.");
                 return "redirect:/payment/chargeMileage";
             }
 
             boolean deducted = userService.deductMileage(guestId, finalAmt);
-            if (!deducted) {
+            if (!deducted)
+            {
                 model.addAttribute("error", "마일리지 차감에 실패했습니다.");
                 return "redirect:/payment/chargeMileage";
             }
@@ -240,7 +256,9 @@ public class KakaoPayControllerJY
 
             return "redirect:/reservation/detail?seq=" + reservation.getRsvSeq();
 
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             model.addAttribute("error", "예약 처리 중 오류가 발생했습니다: " + e.getMessage());
             return "redirect:/payment/chargeMileage";
         }
@@ -249,7 +267,8 @@ public class KakaoPayControllerJY
     // 시간 변환 헬퍼 메서드 추가
     private String convertTimeToHHmm(String timeStr) 
     {
-        if (timeStr == null || timeStr.isEmpty()) {
+        if (timeStr == null || timeStr.isEmpty())
+        {
             return null;
         }
         return timeStr.replace(":", "");  // "10:00" -> "1000"

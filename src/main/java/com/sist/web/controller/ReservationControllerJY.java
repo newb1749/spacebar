@@ -88,14 +88,15 @@ public class ReservationControllerJY
                                    @RequestParam(value = "numGuests", defaultValue = "1") int numGuests,
                                    Model model, HttpServletRequest request) 
     {
-
         String sessionUserId = (String) request.getSession().getAttribute("sessionUserId");
-        if (sessionUserId == null || sessionUserId.isEmpty()) {
+        if (sessionUserId == null || sessionUserId.isEmpty()) 
+        {
             model.addAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
 
-        if (roomTypeSeq == null || checkIn == null || checkOut == null || checkIn.isEmpty() || checkOut.isEmpty()) {
+        if (roomTypeSeq == null || checkIn == null || checkOut == null || checkIn.isEmpty() || checkOut.isEmpty())
+        {
             model.addAttribute("error", "예약 정보가 누락되었습니다.");
             return "redirect:/room/list";
         }
@@ -113,23 +114,29 @@ public class ReservationControllerJY
      * @param reservation
      * @throws Exception
      */
-    private void insertReservation(ReservationJY reservation) throws Exception {
-        if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
+    private void insertReservation(ReservationJY reservation) throws Exception 
+    {
+        if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty())
+        {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
-            if (roomTypeSeq == null) {
+            if (roomTypeSeq == null)
+            {
                 throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
             }
 
             RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
-            if (roomType == null) {
+            if (roomType == null) 
+            {
                 throw new IllegalArgumentException("roomType이 존재하지 않습니다. roomTypeSeq: " + roomTypeSeq);
             }
 
             String hostId = roomType.getHostId();
-            if (hostId == null || hostId.trim().isEmpty()) {
+            if (hostId == null || hostId.trim().isEmpty()) 
+            {
                 int roomSeq = roomType.getRoomSeq();
                 hostId = reservationDao.selectHostIdByRoomSeq(roomSeq);
-                if (hostId == null || hostId.trim().isEmpty()) {
+                if (hostId == null || hostId.trim().isEmpty()) 
+                {
                     throw new IllegalArgumentException("호스트 정보가 없습니다. roomSeq: " + roomSeq);
                 }
             }
@@ -137,7 +144,8 @@ public class ReservationControllerJY
             reservation.setHostId(hostId.trim());
         }
 
-        if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
+        if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) 
+        {
             throw new IllegalArgumentException("HOST_ID가 여전히 null입니다.");
         }
 
@@ -154,7 +162,8 @@ public class ReservationControllerJY
     public String reservationList(HttpServletRequest request, Model model) 
     {
         String guestId = (String) request.getSession().getAttribute("sessionUserId");
-        if (guestId == null || guestId.isEmpty()) {
+        if (guestId == null || guestId.isEmpty()) 
+        {
             return "redirect:/user/login";
         }
 
@@ -164,8 +173,11 @@ public class ReservationControllerJY
     }
 
     @GetMapping("/detailJY")
-    public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq, Model model) {
-        if (rsvSeq == null || rsvSeq <= 0) {
+    public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
+    								Model model) 
+    {
+        if (rsvSeq == null || rsvSeq <= 0) 
+        {
             return "redirect:/reservation/confirm";
         }
 
@@ -182,9 +194,12 @@ public class ReservationControllerJY
      */
     @PostMapping("/cancel")
     public String cancelReservation(@ModelAttribute ReservationJY reservation, RedirectAttributes redirectAttrs) {
-        try {
+        try 
+        {
             reservationService.cancelReservation(reservation);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             redirectAttrs.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
@@ -202,7 +217,8 @@ public class ReservationControllerJY
      */
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
-        if (roomType == null) {
+        if (roomType == null)
+        {
             throw new IllegalArgumentException("존재하지 않는 객실 유형입니다.");
         }
 
@@ -213,11 +229,15 @@ public class ReservationControllerJY
         LocalDate checkOut = LocalDate.parse(checkOutDateStr.trim(), DATE_FORMATTER);
 
         int totalAmount = 0;
-        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
+        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) 
+        {
             DayOfWeek day = date.getDayOfWeek();
-            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) 
+            {
                 totalAmount += weekendAmt;
-            } else {
+            }
+            else
+            {
                 totalAmount += weekdayAmt;
             }
         }
@@ -234,17 +254,20 @@ public class ReservationControllerJY
     @PostMapping("/detailJY")
     public String reservationDetailJY(@ModelAttribute ReservationJY reservation,
                                       HttpServletRequest request,
-                                      Model model) {
+                                      Model model) 
+    {
 
         String guestId = (String) request.getSession().getAttribute("sessionUserId");
-        if (guestId == null || guestId.isEmpty()) {
+        if (guestId == null || guestId.isEmpty()) 
+        {
             return "redirect:/user/login";
         }
 
         reservation.setGuestId(guestId);
 
         RoomTypeJY roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
-        if (roomType != null) {
+        if (roomType != null) 
+        {
             reservation.setHostId(roomType.getHostId());
         }
 
@@ -277,18 +300,21 @@ public class ReservationControllerJY
                                           RedirectAttributes redirectAttrs) 
     {
         String userId = (String) session.getAttribute("sessionUserId");
-        if (userId == null || userId.isEmpty()) {
+        if (userId == null || userId.isEmpty())
+        {
             redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
 
         RoomTypeJY roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
-        if (roomType == null) {
+        if (roomType == null)
+        {
             redirectAttrs.addFlashAttribute("error", "유효하지 않은 객실 정보입니다. 예약을 다시 시도해주세요.");
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
 
-        try {
+        try
+        {
             String checkInStr = request.getParameter("rsvCheckInDt");
             String checkOutStr = request.getParameter("rsvCheckOutDt");
             String checkInTime = request.getParameter("rsvCheckInTime");
@@ -302,7 +328,9 @@ public class ReservationControllerJY
             reservation.setRsvCheckInTime(convertTimeToHHmm(checkInTime));
             reservation.setRsvCheckOutTime(convertTimeToHHmm(checkOutTime));
 
-        } catch (Exception e) {
+        } 
+        catch (Exception e)
+        {
             redirectAttrs.addFlashAttribute("error", "체크인/체크아웃 날짜 또는 시간 파싱 오류: " + e.getMessage());
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
@@ -310,7 +338,8 @@ public class ReservationControllerJY
         reservation.setGuestId(userId);
 
         int userMileage = mileageService.getUserMileage(userId);
-        if (userMileage < reservation.getFinalAmt()) {
+        if (userMileage < reservation.getFinalAmt()) 
+        {
             int shortage = reservation.getFinalAmt() - userMileage;
             redirectAttrs.addFlashAttribute("error", "마일리지가 부족합니다.");
             redirectAttrs.addFlashAttribute("userMileage", userMileage);
@@ -320,14 +349,18 @@ public class ReservationControllerJY
         }
 
         boolean success = mileageService.deductMileage(userId, reservation.getFinalAmt());
-        if (!success) {
+        if (!success) 
+        {
             redirectAttrs.addFlashAttribute("error", "마일리지 결제 실패");
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
 
-        try {
+        try 
+        {
             insertReservation(reservation);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             redirectAttrs.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
@@ -366,14 +399,16 @@ public class ReservationControllerJY
             return "/payment/paymentConfirm";  // (1) 에러 시도 동일 JSP 사용
         }
 
-        if (rsvSeq == null || rsvSeq <= 0) {
+        if (rsvSeq == null || rsvSeq <= 0) 
+        {
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", "잘못된 예약 번호입니다.");
             return "/payment/paymentConfirm";  // (2) 잘못된 rsvSeq 시에도 동일 JSP
         }
 
         ReservationJY reservation = reservationDao.selectReservationById(rsvSeq);
-        if (reservation == null) {
+        if (reservation == null)
+        {
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", "예약 정보를 찾을 수 없습니다.");
             return "/payment/paymentConfirm";  // (3) DB에 없는 경우에도
@@ -403,13 +438,17 @@ public class ReservationControllerJY
                                         @RequestParam(value = "userMileage", required = false) Integer userMileage,
                                         @RequestParam(value = "shortage", required = false) Integer shortage,
                                         HttpSession session,
-                                        Model model) {
+                                        Model model) 
+    {
         String userId = (String) session.getAttribute("sessionUserId");
-        if (userId != null) {
-            if (userMileage == null) {
+        if (userId != null) 
+        {
+            if (userMileage == null) 
+            {
                 userMileage = userService.getCurrentMileage(userId);
             }
-            if (finalAmt != null && shortage == null) {
+            if (finalAmt != null && shortage == null)
+            {
                 shortage = Math.max(0, finalAmt - userMileage);
             }
             model.addAttribute("finalAmt", finalAmt);

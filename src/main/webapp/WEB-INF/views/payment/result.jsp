@@ -36,7 +36,6 @@
 <script>
   console.log("rsvSeq from JSP: ${rsvSeq}");
 </script>
-
   <%-- 자동 이동 제거됨
   <script>
     setTimeout(function() {
