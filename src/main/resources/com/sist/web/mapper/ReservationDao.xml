@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.sist.web.dao.ReservationDaoJY">
+<mapper namespace="com.sist.web.dao.ReservationDao">
 
-  <resultMap id="reservationResultMap" type="com.sist.web.model.ReservationJY">
+  <resultMap id="reservationResultMap" type="com.sist.web.model.Reservation">
     <id property="rsvSeq" column="RSV_SEQ" />
     <result property="guestId" column="GUEST_ID" />
     <result property="hostId" column="HOST_ID" />
@@ -29,7 +29,7 @@
   </resultMap>
 
   <!-- 예약 등록 -->
-  <insert id="insertReservation" parameterType="com.sist.web.model.ReservationJY">
+  <insert id="insertReservation" parameterType="com.sist.web.model.Reservation">
     <selectKey keyProperty="rsvSeq" resultType="int" order="BEFORE">
       SELECT SEQ_RESERVATION_SEQ.NEXTVAL FROM DUAL
     </selectKey>
@@ -147,7 +147,7 @@
   </update>
 
   <!-- 예약 취소 처리 -->
-  <update id="cancelReservation" parameterType="com.sist.web.model.ReservationJY">
+  <update id="cancelReservation" parameterType="com.sist.web.model.Reservation">
     UPDATE RESERVATION
     SET RSV_STAT = '취소',
         RSV_PAYMENT_STAT = '취소',

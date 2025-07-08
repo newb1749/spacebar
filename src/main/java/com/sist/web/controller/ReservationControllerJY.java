@@ -1,8 +1,8 @@
 package com.sist.web.controller;
 
-import com.sist.web.dao.ReservationDaoJY;
-import com.sist.web.model.ReservationJY;
-import com.sist.web.model.RoomTypeJY;
+import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Reservation;
+import com.sist.web.model.RoomType;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomServiceJY;
@@ -62,7 +62,7 @@ public class ReservationControllerJY {
      * 예약 관련 DB 직접 접근 (CRUD 등)
      */
     @Autowired
-    private ReservationDaoJY reservationDao;
+    private ReservationDao reservationDao;
 
     /**
      * 개별 객실(Room) 정보 조회 등 담당
@@ -112,14 +112,14 @@ public class ReservationControllerJY {
      * @param reservation
      * @throws Exception
      */
-    private void insertReservation(ReservationJY reservation) throws Exception {
+    private void insertReservation(Reservation reservation) throws Exception {
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
             if (roomTypeSeq == null) {
                 throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
             }
 
-            RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
+            RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             if (roomType == null) {
                 throw new IllegalArgumentException("roomType이 존재하지 않습니다. roomTypeSeq: " + roomTypeSeq);
             }
@@ -157,7 +157,7 @@ public class ReservationControllerJY {
             return "redirect:/user/login";
         }
 
-        List<ReservationJY> reservations = reservationService.getReservationsByGuestId(guestId);
+        List<Reservation> reservations = reservationService.getReservationsByGuestId(guestId);
         model.addAttribute("reservations", reservations);
         return "/reservation/list";
     }
@@ -168,7 +168,7 @@ public class ReservationControllerJY {
             return "redirect:/reservation/confirm";
         }
 
-        ReservationJY reservation = reservationService.getReservationBySeq(rsvSeq);
+        Reservation reservation = reservationService.getReservationBySeq(rsvSeq);
         model.addAttribute("reservation", reservation);
         return "/reservation/detailJY";
     }
@@ -180,7 +180,7 @@ public class ReservationControllerJY {
 	 * @return 예약 목록 또는 예약 상세 페이지로의 리다이렉션 경로
      */
     @PostMapping("/cancel")
-    public String cancelReservation(@ModelAttribute ReservationJY reservation, RedirectAttributes redirectAttrs) {
+    public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
         try {
             reservationService.cancelReservation(reservation);
         } catch (Exception e) {
@@ -200,7 +200,7 @@ public class ReservationControllerJY {
 	 * @throws IllegalArgumentException 객실 유형이 존재하지 않거나 날짜 형식이 잘못된 경우
      */
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
-        RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
+        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
         if (roomType == null) {
             throw new IllegalArgumentException("존재하지 않는 객실 유형입니다.");
         }
@@ -231,7 +231,7 @@ public class ReservationControllerJY {
      * @return
      */
     @PostMapping("/detailJY")
-    public String reservationDetailJY(@ModelAttribute ReservationJY reservation,
+    public String reservationDetailJY(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
                                       Model model) {
 
@@ -242,7 +242,7 @@ public class ReservationControllerJY {
 
         reservation.setGuestId(guestId);
 
-        RoomTypeJY roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
+        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType != null) {
             reservation.setHostId(roomType.getHostId());
         }
@@ -270,7 +270,7 @@ public class ReservationControllerJY {
 	 * @return 예약 완료 페이지로 리디렉션 또는 오류 발생 시 해당 페이지로 리디렉션
      */
     @PostMapping("/payment/chargeMileage")
-    public String chargeMileageAndReserve(@ModelAttribute ReservationJY reservation,
+    public String chargeMileageAndReserve(@ModelAttribute Reservation reservation,
                                           HttpServletRequest request,
                                           HttpSession session,
                                           RedirectAttributes redirectAttrs) 
@@ -281,7 +281,7 @@ public class ReservationControllerJY {
             return "redirect:/user/login";
         }
 
-        RoomTypeJY roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
+        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType == null) {
             redirectAttrs.addFlashAttribute("error", "유효하지 않은 객실 정보입니다. 예약을 다시 시도해주세요.");
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
@@ -371,7 +371,7 @@ public class ReservationControllerJY {
             return "/payment/paymentConfirm";  // (2) 잘못된 rsvSeq 시에도 동일 JSP
         }
 
-        ReservationJY reservation = reservationDao.selectReservationById(rsvSeq);
+        Reservation reservation = reservationDao.selectReservationById(rsvSeq);
         if (reservation == null) {
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", "예약 정보를 찾을 수 없습니다.");

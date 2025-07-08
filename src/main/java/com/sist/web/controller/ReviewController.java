@@ -276,6 +276,8 @@ public class ReviewController {
     	
     	return "redirect:/review/myList";
     }
+    
+    
     /**
      * 숙소에 대한 리뷰 페이지
      * @param roomSeq

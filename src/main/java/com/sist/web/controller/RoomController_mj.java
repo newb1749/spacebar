@@ -21,11 +21,10 @@ import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
-import com.sist.web.model.RoomQnaComment_mj;
-import com.sist.web.model.RoomQna_mj;
+import com.sist.web.model.RoomQnaComment;
+import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
-import com.sist.web.model.RoomTypeJY;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 import com.sist.web.service.RoomImgService_mj;
 import com.sist.web.service.RoomQnaCommentService_mj;
 import com.sist.web.service.RoomQnaService_mj;
@@ -78,7 +77,7 @@ public class RoomController_mj
         String userType = null;
         if (sessionUserId != null) 
         {
-            User_mj userId = userService.userSelect(sessionUserId);
+            User userId = userService.userSelect(sessionUserId);
             
             if (userId != null) 
             {
@@ -90,11 +89,11 @@ public class RoomController_mj
         model.addAttribute("userType", userType);
         
         //Q&A수정시 roomQnaSeq로 조회하기 위함
-        RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+        RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
         model.addAttribute("roomQna", roomQna);
         
-        List<RoomQna_mj> qnaList = null;
-        RoomQna_mj search = new RoomQna_mj();
+        List<RoomQna> qnaList = null;
+        RoomQna search = new RoomQna();
         int totalCount = 0;
         Paging paging = null;
 
@@ -130,7 +129,7 @@ public class RoomController_mj
                 model.addAttribute("room", room);
 
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
-                List<RoomTypeJY> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
+                List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
                 model.addAttribute("roomTypes", roomTypes);
                 
                 //QNA 총 개수
@@ -179,7 +178,7 @@ public class RoomController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
@@ -207,7 +206,7 @@ public class RoomController_mj
     	
     	if(roomSeq > 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaTitle) && !StringUtil.isEmpty(roomQnaContent))
     	{
-    		RoomQna_mj roomQna = new RoomQna_mj();
+    		RoomQna roomQna = new RoomQna();
     		roomQna.setRoomSeq(roomSeq);
     		roomQna.setRoomQnaTitle(roomQnaTitle);
     		roomQna.setRoomQnaContent(roomQnaContent);
@@ -245,13 +244,13 @@ public class RoomController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
     	
     	return "/room/qnaUpdateForm_mj";
@@ -278,7 +277,7 @@ public class RoomController_mj
     	
     	if(roomSeq > 0 && roomQnaSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaTitle) && !StringUtil.isEmpty(roomQnaContent))
 		{
-    		RoomQna_mj roomQna = new RoomQna_mj();
+    		RoomQna roomQna = new RoomQna();
     		roomQna.setRoomSeq(roomSeq);
     		roomQna.setRoomQnaSeq(roomQnaSeq);
     		roomQna.setRoomQnaTitle(roomQnaTitle);
@@ -319,13 +318,13 @@ public class RoomController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
 		model.addAttribute("roomQnaSeq", roomQnaSeq);
 		
@@ -350,7 +349,7 @@ public class RoomController_mj
     	
     	if(roomQnaSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaCmtContent))
     	{
-    		RoomQnaComment_mj roomQnaCmt = new RoomQnaComment_mj();
+    		RoomQnaComment roomQnaCmt = new RoomQnaComment();
     		roomQnaCmt.setRoomQnaSeq(roomQnaSeq);
     		roomQnaCmt.setRoomQnaCmtContent(roomQnaCmtContent);
     		roomQnaCmt.setUserId(sessionUserId);
@@ -388,16 +387,16 @@ public class RoomController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
 		
-		RoomQnaComment_mj roomQnaComment = roomQnaCommentService.roomQnaCommontSelect(roomQnaCmtSeq);
+		RoomQnaComment roomQnaComment = roomQnaCommentService.roomQnaCommontSelect(roomQnaCmtSeq);
 		model.addAttribute("roomQnaComment", roomQnaComment);
 		model.addAttribute("roomQnaCmtSeq", roomQnaCmtSeq);
 		
@@ -424,7 +423,7 @@ public class RoomController_mj
     	
     	if(roomQnaSeq > 0 && roomQnaCmtSeq > 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaCmtContent))
 		{
-    		RoomQnaComment_mj roomQnaCmt = new RoomQnaComment_mj();
+    		RoomQnaComment roomQnaCmt = new RoomQnaComment();
     		
     		roomQnaCmt.setRoomQnaSeq(roomQnaSeq);
     		roomQnaCmt.setRoomQnaCmtSeq(roomQnaCmtSeq);

@@ -3,13 +3,13 @@ package com.sist.web.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.MileageDaoJY;
+import com.sist.web.dao.MileageDao;
 
 @Service
 public class MileageServiceJY {
 
     @Autowired
-    private MileageDaoJY MileageDaoJY;
+    private MileageDao MileageDaoJY;
 
     /**
      * 현재 로그인된 사용자의 마일리지 조회

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.sist.web.model.Room;
 
-public interface SpaceDaoSh {
+public interface SpaceDao {
 	
 	//룸 리스트 총 개수
   	public long spaceListCount(Room room);

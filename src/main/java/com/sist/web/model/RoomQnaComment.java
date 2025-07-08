@@ -2,7 +2,7 @@ package com.sist.web.model;
 
 import java.io.Serializable;
 
-public class RoomQnaComment_mj implements Serializable
+public class RoomQnaComment implements Serializable
 {
 
 	private static final long serialVersionUID = -6402477444156413581L;
@@ -15,7 +15,7 @@ public class RoomQnaComment_mj implements Serializable
 	private String createDt;			//작성일
 	private String updateDt;			//마지막 업데이트 일시
 	
-	public RoomQnaComment_mj()
+	public RoomQnaComment()
 	{
 		roomQnaCmtSeq = 0;
 		roomQnaSeq = 0;
