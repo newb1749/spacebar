@@ -24,7 +24,7 @@ import com.sist.common.util.StringUtil;
 import com.sist.web.model.ChatMessage;
 import com.sist.web.model.ChatRoom;
 import com.sist.web.model.Response;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 import com.sist.web.service.ChatService;
 import com.sist.web.service.UserService_ks;
 import com.sist.web.service.UserService_mj;
@@ -117,7 +117,7 @@ public class ChatController {
 	    ChatRoom chatRoom = chatService.findOrCreateChatRoom(currentUserId, otherUserId);
 	    
 	    // 상대방 닉네임을 찾아서 ChatRoom 객체에 추가해줍니다.
-	    User_mj otherUser = userService.userSelect(otherUserId);
+	    User otherUser = userService.userSelect(otherUserId);
 	    if(otherUser != null) {
 	        chatRoom.setOtherUserNickname(otherUser.getNickName());
 	    }
@@ -238,7 +238,7 @@ public class ChatController {
 	{
 		String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
 		
-		List<User_mj> userList = userService_ks.userList(userId, searchKeyword);
+		List<User> userList = userService_ks.userList(userId, searchKeyword);
 		
 		model.addAttribute("userList", userList);
 		model.addAttribute("searchKeyword", searchKeyword);
@@ -257,17 +257,17 @@ public class ChatController {
      */
     @RequestMapping(value="/chat/userList.json", method=RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Response<List<User_mj>>> userListApi(@RequestParam(value="searchKeyword", required=false) String searchKeyword, HttpServletRequest request)
+    public ResponseEntity<Response<List<User>>> userListApi(@RequestParam(value="searchKeyword", required=false) String searchKeyword, HttpServletRequest request)
     {
     	String userId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
     	
     	 if (userId == null) 
     	 {
              return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(
-            		 new Response<List<User_mj>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
+            		 new Response<List<User>>(HttpStatus.UNAUTHORIZED.value(), "인증되지 않은 사용자입니다."));
          }  
-    	 List<User_mj> userList = userService_ks.userList(userId, searchKeyword);
+    	 List<User> userList = userService_ks.userList(userId, searchKeyword);
     	 
-    	 return ResponseEntity.ok(new Response<List<User_mj>>(0, "SUCCESS", userList));
+    	 return ResponseEntity.ok(new Response<List<User>>(0, "SUCCESS", userList));
     }
 }

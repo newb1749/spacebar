@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.sist.web.model.CouponJY;
+import com.sist.web.model.Coupon;
 import com.sist.web.service.CouponServiceJY;
 import com.sist.web.util.CookieUtil;
 
@@ -44,7 +44,7 @@ public class CouponControllerJY
     {
         try 
         {
-            List<CouponJY> couponList = couponService.getAllCoupons();
+            List<Coupon> couponList = couponService.getAllCoupons();
             model.addAttribute("couponList", couponList);
         } 
         catch(Exception e) 

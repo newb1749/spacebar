@@ -21,4 +21,11 @@ public interface RoomTypeDao {
     	    @Param("roomCheckInDt") String roomCheckInDt, 
     	    @Param("roomCheckOutDt") String roomCheckOutDt
     	);
+    
+    /**
+     * roomTypeSeq로 객실 타입 정보 조회
+     */
+    RoomType selectRoomTypeBySeq(int roomTypeSeq);
+
+    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
 }

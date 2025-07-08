@@ -2,7 +2,7 @@ package com.sist.web.model;
 
 import java.io.Serializable;
 
-public class CouponJY implements Serializable 
+public class Coupon implements Serializable 
 {
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +20,7 @@ public class CouponJY implements Serializable
     private String regDt;        // Date → String 변경
     private String updateDt;     // Date → String 변경
 
-    public CouponJY() {
+    public Coupon() {
         this.cpnSeq = 0;
         this.cpnName = "";
         this.cpnDesc = "";

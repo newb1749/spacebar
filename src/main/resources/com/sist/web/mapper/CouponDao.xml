@@ -3,9 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.sist.web.dao.CouponDaoJY">
+<mapper namespace="com.sist.web.dao.CouponDao">
 
-  <resultMap id="couponResultMap" type="com.sist.web.model.CouponJY">
+  <resultMap id="couponResultMap" type="com.sist.web.model.Coupon">
     <result property="cpnSeq" column="CPN_SEQ"/>
     <result property="cpnName" column="CPN_NAME"/>
     <result property="cpnDesc" column="CPN_DESC"/>

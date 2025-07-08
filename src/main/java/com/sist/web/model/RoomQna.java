@@ -2,7 +2,7 @@ package com.sist.web.model;
 
 import java.io.Serializable;
 
-public class RoomQna_mj implements Serializable
+public class RoomQna implements Serializable
 {
 	private static final long serialVersionUID = 4457820316358527392L;
 	
@@ -19,9 +19,9 @@ public class RoomQna_mj implements Serializable
 	private int endRow;				//끝페이지 rownum
 	private String nickName;		//회원 닉네임
 	
-	private RoomQnaComment_mj roomQnaComment;	//Q&A 답글
+	private RoomQnaComment roomQnaComment;	//Q&A 답글
 	
-	public RoomQna_mj()
+	public RoomQna()
 	{
 		roomQnaSeq = 0;
 		roomSeq = 0;
@@ -39,11 +39,11 @@ public class RoomQna_mj implements Serializable
 		roomQnaComment = null;
 	}
 
-	public RoomQnaComment_mj getRoomQnaComment() {
+	public RoomQnaComment getRoomQnaComment() {
 		return roomQnaComment;
 	}
 
-	public void setRoomQnaComment(RoomQnaComment_mj roomQnaComment) {
+	public void setRoomQnaComment(RoomQnaComment roomQnaComment) {
 		this.roomQnaComment = roomQnaComment;
 	}
 

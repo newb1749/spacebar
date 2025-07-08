@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface MileageDaoJY 
+public interface MileageDao 
 {
 
     int getMileageByUserId(@Param("userId") String userId);

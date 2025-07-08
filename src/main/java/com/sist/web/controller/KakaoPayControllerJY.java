@@ -137,7 +137,7 @@ public class KakaoPayControllerJY
             model.addAttribute("code", 0);
             model.addAttribute("msg", "충전 완료: " + ap.getAmount().getTotal() + "원");
 
-            ReservationJY pending = (ReservationJY) session.getAttribute("pendingReservation");
+            Reservation pending = (Reservation) session.getAttribute("pendingReservation");
             if (pending != null) {
                 model.addAttribute("reservation", pending);
                 session.removeAttribute("pendingReservation");
@@ -190,7 +190,7 @@ public class KakaoPayControllerJY
      * @return
      */
     @PostMapping("/chargeMileage")
-    public String chargeMileageAndPay(@ModelAttribute ReservationJY reservation,
+    public String chargeMileageAndPay(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
                                       Model model) 
     {
