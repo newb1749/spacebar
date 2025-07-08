@@ -194,18 +194,49 @@ function removeWish(roomSeq, element) {
   });
 }
   
-function toggleWish(roomSeq, element) {
-	  const $icon = $(element).find('i');
-
-	  const isWished = $icon.hasClass('fas');
-
-	  const url = isWished ? "/wishlist/remove" : "/wishlist/add";
-
-	  $.post(url, { roomSeq: roomSeq }, function(response) {
-	    if(response.code === 0) {
-	      $icon.toggleClass("fas wished").toggleClass("far");
-	    }
-	  });
+function toggleWish(roomSeq, btn) {
+	  const $btn    = $(btn);
+	  const $icon   = $btn.find('i.fa-heart');
+	  const wished  = $btn.data('wished');              // true면 지금은 찜된 상태
+	  const url     = wished ? "/wishlist/remove" : "/wishlist/add";
+	  
+	  $.post(url, { roomSeq: roomSeq })
+	    .done(function(res) {
+	      if (res.code === 0) {
+	        if (wished) {
+	          // → 삭제(하얀 하트) & 알림
+	          $icon
+	            .removeClass("fas wished")
+	            .addClass("far");
+	          $btn.data('wished', false);
+	          Swal.fire({
+	            icon: "success",
+	            title: "삭제됐습니다",
+	            text: "찜 목록에서 제거되었습니다.",
+	            timer: 1500,
+	            showConfirmButton: false
+	          });
+	        } else {
+	          // → 추가(빨간 하트) & 알림
+	          $icon
+	            .removeClass("far")
+	            .addClass("fas wished");
+	          $btn.data('wished', true);
+	          Swal.fire({
+	            icon: "success",
+	            title: "추가되었습니다",
+	            text: "찜 목록에 추가되었습니다.",
+	            timer: 1500,
+	            showConfirmButton: false
+	          });
+	        }
+	      } else {
+	        Swal.fire("오류", res.message, "error");
+	      }
+	    })
+	    .fail(function() {
+	      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
+	    });
 	}
 
 </script>
@@ -226,13 +257,13 @@ function toggleWish(roomSeq, element) {
 	  <div class="wishlist-item">
 		  <a href="/room/detail?roomSeq=${room.roomSeq}">
 		    <img src="/resources/upload/room/main/${room.roomImgName}" 
-			     onerror="this.src='/resources/images/default-room.png'" 
+			     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 			     alt="${room.roomTitle}" 
 			     class="wishlist-thumb">
 		  </a>
 		
 		  <div class="wishlist-details">
-		    <a href="/room/detail?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
+		    <a href="/room/roomDetail?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
 		      ${room.roomTitle}
 		    </a>
 		
@@ -246,9 +277,11 @@ function toggleWish(roomSeq, element) {
 		      
 		
 		      <!-- ❤️ 우측하단 꽉 찬 빨간 하트 아이콘 (클릭 시 삭제) -->
-				<button class="wish-heart" onclick="removeWish(${room.roomSeq}, this)">
-				  <i class="fas fa-heart wished"></i>
-				</button>
+				<button class="wish-heart" 
+					     data-wished="true"                
+					     onclick="toggleWish(${room.roomSeq}, this)" >
+			      <i class="fas fa-heart wished"></i>
+			    </button>
 		    </div>
 		  </div>
 		</div>

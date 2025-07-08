@@ -52,6 +52,22 @@ public class RoomServiceSh
 		return list;
 	}
 	
+	//최신순
+	public List<Room> newRoomList()
+	{
+		List<Room> list = null;
+		
+		try
+		{
+			list = roomDao.newRoomList();
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceList]newRoomList : ",e);
+		}
+		
+		return list;
+	}
 }
 
 
