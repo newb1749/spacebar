@@ -1,6 +1,13 @@
 package com.sist.web.controller;
 
-import com.sist.web.model.*;
+import com.sist.web.dao.MileageHistoryDao;
+import com.sist.web.model.KakaoPayApproveRequest;
+import com.sist.web.model.KakaoPayApproveResponse;
+import com.sist.web.model.KakaoPayReadyRequest;
+import com.sist.web.model.KakaoPayReadyResponse;
+import com.sist.web.model.MileageHistory;
+import com.sist.web.model.Reservation;
+import com.sist.web.model.Response;
 import com.sist.web.service.KakaoPayServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.UserService_mj;
@@ -13,11 +20,11 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.*;
-
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,23 +41,16 @@ public class KakaoPayControllerJY
     @Autowired
     private ReservationServiceJY reservationService;
 
-    /**
-     * 카카오페이 거래 ID(TID)를 세션에 저장할 때 사용할 키 이름
-     */
+    // MileageHistoryService 삭제하고 DAO 직접 주입
+    @Autowired
+    private MileageHistoryDao mileageHistoryDao;
+
     @Value("${kakaopay.tid.session.name}")
     private String TID_SESSION;
 
-    /**
-     * 카카오페이 주문 ID(Order ID)를 세션에 저장할 때 사용할 키 이름
-     */
     @Value("${kakaopay.orderid.session.name}")
     private String ORDER_SESSION;
-    
-    /**
-     * 기본 변환기 대신 yyyy-MM-dd 형식으로 파싱하도록 맞춤 처리
-     * @InitBinder 메서드는 스프링 MVC에서 폼 요청 파라미터를 특정 타입으로 변환할 때 커스텀 바인딩 로직을 등록하는 용도
-     * @param binder
-     */
+
     @InitBinder
     public void initBinder(WebDataBinder binder) 
     {
@@ -72,11 +72,6 @@ public class KakaoPayControllerJY
         });
     }
 
-    // 카카오페이 결제 준비 (Ajax)
-    /**
-     * @param req
-     * @return
-     */
     @PostMapping("/readyAjax")
     @ResponseBody
     public Response<Map<String, String>> readyAjax(HttpServletRequest req) 
@@ -142,7 +137,6 @@ public class KakaoPayControllerJY
             return "redirect:/payment/mileageHistory";
         }
 
-        // 실패 처리
         model.addAttribute("code", -1);
         model.addAttribute("msg", "결제 승인 실패");
 
@@ -152,13 +146,6 @@ public class KakaoPayControllerJY
         return "/payment/result";
     }
 
-
-    // 결제 취소 및 실패 페이지
-    /**
-     * @param req
-     * @param model
-     * @return
-     */
     @GetMapping({"/cancel", "/fail"})
     public String cancelFail(HttpServletRequest req, Model model) 
     {
@@ -168,32 +155,20 @@ public class KakaoPayControllerJY
         return "/payment/result";
     }
 
-    // 마일리지 충전 페이지(GET)
-    /**
-     * @return
-     */
     @GetMapping("/chargeMileage")
     public String showChargeMileagePage(HttpSession session, Model model) 
     {
         String userId = (String) session.getAttribute("SESSION_USER_ID");
-        
+
         if (userId == null || userId.isEmpty()) {
-            // 로그인 안 됐으면 로그인 페이지로 리다이렉트하거나 메시지 처리
             return "redirect:/user/login";
         }
-        
+
         int mileage = userService.getCurrentMileage(userId);
-        model.addAttribute("userMileage", mileage);  // 마일리지 값을 모델에 담음
-        return "/payment/chargeMileage";  // JSP 경로 반환
+        model.addAttribute("userMileage", mileage);
+        return "/payment/chargeMileage";
     }
 
-    // 마일리지 차감 후 예약 결제 처리 (POST)
-    /**
-     * @param reservation
-     * @param request
-     * @param model
-     * @return
-     */
     @PostMapping("/chargeMileage")
     public String chargeMileageAndPay(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
@@ -208,8 +183,8 @@ public class KakaoPayControllerJY
         try {
             String checkIn = request.getParameter("rsvCheckInDt");
             String checkOut = request.getParameter("rsvCheckOutDt");
-            String checkInTime = request.getParameter("rsvCheckInTime");   // "HH:mm"
-            String checkOutTime = request.getParameter("rsvCheckOutTime"); // "HH:mm"
+            String checkInTime = request.getParameter("rsvCheckInTime");
+            String checkOutTime = request.getParameter("rsvCheckOutTime");
 
             DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             DateTimeFormatter dbFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -217,10 +192,9 @@ public class KakaoPayControllerJY
             LocalDate checkInDate = LocalDate.parse(checkIn, inputFormat);
             LocalDate checkOutDate = LocalDate.parse(checkOut, inputFormat);
 
-            reservation.setRsvCheckInDt(checkInDate.format(dbFormat));    // DB용 포맷으로 변환
+            reservation.setRsvCheckInDt(checkInDate.format(dbFormat));
             reservation.setRsvCheckOutDt(checkOutDate.format(dbFormat));
 
-            // 시간 변환: "HH:mm" -> "HHmm"
             reservation.setRsvCheckInTime(convertTimeToHHmm(checkInTime));
             reservation.setRsvCheckOutTime(convertTimeToHHmm(checkOutTime));
 
@@ -251,12 +225,32 @@ public class KakaoPayControllerJY
         }
     }
 
-    // 시간 변환 헬퍼 메서드 추가
     private String convertTimeToHHmm(String timeStr) 
     {
         if (timeStr == null || timeStr.isEmpty()) {
             return null;
         }
-        return timeStr.replace(":", "");  // "10:00" -> "1000"
+        return timeStr.replace(":", "");
+    }
+    
+    @GetMapping("/mileageHistory")
+    public String showMileageHistory(@RequestParam(value = "code", required = false) Integer code,
+                                     @RequestParam(value = "msg", required = false) String msg,
+                                     HttpSession session,
+                                     Model model)
+    {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        
+        if (userId == null || userId.isEmpty()) {
+            return "redirect:/user/login";
+        }
+
+        List<MileageHistory> historyList = mileageHistoryDao.selectMileageHistoryByUserId(userId);
+
+        model.addAttribute("code", code);
+        model.addAttribute("msg", msg);
+        model.addAttribute("mileageHistoryList", historyList);
+
+        return "/payment/mileageHistory";
     }
 }

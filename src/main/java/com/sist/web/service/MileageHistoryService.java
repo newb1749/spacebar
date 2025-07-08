@@ -3,12 +3,15 @@ package com.sist.web.service;
 import com.sist.web.model.MileageHistory;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 /**
  * 마일리지 관련 서비스 인터페이스
  */
+@Service
 public interface MileageHistoryService 
 {
-
+ 
     /**
      * 특정 사용자의 현재 마일리지 조회
      * @param userId 사용자 ID

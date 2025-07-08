@@ -1,12 +1,14 @@
 package com.sist.web.model;
 
+import java.util.Date;
+
 public class MileageHistory {
 	private int mileHistorySeq;
 	private String userId;
 	private String trxType; // 예: "충전", "결제"
 	private int trxAmt;
 	private int balanceAfterTrx;
-	private String trxDt;  // 거래 일시
+	private Date trxDt;  // 거래 일시
 
 	// Getters / Setters
 	public int getMileHistorySeq() {
@@ -39,10 +41,10 @@ public class MileageHistory {
 	public void setBalanceAfterTrx(int balanceAfterTrx) {
 		this.balanceAfterTrx = balanceAfterTrx;
 	}
-	public String getTrxDt() {
+	public Date getTrxDt() {
 		return trxDt;
 	}
-	public void setTrxDt(String trxDt) {
+	public void setTrxDt(Date trxDt) {
 		this.trxDt = trxDt;
-	}
+	} 
 }
