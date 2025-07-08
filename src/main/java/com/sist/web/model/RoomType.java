@@ -29,6 +29,7 @@ public class RoomType implements Serializable{
 	
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomTypeImage> RoomTypeImageList; 	// list로 RoomTypeImage 관리
+	private String hostId;
 	
 	public RoomType()
 	{
@@ -51,6 +52,18 @@ public class RoomType implements Serializable{
 
 	
 	
+	public String getHostId() {
+		return hostId;
+	}
+
+
+
+	public void setHostId(String hostId) {
+		this.hostId = hostId;
+	}
+
+
+
 	public List<RoomTypeImage> getRoomTypeImageList() {
 		return RoomTypeImageList;
 	}

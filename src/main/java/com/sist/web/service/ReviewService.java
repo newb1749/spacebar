@@ -243,4 +243,37 @@ public class ReviewService {
 	{
 		return reviewDao.inactiveReview(review);
 	}
+	
+
+	/**
+	 * 특정 숙소의 리뷰 목록 조회
+	 * @param roomSeq 특정 숙소를 조회할 값
+	 * @return 리뷰 목록
+	 * @throws Exception
+	 */
+    public List<Review> getReviewsByRoom(int roomSeq) 
+    {
+        return reviewDao.selectReviewsByRoom(roomSeq);
+    }
+
+
+    /**
+     * 리뷰 1개 상세 조회 
+     * @param reviewSeq
+     * @return 조회할 리뷰 객체
+     * @throws Exception
+     */
+    public Review getReviewDetail(int reviewSeq) 
+    {
+        return reviewDao.selectReviewDetail(reviewSeq);
+    }
+    
+    /**
+     * 숙소 타이틀 조회
+     * @param roomSeq
+     * @return
+     */
+    public String getRoomTitle(int roomSeq) {
+        return reviewDao.selectRoomTitle(roomSeq);
+    }
 }

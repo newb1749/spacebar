@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
-import com.sist.web.dao.UserDao_mj;
-import com.sist.web.model.MiliageHistory;
-import com.sist.web.model.User_mj;
+import com.sist.web.dao.UserDao;
+import com.sist.web.model.MileageHistory;
+import com.sist.web.model.User;
 
 @Service("userService_mj")
 public class UserService_mj 
@@ -23,7 +23,7 @@ public class UserService_mj
 	private static Logger logger = LoggerFactory.getLogger(UserService_mj.class);
 	
 	@Autowired
-	private UserDao_mj userDao_mj;
+	private UserDao userDao;
 	
 
     @Value("#{env['auth.session.name']}")
@@ -34,13 +34,13 @@ public class UserService_mj
 	private String UPLOAD_PROFILE_DIR;
 	
 	//회원 조회
-	public User_mj userSelect(String userId)
+	public User userSelect(String userId)
 	{
-		User_mj user = null;
+		User user = null;
 		
 		try
 		{
-			user = userDao_mj.userSelect(userId);
+			user = userDao.userSelect(userId);
 		}
 		catch(Exception e)
 		{
@@ -51,13 +51,13 @@ public class UserService_mj
 	}
 	
 	//닉네임 
-	public User_mj nickNameSelect(String nickName)
+	public User nickNameSelect(String nickName)
 	{
-		User_mj user = null;
+		User user = null;
 		
 		try
 		{
-			user = userDao_mj.nickNameSelect(nickName);
+			user = userDao.nickNameSelect(nickName);
 		}
 		catch(Exception e)
 		{
@@ -68,13 +68,13 @@ public class UserService_mj
 	}
 	
 	//회원가입
-	public int userInsert(User_mj user) 
+	public int userInsert(User user) 
 	{
 		int count = 0;
 
 		try
 		{
-			count = userDao_mj.userInsert(user);
+			count = userDao.userInsert(user);
 		}
 		catch(Exception e)
 		{
@@ -85,13 +85,13 @@ public class UserService_mj
 	}
 	
 	//회원 정보 수정
-	public int userUpdate(User_mj user)
+	public int userUpdate(User user)
 	{
 		int count = 0;
 		
 		try
 		{
-			count = userDao_mj.userUpdate(user);
+			count = userDao.userUpdate(user);
 		}
 		catch(Exception e)
 		{
@@ -102,14 +102,14 @@ public class UserService_mj
 	}
 	
 	//회원 탈퇴
-	public int userDelete(User_mj user)
+	public int userDelete(User user)
 	{
 		int count = 0;
 		
 		try
 		{
 			user.setUserStat("N");
-			count = userDao_mj.userDelete(user);
+			count = userDao.userDelete(user);
 		}
 		catch(Exception e)
 		{
@@ -121,13 +121,13 @@ public class UserService_mj
 
 	
 	//아이디 찾기
-	public User_mj searchId(User_mj user)
+	public User searchId(User user)
 	{
-		User_mj result = null;
+		User result = null;
 		
 		try
 		{
-			result = userDao_mj.searchId(user);
+			result = userDao.searchId(user);
 		}
 		catch(Exception e)
 		{
@@ -138,13 +138,13 @@ public class UserService_mj
 	}
 	
 	//비밀번호 찾기
-	public User_mj searchPwd(User_mj user)
+	public User searchPwd(User user)
 	{
-		User_mj result = null;
+		User result = null;
 		
 		try
 		{
-			result = userDao_mj.searchPwd(user);
+			result = userDao.searchPwd(user);
 		}
 		catch(Exception e)
 		{
@@ -159,18 +159,18 @@ public class UserService_mj
 	public int chargeMileage(String userId, int amount) {
 	    try {
 	        // 현재 마일리지 조회
-	        int currentMile = userDao_mj.selectMileage(userId);
+	        int currentMile = userDao.selectMileage(userId);
 
 	        // 마일리지 충전 (기존 + amount)
-	        int result = userDao_mj.updateMileage(userId, amount);
+	        int result = userDao.updateMileage(userId, amount);
 
 	        // 이력 저장
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("충전");
 	        history.setTrxAmt(amount);
 	        history.setBalanceAfterTrx(currentMile + amount);
-	        userDao_mj.insertMileageHistory(history);
+	        userDao.insertMileageHistory(history);
 
 	        return result;
 	    } catch (Exception e) {
@@ -184,7 +184,7 @@ public class UserService_mj
 	{
 	    try 
 	    {
-	        return userDao_mj.selectMileage(userId);
+	        return userDao.selectMileage(userId);
 	    } 
 	    catch (Exception e) 
 	    {
@@ -194,11 +194,11 @@ public class UserService_mj
 	}
 	
 	// 마일리지 이력 조회
-	public List<MiliageHistory> getMileageHistory(String userId) 
+	public List<MileageHistory> getMileageHistory(String userId) 
 	{
 	    try 
 	    {
-	        return userDao_mj.selectMileageHistory(userId);
+	        return userDao.selectMileageHistory(userId);
 	    } 
 	    catch (Exception e) 
 	    {
@@ -212,20 +212,20 @@ public class UserService_mj
 	{
 	    try 
 	    {
-	        int currentMile = userDao_mj.selectMileage(userId);
+	        int currentMile = userDao.selectMileage(userId);
 	        if (currentMile < amount)
 	        {
 	            return false;  // 잔액 부족
 	        }
-	        int updated = userDao_mj.updateMileage(userId, -amount); // 마일리지 차감
+	        int updated = userDao.updateMileage(userId, -amount); // 마일리지 차감
 
 	        // 마일리지 거래 내역 기록
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("결제");
 	        history.setTrxAmt(-amount);
 	        history.setBalanceAfterTrx(currentMile - amount);
-	        userDao_mj.insertMileageHistory(history);
+	        userDao.insertMileageHistory(history);
 
 	        return updated > 0;
 	    } 
@@ -241,16 +241,16 @@ public class UserService_mj
 	{
 	    try 
 	    {
-	        int currentMile = userDao_mj.selectMileage(userId);
-	        int updated = userDao_mj.updateMileage(userId, amount); // 마일리지 환불(충전)
+	        int currentMile = userDao.selectMileage(userId);
+	        int updated = userDao.updateMileage(userId, amount); // 마일리지 환불(충전)
 
 	        // 마일리지 거래 내역 기록
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("환불");
 	        history.setTrxAmt(amount);
 	        history.setBalanceAfterTrx(currentMile + amount);
-	        userDao_mj.insertMileageHistory(history);
+	        userDao.insertMileageHistory(history);
 
 	        return updated > 0;
 	    } 

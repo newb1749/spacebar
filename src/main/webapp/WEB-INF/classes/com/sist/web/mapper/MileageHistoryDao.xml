@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.web.dao.MileageHistoryDao">
+
+  <select id="selectMileageHistoryByUserId" parameterType="string" resultType="com.sist.web.model.MileageHistory">
+    SELECT MILE_HISTORY_SEQ      AS mileHistorySeq,
+	       USER_ID               AS userId,
+	       TRX_TYPE              AS trxType,
+	       TRX_AMT               AS trxAmt,
+	       BALANCE_AFTER_TRX     AS balanceAfterTrx,
+	       TRX_DT                AS trxDt
+      FROM MILEAGE_HISTORY
+     WHERE USER_ID = #{userId}
+     ORDER BY TRX_DT DESC
+  </select>
+
+  <select id="selectCurrentMileageByUserId" parameterType="string" resultType="int">
+    SELECT NVL(MAX(BALANCE_AFTER_TRX), 0) 
+      FROM MILEAGE_HISTORY 
+     WHERE USER_ID = #{userId}
+  </select>
+
+  <update id="updateMileageDeduct" parameterType="map">
+    UPDATE USER_MJ
+       SET MILE = MILE - #{amount}
+     WHERE USER_ID = #{userId} 
+       AND MILE >= #{amount}
+  </update>
+
+  <insert id="insertMileageHistory" parameterType="com.sist.web.model.MileageHistory" useGeneratedKeys="true" keyProperty="mileHistorySeq">
+    INSERT INTO 
+    MILEAGE_HISTORY (USER_ID, 
+				     TRX_TYPE, 
+				     TRX_AMT, 
+				     BALANCE_AFTER_TRX,
+					 TRX_DT)
+    VALUES (#{userId}, 
+		    #{trxType}, 
+		    #{trxAmt}, 
+		    #{balanceAfterTrx}, 
+		    SYSDATE)
+  </insert>
+
+</mapper>

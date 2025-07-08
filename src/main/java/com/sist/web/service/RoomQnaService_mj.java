@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomQnaDao_mj;
-import com.sist.web.model.RoomQna_mj;
+import com.sist.web.dao.RoomQnaDao;
+import com.sist.web.model.RoomQna;
 
 @Service("roomQnaService_mj")
 public class RoomQnaService_mj 
@@ -16,12 +16,12 @@ public class RoomQnaService_mj
 	private static Logger logger = LoggerFactory.getLogger(RoomQnaService_mj.class);
 	
 	@Autowired
-	private RoomQnaDao_mj roomQnaDao;
+	private RoomQnaDao roomQnaDao;
 	
     //QNA 리스트
-    public List<RoomQna_mj> qnaList(RoomQna_mj roomQna)
+    public List<RoomQna> qnaList(RoomQna roomQna)
     {
-    	List<RoomQna_mj> list = null;
+    	List<RoomQna> list = null;
     	
     	try
     	{
@@ -54,7 +54,7 @@ public class RoomQnaService_mj
     }
     
     //QNA 등록
-    public int qnaInsert(RoomQna_mj roomQna)
+    public int qnaInsert(RoomQna roomQna)
     {
     	int count = 0;
     	
@@ -71,9 +71,9 @@ public class RoomQnaService_mj
     }
     
 	//QNA 조회
-	public RoomQna_mj qnaSelect(int roomQnaSeq) 
+	public RoomQna qnaSelect(int roomQnaSeq) 
 	{
-		RoomQna_mj roomQna = null;
+		RoomQna roomQna = null;
     	
     	try
     	{
@@ -88,7 +88,7 @@ public class RoomQnaService_mj
 	}
     
     //QNA 수정
-  	public int qnaUpdate(RoomQna_mj roomQna)
+  	public int qnaUpdate(RoomQna roomQna)
   	{
   		int count = 0;
   		

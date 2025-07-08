@@ -20,7 +20,7 @@
           <li><a href="/">Home</a></li>
           <li><a href="/room/roomList">숙소목록</a></li>
           <li><a href="/board/list">게시판</a></li>
-          <li><a href="/payment/chargeMileage">마일리지 충전</a></li>
+          <li><a href="/payment/chargeMileage">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
             <li><a href="/user/myPage_mj">마이페이지</a></li>
             <li><a href="/user/loginOut">로그아웃</a></li>
