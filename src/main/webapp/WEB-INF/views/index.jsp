@@ -1,19 +1,204 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 
+<!-- /*
+* Template Name: Property
+* Template Author: Untree.co
+* Template URI: https://untree.co/
+* License: https://creativecommons.org/licenses/by/3.0/
+*/ -->
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
   <head>
+    <%@ include file="/WEB-INF/views/include/head.jsp" %>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Untree.co" />
+    <link rel="shortcut icon" href="favicon.png" />
 
-  <%@ include file="/WEB-INF/views/include/head.jsp" %>
-    
+    <meta name="description" content="" />
+    <meta name="keywords" content="bootstrap, bootstrap5" />
 
-    <title>
-      Property &mdash; Free Bootstrap 5 Website Template by Untree.co
-    </title>
-    
-    
-    	<style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/resources/fonts/icomoon/style.css" />
+    <link rel="stylesheet" href="/resources/fonts/flaticon/font/flaticon.css" />
+
+    <link rel="stylesheet" href="/resources/css/tiny-slider.css" />
+    <link rel="stylesheet" href="/resources/css/aos.css" />
+    <link rel="stylesheet" href="/resources/css/style.css" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  	<style>
+  /* pulsate effect for heart */
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+.wish-heart.clicked {
+  animation: pulse 0.3s ease;
+}
+
+/* page base */
+body {
+    padding-top: 120px;
+    background-color: #f9f9f9;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+h2 {
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* grid */
+#wishlistBody {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+  /* ================ 슬라이더 래퍼 */
+  .property-slider-wrap {
+    position: relative;
+    padding-left: 80px;
+    padding-right: 80px;
+    overflow: visible !important;
+  }
+
+/* card wrapper */
+.property-item {
+       position: relative;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    margin-bottom: 24px;
+}
+.property-item:hover {
+  transform: translateY(-6px);
+}
+
+  .property-item .img {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+  }
+
+
+
+/* thumbnail */
+.property-item .img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* content */
+.property-content {
+    padding: 10px;
+    margin-top: 0 !important;  /* 겹침 방지 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 가격 (위쪽) */
+.property-content .price {
+  font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 제목 */
+.property-content .city {
+   font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.property-content .city:hover {
+  color: #007acc;
+  text-decoration: underline;
+}
+
+/* 별점·리뷰 */
+.property-content .specs {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 8px;
+}
+.property-content .specs .caption {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* 아래 가격 + 하트 */
+.property-content .room-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+}
+.property-content .room-price strong {
+   font-size: 1.05rem;
+    color: #4a90e2;
+}
+
+/* 하트 버튼 */
+.wish-heart {
+  font-size: 28px;
+  color: #e74c3c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.property-content .room-price .wish-heart {
+  /* 위치를 바닥 오른쪽 모서리에 붙이고 싶으시면 아래처럼 절대 위치 지정 */
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+.wish-heart:hover {
+  transform: scale(1.2);
+  color: #c0392b;
+}
+
+/* 찜된 상태 */
+.wish-heart .wished,
+.wished {
+  color: #e74c3c;
+}
+  
+
+
 	/* 7열 그리드 : gap 조정해 주세요 */
 	.category-grid {
 	  display: grid;
@@ -27,21 +212,15 @@
 	  height: 80px;
 	}
 	
-	.index-item .img {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  height: 250px;   /* ← 예: 250px 높이 */
-}
 
-/* img-fluid 대신 이렇게 적용 */
-.index-item .img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;  /* 영역 가득 채우고, 비율은 유지하며 잘라냄 */
-}
-	</style>  
-    
+
+	</style>
+
+
+
+    <title>
+      Property &mdash; Free Bootstrap 5 Website Template by Untree.co
+    </title>
   </head>
   <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -57,7 +236,7 @@
 
 	<div class="section py-5">
   <div class="container">
-    <h2 class="text-center mb-4">찾는 공간이 있나요?</h2>
+    <h2 class="text-center mb-4">spacebar</h2>
     <div class="category-grid">
       <c:forEach var="cat" items="${categoryList}">
         <a href="${pageContext.request.contextPath}/rooms?category=${cat.roomCatSeq}"
@@ -95,41 +274,56 @@
         <div class="property-slider-wrap">
           <div class="property-slider">
             <c:forEach var="newList" items="${roomList}">
-              <div class="index-item">
-                <a href="${pageContext.request.contextPath}/rooms/${newList.roomSeq}" class="img">
-                  <img src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
-                       alt="${newList.roomTitle}"
-                       class="img-fluid" />
-                </a>
-                <div class="property-content">
-                  <div class="price mb-2">
-                    <span>${newList.weekdayAmt}원</span>
-                  </div>
-                  <div>
-                    <span class="d-block mb-2 text-black-50">
-                      ${newList.roomAddr}
-                    </span>
-                    <span class="city d-block mb-3">
-                      ${newList.roomTitle}
-                    </span>
-                    <div class="specs d-flex mb-4">
-                      <span class="d-block d-flex align-items-center me-3">
-                        <span class="icon-bed me-2"></span>
-                        <span class="caption">${newList.averageRating} </span>
-                      </span>
-                      <span class="d-block d-flex align-items-center">
-                        <span class="icon-bath me-2"></span>
-                        <span class="caption">${newList.reviewCount} </span>
-                      </span>
-                    </div>
-                    <a href="${pageContext.request.contextPath}/room/${newList.roomSeq}"
-                       class="btn btn-primary py-2 px-3">
-                      See details
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </c:forEach>
+  <div class="property-item">
+    <!-- 1) 클릭 가능한 썸네일 -->
+    <a href="${pageContext.request.contextPath}/room/detail?roomSeq=${newList.roomSeq}" class="img">
+      <img src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
+           onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+           alt="${newList.roomTitle}"
+           class="img-fluid" />
+    </a>
+
+    <!-- 2) 카드 하단 정보 -->
+    <div class="property-content">
+      <div class="price mb-2">
+        <span>
+          <fmt:formatNumber value="${newList.weekdayAmt}" pattern="#,###" />원
+        </span>
+      </div>
+      <div>
+        <span class="d-block mb-2 text-black-50">
+          ${newList.roomAddr}
+        </span>
+        <span class="city d-block mb-3">
+          ${newList.roomTitle}
+        </span>
+        <div class="specs d-flex mb-4">
+          <span class="d-block d-flex align-items-center me-3">
+            <span class="caption">⭐ ${newList.averageRating}</span>&nbsp;
+          <span class="caption">(${newList.reviewCount}명)</span>
+          </span>
+        </div>
+        <div class="room-price">
+          <strong>
+            <fmt:formatNumber value="${newList.weekdayAmt}" pattern="#,###" />원~
+          </strong>
+          <c:set var="isWished" value="false"/>
+          <c:forEach var="seq" items="${wishSeqs}">
+            <c:if test="${seq eq newList.roomSeq}">
+              <c:set var="isWished" value="true"/>
+            </c:if>
+          </c:forEach>
+          <!-- 3) 하트 토글 버튼 -->
+          <button class="wish-heart" data-wished="${isWished}"
+                  onclick="toggleWish(${newList.roomSeq}, this)">
+            <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</c:forEach>
+
           </div>
           <div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
             <span class="prev" data-controls="prev" aria-controls="property">Prev</span>
@@ -698,7 +892,53 @@
     <script src="/resources/js/navbar.js"></script>
     <script src="/resources/js/counter.js"></script>
     <script src="/resources/js/custom.js"></script>
-    
+    <script>
+    function toggleWish(roomSeq, btn) {
+  	  const $btn    = $(btn);
+  	  const $icon   = $btn.find('i.fa-heart');
+  	  const wished  = $btn.data('wished');              // true면 지금은 찜된 상태
+  	  const url     = wished ? "/wishlist/remove" : "/wishlist/add";
+  	  
+  	  $.post(url, { roomSeq: roomSeq })
+  	    .done(function(res) {
+  	      if (res.code === 0) {
+  	        if (wished) {
+  	          // → 삭제(하얀 하트) & 알림
+  	          $icon
+  	            .removeClass("fas wished")
+  	            .addClass("far");
+  	          $btn.data('wished', false);
+  	          Swal.fire({
+  	            icon: "success",
+  	            title: "삭제됐습니다",
+  	            text: "찜 목록에서 제거되었습니다.",
+  	            timer: 1500,
+  	            showConfirmButton: false
+  	          });
+  	        } else {
+  	          // → 추가(빨간 하트) & 알림
+  	          $icon
+  	            .removeClass("far")
+  	            .addClass("fas wished");
+  	          $btn.data('wished', true);
+  	          Swal.fire({
+  	            icon: "success",
+  	            title: "추가되었습니다",
+  	            text: "찜 목록에 추가되었습니다.",
+  	            timer: 1500,
+  	            showConfirmButton: false
+  	          });
+  	        }
+  	      } else {
+  	        Swal.fire("오류", res.message, "error");
+  	      }
+  	    })
+  	    .fail(function() {
+  	      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
+  	    });
+  	}
+
+    </script>
     
     
     <%@ include file="/WEB-INF/views/include/footer.jsp" %>
