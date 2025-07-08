@@ -14,7 +14,6 @@
 		<result property="updateDt" column="UPDATE_DT" />
 		<result property="roomTitle" column="ROOM_TITLE" />         
 		<result property="roomTypeTitle" column="ROOM_TYPE_TITLE" />
-		<result property="userNickname" column="USER_NICKNAME" />
     </resultMap>
 	
 	<!-- 1. 리뷰 쓰기 전 예약 상태, 결제 상태 확인 -->
@@ -116,52 +115,5 @@
     <select id="selectReviewForEdit" parameterType="int" resultMap="reviewWithImagesResultMap">
         SELECT * FROM REVIEW WHERE REVIEW_SEQ = #{reviewSeq}
     </select>
-	
-	<!-- 8. 특정 숙소의 모든 리뷰 목록 조회 -->
-	<select id="selectReviewsByRoom" parameterType="int" resultMap="reviewResultMap">
-	    SELECT
-	        R.REVIEW_SEQ AS REVIEW_SEQ,
-	        R.REVIEW_TITLE AS REVIEW_TITLE,
-	        R.RATING AS RATING,
-	        U.NICKNAME AS USER_NICKNAME,
-	        R.REG_DT AS REG_DT
-	    FROM
-	        REVIEW R
-	    INNER JOIN RESERVATION RS ON R.RSV_SEQ = RS.RSV_SEQ
-	    INNER JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
-	    INNER JOIN SB_USER U ON R.USER_ID = U.USER_ID
-	    WHERE
-	        RT.ROOM_SEQ = #{roomSeq}
-	    AND R.REVIEW_STAT = 'Y'
-	    ORDER BY
-	        R.REVIEW_SEQ DESC
-	</select>
-	
-	<!--  9. 리뷰 1개의 상세 정보 조회 (댓글 페이지용) -->
-	<select id="selectReviewDetail" parameterType="int" resultMap="reviewWithImagesResultMap">
-	    SELECT
-	        R.REVIEW_SEQ AS REVIEW_SEQ,
-	        R.REVIEW_TITLE AS REVIEW_TITLE,
-	        R.REVIEW_CONTENT AS REVIEW_CONTENT,
-	        R.RATING AS RATING,
-	        R.USER_ID AS USER_ID,
-	        U.NICKNAME AS USER_NICKNAME,
-	        R.REG_DT AS REG_DT,
-	        RM.ROOM_TITLE AS ROOM_TITLE,
-	        RT.ROOM_TYPE_TITLE AS ROOM_TYPE_TITLE
-	    FROM
-	        REVIEW R
-	    INNER JOIN RESERVATION RS ON R.RSV_SEQ = RS.RSV_SEQ
-	    INNER JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
-	    INNER JOIN ROOM RM ON RT.ROOM_SEQ = RM.ROOM_SEQ
-	    INNER JOIN SB_USER U ON R.USER_ID = U.USER_ID
-	    WHERE
-	        R.REVIEW_SEQ = #{reviewSeq}
-	    AND R.REVIEW_STAT = 'Y'
-	</select>
-	
-	<!--  10. 숙소 제목 조회 (페이지 제목 표시용) -->
-	<select id="selectRoomTitle" parameterType="int" resultType="string">
-	    SELECT ROOM_TITLE FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
-	</select>
+
 </mapper>

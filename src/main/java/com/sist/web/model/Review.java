@@ -26,7 +26,6 @@ public class Review implements Serializable{
 
     private String roomTitle;       			// 숙소명 (JOIN)
     private String roomTypeTitle;   			// 객실명 (JOIN)
-    private String userNickname;				// 닉네임
     
 	public Review()
 	{
@@ -44,20 +43,6 @@ public class Review implements Serializable{
 	
 	
 	
-	public String getUserNickname() {
-		return userNickname;
-	}
-
-
-
-
-	public void setUserNickname(String userNickname) {
-		this.userNickname = userNickname;
-	}
-
-
-
-
 	public String getRoomTitle() {
 		return roomTitle;
 	}
