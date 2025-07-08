@@ -4,15 +4,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.sist.web.dao.ReservationDaoJY;
-import com.sist.web.model.ReservationJY;
-import com.sist.web.model.RoomTypeJY;
+import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Reservation;
+import com.sist.web.model.RoomType;
 
 @Service
 public class ReservationServiceJY 
 {
     @Autowired
-    private ReservationDaoJY reservationDao;
+    private ReservationDao reservationDao;
     
     @Autowired
     private RoomServiceJY roomService;
@@ -24,7 +24,7 @@ public class ReservationServiceJY
      * 예약 등록 - hostId 자동 설정 포함
      */
     @Transactional
-    public void insertReservation(ReservationJY reservation) throws Exception
+    public void insertReservation(Reservation reservation) throws Exception
     {
         // 🔥 디버깅 로그 추가
         System.out.println("=== insertReservation 시작 ===");
@@ -37,7 +37,7 @@ public class ReservationServiceJY
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
             if(roomTypeSeq == null) throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
 
-            RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
+            RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             String hostId = null;
 
             if(roomType != null && roomType.getHostId() != null && !roomType.getHostId().trim().isEmpty()) 
@@ -83,7 +83,7 @@ public class ReservationServiceJY
     /**
      * 특정 게스트의 예약 목록 조회
      */
-    public List<ReservationJY> getReservationsByGuestId(String guestId)
+    public List<Reservation> getReservationsByGuestId(String guestId)
     {
         return reservationDao.selectReservationsByGuestId(guestId);
     }
@@ -91,7 +91,7 @@ public class ReservationServiceJY
     /**
      * 특정 예약 상세 조회
      */
-    public ReservationJY getReservationBySeq(int rsvSeq) 
+    public Reservation getReservationBySeq(int rsvSeq) 
     {
         return reservationDao.selectReservationBySeq(rsvSeq);
     }
@@ -116,7 +116,7 @@ public class ReservationServiceJY
      * 예약 취소 처리 (취소일, 사유, 환불액 등 포함)
      */
     @Transactional
-    public void cancelReservation(ReservationJY reservation) throws Exception
+    public void cancelReservation(Reservation reservation) throws Exception
     {
         reservationDao.cancelReservation(reservation);
     }

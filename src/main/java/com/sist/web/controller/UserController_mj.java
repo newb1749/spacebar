@@ -18,7 +18,7 @@ import com.sist.common.model.FileData;
 import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Response;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.JsonUtil;
@@ -62,7 +62,7 @@ public class UserController_mj
 		
 		if(!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd))
 		{
-			User_mj user = userService_mj.userSelect(userId);
+			User user = userService_mj.userSelect(userId);
 			
 			if(user != null)
 			{
@@ -219,7 +219,7 @@ public class UserController_mj
 		{
 			if(userService_mj.userSelect(userId) == null)
 			{
-				User_mj user = new User_mj();
+				User user = new User();
 				
 				user.setUserId(userId);
 				user.setUserPwd(userPwd);
@@ -285,7 +285,7 @@ public class UserController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		User user = userService_mj.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/updateForm_mj";
@@ -315,7 +315,7 @@ public class UserController_mj
 		{
 			if(StringUtil.equals(userId, sessionUserId))
 			{
-				User_mj user = userService_mj.userSelect(sessionUserId);
+				User user = userService_mj.userSelect(sessionUserId);
 				
 				if(user != null)
 				{
@@ -407,7 +407,7 @@ public class UserController_mj
 			return "redirete:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		User user = userService_mj.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/deleteForm_mj";
@@ -436,7 +436,7 @@ public class UserController_mj
 				 return ajaxRes;
 			}
 			
-			User_mj user = userService_mj.userSelect(sessionUserId);
+			User user = userService_mj.userSelect(sessionUserId);
 			
 			if(user != null)
 			{
@@ -486,11 +486,11 @@ public class UserController_mj
 		String userName = HttpUtil.get(request, "userName");
 		String phone = HttpUtil.get(request, "phone");
 				
-		User_mj user = new User_mj();
+		User user = new User();
 		user.setUserName(userName);
 		user.setPhone(phone);
 		
-		User_mj result = userService_mj.searchId(user);
+		User result = userService_mj.searchId(user);
 
 		if(result != null)
 		{			
@@ -518,12 +518,12 @@ public class UserController_mj
 		String userName = HttpUtil.get(request, "userName");
 		String phone = HttpUtil.get(request, "phone");
 				
-		User_mj user = new User_mj();
+		User user = new User();
 		user.setUserId(userId);
 		user.setUserName(userName);
 		user.setPhone(phone);
 		
-		User_mj result = userService_mj.searchPwd(user);
+		User result = userService_mj.searchPwd(user);
 
 		if(result != null)
 		{			
@@ -549,7 +549,7 @@ public class UserController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		User user = userService_mj.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/myPage_mj";

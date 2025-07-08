@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomQnaCommentDao_mj;
-import com.sist.web.model.RoomQnaComment_mj;
+import com.sist.web.dao.RoomQnaCommentDao;
+import com.sist.web.model.RoomQnaComment;
 
 @Service("roomQnaCommentService_mj")
 public class RoomQnaCommentService_mj 
@@ -14,12 +14,12 @@ public class RoomQnaCommentService_mj
 	private static Logger logger = LoggerFactory.getLogger(RoomService_mj.class);
     
 	@Autowired
-	private RoomQnaCommentDao_mj roomQnaCommentDao;
+	private RoomQnaCommentDao roomQnaCommentDao;
 
 	//QNA 답글 조회
-	public RoomQnaComment_mj roomQnaCommontSelect(int roomQnaSeq)
+	public RoomQnaComment roomQnaCommontSelect(int roomQnaSeq)
 	{
-		RoomQnaComment_mj roomQnaComment = null;
+		RoomQnaComment roomQnaComment = null;
 		
 		try
 		{
@@ -34,7 +34,7 @@ public class RoomQnaCommentService_mj
 	}
 	
 	//Q&A 답글 등록
-	public int qnaCommentInsert(RoomQnaComment_mj roomQnaComment)
+	public int qnaCommentInsert(RoomQnaComment roomQnaComment)
 	{
 		int count = 0;
 		
@@ -51,7 +51,7 @@ public class RoomQnaCommentService_mj
 	}
 	
 	//Q&A 답글 수정
-	public int qnaCommentUpdate(RoomQnaComment_mj roomQnaCmtSeq)
+	public int qnaCommentUpdate(RoomQnaComment roomQnaCmtSeq)
 	{
 		int count = 0;
 		

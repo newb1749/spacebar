@@ -10,7 +10,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import com.sist.web.model.ChatMessage;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 import com.sist.web.service.ChatService;
 import com.sist.web.service.UserService_mj;
 
@@ -37,7 +37,7 @@ public class ChatStompController {
         String senderId = chatMessage.getSenderId();
         
         // senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
-        User_mj sender = userService_mj.userSelect(senderId);
+        User sender = userService_mj.userSelect(senderId);
         
         if(sender != null)
         {
