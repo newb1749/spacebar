@@ -27,8 +27,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.sist.web.model.Room;
 import com.sist.web.model.RoomCategory;
 import com.sist.web.service.RoomCategoryService;
+import com.sist.web.service.RoomServiceSh;
 import com.sist.web.util.CookieUtil;
 
 /**
@@ -60,12 +62,20 @@ public class IndexController
 	
 	@Autowired
     private RoomCategoryService roomategoryService;
+	
+	@Autowired
+	private RoomServiceSh roomService;
 
 	@RequestMapping(value = "/index", method=RequestMethod.GET)
 	public String index(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
+		List<Room> rooms = roomService.newRoomList();
+		
         List<RoomCategory> cats = roomategoryService.categoryList();
+        
+        model.addAttribute("roomList", rooms);
         model.addAttribute("categoryList", cats);
+        
         return "/index";  // /WEB-INF/views/index.jsp
     }
 	
