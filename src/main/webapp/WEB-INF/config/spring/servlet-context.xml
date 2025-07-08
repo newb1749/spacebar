@@ -17,7 +17,7 @@
                            http://www.springframework.org/schema/websocket
                            http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 		 				   
-	<!-- 어노테이션 service, controller 스캔 시작 -->
+	<!-- 어노테이션 service, controller 스캔 시작 -->	
 	<context:component-scan base-package="com.sist.web.controller" />
     <!-- 어노테이션 service, controller 스캔 종료 -->
         
