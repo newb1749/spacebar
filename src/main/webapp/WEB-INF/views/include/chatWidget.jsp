@@ -188,7 +188,7 @@ $(document).ready(function() {
     // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)
     //const USER_ID = "${sessionScope.sessionUserId}";
     const USER_ID = "${userId}";
-    const USER_NICKNAME = "<%= ((com.sist.web.model.User_mj)session.getAttribute("loginUser")) != null ? ((com.sist.web.model.User_mj)session.getAttribute("loginUser")).getNickName() : "" %>";
+    const USER_NICKNAME = "<%= ((com.sist.web.model.User)session.getAttribute("loginUser")) != null ? ((com.sist.web.model.User)session.getAttribute("loginUser")).getNickName() : "" %>";
 
     // ========================================================
     // UI 렌더링 함수

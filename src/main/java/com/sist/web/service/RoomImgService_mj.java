@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.web.dao.RoomDao;
-import com.sist.web.dao.RoomDaoJY;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 
@@ -18,7 +17,7 @@ public class RoomImgService_mj
 	private static Logger logger = LoggerFactory.getLogger(RoomService.class);
 	
 	@Autowired
-	private RoomDaoJY roomDao;
+	private RoomDao roomDao;
 	
 	// 룸정보
 	public Room getRoomDetail(int roomSeq)

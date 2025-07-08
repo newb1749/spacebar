@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sist.web.dao.RoomQnaDao_mj">
+<mapper namespace="com.sist.web.dao.RoomQnaDao">
   
-    <resultMap id="roomQnaResultMap" type="com.sist.web.model.RoomQna_mj">
+    <resultMap id="roomQnaResultMap" type="com.sist.web.model.RoomQna">
 	  	<id column="ROOM_QNA_SEQ" property="roomQnaSeq"/>
 	  	<result column="ROOM_SEQ" property="roomSeq" />
 	  	<result column="ROOM_QNA_TITLE" property="roomQnaTitle" />
@@ -15,7 +15,7 @@
   	</resultMap>
   	
   	<!-- QNA 리스트 -->
-	<select id="qnaList" parameterType="com.sist.web.model.RoomQna_mj" resultMap="roomQnaResultMap">
+	<select id="qnaList" parameterType="com.sist.web.model.RoomQna" resultMap="roomQnaResultMap">
 		SELECT ROOM_QNA_SEQ,
 		       ROOM_SEQ,
 		       ROOM_QNA_TITLE,
@@ -53,14 +53,14 @@
 	</select>
   
   	<!-- QNA 총 갯수 --> 	
-  	<select id="qnaListCount" parameterType="com.sist.web.model.RoomQna_mj" resultType="int">
+  	<select id="qnaListCount" parameterType="com.sist.web.model.RoomQna" resultType="int">
 		SELECT COUNT(A.ROOM_QNA_SEQ) CNT
 		  FROM ROOM_QNA A
 		 WHERE ROOM_SEQ = #{roomSeq}
   	</select>
   	
   	<!-- QNA 등록 -->
-  	<insert id="qnaInsert" parameterType="com.sist.web.model.RoomQna_mj">
+  	<insert id="qnaInsert" parameterType="com.sist.web.model.RoomQna">
   		INSERT INTO ROOM_QNA (
 				    ROOM_QNA_SEQ,
 				    ROOM_SEQ,
@@ -81,7 +81,7 @@
   	</insert>
   	
   	<!-- Q&A 조회 -->
-  	<select id="qnaSelect" parameterType="com.sist.web.model.RoomQna_mj" resultMap="roomQnaResultMap">
+  	<select id="qnaSelect" parameterType="com.sist.web.model.RoomQna" resultMap="roomQnaResultMap">
   		SELECT ROOM_QNA_SEQ,
 		       ROOM_SEQ,
 		       NVL(ROOM_QNA_TITLE,'') ROOM_QNA_TITLE,
@@ -95,7 +95,7 @@
   	</select>
   	
   	<!-- Q&A 수정 -->
-	<update id="qnaUpdate" parameterType="com.sist.web.model.RoomQna_mj">
+	<update id="qnaUpdate" parameterType="com.sist.web.model.RoomQna">
 		UPDATE ROOM_QNA
 		   SET ROOM_QNA_TITLE = #{roomQnaTitle},
 		       ROOM_QNA_CONTENT = #{roomQnaContent},
@@ -104,7 +104,7 @@
 	</update>
 	
 	<!-- Q&A 삭제 -->
-	<update id="qnaDelete" parameterType="com.sist.web.model.RoomQna_mj">
+	<update id="qnaDelete" parameterType="com.sist.web.model.RoomQna">
 		
 	</update>
   
