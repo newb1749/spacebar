@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sist.web.dao.ReservationDaoJY;
+import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.Cart;
-import com.sist.web.model.ReservationJY;
+import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
-import com.sist.web.model.RoomTypeJY;
+import com.sist.web.model.RoomType;
 import com.sist.web.service.CartService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
@@ -48,8 +48,7 @@ public class CartController {
     private RoomTypeServiceJY roomTypeService;
 
     @Autowired
-    private ReservationDaoJY reservationDao;
-    
+    private ReservationDao reservationDao;
 
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
@@ -154,7 +153,7 @@ public class CartController {
 
             // 5) Cart → ReservationJY 변환 & 저장
             for (Cart c : carts) {
-                ReservationJY r = new ReservationJY();
+                Reservation r = new Reservation();
                 r.setGuestId(userId);
                 r.setRoomTypeSeq(c.getRoomTypeSeq());
                 r.setRsvCheckInDt(c.getCartCheckInDt());
@@ -164,7 +163,7 @@ public class CartController {
                 r.setNumGuests(c.getCartGuestsNum());
 
                 // hostId 세팅 (1번 방법)
-                RoomTypeJY rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
+                RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
                 String hostId = rtObj != null ? rtObj.getHostId() : null;
                 if (hostId == null || hostId.trim().isEmpty()) {
                     hostId = reservationDao.selectHostIdByRoomSeq(rtObj.getRoomSeq());
