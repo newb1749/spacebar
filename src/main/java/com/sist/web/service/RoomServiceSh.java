@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomDaoSh;
+import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Room;
 
 @Service("RoomServiceSh")
@@ -16,7 +16,7 @@ public class RoomServiceSh
 	private static Logger logger = LoggerFactory.getLogger(RoomServiceSh.class);
 	
 	@Autowired
-	private RoomDaoSh roomDao;
+	private RoomDao roomDao;
 	
 	//방 총 개수
 	public long roomTotalCount(Room room)
@@ -52,6 +52,22 @@ public class RoomServiceSh
 		return list;
 	}
 	
+	//최신순
+	public List<Room> newRoomList()
+	{
+		List<Room> list = null;
+		
+		try
+		{
+			list = roomDao.newRoomList();
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceList]newRoomList : ",e);
+		}
+		
+		return list;
+	}
 }
 
 

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomDaoJY;
+import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 
@@ -21,7 +21,7 @@ public class RoomServiceJY
 	private String UPLOAD_SAVE_DIR;
     
 	@Autowired
-	private RoomDaoJY roomDao;
+	private RoomDao roomDao;
 	
 	
 	// 룸정보

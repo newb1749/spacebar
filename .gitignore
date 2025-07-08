@@ -9,7 +9,9 @@ src/main/webapp/resources/
 /build/
 .gradle/
 *.class
-*.jar
+*.jar                                     
+/src/main/webapp/WEB-INF/classes/            
+
 
 # ❗ 중복 폴더 방지 (팀원이 잘못 커밋한 것 차단)
 spacebar/
@@ -19,6 +21,8 @@ project/
 .classpath
 .project
 .settings/
+
+
 
 # 로그/임시파일 무시
 *.log

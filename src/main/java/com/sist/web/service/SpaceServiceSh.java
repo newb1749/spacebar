@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.RoomDaoSh;
-import com.sist.web.dao.SpaceDaoSh;
+import com.sist.web.dao.RoomDao;
+import com.sist.web.dao.SpaceDao;
 import com.sist.web.model.Room;
 
 @Service("SpaceServiceSh")
@@ -17,7 +17,7 @@ public class SpaceServiceSh
 	private static Logger logger = LoggerFactory.getLogger(SpaceServiceSh.class);
 	
 	@Autowired
-	private SpaceDaoSh spaceDao;
+	private SpaceDao spaceDao;
 	
 	//방 총 개수
 	public long spaceTotalCount(Room room)

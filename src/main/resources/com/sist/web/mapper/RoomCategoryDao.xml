@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.RoomCategoryDao">
+
+	<resultMap type="com.sist.web.model.RoomCategory" id="categoryResultMap">
+		  	<id column="ROOM_CAT_SEQ" property="roomCatSeq" />
+		  	<result column="ROOM_CAT_NAME" property="roomCatName" />
+		  	<result column="ROOM_CAT_ICON_EXT" property="roomCatIconExt" />
+	</resultMap>
+
+  	
+  
+  <select id="categoryList" resultMap="categoryResultMap">
+  	 SELECT
+      ROOM_CAT_SEQ,
+      ROOM_CAT_NAME,
+      ROOM_CAT_ICON_EXT
+    FROM ROOM_CATEGORY
+    ORDER BY ROOM_CAT_SEQ
+  </select>
+  
+</mapper>

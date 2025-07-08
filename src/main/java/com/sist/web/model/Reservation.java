@@ -8,6 +8,8 @@ public class Reservation implements Serializable{
 	 *  임시로 씀. 리뷰 등록전 예약 및 결제 상태 확인하기 위한 용도로 사용
 	 */
 	private static final long serialVersionUID = 7452262163386829254L;
+	
+	
 		private int rsvSeq;
 	    private String guestId;
 	    private String hostId;
@@ -55,6 +57,14 @@ public class Reservation implements Serializable{
 		    
 	    }
 	    
+	    // 추가: setUserId → 내부적으로 guestId에 매핑
+	    public void setUserId(String userId) {
+	        this.guestId = userId;
+	    }
+
+	    public String getUserId() {
+	        return this.guestId;
+	    }
 	    
 	    
 		public int getRsvSeq() {

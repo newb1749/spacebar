@@ -82,9 +82,9 @@
 		             ) AS WEEKDAY_AMT
 		      FROM WISHLIST A
 		      JOIN ROOM B ON A.ROOM_SEQ = B.ROOM_SEQ
-		      JOIN ROOM_IMAGE C ON B.ROOM_SEQ = C.ROOM_SEQ
-		     WHERE C.IMG_TYPE = 'main'
-		       AND A.USER_ID = #{userId}
+		      LEFT JOIN ROOM_IMAGE C ON B.ROOM_SEQ = C.ROOM_SEQ
+		     AND C.IMG_TYPE = 'main'
+		       WHERE A.USER_ID = #{userId}
 		     ORDER BY A.REG_DT DESC
 		    )
 		  )
@@ -105,7 +105,13 @@
 					WHERE ROOM_SEQ = #{roomSeq}
 	  				AND USER_ID = #{userId}
 		</delete>
-		
+	
+	<!-- 위시리스트 하나 조회 -->
+	<select id="getWishRoomSeqs" resultType="int" parameterType="string">
+	  SELECT ROOM_SEQ
+	    FROM WISHLIST
+	   WHERE USER_ID = #{userId}
+	</select>
 		
 
 	
