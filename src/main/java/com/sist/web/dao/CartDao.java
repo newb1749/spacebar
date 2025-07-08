@@ -2,6 +2,7 @@ package com.sist.web.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.Cart;
@@ -15,4 +16,12 @@ public interface CartDao {
 	//장바구니 삭제
 	public int deleteCart(int cartSeq);
 	
+	public List<Cart> getCartsBySeqs(
+	        @Param("cartSeqs") List<Integer> cartSeqs,
+	        @Param("userId")   String userId
+	    );
+	public	int deleteCarts(
+	        @Param("cartSeqs") List<Integer> cartSeqs,
+	        @Param("userId")   String userId
+	    );
 }

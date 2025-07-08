@@ -4,7 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.RoomQnaComment;
 
-@Repository("roomQnaCommentDao_mj")
+@Repository("roomQnaComment")
 public interface RoomQnaCommentDao 
 {
 	//Q&A 답글 조회

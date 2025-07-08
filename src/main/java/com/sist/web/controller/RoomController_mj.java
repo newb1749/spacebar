@@ -23,8 +23,9 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomQnaComment;
 import com.sist.web.model.RoomQna;
+import com.sist.web.model.RoomQnaComment;
+import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
-import com.sist.web.model.RoomTypeJY;
 import com.sist.web.model.User;
 import com.sist.web.service.RoomImgService_mj;
 import com.sist.web.service.RoomQnaCommentService;
@@ -145,7 +146,7 @@ public class RoomController_mj
                 model.addAttribute("room", room);
 
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
-                List<RoomTypeJY> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
+                List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
                 model.addAttribute("roomTypes", roomTypes);
                 
                 //QNA 총 개수

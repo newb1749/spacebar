@@ -6,10 +6,11 @@ import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Review;
+import com.sist.web.model.ReviewImage;
 
 public interface ReviewDao {
 	
-
+	
 	/**
 	 * 내 리뷰 목록 조회
 	 * @param userId
@@ -63,5 +64,29 @@ public interface ReviewDao {
      * @return 예약 객체
      */
     public Reservation findStatbyRsvSeq(int rsvSeq);
+    
+    /**
+     * 특정 숙소의 모든 리뷰 목록 조회 
+     * @param roomSeq 숙소 확인을 위한 값
+     * @return 한 숙소에 해당하는 List<리뷰 객체>  
+     */
+    public List<Review> selectReviewsByRoom(int roomSeq);
+    
+    
+    /**
+     * 리뷰 1개의 상세 정보 조회 (댓글 페이지용)
+     * @param reviewSeq
+     * @return ReviewImageList 포함된 Review 객체 
+     */
+    public Review selectReviewDetail(int reviewSeq);
+    
+    /**
+     * 숙소 제목 조회 (페이지 제목 표시용)
+     * @param roomSeq
+     * @return 숙소명
+     */
+    public String selectRoomTitle(int roomSeq);
+    
+    
 
 }

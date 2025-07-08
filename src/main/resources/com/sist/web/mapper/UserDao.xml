@@ -223,5 +223,22 @@
 		WHERE USER_ID = #{userId}
 		ORDER BY TRX_DT DESC
 	</select>
+	
+	<!-- 채팅 검색 기능 -->
+	<select id="userList" resultType="com.sist.web.model.User">
+        SELECT USER_ID      AS userId,
+               USER_NAME    AS userName,
+               NICKNAME     AS nickName
+          FROM SB_USER
+         WHERE USER_STAT = 'Y'
+           AND USER_ID != #{userId}
+        <if test="searchKeyword != null and searchKeyword != ''">
+           AND (
+                UPPER(USER_ID) LIKE '%' || UPPER(#{searchKeyword}) || '%' OR
+                UPPER(NICKNAME) LIKE '%' || UPPER(#{searchKeyword}) || '%'
+               )
+        </if>
+         ORDER BY USER_ID ASC
+    </select>
 
 </mapper>

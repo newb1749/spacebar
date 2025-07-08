@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.UserDao_ks;
+import com.sist.web.dao.UserDao;
 import com.sist.web.model.User;
 
 @Service("userService_ks")
@@ -16,7 +16,7 @@ public class UserService_ks {
 	private static Logger logger = LoggerFactory.getLogger(UserService_ks.class);
 	
 	@Autowired
-	private UserDao_ks userDao_ks;
+	private UserDao userDao;
 	
 	/**
 	 * <pre>
@@ -34,7 +34,7 @@ public class UserService_ks {
 		
 		try
 		{
-			list = userDao_ks.userList(userId, searchKeyword);
+			list = userDao.userList(userId, searchKeyword);
 		}
 		catch(Exception e)
 		{

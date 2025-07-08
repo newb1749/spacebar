@@ -1,8 +1,11 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.model.Room;
+import com.sist.web.model.RoomImage;
 
 public interface RoomDao {
 	
@@ -24,6 +27,23 @@ public interface RoomDao {
     public int insertRoomFacility(@Param("roomSeq") int roomSeq, @Param("facSeq") int facSeq);
 
     
+    
+    public Room getRoomDetail(int roomSeq);  // 세미콜론으로 끝남
+
+    public List<RoomImage> getRoomImgDetail(int roomSeq);
+    
+    List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  // 세미콜론으로 끝나야 함
+    
+    String selectHostIdByRoomSeq(int roomSeq);
+    
+    //룸 리스트 총 개수
+  	public long roomListCount(Room room);
+  	
+  	//룸 리스트
+  	public List<Room> roomList(Room room);
+  	
+  	//최신순
+  	public List<Room> newRoomList();
 }
 
 

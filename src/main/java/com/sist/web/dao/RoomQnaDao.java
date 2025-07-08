@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.RoomQna;
 
-@Repository("roomQnaDao_mj")
+@Repository("roomQnaDao")
 public interface RoomQnaDao 
 {
 	//QNA 리스트
