@@ -5,6 +5,7 @@ import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
+import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomServiceJY;
 import com.sist.web.service.RoomTypeServiceJY;
 import com.sist.web.service.UserService_mj;
@@ -20,9 +21,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -45,6 +48,10 @@ public class ReservationControllerJY {
 
     @Autowired
     private RoomServiceJY roomService;
+
+    @Autowired  // 의존성 자동 주입
+    private ReservationServiceJY reservationService;
+
 
     // DAO 직접 주입
     @Autowired
@@ -136,7 +143,7 @@ public class ReservationControllerJY {
 
         String guestId = (String) session.getAttribute("SESSION_USER_ID");
         if (guestId != null) {
-            int mileage = getUserMileage(guestId);
+            long mileage = getUserMileage(guestId);
             model.addAttribute("userMileage", mileage);
         }
 
@@ -144,14 +151,14 @@ public class ReservationControllerJY {
     }
 
     // 마일리지 조회 직접 구현
-    private int getUserMileage(String userId) {
+    private long getUserMileage(String userId) {
         Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
         return mileage != null ? mileage : 0;
     }
 
     // 마일리지 차감 직접 구현
     private boolean deductMileage(String userId, int amount) {
-        int currentMileage = getUserMileage(userId);
+        long currentMileage = getUserMileage(userId);
         if (currentMileage < amount) {
             return false;
         }
@@ -178,7 +185,7 @@ public class ReservationControllerJY {
 
         reservation.setGuestId(userId);
 
-        int userMileage = getUserMileage(userId);
+        long userMileage = getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
             session.setAttribute("pendingReservation", reservation);
             return "redirect:/reservation/payment/chargeMileage";
@@ -259,7 +266,7 @@ public class ReservationControllerJY {
         reservation.setTotalAmt(totalAmt);
         reservation.setFinalAmt(totalAmt);
 
-        int userMileage = getUserMileage(guestId);
+        long userMileage = getUserMileage(guestId);
         model.addAttribute("userMileage", userMileage);
         model.addAttribute("reservation", reservation);
 
@@ -294,7 +301,7 @@ public class ReservationControllerJY {
 
         reservation.setGuestId(userId);
 
-        int userMileage = getUserMileage(userId);
+        long userMileage = getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
             session.setAttribute("pendingReservation", reservation);
             return "redirect:/reservation/payment/chargeMileage";
@@ -343,10 +350,45 @@ public class ReservationControllerJY {
         model.addAttribute("reservation", reservation);
         model.addAttribute("status", "SUCCESS");
 
-        int remainingMileage = getUserMileage(reservation.getGuestId());
+        long remainingMileage = getUserMileage(reservation.getGuestId());
         model.addAttribute("remainingMileage", remainingMileage);
 
         return "/payment/paymentConfirm";
     }
 
+    /**
+     * 로그인한 사용자의 예약 내역 조회 페이지
+     * @param model 뷰에 데이터 전달용
+     * @param session 세션에서 로그인 사용자 정보 조회
+     * @return 내 예약 내역 jsp 경로
+     */
+    @GetMapping("/reservationHistoryJY")
+    public String reservationHistoryJY(Model model, HttpSession session) 
+    {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        List<Reservation> reservations = reservationService.getReservationsByGuestId(userId);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        for (Reservation r : reservations) {
+            try {
+                if (r.getRsvCheckInDt() != null) {
+                    Date checkInDate = sdf.parse(r.getRsvCheckInDt());
+                    r.setRsvCheckInDateObj(checkInDate);
+                }
+                if (r.getRsvCheckOutDt() != null) {
+                    Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
+                    r.setRsvCheckOutDateObj(checkOutDate);
+                }
+            } catch (Exception e) {
+                // 로그 남기거나 예외 처리
+            }
+        }
+
+        model.addAttribute("reservations", reservations);
+        return "/reservation/reservationHistoryJY";
+    }
 }

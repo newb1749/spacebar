@@ -32,4 +32,7 @@ public interface MileageHistoryDao
      * @param mileageHistory 마일리지 거래 내역 객체
      */
     void insertMileageHistory(MileageHistory mileageHistory);
+    
+
+
 }

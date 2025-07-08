@@ -52,8 +52,8 @@
           <tr>
             <td>${r.rsvSeq}</td>
             <td>${r.roomTypeSeq}</td>
-            <td><fmt:formatDate value="${r.rsvCheckInDt}" pattern="yyyy-MM-dd"/></td>
-            <td><fmt:formatDate value="${r.rsvCheckOutDt}" pattern="yyyy-MM-dd"/></td>
+            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
+			<td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
             <td>${r.rsvStat}</td>
             <td>${r.rsvPaymentStat}</td>
             <td><fmt:formatNumber value="${r.finalAmt}" type="currency"/></td>

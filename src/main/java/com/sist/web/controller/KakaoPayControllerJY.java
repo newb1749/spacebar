@@ -232,7 +232,12 @@ public class KakaoPayControllerJY
         }
         return timeStr.replace(":", "");
     }
-    
+
+    private int getUserMileage(String userId) {
+        Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
+        return (mileage != null) ? mileage.intValue() : 0;
+    }
+
     @GetMapping("/mileageHistory")
     public String showMileageHistory(@RequestParam(value = "code", required = false) Integer code,
                                      @RequestParam(value = "msg", required = false) String msg,
@@ -246,11 +251,14 @@ public class KakaoPayControllerJY
         }
 
         List<MileageHistory> historyList = mileageHistoryDao.selectMileageHistoryByUserId(userId);
+        int remainingMileage = getUserMileage(userId);  // 잔여 마일리지 조회
 
         model.addAttribute("code", code);
         model.addAttribute("msg", msg);
         model.addAttribute("mileageHistoryList", historyList);
+        model.addAttribute("remainingMileage", remainingMileage);  // 추가
 
         return "/payment/mileageHistory";
     }
+
 }

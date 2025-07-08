@@ -17,11 +17,12 @@
      ORDER BY TRX_DT DESC
   </select>
 
-  <select id="selectCurrentMileageByUserId" parameterType="string" resultType="int">
-    SELECT NVL(MAX(BALANCE_AFTER_TRX), 0) 
-      FROM MILEAGE_HISTORY 
-     WHERE USER_ID = #{userId}
-  </select>
+<!-- 현재 보유 마일리지 조회 (SB_USER 테이블에서) -->
+<select id="selectCurrentMileageByUserId" parameterType="string" resultType="int">
+  SELECT MILE 
+  FROM SB_USER 
+  WHERE USER_ID = #{userId}
+</select>
 
   <update id="updateMileageDeduct" parameterType="map">
     UPDATE USER_MJ

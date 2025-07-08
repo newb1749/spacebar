@@ -7,7 +7,7 @@ public class MileageHistory {
 	private String userId;
 	private String trxType; // 예: "충전", "결제"
 	private int trxAmt;
-	private int balanceAfterTrx;
+	private long balanceAfterTrx;
 	private Date trxDt;  // 거래 일시
 
 	// Getters / Setters
@@ -35,11 +35,11 @@ public class MileageHistory {
 	public void setTrxAmt(int trxAmt) {
 		this.trxAmt = trxAmt;
 	}
-	public int getBalanceAfterTrx() {
+	public long getBalanceAfterTrx() {
 		return balanceAfterTrx;
 	}
-	public void setBalanceAfterTrx(int balanceAfterTrx) {
-		this.balanceAfterTrx = balanceAfterTrx;
+	public void setBalanceAfterTrx(long l) {
+		this.balanceAfterTrx = l;
 	}
 	public Date getTrxDt() {
 		return trxDt;
