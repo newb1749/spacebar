@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.CartDao">
+
+	<!-- resultMap -->
+		<resultMap id="cartResultMap" type="com.sist.web.model.Cart">
+	    <id column="CART_SEQ" property="cartSeq" />
+	    <result column="USER_ID" property="userId" />
+	    <result column="CART_CHECK_IN_DT" property="cartCheckInDt" />
+	    <result column="CART_CHECK_OUT_DT" property="cartCheckOutDt" />
+	    <result column="CART_GUESTS_NUM" property="cartGuestsNum" />
+	    <result column="CART_TOTAL_AMT" property="cartTotalAmt" />
+	    <result column="REG_DT" property="regDt" />
+	    <result column="UPDATE_DT" property="updateDt" />
+	    <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
+	    
+	    <result column="ROOM_TYPE_TITLE" property="roomTypeTitle" />
+	    <result column="ROOM_TYPE_IMG_NAME" property="roomTypeImgName" />
+	    
+	    <result column="CART_CHECK_IN_TIME" property="cartCheckInTime" />
+	    <result column="CART_CHECK_OUT_TIME" property="cartCheckOutTime" />
+
+	    <result column="ROOM_TITLE" property="roomTitle" />
+	    <result column="ROOM_ADDR" property="roomAddr" />
+	    <result column="CANCEL_POLICY" property="cancelPolicy" />
+	    <result column="ROOM_CAT_NAME" property="roomCatName" />
+	  </resultMap>
+	 
+
+	<!-- 장바구니 등록 -->	
+		<insert id="insertCart" parameterType="com.sist.web.model.Cart">
+	        <selectKey keyProperty="cartSeq" resultType="int" order="BEFORE">
+	            SELECT SEQ_CART_SEQ.NEXTVAL FROM DUAL
+	        </selectKey>
+	        INSERT INTO CART (
+							    CART_SEQ,
+							    USER_ID,
+							    CART_GUESTS_NUM,
+							    CART_TOTAL_AMT,
+							    REG_DT,
+							    UPDATE_DT,
+							    ROOM_TYPE_SEQ,
+							    CART_CHECK_IN_DT,
+							    CART_CHECK_OUT_DT,
+							    CART_CHECK_IN_TIME,
+							    CART_CHECK_OUT_TIME
+	        )
+	        VALUES (
+	            #{cartSeq}, #{userId}, #{cartGuestsNum}, #{cartTotalAmt}, 
+	            SYSDATE, SYSDATE, #{roomTypeSeq}, #{cartCheckInDt}, #{cartCheckOutDt}, #{cartCheckInTime}, #{cartCheckOutTime}
+	        )
+	    </insert>
+    
+    <!-- 장바구니 리스트 -->
+    	 <select id="cartList" parameterType="string" resultMap="cartResultMap">
+			SELECT A.CART_SEQ,
+			       A.USER_ID,
+			       A.REG_DT,
+			       A.ROOM_TYPE_SEQ,
+			       A.CART_CHECK_IN_DT,
+			       A.CART_CHECK_OUT_DT,
+			       A.CART_CHECK_IN_TIME,
+			       A.CART_CHECK_OUT_TIME,
+			       A.CART_GUESTS_NUM,
+			       A.CART_TOTAL_AMT,
+			       
+			       B.ROOM_TYPE_TITLE,
+			       B.MAX_GUESTS,
+			       
+			       C.ROOM_TYPE_IMG_NAME,
+			       
+			       D.ROOM_TITLE,
+			       D.ROOM_ADDR,
+			       D.CANCEL_POLICY,
+			       
+			       E.ROOM_CAT_NAME
+			       
+			        FROM CART A, ROOM_TYPE B, ROOM_TYPE_IMAGE C, ROOM D, ROOM_CATEGORY E
+			        WHERE USER_ID = #{value}
+			          AND A.ROOM_TYPE_SEQ = B.ROOM_TYPE_SEQ
+			          AND B.ROOM_TYPE_SEQ = C.ROOM_TYPE_SEQ
+			          AND D.ROOM_SEQ = B.ROOM_SEQ
+			          AND D.ROOM_CAT_SEQ = E.ROOM_CAT_SEQ
+			          AND C.IMG_TYPE = 'main'
+			        ORDER BY REG_DT DESC
+		  </select>
+    
+    <!-- 장바구니 삭제 -->
+	    <delete id="deleteCart" parameterType="int">
+	        DELETE FROM CART WHERE CART_SEQ = #{cartSeq}
+	    </delete>
+	    
+	    
+	     <select id="getCartsBySeqs" resultMap="cartResultMap" parameterType="map">
+    SELECT A.CART_SEQ,
+           A.USER_ID,
+           A.REG_DT,
+           A.ROOM_TYPE_SEQ,
+           A.CART_CHECK_IN_DT,
+           A.CART_CHECK_OUT_DT,
+           A.CART_CHECK_IN_TIME,
+           A.CART_CHECK_OUT_TIME,
+           A.CART_GUESTS_NUM,
+           A.CART_TOTAL_AMT,
+           B.ROOM_TYPE_TITLE,
+           C.ROOM_TYPE_IMG_NAME,
+           D.ROOM_TITLE,
+           D.ROOM_ADDR,
+           D.CANCEL_POLICY,
+           E.ROOM_CAT_NAME
+      FROM CART A
+      JOIN ROOM_TYPE B       ON A.ROOM_TYPE_SEQ = B.ROOM_TYPE_SEQ
+      JOIN ROOM_TYPE_IMAGE C ON B.ROOM_TYPE_SEQ = C.ROOM_TYPE_SEQ AND C.IMG_TYPE = 'main'
+      JOIN ROOM D            ON B.ROOM_SEQ      = D.ROOM_SEQ
+      JOIN ROOM_CATEGORY E   ON D.ROOM_CAT_SEQ  = E.ROOM_CAT_SEQ
+     WHERE A.USER_ID = #{userId}
+       AND A.CART_SEQ IN
+       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
+         #{seq}
+       </foreach>
+     ORDER BY A.REG_DT DESC
+  </select>
+
+  <!-- 2) 일괄 삭제 -->
+  <delete id="deleteCarts" parameterType="map">
+    DELETE FROM CART
+     WHERE USER_ID = #{userId}
+       AND CART_SEQ IN
+       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
+         #{seq}
+       </foreach>
+  </delete>
+    
+</mapper>
