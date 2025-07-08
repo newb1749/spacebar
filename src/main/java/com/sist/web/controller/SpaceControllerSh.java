@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.SpaceServiceSh;
+import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
@@ -50,8 +52,14 @@ public class SpaceControllerSh {
 	@Value("#{env['upload.save.dir']}") // env.xml에 있음
 	private String UPLOAD_SAVE_DIR;
 	
+	@Value("#{env['auth.session.name']}") 
+	private String AUTH_SESSION_NAME;
+	
 	@Autowired
 	private SpaceServiceSh spaceService;	
+	
+	@Autowired
+	private WishlistService wishlistService;
 	
 	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
@@ -178,6 +186,16 @@ public class SpaceControllerSh {
 			
 			list = spaceService.spaceList(search);
 		}
+		
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    if (sessionUserId != null && !sessionUserId.isEmpty()) {
+	        List<Integer> wishSeqs = wishlistService.getWishRoomSeqs(sessionUserId);
+	        model.addAttribute("wishSeqs", wishSeqs);
+	    } else {
+	        // 비로그인 시 빈 리스트라도 넘겨주기
+	        model.addAttribute("wishSeqs", Collections.emptyList());
+	    }
+
 		
 		model.addAttribute("list",list);
 		model.addAttribute("searchValue",searchValue);
@@ -323,6 +341,15 @@ public class SpaceControllerSh {
 			
 			list = spaceService.spaceList(search);
 		}
+		
+		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    if (sessionUserId != null && !sessionUserId.isEmpty()) {
+	        List<Integer> wishSeqs = wishlistService.getWishRoomSeqs(sessionUserId);
+	        model.addAttribute("wishSeqs", wishSeqs);
+	    } else {
+	        // 비로그인 시 빈 리스트라도 넘겨주기
+	        model.addAttribute("wishSeqs", Collections.emptyList());
+	    }
 		
 		model.addAttribute("list",list);
 		model.addAttribute("searchValue",searchValue);

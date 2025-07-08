@@ -50,7 +50,7 @@ public class WishlistController {
 	//위시리스트 추가
 	@RequestMapping(value="/wishlist/add", method=RequestMethod.POST)
 	@ResponseBody
-	public Response<Object> wishlistAdd(MultipartHttpServletRequest request, HttpServletResponse response)
+	public Response<Object> wishlistAdd(HttpServletRequest request, HttpServletResponse response)
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		
