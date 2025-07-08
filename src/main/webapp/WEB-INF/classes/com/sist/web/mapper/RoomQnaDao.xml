@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.RoomQnaDao">
+  
+    <resultMap id="roomQnaResultMap" type="com.sist.web.model.RoomQna">
+	  	<id column="ROOM_QNA_SEQ" property="roomQnaSeq"/>
+	  	<result column="ROOM_SEQ" property="roomSeq" />
+	  	<result column="ROOM_QNA_TITLE" property="roomQnaTitle" />
+	  	<result column="ROOM_QNA_CONTENT" property="roomQnaContent" />
+	  	<result column="USER_ID" property="userId" />
+	  	<result column="NICKNAME" property="nickName" />
+	  	<result column="PROF_IMG_EXT" property="profImgExt" />
+	  	<result column="ROOM_QNA_STAT" property="roomQnaStat" />
+	  	<result column="REG_DT" property="regDt" />
+	  	<result column="UPDATE_DT" property="updateDt" />
+  	</resultMap>
+  	
+  	<!-- QNA 리스트 -->
+	<select id="qnaList" parameterType="com.sist.web.model.RoomQna" resultMap="roomQnaResultMap">
+		SELECT ROOM_QNA_SEQ,
+		       ROOM_SEQ,
+		       ROOM_QNA_TITLE,
+		       ROOM_QNA_CONTENT,
+		       USER_ID,
+		       NICKNAME,
+		       PROF_IMG_EXT,
+		       ROOM_QNA_STAT,
+		       REG_DT,
+		       UPDATE_DT
+		  FROM (SELECT ROWNUM RNUM,
+		               ROOM_QNA_SEQ,
+		               ROOM_SEQ,
+		               ROOM_QNA_TITLE,
+		               ROOM_QNA_CONTENT,
+		               USER_ID,
+		               NICKNAME,
+		               PROF_IMG_EXT,
+		               ROOM_QNA_STAT,
+		               REG_DT,
+		               UPDATE_DT
+		          FROM (SELECT A.ROOM_QNA_SEQ,
+		                       A.ROOM_SEQ,
+		                       NVL(A.ROOM_QNA_TITLE,'') ROOM_QNA_TITLE,
+		                       NVL(A.ROOM_QNA_CONTENT,'') ROOM_QNA_CONTENT,
+		                       A.USER_ID USER_ID,
+		                       NVL(B.NICKNAME,'') NICKNAME,
+		                       NVL(B.PROF_IMG_EXT,'') PROF_IMG_EXT,
+		                       NVL(A.ROOM_QNA_STAT,'Y') ROOM_QNA_STAT,
+		                       NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'),'') REG_DT,
+		                       NVL(TO_CHAR(A.UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
+		                  FROM ROOM_QNA A,  SB_USER B
+		                 WHERE A.ROOM_SEQ = #{roomSeq}
+		                   AND A.USER_ID = B. USER_ID
+		                   AND ROOM_QNA_STAT = 'Y'
+		                 ORDER BY REG_DT DESC))
+		  WHERE RNUM <![CDATA[>=]]> #{startRow}
+		    AND RNUM <![CDATA[<=]]> #{endRow}
+	</select>
+  
+  	<!-- QNA 총 갯수 --> 	
+  	<select id="qnaListCount" parameterType="com.sist.web.model.RoomQna" resultType="int">
+		SELECT COUNT(A.ROOM_QNA_SEQ) CNT
+		  FROM ROOM_QNA A
+		 WHERE ROOM_SEQ = #{roomSeq}
+  	</select>
+  	
+  	<!-- QNA 등록 -->
+  	<insert id="qnaInsert" parameterType="com.sist.web.model.RoomQna">
+  		INSERT INTO ROOM_QNA (
+				    ROOM_QNA_SEQ,
+				    ROOM_SEQ,
+				    ROOM_QNA_TITLE,
+				    ROOM_QNA_CONTENT,
+				    USER_ID,
+				    ROOM_QNA_STAT,
+				    REG_DT,
+				    UPDATE_DT
+				) VALUES ( SEQ_ROOM_QNA_SEQ.nextval,
+				           #{roomSeq},
+				           #{roomQnaTitle},
+				           #{roomQnaContent},
+				           #{userId},
+				           #{roomQnaStat},
+				           SYSDATE,
+				           null )
+  	</insert>
+  	
+  	<!-- Q&A 조회 -->
+  	<select id="qnaSelect" parameterType="com.sist.web.model.RoomQna" resultMap="roomQnaResultMap">
+  		SELECT ROOM_QNA_SEQ,
+		       ROOM_SEQ,
+		       NVL(ROOM_QNA_TITLE,'') ROOM_QNA_TITLE,
+		       NVL(ROOM_QNA_CONTENT,'') ROOM_QNA_CONTENT,
+		       USER_ID USER_ID,
+		       NVL(ROOM_QNA_STAT,'Y') ROOM_QNA_STAT,
+		       TO_CHAR(REG_DT,'YYYY.MM.DD HH24:MI:SS') REG_DT,
+		       TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS') UPDATE_DT
+		  FROM ROOM_QNA
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
+  	</select>
+  	
+  	<!-- Q&A 수정 -->
+	<update id="qnaUpdate" parameterType="com.sist.web.model.RoomQna">
+		UPDATE ROOM_QNA
+		   SET ROOM_QNA_TITLE = #{roomQnaTitle},
+		       ROOM_QNA_CONTENT = #{roomQnaContent},
+		       UPDATE_DT = SYSDATE
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
+	</update>
+	
+	<!-- Q&A 삭제 -->
+	<update id="qnaDelete" parameterType="com.sist.web.model.RoomQna">
+		UPDATE ROOM_QNA
+		   SET ROOM_QNA_STAT = 'N'
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
+	</update>
+  
+</mapper>

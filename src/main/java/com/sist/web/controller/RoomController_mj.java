@@ -21,15 +21,15 @@ import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
-import com.sist.web.model.RoomQnaComment_mj;
-import com.sist.web.model.RoomQna_mj;
+import com.sist.web.model.RoomQnaComment;
+import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeJY;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 import com.sist.web.service.RoomImgService_mj;
-import com.sist.web.service.RoomQnaCommentService_mj;
-import com.sist.web.service.RoomQnaService_mj;
-import com.sist.web.service.RoomService_mj;
+import com.sist.web.service.RoomQnaCommentService;
+import com.sist.web.service.RoomQnaService;
+import com.sist.web.service.RoomServiceJY;
 import com.sist.web.service.RoomTypeServiceJY;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
@@ -40,13 +40,13 @@ public class RoomController_mj
 	private static Logger logger = LoggerFactory.getLogger(RoomController_mj.class);
 	
     @Autowired
-    private RoomService_mj roomService;
+    private RoomServiceJY roomService;
     
     @Autowired
-    private RoomQnaService_mj roomQnaService;
+    private RoomQnaService roomQnaService;
     
     @Autowired
-    private RoomQnaCommentService_mj roomQnaCommentService;
+    private RoomQnaCommentService roomQnaCommentService;
 
     @Autowired
     private RoomImgService_mj roomImgService;
@@ -60,8 +60,8 @@ public class RoomController_mj
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
 	
-	private static final int LIST_COUNT = 1; 		//한 페이지의 게시물 수
-	private static final int PAGE_COUNT = 2; 		//페이징 수
+	private static final int LIST_COUNT = 5; 		//한 페이지의 게시물 수
+	private static final int PAGE_COUNT = 5; 		//페이징 수
 
 	//ROOM 상세페이지 + Q&A 리스트
     @RequestMapping(value = "/room/roomDetail_mj", method = RequestMethod.GET)
@@ -73,12 +73,16 @@ public class RoomController_mj
         
         //userType = 'G' 'H'인지 구분하여 Q&A 질문 / 답변 버튼 보여주기 위함
         String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-        logger.debug("sessionUserId : " + sessionUserId);
+        
+        logger.debug("ROOM 상세페이지 sessionUserId : " + sessionUserId);
+        logger.debug("roomSeq : " + roomSeq);
+        logger.debug("roomQnaSeq : " + roomQnaSeq);
+        logger.debug("curPage : " + curPage);
         
         String userType = null;
         if (sessionUserId != null) 
         {
-            User_mj userId = userService.userSelect(sessionUserId);
+            User userId = userService.userSelect(sessionUserId);
             
             if (userId != null) 
             {
@@ -90,17 +94,23 @@ public class RoomController_mj
         model.addAttribute("userType", userType);
         
         //Q&A수정시 roomQnaSeq로 조회하기 위함
-        RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+        RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
         model.addAttribute("roomQna", roomQna);
         
-        List<RoomQna_mj> qnaList = null;
-        RoomQna_mj search = new RoomQna_mj();
+        List<RoomQna> qnaList = null;
+        RoomQna search = new RoomQna();
         int totalCount = 0;
         Paging paging = null;
 
         if(roomSeq > 0) 
         {
             Room room = roomImgService.getRoomDetail(roomSeq);
+            
+            logger.debug("##########################################");
+            logger.debug("roomSeq : " + roomSeq);
+            logger.debug("room.getRoomSeq : " + room.getRoomSeq());
+            logger.debug("##########################################");
+            
 
             if(room != null) 
             {
@@ -127,6 +137,11 @@ public class RoomController_mj
                     model.addAttribute("detailImages", detailImages);
                 }
 
+                logger.debug("===================================");
+                logger.debug("room.getRoomSeq : " + room.getRoomSeq());
+                
+                
+                
                 model.addAttribute("room", room);
 
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
@@ -159,6 +174,7 @@ public class RoomController_mj
         		
                 model.addAttribute("qnaList", qnaList);
                 model.addAttribute("paging", paging);
+                model.addAttribute("curPage", curPage);
             }
            
         }
@@ -172,18 +188,21 @@ public class RoomController_mj
     {
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-    	logger.debug("sessionUserId : " + sessionUserId);
+    	
+    	logger.debug("Q&A 등록 화면 sessionUserId : " + sessionUserId);
+    	logger.debug("roomSeq : " + roomSeq);
     	
 		if(StringUtil.isEmpty(sessionUserId))
 		{
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
+		model.addAttribute("roomSeq", roomSeq);
 		
     	return "/room/qnaForm_mj";
     }
@@ -200,18 +219,19 @@ public class RoomController_mj
     	String roomQnaContent = HttpUtil.get(request, "roomQnaContent");
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
     	
+    	logger.debug("Q&A 등록 sessionUserId : " + sessionUserId);
         logger.debug("roomSeq : " + roomSeq);
         logger.debug("roomQnaTitle : " + roomQnaTitle);
         logger.debug("roomQnaContent : " + roomQnaContent);
-        logger.debug("sessionUserId : " + sessionUserId);
     	
     	if(roomSeq > 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaTitle) && !StringUtil.isEmpty(roomQnaContent))
     	{
-    		RoomQna_mj roomQna = new RoomQna_mj();
+    		RoomQna roomQna = new RoomQna();
     		roomQna.setRoomSeq(roomSeq);
     		roomQna.setRoomQnaTitle(roomQnaTitle);
     		roomQna.setRoomQnaContent(roomQnaContent);
     		roomQna.setUserId(sessionUserId);
+    		roomQna.setRoomQnaStat("Y");
     		
     		if(roomQnaService.qnaInsert(roomQna) > 0)
     		{
@@ -238,20 +258,23 @@ public class RoomController_mj
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
     	int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-    	logger.debug("sessionUserId : " + sessionUserId);
+    	
+    	logger.debug("Q&A 수정 화면 sessionUserId : " + sessionUserId);
+    	logger.debug("roomSeq : " + roomSeq);
+    	logger.debug("roomQnaSeq : " + roomQnaSeq);
     	
 		if(StringUtil.isEmpty(sessionUserId))
 		{
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
     	
     	return "/room/qnaUpdateForm_mj";
@@ -270,15 +293,15 @@ public class RoomController_mj
     	String roomQnaContent = HttpUtil.get(request, "roomQnaContent");
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
     	
+    	logger.debug("Q&A 수정 sessionUserId : " + sessionUserId);
         logger.debug("roomSeq : " + roomSeq);
         logger.debug("roomQnaSeq : " + roomQnaSeq);
         logger.debug("roomQnaTitle : " + roomQnaTitle);
         logger.debug("roomQnaContent : " + roomQnaContent);
-        logger.debug("sessionUserId : " + sessionUserId);
     	
-    	if(roomSeq > 0 && roomQnaSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaTitle) && !StringUtil.isEmpty(roomQnaContent))
+    	if(roomSeq >= 0 && roomQnaSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaTitle) && !StringUtil.isEmpty(roomQnaContent))
 		{
-    		RoomQna_mj roomQna = new RoomQna_mj();
+    		RoomQna roomQna = new RoomQna();
     		roomQna.setRoomSeq(roomSeq);
     		roomQna.setRoomQnaSeq(roomQnaSeq);
     		roomQna.setRoomQnaTitle(roomQnaTitle);
@@ -309,8 +332,9 @@ public class RoomController_mj
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
     	int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-    	logger.debug("sessionUserId : " + sessionUserId);
     	
+    	logger.debug("Q&A 답글 등록 화면 sessionUserId : " + sessionUserId);
+    	logger.debug("roomSeq : " + roomSeq );
     	logger.debug("==================================================");
     	logger.debug("roomQnaSeq : " + roomQnaSeq );
     	
@@ -319,13 +343,13 @@ public class RoomController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
 		model.addAttribute("roomQnaSeq", roomQnaSeq);
 		
@@ -344,16 +368,17 @@ public class RoomController_mj
     	String roomQnaCmtContent = HttpUtil.get(request, "roomQnaCmtContent");
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
     	
+    	logger.debug("Q&A 답글 등록 sessionUserId : " + sessionUserId);
         logger.debug("roomQnaSeq : " + roomQnaSeq);
-        logger.debug("roomQnaCmtContent : " + roomQnaCmtContent);
-        logger.debug("sessionUserId : " + sessionUserId);
+        logger.debug("roomQnaCmtContent : " + roomQnaCmtContent);       
     	
     	if(roomQnaSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaCmtContent))
     	{
-    		RoomQnaComment_mj roomQnaCmt = new RoomQnaComment_mj();
+    		RoomQnaComment roomQnaCmt = new RoomQnaComment();
     		roomQnaCmt.setRoomQnaSeq(roomQnaSeq);
     		roomQnaCmt.setRoomQnaCmtContent(roomQnaCmtContent);
     		roomQnaCmt.setUserId(sessionUserId);
+    		roomQnaCmt.setRooQnaCmtStat("Y");
     		
     		if(roomQnaCommentService.qnaCommentInsert(roomQnaCmt) > 0)
     		{
@@ -381,23 +406,27 @@ public class RoomController_mj
 		int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
 		int roomQnaCmtSeq = HttpUtil.get(request, "roomQnaCmtSeq", 0);
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		logger.debug("sessionUserId : " + sessionUserId);
 		
+		logger.debug("Q&A 답글 수정 화면 sessionUserId : " + sessionUserId);
+        logger.debug("roomSeq : " + roomSeq);
+        logger.debug("roomQnaSeq : " + roomQnaSeq);
+        logger.debug("roomQnaCmtSeq : " + roomQnaCmtSeq);
+        
 		if(StringUtil.isEmpty(sessionUserId))
 		{
 			return "redirect:/";
 		}
 		
-		User_mj user = userService.userSelect(sessionUserId);	
+		User user = userService.userSelect(sessionUserId);	
 		model.addAttribute("user", user);
 		
 		Room room = roomService.getRoomDetail(roomSeq);
 		model.addAttribute("room", room);
 		
-		RoomQna_mj roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
 		
-		RoomQnaComment_mj roomQnaComment = roomQnaCommentService.roomQnaCommontSelect(roomQnaCmtSeq);
+		RoomQnaComment roomQnaComment = roomQnaCommentService.roomQnaCommontSelect(roomQnaCmtSeq);
 		model.addAttribute("roomQnaComment", roomQnaComment);
 		model.addAttribute("roomQnaCmtSeq", roomQnaCmtSeq);
 		
@@ -417,14 +446,14 @@ public class RoomController_mj
     	String roomQnaCmtContent = HttpUtil.get(request, "roomQnaCmtContent");
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
     	
+        logger.debug("Q&A 답글 수정 sessionUserId : " + sessionUserId);
         logger.debug("roomQnaSeq : " + roomQnaSeq);
         logger.debug("roomQnaCmtSeq : " + roomQnaCmtSeq);
         logger.debug("roomQnaCmtContent : " + roomQnaCmtContent);
-        logger.debug("sessionUserId : " + sessionUserId);
     	
-    	if(roomQnaSeq > 0 && roomQnaCmtSeq > 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaCmtContent))
+    	if(roomQnaSeq >= 0 && roomQnaCmtSeq >= 0 && sessionUserId != null && !StringUtil.isEmpty(roomQnaCmtContent))
 		{
-    		RoomQnaComment_mj roomQnaCmt = new RoomQnaComment_mj();
+    		RoomQnaComment roomQnaCmt = new RoomQnaComment();
     		
     		roomQnaCmt.setRoomQnaSeq(roomQnaSeq);
     		roomQnaCmt.setRoomQnaCmtSeq(roomQnaCmtSeq);
@@ -449,7 +478,48 @@ public class RoomController_mj
     }
     
     
-    //Q&A 삭제(Q&A 답글도 같이 삭제)
+    //Q&A 삭제(Q&A 답글도 같이 삭제 => sts 'N' 변경)
+    @RequestMapping(value="/room/qnaDeleteProc", method=RequestMethod.POST)
+    @ResponseBody
+    public Response<Object> qnaDeleteProc(Model model, HttpServletRequest request, HttpServletResponse response)
+    {
+    	Response<Object> ajaxRes = new Response<Object>();
+    	
+    	int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
+    	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+    	
+        logger.debug("Q&A 삭제 sessionUserId : " + sessionUserId);
+        logger.debug("roomQnaSeq : " + roomQnaSeq);
+
+        if(sessionUserId == null)
+        {
+        	ajaxRes.setResponse(410, "loging failed");
+        	return ajaxRes;
+        }
+        
+        else
+        {
+            try
+            {
+            	if(roomQnaService.qnaDelete(roomQnaSeq) > 0)
+            	{
+            		ajaxRes.setResponse(0, "success");
+            	}
+            	else
+            	{
+            		ajaxRes.setResponse(500, "internal server error");
+            	}
+            }
+            catch(Exception e)
+            {
+            	logger.error("[RoomController]qnaDeleteProc Exception", e);
+            	ajaxRes.setResponse(500, "internal server error2");
+            }
+        }
+
+    	
+    	return ajaxRes;
+    }
 
 }
 

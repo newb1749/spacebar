@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sist.web.dao.RoomQnaCommentDao_mj">
+<mapper namespace="com.sist.web.dao.RoomQnaCommentDao">
   
-    <resultMap id="roomQnaCommentResultMap" type="com.sist.web.model.RoomQnaComment_mj">
+    <resultMap id="roomQnaCommentResultMap" type="com.sist.web.model.RoomQnaComment">
 	  	<id column="ROOM_QNA_CMT_SEQ" property="roomQnaCmtSeq"/>
 	  	<result column="ROOM_QNA_SEQ" property="roomQnaSeq" />
 	  	<result column="USER_ID" property="userId" />
@@ -22,12 +22,13 @@
 		       NVL(TO_CHAR(CREATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') CREATE_DT,
 		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
 		  FROM ROOM_QNA_COMMENT
-		 WHERE ROOM_QNA_SEQ = #{value}
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
+		   AND ROOM_QNA_CMT_STAT = 'Y'
 		 ORDER BY CREATE_DT DESC
 	</select>
 	
 	<!-- Q&A 답글 등록 -->
-	<insert id="qnaCommentInsert" parameterType="com.sist.web.model.RoomQnaComment_mj">
+	<insert id="qnaCommentInsert" parameterType="com.sist.web.model.RoomQnaComment">
 		INSERT INTO ROOM_QNA_COMMENT (
 		    ROOM_QNA_CMT_SEQ,
 		    ROOM_QNA_SEQ,
@@ -46,11 +47,18 @@
 	</insert>
 	
 	<!-- Q&A 답글 수정 -->
-	<update id="qnaCommentUpdate" parameterType="com.sist.web.model.RoomQnaComment_mj">
+	<update id="qnaCommentUpdate" parameterType="com.sist.web.model.RoomQnaComment">
 		UPDATE ROOM_QNA_COMMENT
 		   SET ROOM_QNA_CMT_CONTENT = #{roomQnaCmtContent},
 		       UPDATE_DT = SYSDATE
 		 WHERE ROOM_QNA_CMT_SEQ = #{roomQnaCmtSeq}
+	</update>
+  
+  	<!-- Q&A 답글 삭제 -->
+	<update id="qnaCommentDelete" parameterType="com.sist.web.model.RoomQnaComment">
+		UPDATE ROOM_QNA_COMMENT
+		   SET ROOM_QNA_CMT_STAT = 'N'
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
 	</update>
   
 </mapper>

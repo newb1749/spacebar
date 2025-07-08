@@ -102,12 +102,7 @@ $(document).ready(function(){
 				if(res.code == 0)
 				{
 					alert("Q&A 삭제가 완료되었습니다.");
-					location.href = "/";
-				}
-				else if(res.code == 404)
-				{
-					alert("회원정보가 존재하지 않습니다.");
-					location.href = "/";
+					location.href = "/room/roomDetail_mj?roomSeq=" + $("input[name=roomSeq]").val();
 				}
 				else if(res.code == 410)
 				{

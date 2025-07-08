@@ -68,8 +68,8 @@
               <div class="qna-avatar me-3">
               <!-- 게스트 Q&A -->
               <c:choose>
-              <c:when test="">
-                <img src="/resources/upload/userprofile/${user.userId}.${user.profImgExt}"  
+              <c:when test="${!empty qna.profImgExt}">
+                <img src="/resources/upload/userprofile/${qna.userId}.${qna.profImgExt}"  
                 alt="profile" width="40" height="40" style="border-radius: 50%;" />
                </c:when>
                <c:otherwise>
@@ -96,7 +96,7 @@
                 
            <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
 		   <c:if test="${sessionUserId == qna.userId}">
-		    <a href="/room/qnaUpdateForm_mj?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+		    <a href="/room/qnaUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
 		      ✏ Q&A 수정하기
 		    </a>
 		  </c:if> 
@@ -123,13 +123,13 @@
                 <!-- 답글 작성 버튼 -->
                 <div class="d-flex justify-content-end gap-2 mb-3 mt-4">
                  <c:if test="${user.userType =='H' and empty qna.roomQnaComment}">
-                     <a href="/room/qnaCmtForm_mj?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
+                     <a href="/room/qnaCmtForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
                        ✏ 답글 작성하기
                      </a>
                 </c:if> 
                 <!-- 답글 수정 버튼 -->
 			    <c:if test="${user.userType =='H' and !empty qna.roomQnaComment}">
-			      <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+			      <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
 			        ✏ 답글 수정하기
 			      </a>
 			    </c:if>                      

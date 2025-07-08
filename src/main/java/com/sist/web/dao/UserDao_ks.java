@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import com.sist.web.model.User_mj; 
+import com.sist.web.model.User; 
 
 @Repository("userDao_ks")
 public interface UserDao_ks {
@@ -15,5 +15,5 @@ public interface UserDao_ks {
 	 * @param searchKeyword
 	 * @return 검색한 리스트(userId, userName, nickName)
 	 */
-	public List<User_mj> userList(@Param("userId") String userId, @Param("searchKeyword") String searchKeyword);
+	public List<User> userList(@Param("userId") String userId, @Param("searchKeyword") String searchKeyword);
 }

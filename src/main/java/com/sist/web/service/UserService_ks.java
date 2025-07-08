@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.web.dao.UserDao_ks;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
 
 @Service("userService_ks")
 public class UserService_ks {
@@ -28,9 +28,9 @@ public class UserService_ks {
 	 * @param searchKeyword 검색어(userId, nickName)
 	 * @return 사용자 리스트
 	 */
-	public List<User_mj> userList(String userId, String searchKeyword)
+	public List<User> userList(String userId, String searchKeyword)
 	{
-		List<User_mj> list = null;
+		List<User> list = null;
 		
 		try
 		{

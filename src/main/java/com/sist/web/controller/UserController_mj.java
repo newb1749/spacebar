@@ -1,5 +1,7 @@
 package com.sist.web.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,9 +19,20 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.sist.common.model.FileData;
 import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Cart;
+import com.sist.web.model.Coupon;
+import com.sist.web.model.FreeBoard;
+import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Response;
-import com.sist.web.model.User_mj;
+import com.sist.web.model.User;
+import com.sist.web.model.Wishlist;
+import com.sist.web.service.CartService;
+import com.sist.web.service.CouponServiceJY;
+import com.sist.web.service.FreeBoardService;
+import com.sist.web.service.MileageHistoryService;
+import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.UserService_mj;
+import com.sist.web.service.WishlistService;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.JsonUtil;
 
@@ -30,7 +43,25 @@ public class UserController_mj
 	private static Logger logger = LoggerFactory.getLogger(UserController_mj.class);
 	
 	@Autowired
-	private UserService_mj userService_mj;
+	private UserService_mj userService;
+	
+	@Autowired
+	private CouponServiceJY couponService;
+	
+	@Autowired
+	private MileageHistoryService mileageHistoryService;
+	
+	@Autowired
+	private MileageServiceJY mileageService;
+	
+	@Autowired
+	private WishlistService wishlistService;
+	
+	@Autowired 
+	private CartService cartService;
+	
+	@Autowired
+	private FreeBoardService freeBoardService;
 	
 	@Value("#{env['upload.save.dir']}")
 	private String UPLOAD_SAVE_DIR;
@@ -62,7 +93,7 @@ public class UserController_mj
 		
 		if(!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd))
 		{
-			User_mj user = userService_mj.userSelect(userId);
+			User user = userService.userSelect(userId);
 			
 			if(user != null)
 			{
@@ -139,7 +170,7 @@ public class UserController_mj
 		
 		if(!StringUtil.isEmpty(userId))
 		{
-			if(userService_mj.userSelect(userId) == null)
+			if(userService.userSelect(userId) == null)
 			{
 				ajaxRes.setResponse(0, "success");
 			}
@@ -172,7 +203,7 @@ public class UserController_mj
 		
 		if(!StringUtil.isEmpty(nickName))
 		{
-			if(userService_mj.nickNameSelect(nickName) == null)
+			if(userService.nickNameSelect(nickName) == null)
 			{
 				ajaxRes.setResponse(0, "success");
 			}
@@ -217,9 +248,9 @@ public class UserController_mj
 		if(!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd) && !StringUtil.isEmpty(userName) && !StringUtil.isEmpty(nickName) && !StringUtil.isEmpty(email) && 
 				!StringUtil.isEmpty(phone) && !StringUtil.isEmpty(gender) && !StringUtil.isEmpty(birthDt) && !StringUtil.isEmpty(userAddr) && !StringUtil.isEmpty(userType))
 		{
-			if(userService_mj.userSelect(userId) == null)
+			if(userService.userSelect(userId) == null)
 			{
-				User_mj user = new User_mj();
+				User user = new User();
 				
 				user.setUserId(userId);
 				user.setUserPwd(userPwd);
@@ -245,7 +276,7 @@ public class UserController_mj
 //					user.setProfImgExt("none");
 //				}
 				
-				if(userService_mj.userInsert(user) > 0)
+				if(userService.userInsert(user) > 0)
 				{
 					ajaxRes.setResponse(0, "success");
 				}
@@ -285,7 +316,7 @@ public class UserController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/updateForm_mj";
@@ -315,7 +346,7 @@ public class UserController_mj
 		{
 			if(StringUtil.equals(userId, sessionUserId))
 			{
-				User_mj user = userService_mj.userSelect(sessionUserId);
+				User user = userService.userSelect(sessionUserId);
 				
 				if(user != null)
 				{
@@ -347,7 +378,7 @@ public class UserController_mj
 //							user.setProfImgExt("none");
 //						}
 						
-						if(userService_mj.userUpdate(user) > 0)
+						if(userService.userUpdate(user) > 0)
 						{
 							ajaxRes.setResponse(0, "success");
 						}
@@ -407,7 +438,7 @@ public class UserController_mj
 			return "redirete:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
 		return "/user/deleteForm_mj";
@@ -436,7 +467,7 @@ public class UserController_mj
 				 return ajaxRes;
 			}
 			
-			User_mj user = userService_mj.userSelect(sessionUserId);
+			User user = userService.userSelect(sessionUserId);
 			
 			if(user != null)
 			{
@@ -448,7 +479,7 @@ public class UserController_mj
 					}					
 				}
 				
-				if(userService_mj.userDelete(user) > 0)
+				if(userService.userDelete(user) > 0)
 				{
 					request.getSession().invalidate();
 					ajaxRes.setResponse(0, "success");
@@ -486,11 +517,11 @@ public class UserController_mj
 		String userName = HttpUtil.get(request, "userName");
 		String phone = HttpUtil.get(request, "phone");
 				
-		User_mj user = new User_mj();
+		User user = new User();
 		user.setUserName(userName);
 		user.setPhone(phone);
 		
-		User_mj result = userService_mj.searchId(user);
+		User result = userService.searchId(user);
 
 		if(result != null)
 		{			
@@ -518,12 +549,12 @@ public class UserController_mj
 		String userName = HttpUtil.get(request, "userName");
 		String phone = HttpUtil.get(request, "phone");
 				
-		User_mj user = new User_mj();
+		User user = new User();
 		user.setUserId(userId);
 		user.setUserName(userName);
 		user.setPhone(phone);
 		
-		User_mj result = userService_mj.searchPwd(user);
+		User result = userService.searchPwd(user);
 
 		if(result != null)
 		{			
@@ -549,8 +580,43 @@ public class UserController_mj
 			return "redirect:/";
 		}
 		
-		User_mj user = userService_mj.userSelect(sessionUserId);
+		//회원 정보
+		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
+		
+		//쿠폰 정보
+		List<Coupon> coupon = couponService.getAllCoupons();
+		model.addAttribute("coupon", coupon);
+		
+		//결제 정보
+		
+		
+		//마일리지 조회 내역
+		int mile = mileageService.getUserMileage(sessionUserId);
+		model.addAttribute("mile", mile);
+		
+		//마일리지 충전 내역
+		List<MileageHistory> mileHistory = mileageHistoryService.getMileageHistory(sessionUserId);
+		model.addAttribute("mileHistory", mileHistory);
+		
+		//게시글 정보
+		FreeBoard freeboard = new FreeBoard();
+		freeboard.setUserId(sessionUserId);
+		
+		List<FreeBoard> freeBoard = freeBoardService.boardList(freeboard);
+		model.addAttribute("freeBoard", freeBoard);
+		
+		//위시리스트 정보
+	    Wishlist wishlist = new Wishlist();
+	    wishlist.setUserId(sessionUserId);
+	    
+	    List<Wishlist> wishList = wishlistService.wishlist(wishlist);
+	    model.addAttribute("wishList", wishList);
+		
+		//장바구니 정보
+	    List<Cart> cartList = cartService.cartList(sessionUserId);
+	    model.addAttribute("cartList", cartList);
+		
 		
 		return "/user/myPage_mj";
 	}

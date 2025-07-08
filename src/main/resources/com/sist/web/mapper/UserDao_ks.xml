@@ -3,7 +3,7 @@
 
 <mapper namespace="com.sist.web.dao.UserDao_ks">
 
-<select id="userList" resultType="com.sist.web.model.User_mj">
+<select id="userList" resultType="com.sist.web.model.User">
         SELECT USER_ID      AS userId,
                USER_NAME    AS userName,
                NICKNAME     AS nickName

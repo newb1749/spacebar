@@ -20,7 +20,7 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
-  </resultMap>
+   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
 		<id column="ROOM_IMG_SEQ" property="roomImgSeq" />
