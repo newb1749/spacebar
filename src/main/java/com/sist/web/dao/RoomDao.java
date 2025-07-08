@@ -41,6 +41,9 @@ public interface RoomDao {
   	
   	//룸 리스트
   	public List<Room> roomList(Room room);
+  	
+  	//최신순
+  	public List<Room> newRoomList();
 }
 
 
