@@ -60,7 +60,17 @@
 }
 
   </style>
+<script>
+$(document).ready(function(){
+	$("#btnRoomList").on("click",function(){
+		document.roomForm.action = "/room/roomList";
+		document.roomForm.submit();
+	});
+});
 
+
+
+</script>
 </head>
 <body>
 
@@ -92,6 +102,7 @@
 <div class="section">
   <div class="container">
     <div class="row justify-content-between align-items-start">
+    <!-- 왼쪽 정렬 -->
       <div class="col-lg-7">
         <div class="property-slider-wrap">
 		  <!-- Tiny Slider 구조 -->
@@ -104,36 +115,89 @@
 		    </c:forEach>
 		  </div>
 		</div>
-      </div>
-
-      <div class="col-lg-4">
-        <div class="property-info">
-          <h2 class="text-primary mb-3">${room.roomTitle}</h2>
+		<h2 class="text-primary mb-3">${room.roomTitle}</h2>
           <p class="meta mb-1"><i class="icon-map-marker"></i> ${room.roomAddr} (${room.region})</p>
           <p class="text-black-50">${room.roomDesc}</p>
-          <ul class="list-unstyled mt-4">
-            <li><strong>등록일:</strong> ${room.regDt}</li>
-            <li><strong>이용 시간:</strong> ${room.minTimes} ~ ${room.maxTimes}시간</li>
-            <li><strong>자동 예약 확정:</strong>
-              <c:choose>
-                <c:when test="${room.autoConfirmYn == 'Y'}">예</c:when>
-                <c:otherwise>아니오</c:otherwise>
-              </c:choose>
-            </li>
-            <li><strong>취소 정책:</strong> ${room.cancelPolicy}</li>
-            <li><strong>평점:</strong> ${room.averageRating} / 리뷰 수: ${room.reviewCount}</li>
-          </ul>
+          
+          <!-- 룸타입 리스트 -->
+          <h2>룸타입</h2>
+          <div class="container mt-4">
+  <div class="row g-4">
+    <c:forEach var="rt" items="${roomTypes}">
+      <div class="col-12">
+        <div class="card h-100 border rounded" style="min-height: 220px;">
+          <div class="row g-0">
+            <!-- 이미지 영역: 전체의 30% 너비 -->
+            <div class="col-md-4">
+              <img
+                src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${rt.roomTypeSeq}.jpg"
+                class="img-fluid h-100 w-100 rounded-start"
+                style="object-fit: cover;"
+                alt="${rt.roomTypeTitle}"
+              />
+            </div>
+            <!-- 텍스트 영역: 전체의 70% 너비 -->
+            <div class="col-md-8">
+              <div class="card-body p-3">
+                <!-- 더 큰 제목 -->
+                <h5 class="card-title fs-4 mb-2">${rt.roomTypeTitle}</h5>
+                
+                <!-- 요금 -->
+                <p class="mb-1"><strong>주중:</strong> ${rt.weekdayAmt}원</p>
+                <p class="mb-2"><strong>주말:</strong> ${rt.weekendAmt}원</p>
+                
+                <!-- 설명 (있을 때만) -->
+                <c:if test="${not empty rt.roomTypeDesc}">
+                  <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+                </c:if>
+                
+                 <!-- 버튼 -->
+            <c:choose>
+              <c:when test="${rt.reservationCheck > 0}">
+                <button type="button"
+                        class="btn btn-secondary mt-3"
+                        disabled>
+                  만실
+                </button>
+              </c:when>
+              <c:otherwise>
+                <button type="button"
+                        class="btn btn-primary mt-3"
+                        onclick="location.href='/reservation/step1JY?roomTypeSeq=${rt.roomTypeSeq}'">
+                  예약하기
+                </button>
+              </c:otherwise>
+            </c:choose>
+            
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </c:forEach>
+  </div>
+</div>
+
+          
 
           <%-- 지도 모듈 포함 --%>
           <jsp:include page="/WEB-INF/views/component/mapModule.jsp">
             <jsp:param name="address" value="${room.roomAddr}" />
             <jsp:param name="roomName" value="${room.roomTitle}" />
           </jsp:include>
+      </div>
+
+		<!-- 오른쪽 정렬 -->
+      <div class="col-lg-4">
+        <div class="property-info">
+          
 
           <%-- 달력 모듈 포함 --%>
           <jsp:include page="/WEB-INF/views/component/calendar.jsp">
             <jsp:param name="calId" value="roomDetailCalendar" />
             <jsp:param name="fetchUrl" value="" />
+            <jsp:param name="startDate" value="${startDate}" />
+	    	<jsp:param name="endDate" value="${endDate}" />
           </jsp:include>
 
           <%-- 객실 타입 선택 --%>
@@ -153,9 +217,39 @@
               <option value="${i}">${i}명</option>
             </c:forEach>
           </select>
+          
+          <ul class="list-unstyled mt-4">
+            <li><strong>등록일:</strong> ${room.regDt}</li>
+            <li><strong>이용 시간:</strong> ${room.minTimes} ~ ${room.maxTimes}시간</li>
+            <li><strong>자동 예약 확정:</strong>
+              <c:choose>
+                <c:when test="${room.autoConfirmYn == 'Y'}">예</c:when>
+                <c:otherwise>아니오</c:otherwise>
+              </c:choose>
+            </li>
+            <li><strong>취소 정책:</strong> ${room.cancelPolicy}</li>
+            <li><strong>평점:</strong> ${room.averageRating} / 리뷰 수: ${room.reviewCount}</li>
+          </ul>
 
           <%-- 예약하기 버튼 --%>
           <button id="reserveBtn" class="btn btn-primary mt-3">예약하기</button>
+		
+		<%-- roomCatSeq 값에 따라 추가 버튼 노출 --%>
+			<div class="mt-2 d-flex">
+			  <c:choose>
+			    <c:when test="${room.roomCatSeq >= 1 && room.roomCatSeq <= 7}">
+			      <button id="btnSpaceList" type="button" class="btn btn-secondary btn-sm px-3">
+			        공간 리스트로 돌아가기
+			      </button>
+			    </c:when>
+			    <c:when test="${room.roomCatSeq >= 8 && room.roomCatSeq <= 14}">
+			      <button id="btnRoomList" type="button" class="btn btn-secondary btn-sm px-3">
+			        룸 리스트로 돌아가기
+			      </button>
+			    </c:when>
+			  </c:choose>
+			</div>
+
         </div>
       </div>
     </div>
@@ -172,13 +266,24 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // 캘린더 초기화
-    initRoomCalendar("roomDetailCalendar", {
-      fetchUrl: "",
-      onChange: (dates) => {
-        window.selectedDates = dates;
+
+    
+ // 2️⃣ hidden input을 form 내부로 강제 이동
+    const startInput = document.getElementById(calendarId + '_start');
+    const endInput   = document.getElementById(calendarId + '_end');
+    const form       = document.getElementById("roomForm");  // 여기에 id="roomForm" 폼을 잡아서
+
+    if (form) {
+      if (startInput && !form.contains(startInput)) {
+        form.appendChild(startInput);
       }
-    });
+      if (endInput   && !form.contains(endInput)) {
+        form.appendChild(endInput);
+      }
+    } else {
+      console.warn("roomForm을 찾을 수 없음");
+    }
+
 
     // 예약하기 버튼 클릭 이벤트
     document.getElementById("reserveBtn").addEventListener("click", function () {
@@ -217,6 +322,46 @@
 	    ]
 	  });
 	});
+  
+  document.addEventListener('DOMContentLoaded', function(){
+	  const calInput = document.getElementById("roomDetailCalendar");
+	  const form     = document.getElementById("roomForm");
+	  if (!calInput || !calInput._flatpickr || !form) return;
+
+	  // 1) 새로고침 후 이전 스크롤 위치 복원
+	  const savedPos = sessionStorage.getItem("roomDetailScrollPos");
+	  if (savedPos) {
+	    window.scrollTo({ top: parseInt(savedPos, 10), behavior: "instant" });
+	    sessionStorage.removeItem("roomDetailScrollPos");
+	  }
+
+	  // 2) 날짜 변경 시 — selectedDates 길이가 2일 때만 submit
+	  calInput._flatpickr.config.onChange.push(function(selectedDates){
+	    if (selectedDates.length === 2) {
+	      // 2-1) 현재 스크롤 위치 저장
+	      sessionStorage.setItem("roomDetailScrollPos", window.scrollY);
+	      // 2-2) 폼 제출 (page reload)
+	      form.submit();
+	    }
+	  });
+	});
+	
+
+	
 </script>
+
+<form name="roomForm" id="roomForm" method="post">
+  <input type="hidden" name="roomSeq" value="${roomSeq}" />
+  <input type="hidden" name="searchValue" value="${searchValue}" />
+  <input type="hidden" name="curPage"  value="${curPage}" />
+  <input type="hidden" name="regionList" id="regionList" value="${regionList}" />
+  <input type="hidden" name="startTime" id="startTime" value="${startTime}"/>
+  <input type="hidden" name="endTime" id="endTime" value="${endTime}"/>
+  <input type="hidden" name="category" id="category" value="${category}"/>
+  <input type="hidden" name="personCount" id="personCount" value="${personCount}" />
+  <input type="hidden" name="minPrice" id="minPrice" value="${minPrice}" />
+  <input type="hidden" name="maxPrice" id="maxPrice" value="${maxPrice}" />
+</form>
+
 </body>
 </html>

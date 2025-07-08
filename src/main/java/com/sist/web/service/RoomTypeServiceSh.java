@@ -2,7 +2,9 @@ package com.sist.web.service;
 
 import com.sist.web.dao.RoomDaoSh;
 import com.sist.web.dao.RoomTypeDaoSh;
+import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
+import com.sist.web.model.RoomTypeImage;
 
 import java.util.List;
 
@@ -23,8 +25,8 @@ public class RoomTypeServiceSh
         return roomTypeDao.selectRoomTypeBySeq(roomTypeSeq);
     }
     
-	public List<RoomType> getRoomTypesByRoomSeq(int roomSeq) 
+	public List<RoomType> getRoomTypesByRoomSeq(Room room) 
 	{
-	    return roomTypeDao.selectRoomTypesByRoomSeq(roomSeq);
+	    return roomTypeDao.selectRoomTypesByRoomSeq(room);
 	}
 }

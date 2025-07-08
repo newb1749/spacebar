@@ -295,7 +295,7 @@
 	  AND RNUM <![CDATA[<=]]> #{endRow}
 </select>
 
-<select id="getRoomDetail" resultType="com.sist.web.model.Room">
+<select id="getRoomDetail" resultMap="roomResultMap">
     SELECT ROOM_SEQ, ROOM_CAT_SEQ, HOST_ID, ROOM_ADDR, LATITUDE, LONGITUDE, REGION, AUTO_CONFIRM_YN, ROOM_TITLE, ROOM_DESC, CANCEL_POLICY, MIN_TIMES, MAX_TIMES, AVERAGE_RATING, REVIEW_COUNT, TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
     FROM ROOM
     WHERE ROOM_SEQ = #{roomSeq}

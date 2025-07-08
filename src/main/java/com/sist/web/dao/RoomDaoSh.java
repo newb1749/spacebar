@@ -18,4 +18,5 @@ public interface RoomDaoSh {
     
   	//상세 페이지 사진 리스트
   	public List<RoomImage> getRoomImgDetail(int roomSeq);
+ 
 }

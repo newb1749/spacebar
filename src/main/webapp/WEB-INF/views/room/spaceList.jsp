@@ -427,6 +427,13 @@ $(window).on("scroll", function () {
 		fn_list_scroll(curPage + 1);
 	}
 });
+
+function fn_roomDetail(roomSeq)
+{
+	document.roomForm.roomSeq.value = roomSeq;
+	document.roomForm.action = "/room/roomDetailSh";
+	document.roomForm.submit();
+}
 </script>
 
 </head>
@@ -588,6 +595,7 @@ $(window).on("scroll", function () {
   <!-- ✅ 리스트 출력 -->
   <div id="roomListBody">
   <c:forEach var="room" items="${list}">
+  <a href="#" class="room-link d-block text-decoration-none" onclick="fn_roomDetail(${room.roomSeq}); event.preventDefault();">
     <div class="room-list-item">
       <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail">
       <div class="room-details">
@@ -599,6 +607,7 @@ $(window).on("scroll", function () {
         </div>
       </div>
     </div>
+    </a>
   </c:forEach>
 </div>
 

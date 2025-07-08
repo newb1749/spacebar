@@ -2,7 +2,9 @@ package com.sist.web.dao;
 
 import java.util.List;
 
+import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;  // 반드시 import
+import com.sist.web.model.RoomTypeImage;
 
 public interface RoomTypeDaoSh 
 {
@@ -21,5 +23,6 @@ public interface RoomTypeDaoSh
      */
     RoomType selectRoomTypeBySeq(int roomTypeSeq);
 
-    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
+    List<RoomType> selectRoomTypesByRoomSeq(Room room);
+    
 }
