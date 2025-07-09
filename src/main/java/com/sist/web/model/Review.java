@@ -28,6 +28,11 @@ public class Review implements Serializable{
     private String roomTypeTitle;   			// 객실명 (JOIN)
     private String userNickname;				// 닉네임
     
+    private String profImgExt;					// 프로필이미지타입
+    private String roomAddr;					// 숙소주소
+    private String reviewImgName;				// 최초등록리뷰이미지
+    
+    
 	public Review()
 	{
 		reviewSeq = 0;
@@ -39,11 +44,57 @@ public class Review implements Serializable{
 		reviewStat = "";
 		regDt = null;
 		updateDt = null;
+		
+		profImgExt = "";
+		roomAddr = "";
+		reviewImgName = "";
 	}
 
 	
 	
 	
+	public String getProfImgExt() {
+		return profImgExt;
+	}
+
+
+
+
+	public void setProfImgExt(String profImgExt) {
+		this.profImgExt = profImgExt;
+	}
+
+
+
+
+	public String getRoomAddr() {
+		return roomAddr;
+	}
+
+
+
+
+	public void setRoomAddr(String roomAddr) {
+		this.roomAddr = roomAddr;
+	}
+
+
+
+
+	public String getReviewImgName() {
+		return reviewImgName;
+	}
+
+
+
+
+	public void setReviewImgName(String reviewImgName) {
+		this.reviewImgName = reviewImgName;
+	}
+
+
+
+
 	public String getUserNickname() {
 		return userNickname;
 	}

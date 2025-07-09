@@ -87,6 +87,6 @@ public interface ReviewDao {
      */
     public String selectRoomTitle(int roomSeq);
     
-    
-
+    //메인페이지 모든 리뷰 조회용
+    public List<Review> allReviewList();
 }
