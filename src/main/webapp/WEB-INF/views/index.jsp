@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 
+
 <!-- /*
 * Template Name: Property
 * Template Author: Untree.co
@@ -59,11 +60,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
 }
-h2 {
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: #333;
-}
+
 
 /* grid */
 #wishlistBody {
@@ -74,21 +71,23 @@ h2 {
 
   /* ================ 슬라이더 래퍼 */
   .property-slider-wrap {
-    position: relative;
-    padding-left: 80px;
-    padding-right: 80px;
-    overflow: visible !important;
+      position: relative;
+  padding: 0;
+  overflow: hidden; /* 보통은 hidden 으로 */
+    
   }
+  
+  
 
 /* card wrapper */
 .property-item {
-       position: relative;
+    position: relative;
     background-color: #fff;
-    border-radius: 16px;
+    border-radius: 0px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     overflow: hidden;
     transition: transform 0.2s ease;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 .property-item:hover {
   transform: translateY(-6px);
@@ -135,7 +134,7 @@ h2 {
    font-size: 1.15rem;
     font-weight: 700;
     color: #222;
-    margin-bottom: 3px;
+    margin-bottom: 1px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -149,7 +148,7 @@ h2 {
 .property-content .specs {
     font-size: 0.9rem;
     color: #777;
-    margin-bottom: 8px;
+    margin-bottom: 3px;
 }
 .property-content .specs .caption {
   font-size: 0.9rem;
@@ -161,7 +160,7 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 2px;
 }
 .property-content .room-price strong {
    font-size: 1.05rem;
@@ -212,8 +211,50 @@ h2 {
 	  height: 80px;
 	}
 	
+.property-slider-wrap .property-item {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px          /* 부모 컨테이너(슬라이더)가 허용하는 최대 높이로 늘리기 */
+}
 
+.property-slider-wrap .property-item .img {
+    flex: none !important;
+  width: 100% !important;
+  height: 240px !important;
+}
 
+.property-slider-wrap .property-item .property-content {
+  flex: 1;               /* 남은 공간 전부 채우기 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 제목·별점 영역과 하단 가격·하트 버튼을 위아래로 분리 */
+}
+
+.property-content .room-addr {
+  line-height: 1.2em;               /* 한 줄의 높이 */
+  min-height: calc(1.2em * 2);      /* 2줄 분량 만큼 항상 확보 */
+  
+  /* mb-2 클래스가 이미 margin-bottom: .5rem 을 주고 있으니 추가 여백 필요 없을 겁니다 */
+}
+
+.property-slider {
+  /* tiny-slider 가 쓰는 tns-item 들을 flex 컨테이너로 감쌌을 때 */
+  display: flex !important;
+}
+
+.property-item .img {
+  display: block;
+  width: 100%;
+}
+
+/* img-fluid 가 물려준 display/height:auto 등을 덮어씌우고, object-fit으로 꽉 채우기 */
+.property-item .img img {
+ display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center; /* 가운데 중심으로 자를 때 유용합니다 */
+}
 	</style>
 
 
@@ -252,19 +293,19 @@ h2 {
 </div>
 
 
-    <div class="section">
+<div class="section">
   <div class="container">
     <div class="row mb-5 align-items-center">
       <div class="col-lg-6">
         <h2 class="font-weight-bold text-primary heading">
-          Popular Properties
+          신규등록공간
         </h2>
       </div>
       <div class="col-lg-6 text-lg-end">
         <p>
           <a href="${pageContext.request.contextPath}/room"
              class="btn btn-primary text-white py-3 px-4">
-            View all properties
+            모든공간보기
           </a>
         </p>
       </div>
@@ -274,66 +315,68 @@ h2 {
         <div class="property-slider-wrap">
           <div class="property-slider">
             <c:forEach var="newList" items="${roomList}">
-  <div class="property-item">
-    <!-- 1) 클릭 가능한 썸네일 -->
-    <a href="${pageContext.request.contextPath}/room/detail?roomSeq=${newList.roomSeq}" class="img">
-      <img src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
-           onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
-           alt="${newList.roomTitle}"
-           class="img-fluid" />
-    </a>
+              <div class="property-item">
+                <!-- 1) 클릭 가능한 썸네일 -->
+                <a href="${pageContext.request.contextPath}/room/detail?roomSeq=${newList.roomSeq}"
+                   class="img">
+                  <img
+                    src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
+                    onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+                    alt="${newList.roomTitle}"
+                    class="img-fluid"
+                  />
+                </a>
 
-    <!-- 2) 카드 하단 정보 -->
-    <div class="property-content">
-      <div class="price mb-2">
-        <span>
-          <fmt:formatNumber value="${newList.weekdayAmt}" pattern="#,###" />원
-        </span>
-      </div>
-      <div>
-        <span class="d-block mb-2 text-black-50">
-          ${newList.roomAddr}
-        </span>
-        <span class="city d-block mb-3">
-          ${newList.roomTitle}
-        </span>
-        <div class="specs d-flex mb-4">
-          <span class="d-block d-flex align-items-center me-3">
-            <span class="caption">⭐ ${newList.averageRating}</span>&nbsp;
-          <span class="caption">(${newList.reviewCount}명)</span>
-          </span>
-        </div>
-        <div class="room-price">
-          <strong>
-            <fmt:formatNumber value="${newList.weekdayAmt}" pattern="#,###" />원~
-          </strong>
-          <c:set var="isWished" value="false"/>
-          <c:forEach var="seq" items="${wishSeqs}">
-            <c:if test="${seq eq newList.roomSeq}">
-              <c:set var="isWished" value="true"/>
-            </c:if>
-          </c:forEach>
-          <!-- 3) 하트 토글 버튼 -->
-          <button class="wish-heart" data-wished="${isWished}"
-                  onclick="toggleWish(${newList.roomSeq}, this)">
-            <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</c:forEach>
-
+                <!-- 2) 카드 하단 정보 -->
+                <div class="property-content">
+                  <div>
+                    <span class="d-block mb-2 text-black-50 room-addr">
+                      ${newList.roomAddr}
+                    </span>
+                    <span class="city d-block mb-3">
+                      ${newList.roomTitle}
+                    </span>
+                    <div class="specs d-flex mb-4">
+                      <span class="d-block d-flex align-items-center me-3">
+                        <span class="caption">⭐ ${newList.averageRating}</span>&nbsp;
+                        <span class="caption">(${newList.reviewCount}명)</span>
+                      </span>
+                    </div>
+                    <div class="room-price">
+                      <strong>
+                        <fmt:formatNumber value="${newList.weekdayAmt}" pattern="#,###" />원~
+                      </strong>
+                      <c:set var="isWished" value="false" />
+                      <c:forEach var="seq" items="${wishSeqs}">
+                        <c:if test="${seq eq newList.roomSeq}">
+                          <c:set var="isWished" value="true" />
+                        </c:if>
+                      </c:forEach>
+                      <!-- 3) 하트 토글 버튼 -->
+                      <button class="wish-heart"
+                              data-wished="${isWished}"
+                              onclick="toggleWish(${newList.roomSeq}, this)">
+                        <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </c:forEach>
           </div>
-          <div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
-            <span class="prev" data-controls="prev" aria-controls="property">Prev</span>
-            <span class="next" data-controls="next" aria-controls="property">Next</span>
+          <div id="property-nav"
+               class="controls"
+               tabindex="0"
+               aria-label="Carousel Navigation">
+            <span class="prev" data-controls="prev" aria-controls="property">◀</span>
+            <span class="next" data-controls="next" aria-controls="property">▶</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 
     <section class="features-1">
       <div class="container">
@@ -386,139 +429,54 @@ h2 {
       </div>
     </section>
 
-    <div class="section sec-testimonials">
-      <div class="container">
-        <div class="row mb-5 align-items-center">
-          <div class="col-md-6">
-            <h2 class="font-weight-bold heading text-primary mb-4 mb-md-0">
-              Customer Says
-            </h2>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <div id="testimonial-nav">
-              <span class="prev" data-controls="prev">Prev</span>
-
-              <span class="next" data-controls="next">Next</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-lg-4"></div>
-        </div>
-        <div class="testimonial-slider-wrap">
-          <div class="testimonial-slider">
-            <div class="item">
-              <div class="testimonial">
-                <img
-                  src="/resources/images/person_1-min.jpg"
-                  alt="Image"
-                  class="img-fluid rounded-circle w-25 mb-4"
-                />
-                <div class="rate">
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                </div>
-                <h3 class="h5 text-primary mb-4">James Smith</h3>
-                <blockquote>
-                  <p>
-                    &ldquo;Far far away, behind the word mountains, far from the
-                    countries Vokalia and Consonantia, there live the blind
-                    texts. Separated they live in Bookmarksgrove right at the
-                    coast of the Semantics, a large language ocean.&rdquo;
-                  </p>
-                </blockquote>
-                <p class="text-black-50">Designer, Co-founder</p>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="testimonial">
-                <img
-                  src="/resources/images/person_2-min.jpg"
-                  alt="Image"
-                  class="img-fluid rounded-circle w-25 mb-4"
-                />
-                <div class="rate">
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                </div>
-                <h3 class="h5 text-primary mb-4">Mike Houston</h3>
-                <blockquote>
-                  <p>
-                    &ldquo;Far far away, behind the word mountains, far from the
-                    countries Vokalia and Consonantia, there live the blind
-                    texts. Separated they live in Bookmarksgrove right at the
-                    coast of the Semantics, a large language ocean.&rdquo;
-                  </p>
-                </blockquote>
-                <p class="text-black-50">Designer, Co-founder</p>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="testimonial">
-                <img
-                  src="/resources/images/person_3-min.jpg"
-                  alt="Image"
-                  class="img-fluid rounded-circle w-25 mb-4"
-                />
-                <div class="rate">
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                </div>
-                <h3 class="h5 text-primary mb-4">Cameron Webster</h3>
-                <blockquote>
-                  <p>
-                    &ldquo;Far far away, behind the word mountains, far from the
-                    countries Vokalia and Consonantia, there live the blind
-                    texts. Separated they live in Bookmarksgrove right at the
-                    coast of the Semantics, a large language ocean.&rdquo;
-                  </p>
-                </blockquote>
-                <p class="text-black-50">Designer, Co-founder</p>
-              </div>
-            </div>
-
-            <div class="item">
-              <div class="testimonial">
-                <img
-                  src="/resources/images/person_4-min.jpg"
-                  alt="Image"
-                  class="img-fluid rounded-circle w-25 mb-4"
-                />
-                <div class="rate">
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                </div>
-                <h3 class="h5 text-primary mb-4">Dave Smith</h3>
-                <blockquote>
-                  <p>
-                    &ldquo;Far far away, behind the word mountains, far from the
-                    countries Vokalia and Consonantia, there live the blind
-                    texts. Separated they live in Bookmarksgrove right at the
-                    coast of the Semantics, a large language ocean.&rdquo;
-                  </p>
-                </blockquote>
-                <p class="text-black-50">Designer, Co-founder</p>
-              </div>
-            </div>
-          </div>
+<div class="section sec-testimonials">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-md-6">
+        <h2 class="heading text-primary">최근등록후기</h2>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div id="testimonial-nav" class="d-inline-flex gap-3">
+          <button type="button" class="prev btn btn-sm btn-outline-secondary">◀</button>
+          <button type="button" class="next btn btn-sm btn-outline-secondary">▶</button>
         </div>
       </div>
     </div>
+    <div class="testimonial-slider-wrap position-relative">
+      <div class="testimonial-slider">
+        <c:forEach var="rev" items="${reviewList}">
+          <div class="item">
+            <div class="testimonial text-center p-4">
+              <div class="mb-3">
+                <img
+                  src="${pageContext.request.contextPath}/resources/upload/userprofile/${rev.userId}.${rev.profImgExt}"
+                  onerror="this.src='${pageContext.request.contextPath}/resources/upload/userprofile/회원.png'"
+                  class="rounded-circle"
+                  width="50" height="50"
+                />
+                <strong class="d-block mt-2">${rev.userNickname}</strong>
+              </div>
+              <div class="mb-3">
+                <img
+                  src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
+                  onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+                  class="img-fluid rounded"
+                  style="max-height:200px; object-fit:cover;"
+                />
+              </div>
+              <blockquote class="mb-2">&ldquo;${rev.reviewContent}&rdquo;</blockquote>
+              <div class="fw-bold mb-1">${rev.roomTitle} (${rev.roomTypeTitle})</div>
+              <div class="text-muted small">${rev.roomAddr}</div>
+            </div>
+          </div>
+        </c:forEach>
+      </div>
+      <!-- 네비게이션 도트가 들어갈 컨테이너 -->
+      <div class="testimonial-dots text-center mt-4"></div>
+    </div>
+  </div>
+</div>
+
 
     <div class="section section-4 bg-light">
       <div class="container">
@@ -940,6 +898,7 @@ h2 {
 
     </script>
     
+
     
     <%@ include file="/WEB-INF/views/include/footer.jsp" %>
   </body>
