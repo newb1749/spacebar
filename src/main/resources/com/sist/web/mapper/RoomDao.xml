@@ -23,6 +23,9 @@
       <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
       <result column="AMT" property="amt" />
       <result column="ROOM_IMAGE_NAME" property="roomImageName" />
+      
+      <result column="WEEKDAY_AMT" property="weekdayAmt" />
+      <result column="ROOM_IMG_NAME" property="roomImgName" />
   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
@@ -36,6 +39,40 @@
 		<result column="ROOM_IMG_NAME" property="roomImgName" />
 		<result column="REG_DT" property="regDt" />
   </resultMap>
+  
+  <select id="newRoomList" resultMap="roomResultMap">
+  		SELECT ROOM_SEQ,
+           ROOM_ADDR,
+           ROOM_TITLE,
+           AVERAGE_RATING,
+           REVIEW_COUNT,
+           ROOM_IMG_NAME,
+           WEEKDAY_AMT
+	    FROM (
+	      SELECT 
+	        A.ROOM_SEQ        AS ROOM_SEQ,
+	        A.ROOM_ADDR       AS ROOM_ADDR,
+	        A.ROOM_TITLE      AS ROOM_TITLE,
+	        A.AVERAGE_RATING  AS AVERAGE_RATING,
+	        A.REVIEW_COUNT    AS REVIEW_COUNT,
+	        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+	        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+	        ROW_NUMBER() OVER (
+	          PARTITION BY A.ROOM_SEQ 
+	          ORDER BY B.WEEKDAY_AMT ASC
+	        ) AS rn
+	      FROM ROOM A
+	      JOIN ROOM_IMAGE C
+	        ON A.ROOM_SEQ = C.ROOM_SEQ
+	       AND C.IMG_TYPE = 'main'
+	      JOIN ROOM_TYPE B
+	        ON A.ROOM_SEQ = B.ROOM_SEQ
+	    )
+	    WHERE rn = 1
+	      AND ROWNUM <![CDATA[<=]]>  9
+	    ORDER BY ROOM_SEQ
+  				
+  </select>
     
 	  <insert id="insertRoom" parameterType="com.sist.web.model.Room">
 	  		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
