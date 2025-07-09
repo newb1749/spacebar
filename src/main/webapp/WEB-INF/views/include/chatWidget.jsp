@@ -302,7 +302,7 @@ $(document).ready(function() {
 	                    '<div class="chat-room-info" style="flex-grow:1; margin-left:10px;">' +
 	                        '<div class="info-header" style="display:flex; justify-content:space-between;">' +
 	                            '<strong style="font-size:16px;">' + room.otherUserNickname + '</strong>' +
-	                            '<small style="color:#999;">' + new Date(room.lastMessageDate).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}) + '</small>' +
+	                            '<small style="color:#999;">' + formatLastMessageTime(room.lastMessageDate) + '</small>'+
 	                        '</div>' +
 	                        '<div class="last-message" style="display:flex; justify-content:space-between; margin-top:4px;">' +
 	                            '<span style="color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + room.lastMessage + '</span>' +
@@ -336,7 +336,7 @@ $(document).ready(function() {
 	// 6. 메시지창
     function createMessageHtml(message) {
         const sendDate = new Date(message.sendDate);
-        const formattedDate = sendDate.toLocaleString('ko-KR');
+        const formattedDate = formatLastMessageTime(message.sendDate);
         let messageClass = message.senderId === USER_ID ? 'my-message' : 'other-message';
 
         let profileImgHtml = '';
@@ -386,6 +386,32 @@ $(document).ready(function() {
         chatModalContent.html(messagesHtml);
         chatModalContent.scrollTop(chatModalContent[0].scrollHeight);
     }
+	
+	
+	// 8. 최근 메시지 시간 
+	function formatLastMessageTime(timestamp) {
+	    const now = new Date();
+	    const messageDate = new Date(timestamp);
+	
+	    const isToday = now.toDateString() === messageDate.toDateString();
+	
+	    const yesterday = new Date();
+	    yesterday.setDate(now.getDate() - 1);
+	    const isYesterday = yesterday.toDateString() === messageDate.toDateString();
+	
+	    if (isToday) {
+	        // 오늘이면 시:분 (오전/오후 포함)
+	        return messageDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+	    } else if (isYesterday) {
+	        return '어제';
+	    } else {
+	        // 과거면 yyyy.MM.dd 형식
+	        return messageDate.getFullYear() + '.' +
+	               String(messageDate.getMonth() + 1).padStart(2, '0') + '.' +
+	               String(messageDate.getDate()).padStart(2, '0');
+	    }
+	}
+
 
     // ========================================================
     // 서버 통신 함수
