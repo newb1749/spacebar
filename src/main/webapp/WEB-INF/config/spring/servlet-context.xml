@@ -19,6 +19,7 @@
 		 				   
 	<!-- 어노테이션 service, controller 스캔 시작 -->	
 	<context:component-scan base-package="com.sist.web.controller" />
+	<context:component-scan base-package="com.sist.web.config" />
     <!-- 어노테이션 service, controller 스캔 종료 -->
         
     <!--
@@ -38,14 +39,14 @@
     
      <mvc:annotation-driven />
      
-     
+    <!-- 
     <websocket:message-broker application-destination-prefix="/app">
         <websocket:stomp-endpoint path="/ws-chat">
             <websocket:sockjs />
         </websocket:stomp-endpoint>
         <websocket:simple-broker prefix="/topic" />
     </websocket:message-broker>
-
+	 -->
 	<task:annotation-driven />    
     
     

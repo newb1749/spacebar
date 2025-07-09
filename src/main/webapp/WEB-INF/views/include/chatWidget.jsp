@@ -172,6 +172,9 @@
 	
 <script>
 $(document).ready(function() {
+	
+	let socketConnected = false; // 전역 변수처럼 한 번만 선언
+
     // ========================================================
     // 전역 변수 및 jQuery 객체
     // ========================================================
@@ -194,33 +197,34 @@ $(document).ready(function() {
     // ========================================================
     // UI 렌더링 함수
     // ========================================================
+	
+    connect();
+    
 
     	
     // 1. 웹소켓 연결 및 개인 알림 채널 구독 (모달 열 때 최초 1회 실행)
     function connect() {
-        if (stompClient && stompClient.connected) return;
+    if (stompClient && stompClient.connected) return;
 
-        const socket = new SockJS('/ws-chat');
-        stompClient = Stomp.over(socket);
-        
-        stompClient.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            
-            // 연결 성공 시, 즉시 내 개인 알림 채널을 구독
-            const userPrivateTopic = '/topic/user/' + USER_ID;
-            console.log('Subscribing to private topic: ' + userPrivateTopic);
-            
-            userSubscription = stompClient.subscribe(userPrivateTopic, function(message) {
-                console.log("Received chat list update notification:", message.body);
-                // "update" 신호가 오면, 채팅 목록을 새로고침합니다.
-                // 단, 현재 채팅방에 들어가 있는 상태가 아닐 때만 실행
-                if (!currentRoomSeq) {
-                    fetchChatList();
-                }
-            });
-        });
-    }
-    
+    const socket = new SockJS('/ws-chat');
+    stompClient = Stomp.over(socket);
+
+	    stompClient.connect({}, function(frame) {
+	        console.log('Connected: ' + frame);
+	
+	        // /user/queue/update 구독 추가!! 
+	        // 채팅방 목록에서 실시간 채팅 받기
+	        stompClient.subscribe('/user/queue/update', function(notification) {
+	            console.log('[실시간 목록 알림 도착]', notification.body);
+	            
+	            // 전체 목록 새로고침 (혹은 updateChatListItem(notification.body) 등으로 개별 반영 가능)
+	            fetchChatList();
+	        });
+
+    	});
+	}
+
+    // 2. 구독.  1:1 채팅방이라 1명만 구독
     function subscribeToRoom() {
     	        if (currentSubscription) { currentSubscription.unsubscribe(); }
     	        
@@ -261,7 +265,7 @@ $(document).ready(function() {
         });
     }
 
-	// 4. 채팅방 목록을 그리는 함수 수정
+	// 4. 채팅방 목록
 	function renderChatList(rooms) {
 	    const chatModalContent = $('#chat-modal-content');
 	    chatModalContent.empty();
@@ -310,7 +314,8 @@ $(document).ready(function() {
 	    listHtml += '</ul>';
 	    chatModalContent.html(listHtml);
 	}
-
+	
+	// 5. 유저 리스트(검색시)
     function renderUserList(users) {
         const userListDiv = $('#user-search-results');
         userListDiv.empty();
@@ -327,7 +332,8 @@ $(document).ready(function() {
         userListHtml += '</ul>';
         userListDiv.html(userListHtml);
     }
-
+	
+	// 6. 메시지창
     function createMessageHtml(message) {
         const sendDate = new Date(message.sendDate);
         const formattedDate = sendDate.toLocaleString('ko-KR');
@@ -365,7 +371,8 @@ $(document).ready(function() {
                    '</div>';
         }
     }
-
+	
+	// 7. 채팅방
     function renderChatRoom(roomSeq, roomTitle, messages) {
         chatModalTitle.text(roomTitle);
         backToListBtn.show();
@@ -408,42 +415,7 @@ $(document).ready(function() {
     }
 
 
-    function connectAndSubscribe() {
-        if (stompClient && stompClient.connected) {
-            subscribeToRoom();
-            return;
-        }
-        const socket = new SockJS('/ws-chat');
-        stompClient = Stomp.over(socket);
-        
-        stompClient.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            
-            // 1. 기존의 채팅방 토픽을 구독합니다 (이 부분은 enterChatRoom에서 호출될 때만 실행됨).
-            //    따라서 이 함수 자체를 수정하기보다, 구독 로직을 분리하는 것이 좋습니다.
-            //    하지만 현재 구조를 유지하기 위해, 여기서는 개인 채널 구독만 추가합니다.
-            
-            // 2. [추가] 내 개인 알림 채널을 구독합니다.
-            // 이 채널은 채팅 위젯이 열리는 동안 항상 연결을 유지합니다.
-            const userPrivateTopic = '/topic/user/' + USER_ID; // 전역 변수 USER_ID 사용
-            console.log('Subscribing to private topic: ' + userPrivateTopic);
-            
-            stompClient.subscribe(userPrivateTopic, function(message) {
-                // 이 채널로 "update" 신호가 오면,
-                console.log("Received chat list update notification:", message.body);
-                
-                // 그냥 채팅방 목록 API를 다시 호출하여 화면을 새로고침합니다.
-                fetchChatList();
-            });
-
-            // 만약 채팅방에 이미 들어가 있는 상태라면, 해당 방도 구독합니다.
-            if(currentRoomSeq) {
-                subscribeToRoom();
-            }
-        });
-    }
-
-
+ 
 
     function sendStompMessage() {
         const messageInput = $('#chat-message-input');
@@ -462,14 +434,20 @@ $(document).ready(function() {
     // 이벤트 핸들러 바인딩
     // ========================================================
     
-    $('#chat-fab').on('click', function() {
-        if (chatModal.is(':visible')) {
-            chatModal.fadeOut(200);
-        } else {
-            fetchChatList();
-            chatModal.fadeIn(200);
-        }
-    });
+	$('#chat-fab').on('click', function() {
+	    if (chatModal.is(':visible')) {
+	        chatModal.fadeOut(200);
+	    } else {
+	        fetchChatList();
+	        chatModal.fadeIn(200);
+	
+	        // ✅ WebSocket 연결 및 개인 큐 구독 (최초 1회만)
+	        if (!socketConnected) {
+	            connect(); // ★여기서 connect()만 호출하면 됨
+	            socketConnected = true;
+	        }
+	    }
+	});
 
     $('#close-chat-modal-btn').on('click', function() {
         $('#chat-modal').fadeOut(200);

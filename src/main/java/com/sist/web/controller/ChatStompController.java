@@ -1,5 +1,6 @@
 package com.sist.web.controller;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,60 +44,45 @@ public class ChatStompController {
      * WebSocket/STOMP를 통해 들어오는 메시지를 처리.
     */
     @MessageMapping("/chat/sendMessage/{chatRoomSeq}")
-    public void sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage) 
-    {
+    @SendTo("/topic/chat/room/{chatRoomSeq}") // 1. 채팅방의 모두에게 새 메시지 전송(1:N)
+public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage, @Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         
-        logger.debug("STOMP Message Received: {}", chatMessage.getMessageContent());
+        // 1. Principal 객체에서 현재 사용자 ID를 가져옵니다. (HandshakeInterceptor 덕분에 가능)
+    	String senderId = (String) sessionAttributes.get("sessionUserId");
+        chatMessage.setSenderId(senderId);
         
-        // senderId는 클라이언트가 보낸 chatMessage 객체에서 직접 가져옵니다.
-        String senderId = chatMessage.getSenderId();
-   
-        
-        // senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
         User sender = userService.userSelect(senderId);
-        
-        if(sender != null)
-        {
+        if(sender != null) {
             chatMessage.setSenderName(sender.getNickName());
-            chatMessage.setSenderProfileImgExt(sender.getProfImgExt()); // 프로필 이미지 확장자 설정
+            chatMessage.setSenderProfileImgExt(sender.getProfImgExt());
         }
-        else
-        {
-            logger.warn("Cannot find user with ID: " + senderId);
-            chatMessage.setSenderName("알수없음");
-        }
-
-        // 방 번호와 서버 시간 설정
+       
+        logger.debug("[DEBUG] senderId = " + senderId);
+        
         chatMessage.setChatRoomSeq(chatRoomSeq);
         chatMessage.setSendDate(new Date());
         
-        // 메시지를 DB에 저장
         chatService.sendMessage(chatMessage);
         
-        // @SendTo 대신, 메시징 템플릿으로 직접 메시지를 보냄
-        // 목적지 주소를 동적으로 만듦
-        String destination = "/topic/chat/room/" + chatRoomSeq;
-        
-        // 해당 목적지를 구독하는 모든 클라이언트에게 chatMessage 객체를 JSON으로 변환하여 보냄
-        messagingTemplate.convertAndSend(destination, chatMessage);
-        
-        /*
-        // 채팅방의 '모든' 참여자에게 목록 업데이트 알림 전송
+        // 2. 상대방에게만 "목록 업데이트" 알림을 개인 큐로 전송합니다.
         List<String> userIds = chatService.findUserIdsByRoomSeq(chatRoomSeq);
-        
-        if (userIds != null) 
-        {
-            for (String userId : userIds) 
-            {
-            	// 참여자의 ID가 메시지를 보낸 사람의 ID와 같지 않을 때만 알림을 보냅니다.
+        if (userIds != null) {
+            for (String userId : userIds) {
+            	logger.debug("[DEBUG] userId = {}, senderId = {}", userId, senderId);
+
                 if (!userId.equals(senderId)) {
-                    String userDestination = "/topic/user/" + userId;
-                    messagingTemplate.convertAndSend(userDestination, "update");
-                    logger.debug("Sent update notification to OTHERS: {}", userDestination);
+                	// convertAndSendToUser 사용하려면 WebSocket 세션에 principal 필요하다...
+                    // simpMessagingTemplate.convertAndSendToUser()를 사용합니다.
+                	logger.debug("Sending to /user/{}/queue/update", userId);
+                	// convertAndSendToUser는 userId가 이미 WebSocket 연결 + /user/queue/update 구독 중이어야 수신 가능
+                    messagingTemplate.convertAndSendToUser(userId, "/queue/update", "new_message");
+                    logger.debug("Sent update notification to user: {}", userId);
                 }
-            }	
+            }
         }
-        */
+        
+        // 3. @SendTo를 통해 모든 구독자에게 메시지 객체를 반환합니다.
+        return chatMessage;
     }
     
     
