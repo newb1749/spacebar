@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
 
 public interface RoomTypeDao {
@@ -27,5 +28,5 @@ public interface RoomTypeDao {
      */
     RoomType selectRoomTypeBySeq(int roomTypeSeq);
 
-    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
+    List<RoomType> selectRoomTypesByRoomSeq(Room room);
 }
