@@ -96,4 +96,22 @@ public class ChatService {
     }
     
     
+    /**
+     * 채팅방 참여자 ID 목록을 조회
+     * @param chatRoomSeq 채팅방 시퀀스
+     * @return 사용자 ID 목록
+     */
+    public List<String> findUserIdsByRoomSeq(int chatRoomSeq) 
+    {
+        try 
+        {
+            return chatDao.findUserIdsByRoomSeq(chatRoomSeq);
+        } 
+        catch (Exception e) 
+        {
+            logger.error("[ChatService] findUserIdsByRoomSeq Exception", e);
+            return null;
+        }
+    }
+    
 }
