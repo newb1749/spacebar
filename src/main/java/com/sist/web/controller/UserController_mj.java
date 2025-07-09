@@ -23,6 +23,7 @@ import com.sist.web.model.Cart;
 import com.sist.web.model.Coupon;
 import com.sist.web.model.FreeBoard;
 import com.sist.web.model.MileageHistory;
+import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
 import com.sist.web.model.User;
 import com.sist.web.model.Wishlist;
@@ -31,6 +32,7 @@ import com.sist.web.service.CouponServiceJY;
 import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
+import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.HttpUtil;
@@ -47,6 +49,9 @@ public class UserController_mj
 	
 	@Autowired
 	private CouponServiceJY couponService;
+	
+	@Autowired
+	private ReservationServiceJY reservationService;
 	
 	@Autowired
 	private MileageHistoryService mileageHistoryService;
@@ -588,7 +593,14 @@ public class UserController_mj
 		List<Coupon> coupon = couponService.getAllCoupons();
 		model.addAttribute("coupon", coupon);
 		
-		//결제 정보
+		//예약 정보
+		List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
+		for (Reservation r : reservations) {
+		    System.out.println("체크인: " + r.getRsvCheckInDateObj());
+		    System.out.println("체크아웃: " + r.getRsvCheckOutDateObj());
+		}
+		
+		model.addAttribute("reservations", reservations);
 		
 		
 		//마일리지 조회 내역
@@ -603,7 +615,7 @@ public class UserController_mj
 		FreeBoard freeboard = new FreeBoard();
 		freeboard.setUserId(sessionUserId);
 		
-		List<FreeBoard> freeBoard = freeBoardService.boardList(freeboard);
+		List<FreeBoard> freeBoard = freeBoardService.boardListByUser(sessionUserId);
 		model.addAttribute("freeBoard", freeBoard);
 		
 		//위시리스트 정보
@@ -615,8 +627,16 @@ public class UserController_mj
 		
 		//장바구니 정보
 	    List<Cart> cartList = cartService.cartList(sessionUserId);
+
+	    // 총 금액 계산
+	    int cartTotalAmt = 0;
+	    if (cartList != null && !cartList.isEmpty()) 
+	    {
+	        cartTotalAmt = cartList.stream().mapToInt(Cart::getCartTotalAmt).sum();
+	    }
+
 	    model.addAttribute("cartList", cartList);
-		
+	    model.addAttribute("cartTotalAmt", cartTotalAmt);
 		
 		return "/user/myPage_mj";
 	}

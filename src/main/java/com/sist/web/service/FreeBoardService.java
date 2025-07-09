@@ -255,4 +255,21 @@ public class FreeBoardService {
     	
     	return count;
     }
+    
+    //게시글 조회(마이페이지용)
+    public List<FreeBoard> boardListByUser(String sessionUserId)
+    {
+    	 List<FreeBoard> list = null;
+    	 
+     	try
+     	{
+     		list = freeBoardDao.boardListByUser(sessionUserId);
+     	}
+     	catch(Exception e)
+     	{
+     		logger.error("[FreeBoardService] boardListByUser Exception : ", e);
+     	}
+    	 
+    	 return list;
+    }
 }
