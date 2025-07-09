@@ -176,7 +176,7 @@ $(document).ready(function() {
 	let socketConnected = false; // 전역 변수처럼 한 번만 선언
 
     // ========================================================
-    // 전역 변수 및 jQuery 객체
+    // 전역 변수 및 jQuery 객체ㅇ
     // ========================================================
     let stompClient = null;
     let currentSubscription = null;
@@ -189,7 +189,7 @@ $(document).ready(function() {
     const chatMessageInput = $('#chat-message-input');
     const backToListBtn = $('#back-to-list-btn');
     
-    // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)
+    // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)ㅇ
     //const USER_ID = "${sessionScope.sessionUserId}";
     const USER_ID = "${userId}";
     const USER_NICKNAME = "<%= ((com.sist.web.model.User)session.getAttribute("loginUser")) != null ? ((com.sist.web.model.User)session.getAttribute("loginUser")).getNickName() : "" %>";

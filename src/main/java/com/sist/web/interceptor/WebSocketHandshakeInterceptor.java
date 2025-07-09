@@ -12,7 +12,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 // SESSION_USER_ID가 없는 경우 Principal이 anonymous 됨
 // 정확히 세션 값 복사
-// 기존 HTTP 세션 정보를 WebSocket 세션에 복사, 둘은 세션이 다름(stateful, stateless)
+// 기존 HTTP 세션 정보를 WebSocket 세션에 복사, 둘은 세션이 다름(stateful, stateless)ㅇ
 // 사용하는 이유? @MessageMapping 메서드에서 세션 사용자 정보 접근하려고
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 

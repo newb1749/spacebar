@@ -10,7 +10,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-// WebSocket 세션에 Principal 정보를 강제로 주입해주는 클래스
+// WebSocket 세션에 Principal 정보를 강제로 주입해주는 클래스ㅇ
 // convertAndSendToUser 사용하려면 WebSocket 세션에 principal 필요하다...
 public class CustomHandshakeHandler extends DefaultHandshakeHandler {
     @Override

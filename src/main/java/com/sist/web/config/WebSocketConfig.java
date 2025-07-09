@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import com.sist.web.interceptor.WebSocketHandshakeInterceptor;
 
 @Configuration
-@EnableWebSocketMessageBroker	// STOMP 메시징을 사용하도록 활성화
+@EnableWebSocketMessageBroker	// STOMP 메시징을 사용하도록 활성화ㅇ
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 	
     @Override

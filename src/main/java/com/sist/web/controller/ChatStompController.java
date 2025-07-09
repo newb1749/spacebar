@@ -44,7 +44,7 @@ public class ChatStompController {
      * WebSocket/STOMP를 통해 들어오는 메시지를 처리.
     */
     @MessageMapping("/chat/sendMessage/{chatRoomSeq}")
-    @SendTo("/topic/chat/room/{chatRoomSeq}") // 1. 채팅방의 모두에게 새 메시지 전송(1:N)
+    @SendTo("/topic/chat/room/{chatRoomSeq}") // 1. 채팅방의 모두에게 새 메시지 전송(1:N)ㅇ
 public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMessage chatMessage, @Header("simpSessionAttributes") Map<String, Object> sessionAttributes) {
         
         // 1. Principal 객체에서 현재 사용자 ID를 가져옵니다. (HandshakeInterceptor 덕분에 가능)
