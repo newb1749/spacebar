@@ -657,7 +657,7 @@ function fn_roomDetail(roomSeq)
 
 <!-- 여기에 로딩 메시지 -->
 <div id="loadingIndicator" style="display:none; text-align:center; padding:16px; color:#555;">
-  로딩중… 잠시만 기다려주세요
+  로딩중…   잠시만 기다려주세요
 </div>
   <!-- ✅ 페이지네이션 
   <nav>
