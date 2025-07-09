@@ -28,5 +28,5 @@
 		  </button>
       </div>
     </div>
-  </div>
-</c:forEach>
+    </a>
+  </c:forEach>
