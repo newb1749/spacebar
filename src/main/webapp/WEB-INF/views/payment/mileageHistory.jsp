@@ -14,9 +14,9 @@
       padding-top: 230px;
     }
     .container {
-      max-width: 960px;  /* 기존 720px에서 더 넓게 */
-      width: 90%;        /* 브라우저 너비 대비 90% 사용 */
-      margin: 0 auto;    /* 가운데 정렬 유지 */
+      max-width: 960px;
+      width: 90%;
+      margin: 0 auto;
     }
     .info-box {
       background: #f9f9f9;
@@ -26,26 +26,25 @@
       margin-bottom: 60px;
     }
     .table {
-      font-size: 1.1rem; /* 글씨 크기 키움 */
+      font-size: 1.1rem;
     }
     .alert strong {
-      font-size: 1.3rem; /* 충전 완료 메시지 크기 (숫자와 원 모두 포함) */
+      font-size: 1.3rem;
     }
     .btn {
-      font-size: 1.1rem; /* 원하는 크기로 조절하세요 */
-      padding: 0.5rem 1.2rem; /* 버튼 크기도 약간 키우는 게 좋음 */
+      font-size: 1.1rem;
+      padding: 0.5rem 1.2rem;
     }
     .table td.amount {
       text-align: right;
       padding-right: 12px;
     }
     .table td {
-      vertical-align: middle; /* 수직 가운데 정렬 */
+      vertical-align: middle;
     }
-    .table td:nth-child(1), /* 거래 일시 */
-    .table td:nth-child(2)  /* 거래 유형 */ 
-    {
-      text-align: center; /* 수평 가운데 정렬 */
+    .table td:nth-child(1),
+    .table td:nth-child(2) {
+      text-align: center;
     }
   </style>
 </head>
@@ -80,7 +79,22 @@
         <c:forEach var="entry" items="${mileageHistoryList}">
           <tr>
             <td><fmt:formatDate value="${entry.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-            <td><c:out value="${entry.trxType}" /></td>
+            <td>
+			  <c:choose>
+				  <c:when test="${entry.trxType eq '충전'}">
+				    <span class="badge bg-success">충전</span>
+				  </c:when>
+				  <c:when test="${entry.trxType eq '결제'}">
+				    <span class="badge bg-danger">결제</span>
+				  </c:when>
+				  <c:when test="${entry.trxType eq '환불'}">
+				    <span class="badge bg-info text-dark">환불</span>
+				  </c:when>
+				  <c:otherwise>
+				    <span class="badge bg-secondary"><c:out value="${entry.trxType}" /></span>
+				  </c:otherwise>
+			</c:choose>
+			</td>
             <td class="amount"><fmt:formatNumber value="${entry.trxAmt}" groupingUsed="true" /> 원</td>
             <td class="amount"><fmt:formatNumber value="${entry.balanceAfterTrx}" groupingUsed="true" /> 원</td>
           </tr>
