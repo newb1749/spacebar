@@ -11,40 +11,54 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <style>
     body {
-      padding-top: 230px;
+      padding-top: 80px;
+      background-color: #f8f9fa;
+    }
+    h2 {
+      margin-top: 120px;
+      text-align: left !important;
+    }
+    .alert strong {
+      font-size: 30px;
     }
     .container {
       max-width: 960px;
-      width: 90%;
       margin: 0 auto;
     }
     .info-box {
       background: #f9f9f9;
       padding: 20px;
       border-radius: 8px;
-      margin-top: 20px;
+      margin-top: -30px;
       margin-bottom: 60px;
     }
-    .table {
+    .table-wrapper {
+      margin: 0 -20px; /* 표 가로 여백 줄이기 */
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
       font-size: 1.1rem;
     }
-    .alert strong {
-      font-size: 1.3rem;
+    .table thead tr {
+      background-color: #343a40;
     }
-    .btn {
-      font-size: 1.1rem;
-      padding: 0.5rem 1.2rem;
+    .table thead tr th {
+      color: #fff;
+      text-align: center;
+    }
+    .table td {
+      text-align: center;
+      vertical-align: middle;
     }
     .table td.amount {
       text-align: right;
       padding-right: 12px;
     }
-    .table td {
-      vertical-align: middle;
-    }
-    .table td:nth-child(1),
-    .table td:nth-child(2) {
-      text-align: center;
+    .btn {
+      font-size: 1.1rem;
+      padding: 0.5rem 1.2rem;
+      margin-left: 10px;
     }
   </style>
 </head>
@@ -66,47 +80,49 @@
   </c:if>
 
   <div class="info-box">
-    <table class="table table-bordered">
-      <thead class="table-light">
-        <tr>
-          <th>거래 일시</th>
-          <th>거래 유형</th>
-          <th class="text-end">거래 금액</th>
-          <th class="text-end">거래 후 잔액</th>
-        </tr>
-      </thead>
-      <tbody>
-        <c:forEach var="entry" items="${mileageHistoryList}">
+    <div class="table-wrapper">
+      <table class="table table-bordered">
+        <thead>
           <tr>
-            <td><fmt:formatDate value="${entry.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-            <td>
-			  <c:choose>
-				  <c:when test="${entry.trxType eq '충전'}">
-				    <span class="badge bg-success">충전</span>
-				  </c:when>
-				  <c:when test="${entry.trxType eq '결제'}">
-				    <span class="badge bg-danger">결제</span>
-				  </c:when>
-				  <c:when test="${entry.trxType eq '환불'}">
-				    <span class="badge bg-info text-dark">환불</span>
-				  </c:when>
-				  <c:otherwise>
-				    <span class="badge bg-secondary"><c:out value="${entry.trxType}" /></span>
-				  </c:otherwise>
-			</c:choose>
-			</td>
-            <td class="amount"><fmt:formatNumber value="${entry.trxAmt}" groupingUsed="true" /> 원</td>
-            <td class="amount"><fmt:formatNumber value="${entry.balanceAfterTrx}" groupingUsed="true" /> 원</td>
+            <th>거래 일시</th>
+            <th>거래 유형</th>
+            <th>거래 금액</th>
+            <th>거래 후 잔액</th>
           </tr>
-        </c:forEach>
-        <c:if test="${empty mileageHistoryList}">
-          <tr><td colspan="4" class="text-center">거래 내역이 없습니다.</td></tr>
-        </c:if>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <c:forEach var="entry" items="${mileageHistoryList}">
+            <tr>
+              <td><fmt:formatDate value="${entry.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+              <td>
+                <c:choose>
+                  <c:when test="${entry.trxType eq '충전'}">
+                    <span class="badge bg-success">충전</span>
+                  </c:when>
+                  <c:when test="${entry.trxType eq '결제'}">
+                    <span class="badge bg-danger">결제</span>
+                  </c:when>
+                  <c:when test="${entry.trxType eq '환불'}">
+                    <span class="badge bg-info text-dark">환불</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="badge bg-secondary"><c:out value="${entry.trxType}" /></span>
+                  </c:otherwise>
+                </c:choose>
+              </td>
+              <td class="amount"><fmt:formatNumber value="${entry.trxAmt}" groupingUsed="true" /> 원</td>
+              <td class="amount"><fmt:formatNumber value="${entry.balanceAfterTrx}" groupingUsed="true" /> 원</td>
+            </tr>
+          </c:forEach>
+          <c:if test="${empty mileageHistoryList}">
+            <tr><td colspan="4" class="text-center">거래 내역이 없습니다.</td></tr>
+          </c:if>
+        </tbody>
+      </table>
+    </div>
 
     <div class="mt-3 text-end">
-      <a href="/payment/chargeMileage" class="btn btn-outline-primary me-2">마일리지 충전하기</a>
+      <a href="/payment/chargeMileage" class="btn btn-outline-primary">마일리지 충전하기</a>
       <a href="/reservation/reservationHistoryJY" class="btn btn-outline-secondary">예약 내역 보기</a>
     </div>
   </div>
