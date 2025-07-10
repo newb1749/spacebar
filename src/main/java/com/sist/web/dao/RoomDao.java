@@ -43,11 +43,16 @@ public interface RoomDao {
   	//룸 리스트
   	public List<Room> roomList(Room room);
   	
-  	//최신순
+  	//최신순 숙소
   	public List<Room> newRoomList();
   	
+
+  	//최신순 공간
+  	public List<Room> newSpaceList();
+
   	//편의시설 리스트
   	public List<Facility> facilityList(int roomSeq);
+
 }
 
 

@@ -1,5 +1,8 @@
 package com.sist.web.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +67,27 @@ public class CartController {
         String checkInTime    = HttpUtil.get(request, "rsvCheckInTime", "");
         String checkOutTime   = HttpUtil.get(request, "rsvCheckOutTime", "");
         int    guests         = HttpUtil.get(request, "numGuests", 1);
-        int    totalAmt       = HttpUtil.get(request, "totalAmt", 0);
+        
+        // 1) 룸타입 정보 조회 (service/DAO 에서 WEEKDAY_AMT, WEEKEND_AMT 필드 포함)
+        RoomType rt = roomTypeService.getRoomType(roomTypeSeq);
+        int weekdayAmt = rt.getWeekdayAmt();
+        int weekendAmt = rt.getWeekendAmt();
+        
+        // 2) 날짜 파싱 및 합산
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate start = LocalDate.parse(checkInDt, fmt);
+        LocalDate end   = LocalDate.parse(checkOutDt, fmt);
+        int totalAmt = 0;
+        for (LocalDate d = start; d.isBefore(end); d = d.plusDays(1)) {
+            DayOfWeek dow = d.getDayOfWeek();
+            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY || dow == DayOfWeek.FRIDAY) {
+                totalAmt += weekendAmt;
+            } else {
+                totalAmt += weekdayAmt;
+            }
+        }
+        
+        
 
         Cart cart = new Cart();
         cart.setUserId            (sessionUserId);
