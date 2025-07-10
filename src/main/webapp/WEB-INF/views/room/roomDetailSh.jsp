@@ -9,18 +9,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   
 <style>
-.hero.page-inner.overlay {
-  /* 좌우 마진 20px씩 */
+.section-block {
+  padding: 40px 0;
+  margin-bottom: 40px;
+  border-top: 2px solid #e9ecef;
+}
+
+.section-heading {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 3px solid #007bff;
+  display: inline-block;
+}
+
+.section-bg-light {
+  background-color: #f8f9fa;
+}
+.hero.page-inner {
+  /* 기존 overlay 클래스는 지웠다고 가정합니다 */
   width: calc(100% - 40px) !important;
   margin: 0 auto !important;
 
-  /* 이미지가 잘려서 보이지 않도록 */
+  /* 배경 이미지 고해상도로 꽉 채우기 */
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
 
-  /* 높이는 필요에 따라 조정 */
-  min-height: 300px !important;
+  /* height를 조금 더 크게 조정 (예: 300px → 400px 또는 뷰포트 비율) */
+  min-height: 400px !important;
+  /* 또는 화면의 절반 높이를 사용하려면
+  height: 50vh !important;
+  */
+
+  /* 브라우저 스케일 품질 최적화 (크롬 등에서 고해상도 렌더링) */
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast; /* WebKit 전용 */
 }
 
 
@@ -63,9 +88,17 @@
 <script>
 $(document).ready(function(){
 	$("#btnRoomList").on("click",function(){
+		document.roomForm.personCount.value = $("#_personCount").val();
 		document.roomForm.action = "/room/roomList";
 		document.roomForm.submit();
 	});
+	
+	 $("#reserveBtn").on("click", function(e){
+	    e.preventDefault();  // form submit 방지
+	    $('html, body').animate({
+	      scrollTop: $("#roomTypesSection").offset().top
+	    }, 50);
+	  });
 });
 
 
@@ -92,7 +125,7 @@ $(document).ready(function(){
 </c:choose>
 
 <!-- 한 번만 열고, bgImage 변수 사용 -->
-<div class="hero page-inner overlay"
+<div class="hero page-inner"
      style="background-image: url('${bgImage}');">
   <div class="container text-center mt-5">
     <h1 class="heading" data-aos="fade-up">${room.roomTitle}</h1>
@@ -115,76 +148,122 @@ $(document).ready(function(){
 		    </c:forEach>
 		  </div>
 		</div>
-		<h2 class="text-primary mb-3">${room.roomTitle}</h2>
-          <p class="meta mb-1"><i class="icon-map-marker"></i> ${room.roomAddr} (${room.region})</p>
-          <p class="text-black-50">${room.roomDesc}</p>
+			<section class="room-description section-block section-bg-light">
+			  <div class="container">
+			    <!-- 제목 -->
+			    <h2 class="section-heading text-primary mb-3">${room.roomTitle}</h2>
+			    <!-- 위치 -->
+			    <p class="meta mb-1">
+			      <i class="icon-map-marker"></i>
+			      ${room.roomAddr} (${room.region})
+			    </p>
+			    <!-- 상세 설명 -->
+			    <p class="text-black-50">${room.roomDesc}</p>
+			  </div>
+			</section>
           
-          <!-- 룸타입 리스트 -->
-          <h2>룸타입</h2>
-          <div class="container mt-4">
-  <div class="row g-4">
-    <c:forEach var="rt" items="${roomTypes}">
-      <div class="col-12">
-        <div class="card h-100 border rounded" style="min-height: 220px;">
-          <div class="row g-0">
-            <!-- 이미지 영역: 전체의 30% 너비 -->
-            <div class="col-md-4">
-              <img
-                src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${rt.roomTypeSeq}.jpg"
-                class="img-fluid h-100 w-100 rounded-start"
-                style="object-fit: cover;"
-                alt="${rt.roomTypeTitle}"
-              />
-            </div>
-            <!-- 텍스트 영역: 전체의 70% 너비 -->
-            <div class="col-md-8">
-              <div class="card-body p-3">
-                <!-- 더 큰 제목 -->
-                <h5 class="card-title fs-4 mb-2">${rt.roomTypeTitle}</h5>
-                
-                <!-- 요금 -->
-                <p class="mb-1"><strong>주중:</strong> ${rt.weekdayAmt}원</p>
-                <p class="mb-2"><strong>주말:</strong> ${rt.weekendAmt}원</p>
-                
-                <!-- 설명 (있을 때만) -->
-                <c:if test="${not empty rt.roomTypeDesc}">
-                  <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
-                </c:if>
-                
-                 <!-- 버튼 -->
-            <c:choose>
-              <c:when test="${rt.reservationCheck > 0}">
-                <button type="button"
-                        class="btn btn-secondary mt-3"
-                        disabled>
-                  만실
-                </button>
-              </c:when>
-              <c:otherwise>
-                <button type="button"
-                        class="btn btn-primary mt-3"
-                        onclick="location.href='/reservation/step1JY?roomTypeSeq=${rt.roomTypeSeq}'">
-                  예약하기
-                </button>
-              </c:otherwise>
-            </c:choose>
-            
+          <!-- 룸타입 섹션 시작 -->
+<section class="room-types section-block">
+  <div class="container">
+    <!-- 섹션 제목 -->
+    <h2 class="section-heading" id="roomTypesSection">룸타입</h2>
+    
+    <!-- 카드 리스트 -->
+    <div class="row g-4 mt-4">
+      <c:forEach var="rt" items="${roomTypes}">
+        <div class="col-12">
+          <div class="card h-100 border rounded" style="min-height: 220px;">
+            <div class="row g-0">
+              <!-- 이미지 영역 -->
+              <div class="col-md-4">
+                <img
+                  src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${rt.roomTypeSeq}.jpg"
+                  class="img-fluid h-100 w-100 rounded-start"
+                  style="object-fit: cover;"
+                  alt="${rt.roomTypeTitle}" />
+              </div>
+              <!-- 텍스트 영역 -->
+              <div class="col-md-8">
+                <div class="card-body p-3">
+                  <h5 class="card-title fs-4 mb-2">${rt.roomTypeTitle}</h5>
+                  <c:if test="${not empty rt.roomTypeDesc}">
+                    <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+                  </c:if>
+                  <p class="mb-1"><strong>정원:</strong> ${rt.maxGuests}명</p>
+                  <p class="mb-2"><strong>주중가격:</strong> ${rt.weekdayAmt}원</p>
+                  <p class="mb-3"><strong>주말 가격:</strong> ${rt.weekendAmt}원</p>
+
+                  <c:choose>
+                    <c:when test="${rt.reservationCheck > 0}">
+                      <button type="button" class="btn btn-secondary mt-3" disabled>만실</button>
+                    </c:when>
+                    <c:otherwise>
+                      <div class="d-flex gap-2 mt-3">
+                        <button type="button"
+                                class="btn btn-primary"
+                                onclick="fn_reservation(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
+                          예약하기
+                        </button>
+                        <button type="button"
+                                class="btn btn-secondary"
+                                onclick="fn_addCart(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
+                          장바구니
+                        </button>
+                      </div>
+                    </c:otherwise>
+                  </c:choose>
+
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </c:forEach>
+      </c:forEach>
+    </div>
   </div>
-</div>
+</section>
+<!-- 룸타입 섹션 끝 -->
 
           
 
-          <%-- 지도 모듈 포함 --%>
-          <jsp:include page="/WEB-INF/views/component/mapModule.jsp">
-            <jsp:param name="address" value="${room.roomAddr}" />
-            <jsp:param name="roomName" value="${room.roomTitle}" />
-          </jsp:include>
+	 <!-- 지도 섹션 시작 -->
+	<section class="map-section section-block">
+	  <div class="container">
+	    <!-- 섹션 제목 -->
+	    <h2 class="section-heading">위치</h2>
+	
+	    <%-- 지도 모듈 포함 --%>
+	    <jsp:include page="/WEB-INF/views/component/mapModule.jsp">
+	      <jsp:param name="address"   value="${room.roomAddr}"   />
+	      <jsp:param name="roomName"  value="${room.roomTitle}"  />
+	    </jsp:include>
+	  </div>
+	</section>
+	<!-- 지도 섹션 끝 -->
+	
+<section class="facility-section section-block">
+  <div class="container">
+    <h2 class="section-heading">편의시설</h2>
+    <div class="row">
+      <c:choose>
+        <c:when test="${not empty facilityList}">
+          <c:forEach var="fac" items="${facilityList}">
+            <div class="col-3 mb-3">
+              <span 
+                class="badge bg-secondary w-100 text-center" 
+                style="font-size:1.1rem; padding:0.6em 0;">
+                ${fac.facName}
+              </span>
+            </div>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <p>선택된 편의시설이 없습니다.</p>
+        </c:otherwise>
+      </c:choose>
+    </div>
+  </div>
+</section>
       </div>
 
 		<!-- 오른쪽 정렬 -->
@@ -193,30 +272,20 @@ $(document).ready(function(){
           
 
           <%-- 달력 모듈 포함 --%>
+          <label class="mt-3">날짜 선택: </label></br>
           <jsp:include page="/WEB-INF/views/component/calendar.jsp">
             <jsp:param name="calId" value="roomDetailCalendar" />
             <jsp:param name="fetchUrl" value="" />
             <jsp:param name="startDate" value="${startDate}" />
 	    	<jsp:param name="endDate" value="${endDate}" />
           </jsp:include>
+		</br>
 
-          <%-- 객실 타입 선택 --%>
-          <label for="roomTypeSelect" class="mt-3">객실 타입 선택:</label>
-          <select id="roomTypeSelect" class="form-select" style="width:100%;">
-            <c:forEach var="rt" items="${roomTypes}">
-              <option value="${rt.roomTypeSeq}">
-                ${rt.roomTypeTitle} - 주중: ${rt.weekdayAmt}원 / 주말: ${rt.weekendAmt}원
-              </option>
-            </c:forEach>
-          </select>
 
           <%-- 인원 수 선택 --%>
           <label for="numGuests" class="mt-3">인원 수 선택:</label>
-          <select id="numGuests" class="form-select" style="width:100px;">
-            <c:forEach begin="1" end="10" var="i">
-              <option value="${i}">${i}명</option>
-            </c:forEach>
-          </select>
+<input type="number" id="_personCount" name="_personCount" class="form-control shadow-sm" style="width: 100px; height: 44px; border-radius: 12px; text-align: center;"
+    placeholder="인원수" value="${personCount != 0 ? personCount : ''}" min="0" step="1"/>
           
           <ul class="list-unstyled mt-4">
             <li><strong>등록일:</strong> ${room.regDt}</li>
@@ -285,23 +354,7 @@ $(document).ready(function(){
     }
 
 
-    // 예약하기 버튼 클릭 이벤트
-    document.getElementById("reserveBtn").addEventListener("click", function () {
-      if (!window.selectedDates || window.selectedDates.length !== 2) {
-        alert("예약할 날짜를 선택해주세요.");
-        return;
-      }
-      const startDate = window.selectedDates[0].toISOString().split("T")[0];
-      const endDate = window.selectedDates[1].toISOString().split("T")[0];
-      const roomTypeSelect = document.getElementById("roomTypeSelect");
-      const selectedRoomTypeSeq = roomTypeSelect.value;
-      const numGuests = document.getElementById("numGuests").value;
-
-      location.href = "/reservation/step1JY?roomTypeSeq=" + encodeURIComponent(selectedRoomTypeSeq)
-                    + "&checkIn=" + encodeURIComponent(startDate)
-                    + "&checkOut=" + encodeURIComponent(endDate)
-                    + "&numGuests=" + encodeURIComponent(numGuests);
-    });
+    
   });
   
   document.addEventListener('DOMContentLoaded', function() {
@@ -346,7 +399,133 @@ $(document).ready(function(){
 	  });
 	});
 	
+function fn_reservation(roomTypeSeq, maxGuests, roomCheckInTime, roomCheckOutTime)
+{
+	var count = parseInt(document.getElementById('_personCount').value, 10);
+	const roomCatSeq = ${room.roomCatSeq};
+	
+	const startDate  = document.getElementById('checkIn').value;
+	const endDate = document.getElementById('checkOut').value;
 
+	
+	if (isNaN(count) || count <= 0) 
+	{
+	    alert('인원수를 1명 이상 선택해주세요');
+	    return;
+	}
+	
+	if (count > maxGuests)
+	{
+		alert("최대 인원 수는 " + maxGuests + "명입니다.");
+		return;
+	}
+	
+	if(roomCatSeq >= 1 && roomCatSeq <= 7)
+	{
+		if(startDate != endDate)
+		{
+			alert("날짜는 하루만 선택해 주세요");
+			return;
+		}
+	}
+	
+	if(roomCatSeq >= 8 && roomCatSeq <= 14)
+	{
+		if(startDate == endDate)
+		{
+			alert("날짜는 하루 이상 선택해주세요");
+			return;
+		}
+	}
+	
+	document.roomTypeForm.method = 'get';
+	document.roomTypeForm.roomTypeSeq.value = roomTypeSeq;
+	document.roomTypeForm.numGuests.value = count;
+	document.roomTypeForm.checkInTime.value = roomCheckInTime;
+	document.roomTypeForm.checkOutTime.value = roomCheckOutTime;
+	document.roomTypeForm.action = "${pageContext.request.contextPath}/reservation/step1JY";
+	document.roomTypeForm.submit();
+}
+
+function fn_addCart(roomTypeSeq, maxGuests, roomCheckInTime, roomCheckOutTime)
+{
+	var count = parseInt(document.getElementById('_personCount').value, 10);
+	const roomCatSeq = ${room.roomCatSeq};
+	
+	const startDate  = document.getElementById('checkIn').value;
+	const endDate = document.getElementById('checkOut').value;
+	
+	if (isNaN(count) || count <= 0) 
+	{
+	    alert('인원수를 1명 이상 선택해주세요');
+	    return;
+	}
+	
+	if (count > maxGuests)
+	{
+		alert("최대 인원 수는 " + maxGuests + "명입니다.");
+		return;
+	}
+	
+	if(roomCatSeq >= 1 && roomCatSeq <= 7)
+	{
+		if(startDate != endDate)
+		{
+			alert("날짜는 하루만 선택해 주세요");
+			return;
+		}
+	}
+	
+	if(roomCatSeq >= 8 && roomCatSeq <= 14)
+	{
+		if(startDate == endDate)
+		{
+			alert("날짜는 하루 이상 선택해주세요");
+			return;
+		}
+	}
+	document.roomTypeForm.roomTypeSeq.value = roomTypeSeq;
+	document.roomTypeForm.numGuests.value = count;
+	document.roomTypeForm.checkInTime.value = roomCheckInTime;
+	document.roomTypeForm.checkOutTime.value = roomCheckOutTime;
+	
+	$.ajax({
+		type:"POST",
+		url:"${pageContext.request.contextPath}/cart/add",
+		data:{
+			roomTypeSeq:$("#roomTypeSeq").val(),
+			rsvCheckInDt:$("#checkIn").val(),
+			rsvCheckOutDt:$("#checkOut").val(),
+			numGuests:$("#numGuests").val(),
+			rsvCheckInTime:$("#checkInTime").val(),
+			rsvCheckOutTime:$("#checkOutTime").val()
+		},
+		datatype:"JSON",
+		beforeSend:function(xhr)
+		{
+			xhr.setRequestHeader("AJAX","true");
+		},
+		success:function(response)
+		{
+			if(response.code == 0)
+			{
+				if (confirm("장바구니에 추가되었습니다.\n지금 장바구니로 이동하시겠습니까?")) 
+				{
+                    window.location.href = "${pageContext.request.contextPath}/cart/list";
+                }
+			}
+			else if(response.code == 500)
+			{
+				alert("장바구니 추가에 실패하였습니다.");
+				return;
+			}
+		},
+		error:function(xhr,status,error)
+		{
+			icia.common.error(error);
+		}
+	});
+}
 	
 </script>
 
@@ -361,6 +540,15 @@ $(document).ready(function(){
   <input type="hidden" name="personCount" id="personCount" value="${personCount}" />
   <input type="hidden" name="minPrice" id="minPrice" value="${minPrice}" />
   <input type="hidden" name="maxPrice" id="maxPrice" value="${maxPrice}" />
+</form>
+
+<form name="roomTypeForm" id="roomTypeForm" method="post">
+  <input type="hidden" name="roomTypeSeq" id="roomTypeSeq" value="" />
+  <input type="hidden" name="checkIn" id="checkIn" value="${startDate}"/>
+  <input type="hidden" name="checkOut" id="checkOut" value="${endDate}"/>
+  <input type="hidden" name="numGuests" id="numGuests" value="" />
+  <input type="hidden" name="checkInTime" id="checkInTime" value="" />
+  <input type="hidden" name="checkOutTime" id="checkOutTime" value="" />
 </form>
 
 </body>
