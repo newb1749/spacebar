@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sist.web.dao.RoomDao;
+import com.sist.web.model.Facility;
 import com.sist.web.model.Room;
 
 @Service("RoomServiceSh")
@@ -85,6 +86,22 @@ public class RoomServiceSh
 		return room;
 	}
 	
+	//편의시설 리스트
+	public List<Facility> facilityList(int roomSeq)
+	{
+		List<Facility> list = null;
+		
+		try
+		{
+			list = roomDao.facilityList(roomSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceSh]facilityList : ", e);
+		}
+		
+		return list;
+	}
 }
 
 

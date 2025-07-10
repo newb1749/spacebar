@@ -311,6 +311,14 @@ $(document).ready(function(){
     document.roomForm.submit();
   });
   
+	//JavaScript에서 JSP 변수를 비교
+  var startDate = "${startDate}";
+  var endDate = "${endDate}";
+  
+  if (startDate !== endDate) {
+    alert("날짜는 하루만 선택해 주세요");
+    return;
+  }
 
 	//필터 드롭다운 토글
   $("#toggleFilter").on("click", function () {
@@ -503,9 +511,15 @@ function toggleWish(roomSeq, btn) {
 	      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
 	    });
 	}
+	
+function fn_roomDetail(roomSeq)
+{
+	document.roomForm.roomSeq.value = roomSeq;
+	document.roomForm.action = "/room/roomDetailSh";
+	document.roomForm.submit();
+}
 </script>
 
-</script>
 
 </head>
 <body>
@@ -666,11 +680,10 @@ function toggleWish(roomSeq, btn) {
   <!-- ✅ 리스트 출력 -->
   <div id="roomListBody">
   <c:forEach var="room" items="${list}">
-  <a href="#" class="room-link d-block text-decoration-none" onclick="fn_roomDetail(${room.roomSeq}); event.preventDefault();">
     <div class="room-list-item">
-      <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail">
+      <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail" onclick="fn_roomDetail(${room.roomSeq});">
       <div class="room-details">
-        <div class="room-title">${room.roomTitle}  ${room.roomSeq}</div>
+        <div class="room-title" style="cursor: pointer;" onclick="fn_roomDetail(${room.roomSeq});">${room.roomTitle}  ${room.roomSeq}</div>
         <div class="room-location">${room.roomAddr}</div>
         <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
         <div class="room-price">
@@ -691,7 +704,6 @@ function toggleWish(roomSeq, btn) {
         </div>
       </div>
     </div>
-    </a>
   </c:forEach>
 </div>
 
