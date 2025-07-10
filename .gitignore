@@ -1,12 +1,16 @@
 # User specified
 /src/main/webapp/WEB-INF/views/resources/upload/
 /src/main/webapp/WEB-INF/lib/
+src/main/webapp/WEB-INF/views/resources/upload/
+src/main/webapp/WEB-INF/lib/
 src/main/webapp/resources/
 /upload/
 
 # 빌드 결과물 무시
 /target/
+target/
 /build/
+build/
 .gradle/
 *.class
 *.jar                                     

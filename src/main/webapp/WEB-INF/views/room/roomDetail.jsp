@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>${room.roomTitle} - 상세페이지</title>
+  <title>${room.roomTitle} - 상세페이지 바꿀꺼야바꿀거야</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/tiny-slider.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/aos.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
@@ -26,7 +26,7 @@
   </c:otherwise>
 </c:choose>
   <div class="container text-center mt-5">
-    <h1 class="heading" data-aos="fade-up">${room.roomTitle}</h1>
+    <h1 class="heading" data-aos="fade-up">${room.roomTitle}ㅁㄴㅇㄹ</h1>
   </div>
 </div>
 

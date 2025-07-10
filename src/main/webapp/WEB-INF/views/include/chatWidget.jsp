@@ -32,6 +32,7 @@
 	         <button id="chat-send-btn">전송</button>
 	    </div>
 	</div>
+
 	
 	<style>
 	    /* 플로팅 아이콘 스타일 */
@@ -171,8 +172,11 @@
 	
 <script>
 $(document).ready(function() {
+	
+	let socketConnected = false; // 전역 변수처럼 한 번만 선언
+
     // ========================================================
-    // 전역 변수 및 jQuery 객체
+    // 전역 변수 및 jQuery 객체ㅇ
     // ========================================================
     let stompClient = null;
     let currentSubscription = null;
@@ -185,7 +189,7 @@ $(document).ready(function() {
     const chatMessageInput = $('#chat-message-input');
     const backToListBtn = $('#back-to-list-btn');
     
-    // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)
+    // 로그인한 사용자 정보 (JSP 내장객체를 통해 가져옴)ㅇ
     //const USER_ID = "${sessionScope.sessionUserId}";
     const USER_ID = "${userId}";
     const USER_NICKNAME = "<%= ((com.sist.web.model.User)session.getAttribute("loginUser")) != null ? ((com.sist.web.model.User)session.getAttribute("loginUser")).getNickName() : "" %>";
@@ -193,59 +197,125 @@ $(document).ready(function() {
     // ========================================================
     // UI 렌더링 함수
     // ========================================================
+	
+    connect();
+    
 
+    	
+    // 1. 웹소켓 연결 및 개인 알림 채널 구독 (모달 열 때 최초 1회 실행)
+    function connect() {
+    if (stompClient && stompClient.connected) return;
 
+    const socket = new SockJS('/ws-chat');
+    stompClient = Stomp.over(socket);
 
-// 1. 채팅방 목록을 그리는 함수 수정
-function renderChatList(rooms) {
-    const chatModalContent = $('#chat-modal-content');
-    chatModalContent.empty();
-    if (!rooms || rooms.length === 0) {
-        chatModalContent.html('<div style="text-align:center; padding-top: 50px; color:#888;">대화중인 방이 없습니다.</div>');
-        return;
+	    stompClient.connect({}, function(frame) {
+	        console.log('Connected: ' + frame);
+	
+	        // /user/queue/update 구독 추가!! 
+	        // 채팅방 목록에서 실시간 채팅 받기
+	        stompClient.subscribe('/user/queue/update', function(notification) {
+	            console.log('[실시간 목록 알림 도착]', notification.body);
+	            
+	            // 전체 목록 새로고침 (혹은 updateChatListItem(notification.body) 등으로 개별 반영 가능)
+	            fetchChatList();
+	        });
+
+    	});
+	}
+
+    // 2. 구독.  1:1 채팅방이라 1명만 구독
+    function subscribeToRoom() {
+    	        if (currentSubscription) { currentSubscription.unsubscribe(); }
+    	        
+    	        const destination = '/topic/chat/room/' + currentRoomSeq;
+    	        console.log("Now subscribing to " + destination);
+
+    	        currentSubscription = stompClient.subscribe(destination, function(message) {
+    	            // 서버로부터 받은 JSON 문자열을 JavaScript 객체로 변환
+    	            const newMessage = JSON.parse(message.body);
+    	            
+    	            // [수정] createMessageHtml 함수를 호출하여 새 메시지에 대한 HTML을 생성하고,
+    	            //        채팅창 내용 맨 아래에 추가(append)합니다.
+    	            $('#chat-modal-content').append(createMessageHtml(newMessage));
+    	            
+    	            // 새 메시지가 추가되면 스크롤을 맨 아래로 내립니다.
+    	            $('#chat-modal-content').scrollTop($('#chat-modal-content')[0].scrollHeight);
+    	        });
+    	    }
+
+    // 3. 채팅방 입장 로직
+    function enterChatRoom(roomSeq, roomTitle) {
+        currentRoomSeq = roomSeq;
+        $.ajax({
+            url: "/chat/message", type: "GET", data: { chatRoomSeq: roomSeq },
+            success: function(response) {
+                if (response.code === 0 && response.data) {
+                    renderChatRoom(roomSeq, roomTitle, response.data);
+                    // 웹소켓 연결이 되어있는지 확인하고, 방 구독 시작
+                    if (stompClient && stompClient.connected) {
+                        subscribeToRoom(roomSeq);
+                    } else {
+                        // 혹시 연결이 끊겼으면 다시 연결
+                        connect();
+                        setTimeout(function() { subscribeToRoom(roomSeq); }, 500); // 연결 시간을 기다림
+                    }
+                }
+            }
+        });
     }
 
-    let listHtml = '<ul class="chat-list-modal" style="list-style:none; padding:0;">';
-    rooms.forEach(function(room) {
-        let profileImgHtml = '';
-
-        // [수정] 상대방 프로필 이미지 확장자(otherUserProfileImgExt)가 있는지 확인
-        if (room.otherUserProfileImgExt && room.otherUserProfileImgExt.trim() !== '') {
-            // 확장자가 있으면, 실제 프로필 이미지 경로를 사용합니다.
-            // (주의: otherUserId 필드가 SELECT 쿼리에 포함되어 있어야 합니다.)
-            profileImgHtml = '<img src="/resources/upload/userprofile/' + room.otherUserId + '.' + room.otherUserProfileImgExt + '" class="profile-img" alt="프로필 이미지">';
-        } else {
-            // 확장자가 없으면(null), 기본 이미지 '회원.png'를 사용합니다.
-            // (주의: '/resources/images/' 경로는 실제 프로젝트 구조에 맞게 확인해야 합니다.)
-            profileImgHtml = '<img src="/resources/upload/userprofile/회원.png" class="profile-img" alt="기본 프로필 이미지">';
-        }
-        
-        let unreadBadge = '';
-        if (room.unreadCount > 0) {
-            unreadBadge = '<span class="unread-badge">' + room.unreadCount + '</span>';
-        }
-
-        // [수정] 전체 HTML 구조 변경
-        listHtml += '<li style="display:flex; align-items:center; padding:10px; border-bottom:1px solid #eee; cursor:pointer;" class="enter-chat-room" ' +
-                    'data-room-seq="' + room.chatRoomSeq + '" ' +
-                    'data-room-title="' + room.otherUserNickname + '님과의 대화">' +
-                    profileImgHtml + 
-                    '<div class="chat-room-info" style="flex-grow:1; margin-left:10px;">' +
-                        '<div class="info-header" style="display:flex; justify-content:space-between;">' +
-                            '<strong style="font-size:16px;">' + room.otherUserNickname + '</strong>' +
-                            '<small style="color:#999;">' + new Date(room.lastMessageDate).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}) + '</small>' +
-                        '</div>' +
-                        '<div class="last-message" style="display:flex; justify-content:space-between; margin-top:4px;">' +
-                            '<span style="color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + room.lastMessage + '</span>' +
-                            unreadBadge +
-                        '</div>' +
-                    '</div>' +
-                    '</li>';
-    });
-    listHtml += '</ul>';
-    chatModalContent.html(listHtml);
-}
-
+	// 4. 채팅방 목록
+	function renderChatList(rooms) {
+	    const chatModalContent = $('#chat-modal-content');
+	    chatModalContent.empty();
+	    if (!rooms || rooms.length === 0) {
+	        chatModalContent.html('<div style="text-align:center; padding-top: 50px; color:#888;">대화중인 방이 없습니다.</div>');
+	        return;
+	    }
+	
+	    let listHtml = '<ul class="chat-list-modal" style="list-style:none; padding:0;">';
+	    rooms.forEach(function(room) {
+	        let profileImgHtml = '';
+	
+	        // [수정] 상대방 프로필 이미지 확장자(otherUserProfileImgExt)가 있는지 확인
+	        if (room.otherUserProfileImgExt && room.otherUserProfileImgExt.trim() !== '') {
+	            // 확장자가 있으면, 실제 프로필 이미지 경로를 사용합니다.
+	            // (주의: otherUserId 필드가 SELECT 쿼리에 포함되어 있어야 합니다.)
+	            profileImgHtml = '<img src="/resources/upload/userprofile/' + room.otherUserId + '.' + room.otherUserProfileImgExt + '" class="profile-img" alt="프로필 이미지">';
+	        } else {
+	            // 확장자가 없으면(null), 기본 이미지 '회원.png'를 사용합니다.
+	            // (주의: '/resources/images/' 경로는 실제 프로젝트 구조에 맞게 확인해야 합니다.)
+	            profileImgHtml = '<img src="/resources/upload/userprofile/회원.png" class="profile-img" alt="기본 프로필 이미지">';
+	        }
+	        
+	        let unreadBadge = '';
+	        if (room.unreadCount > 0) {
+	            unreadBadge = '<span class="unread-badge">' + room.unreadCount + '</span>';
+	        }
+	
+	        // [수정] 전체 HTML 구조 변경
+	        listHtml += '<li style="display:flex; align-items:center; padding:10px; border-bottom:1px solid #eee; cursor:pointer;" class="enter-chat-room" ' +
+	                    'data-room-seq="' + room.chatRoomSeq + '" ' +
+	                    'data-room-title="' + room.otherUserNickname + '님과의 대화">' +
+	                    profileImgHtml + 
+	                    '<div class="chat-room-info" style="flex-grow:1; margin-left:10px;">' +
+	                        '<div class="info-header" style="display:flex; justify-content:space-between;">' +
+	                            '<strong style="font-size:16px;">' + room.otherUserNickname + '</strong>' +
+	                            '<small style="color:#999;">' + formatLastMessageTime(room.lastMessageDate) + '</small>'+
+	                        '</div>' +
+	                        '<div class="last-message" style="display:flex; justify-content:space-between; margin-top:4px;">' +
+	                            '<span style="color:#555; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + room.lastMessage + '</span>' +
+	                            unreadBadge +
+	                        '</div>' +
+	                    '</div>' +
+	                    '</li>';
+	    });
+	    listHtml += '</ul>';
+	    chatModalContent.html(listHtml);
+	}
+	
+	// 5. 유저 리스트(검색시)
     function renderUserList(users) {
         const userListDiv = $('#user-search-results');
         userListDiv.empty();
@@ -262,10 +332,11 @@ function renderChatList(rooms) {
         userListHtml += '</ul>';
         userListDiv.html(userListHtml);
     }
-
+	
+	// 6. 메시지창
     function createMessageHtml(message) {
         const sendDate = new Date(message.sendDate);
-        const formattedDate = sendDate.toLocaleString('ko-KR');
+        const formattedDate = formatLastMessageTime(message.sendDate);
         let messageClass = message.senderId === USER_ID ? 'my-message' : 'other-message';
 
         let profileImgHtml = '';
@@ -300,7 +371,8 @@ function renderChatList(rooms) {
                    '</div>';
         }
     }
-
+	
+	// 7. 채팅방
     function renderChatRoom(roomSeq, roomTitle, messages) {
         chatModalTitle.text(roomTitle);
         backToListBtn.show();
@@ -314,6 +386,32 @@ function renderChatList(rooms) {
         chatModalContent.html(messagesHtml);
         chatModalContent.scrollTop(chatModalContent[0].scrollHeight);
     }
+	
+	
+	// 8. 최근 메시지 시간 
+	function formatLastMessageTime(timestamp) {
+	    const now = new Date();
+	    const messageDate = new Date(timestamp);
+	
+	    const isToday = now.toDateString() === messageDate.toDateString();
+	
+	    const yesterday = new Date();
+	    yesterday.setDate(now.getDate() - 1);
+	    const isYesterday = yesterday.toDateString() === messageDate.toDateString();
+	
+	    if (isToday) {
+	        // 오늘이면 시:분 (오전/오후 포함)
+	        return messageDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+	    } else if (isYesterday) {
+	        return '어제';
+	    } else {
+	        // 과거면 yyyy.MM.dd 형식
+	        return messageDate.getFullYear() + '.' +
+	               String(messageDate.getMonth() + 1).padStart(2, '0') + '.' +
+	               String(messageDate.getDate()).padStart(2, '0');
+	    }
+	}
+
 
     // ========================================================
     // 서버 통신 함수
@@ -342,44 +440,13 @@ function renderChatList(rooms) {
         });
     }
 
-    function enterChatRoom(roomSeq, roomTitle) {
-        currentRoomSeq = roomSeq;
-        $.ajax({
-            url: "/chat/message", type: "GET", data: { chatRoomSeq: roomSeq },
-            success: function(response) {
-                if (response.code === 0 && response.data) {
-                    renderChatRoom(roomSeq, roomTitle, response.data);
-                    connectAndSubscribe();
-                }
-            }
-        });
-    }
 
-    function connectAndSubscribe() {
-        if (stompClient && stompClient.connected) {
-            subscribeToRoom();
-            return;
-        }
-        const socket = new SockJS('/ws-chat');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            subscribeToRoom();
-        });
-    }
-
-    function subscribeToRoom() {
-        if (currentSubscription) { currentSubscription.unsubscribe(); }
-        currentSubscription = stompClient.subscribe('/topic/chat/room/' + currentRoomSeq, function(message) {
-            const newMessage = JSON.parse(message.body);
-            chatModalContent.append(createMessageHtml(newMessage));
-            chatModalContent.scrollTop(chatModalContent[0].scrollHeight);
-        });
-    }
+ 
 
     function sendStompMessage() {
-        const messageContent = chatMessageInput.val();
-        if (!messageContent.trim()) return;
+        const messageInput = $('#chat-message-input');
+        const messageContent = messageInput.val();
+        if (!messageContent.trim() || !stompClient || !stompClient.connected) return;
         const chatMessage = {
             senderId: USER_ID,
             senderName: USER_NICKNAME,
@@ -393,21 +460,28 @@ function renderChatList(rooms) {
     // 이벤트 핸들러 바인딩
     // ========================================================
     
-    $('#chat-fab').on('click', function() {
-        if (chatModal.is(':visible')) {
-            chatModal.fadeOut(200);
-        } else {
-            fetchChatList();
-            chatModal.fadeIn(200);
-        }
-    });
+	$('#chat-fab').on('click', function() {
+	    if (chatModal.is(':visible')) {
+	        chatModal.fadeOut(200);
+	    } else {
+	        fetchChatList();
+	        chatModal.fadeIn(200);
+	
+	        // ✅ WebSocket 연결 및 개인 큐 구독 (최초 1회만)
+	        if (!socketConnected) {
+	            connect(); // ★여기서 connect()만 호출하면 됨
+	            socketConnected = true;
+	        }
+	    }
+	});
 
     $('#close-chat-modal-btn').on('click', function() {
-        chatModal.fadeOut(200);
+        $('#chat-modal').fadeOut(200);
         if (stompClient && stompClient.connected) {
-            stompClient.disconnect();
+            stompClient.disconnect(function() {
+                console.log("Disconnected.");
+            });
             stompClient = null;
-            console.log("Disconnected.");
         }
     });
 
