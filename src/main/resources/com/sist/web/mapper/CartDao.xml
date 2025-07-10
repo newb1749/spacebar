@@ -115,8 +115,8 @@
       JOIN ROOM_CATEGORY E   ON D.ROOM_CAT_SEQ  = E.ROOM_CAT_SEQ
      WHERE A.USER_ID = #{userId}
        AND A.CART_SEQ IN
-       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
-         #{seq}
+       <foreach collection="cartSeqs" item="cartSeq" open="(" separator="," close=")">
+         #{cartSeq}
        </foreach>
      ORDER BY A.REG_DT DESC
   </select>
@@ -126,8 +126,8 @@
     DELETE FROM CART
      WHERE USER_ID = #{userId}
        AND CART_SEQ IN
-       <foreach collection="cartSeqs" item="seq" open="(" separator="," close=")">
-         #{seq}
+       <foreach collection="cartSeqs" item="cartSeq" open="(" separator="," close=")">
+         #{cartSeq}
        </foreach>
   </delete>
     
