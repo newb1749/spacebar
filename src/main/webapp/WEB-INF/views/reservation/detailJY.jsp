@@ -16,6 +16,7 @@
       font-family: 'Noto Sans KR', sans-serif;
     }
     h3 {
+      margin-top: 120px;
       color: #343a40;
       font-weight: 700;
       margin-bottom: 30px;

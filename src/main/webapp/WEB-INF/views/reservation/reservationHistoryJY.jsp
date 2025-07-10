@@ -52,7 +52,7 @@
       margin-top: 6px;
     }
     form {
-      display: inline-block; /* 환불 버튼 form이 인라인 유지되도록 */
+      display: inline-block;
     }
   </style>
 </head>
@@ -99,7 +99,7 @@
               <c:choose>
                 <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
                 <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
-                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
+                <c:when test="${r.rsvPaymentStat eq '취소'}">환불완료</c:when>
                 <c:otherwise>-</c:otherwise>
               </c:choose>
             </td>

@@ -9,11 +9,13 @@ import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomServiceJY;
 import com.sist.web.service.RoomTypeServiceJY;
 import com.sist.web.service.UserService_mj;
+import com.sist.web.service.MileageHistoryService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -208,14 +210,44 @@ public class ReservationControllerJY {
         return "redirect:/reservation/confirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
+    @Autowired
+    private MileageHistoryService mileageHistoryService;
+
     @PostMapping("/cancel")
-    public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
+    public String cancelReservation(@ModelAttribute Reservation reservation,
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttrs) {
         try {
-            reservationDao.cancelReservation(reservation);
+            String userId = (String) session.getAttribute("SESSION_USER_ID");
+            if (userId == null || userId.isEmpty()) {
+                redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
+                return "redirect:/user/login";
+            }
+
+            Reservation fullReservation = reservationDao.selectReservationBySeq(reservation.getRsvSeq());
+            if (fullReservation == null || !userId.equals(fullReservation.getGuestId())) {
+                redirectAttrs.addFlashAttribute("error", "잘못된 접근입니다.");
+                return "redirect:/reservation/reservationHistoryJY";
+            }
+
+            // 예약 상태 취소 및 환불 상태 업데이트
+            fullReservation.setRsvStat("취소");
+            fullReservation.setRsvPaymentStat("취소");
+            fullReservation.setCancelDt(new Date());
+            fullReservation.setRefundAmt(fullReservation.getFinalAmt());
+
+            // 예약 취소 DB 반영
+            reservationService.cancelReservation(fullReservation);
+
+            // 마일리지 환불 처리
+            mileageHistoryService.refundMileage(userId, fullReservation.getRefundAmt());
+
+            redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
         } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
+            redirectAttrs.addFlashAttribute("error", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
+
         return "redirect:/reservation/reservationHistoryJY";
     }
 

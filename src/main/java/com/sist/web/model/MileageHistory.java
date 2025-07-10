@@ -9,6 +9,17 @@ public class MileageHistory {
 	private int trxAmt;
 	private long balanceAfterTrx;
 	private Date trxDt;  // 거래 일시
+	
+	@Override
+	public String toString() {
+	    return "MileageHistory{" +
+	           "userId='" + userId + '\'' +
+	           ", trxType='" + trxType + '\'' +
+	           ", trxAmt=" + trxAmt +
+	           ", balanceAfterTrx=" + balanceAfterTrx +
+	           ", trxDt=" + trxDt +
+	           '}';
+	}
 
 	// Getters / Setters
 	public int getMileHistorySeq() {
