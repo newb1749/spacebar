@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
@@ -47,3 +48,54 @@
   </insert>
 
 </mapper>
+=======
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.web.dao.MileageDao">
+
+  <!-- 현재 마일리지 조회 -->
+  <select id="getMileageByUserId" parameterType="string" resultType="int">
+    SELECT MILE
+    FROM SB_USER
+    WHERE USER_ID = #{userId}
+  </select>
+
+  <!-- 마일리지 차감 (잔액 확인 포함) -->
+  <update id="deductMileage" parameterType="map">
+    UPDATE SB_USER
+    SET MILE = MILE - #{amount}
+    WHERE USER_ID = #{userId}
+      AND MILE >= #{amount}
+  </update>
+
+  <!-- 마일리지 충전 -->
+  <update id="addMileage" parameterType="map">
+    UPDATE SB_USER
+    SET MILE = MILE + #{amount}
+    WHERE USER_ID = #{userId}
+  </update>
+
+  <!-- 마일리지 내역 삽입 -->
+  <insert id="insertMileageHistory" parameterType="map">
+    INSERT INTO MILEAGE_HISTORY (
+      MH_SEQ,
+      USER_ID,
+      AMOUNT,
+      TYPE,
+      DESCRIPTION,
+      REG_DT
+    ) VALUES (
+      MILEAGE_HISTORY_SEQ.NEXTVAL,
+      #{userId},
+      #{amount},
+      #{type},
+      #{description},
+      SYSDATE
+    )
+  </insert>
+
+</mapper>
+>>>>>>> base

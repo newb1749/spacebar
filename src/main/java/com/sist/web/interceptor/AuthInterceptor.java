@@ -41,7 +41,7 @@ import com.sist.web.util.SessionUtil;
  * 설명       :
  * </pre>
  */
-public class AuthInterceptor extends HandlerInterceptorAdapter
+public class AuthInterceptor extends HandlerInterceptorAdapter 
 {
 	private static Logger logger = LoggerFactory.getLogger(AuthInterceptor.class);
 	

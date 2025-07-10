@@ -9840,6 +9840,7 @@ textarea {
       width: 35px; }
 
 .property-slider-wrap, .img-property-slide-wrap {
+	
   position: relative; }
   .property-slider-wrap .tns-outer .tns-inner, .img-property-slide-wrap .tns-outer .tns-inner {
     padding-bottom: 100px !important; }
@@ -9887,7 +9888,9 @@ textarea {
 
 .property-item .img {
   position: relative;
-  z-index: 1; }
+  z-index: 1; 
+  
+  }
 
 .property-item .property-content {
   background: #fff;

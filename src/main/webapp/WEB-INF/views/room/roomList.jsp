@@ -1,13 +1,44 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <title>숙소 리스트</title>
 <style>
 body {
   padding-top: 100px;
+}
+
+
+
+.wish-heart {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-size: 28px; /* 크게! */
+  color: #e74c3c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+
+.wish-heart:hover {
+  transform: scale(1.2);
+  color: #c0392b;
 }
 #roomListBody {
   display: grid;
@@ -91,6 +122,9 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  
+  position: relative;        /* 추가 */
+  /* ... 나머지 그대로 ... */
 }
 .room-list-item:hover {
   transform: translateY(-4px);
@@ -381,6 +415,61 @@ $(window).on("scroll", function () {
 		fn_list_scroll(curPage + 1);
 	}
 });
+
+
+function toggleWish(roomSeq, btn) {
+	  const $btn    = $(btn);
+	  const $icon   = $btn.find('i.fa-heart');
+	  const wished  = $btn.data('wished');              // true면 지금은 찜된 상태
+	  const url     = wished ? "/wishlist/remove" : "/wishlist/add";
+	  
+	  $.post(url, { roomSeq: roomSeq })
+	    .done(function(res) {
+	      if (res.code === 0) {
+	        if (wished) {
+	          // → 삭제(하얀 하트) & 알림
+	          $icon
+	            .removeClass("fas wished")
+	            .addClass("far");
+	          $btn.data('wished', false);
+	          Swal.fire({
+	            icon: "success",
+	            title: "삭제됐습니다",
+	            text: "찜 목록에서 제거되었습니다.",
+	            timer: 1500,
+	            showConfirmButton: false
+	          });
+	        } else {
+	          // → 추가(빨간 하트) & 알림
+	          $icon
+	            .removeClass("far")
+	            .addClass("fas wished");
+	          $btn.data('wished', true);
+	          Swal.fire({
+	            icon: "success",
+	            title: "추가되었습니다",
+	            text: "찜 목록에 추가되었습니다.",
+	            timer: 1500,
+	            showConfirmButton: false
+	          });
+	        }
+	      } else {
+	        Swal.fire("오류", res.message, "error");
+	      }
+	    })
+	    .fail(function() {
+	      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
+	    });
+	}
+	
+
+function fn_roomDetail(roomSeq)
+{
+	document.roomForm.roomSeq.value = roomSeq;
+	document.roomForm.action = "/room/roomDetailSh";
+	document.roomForm.submit();
+}
+
 </script>
 
 </head>
@@ -540,13 +629,26 @@ $(window).on("scroll", function () {
   <div id="roomListBody">
   <c:forEach var="room" items="${list}">
     <div class="room-list-item">
-      <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail">
+      <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail" onclick="fn_roomDetail(${room.roomSeq});">
       <div class="room-details">
-        <div class="room-title">${room.roomTitle}  ${room.roomSeq}</div>
+        <div class="room-title" style="cursor: pointer;" onclick="fn_roomDetail(${room.roomSeq});">${room.roomTitle}  ${room.roomSeq}</div>
         <div class="room-location">${room.roomAddr}</div>
         <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
         <div class="room-price">
           <fmt:formatNumber value="${room.amt}" type="currency" currencySymbol="₩" />
+        
+        <c:set var="isWished" value="false"/>
+		  <c:forEach var="seq" items="${wishSeqs}">
+		    <c:if test="${seq eq room.roomSeq}">
+		      <c:set var="isWished" value="true"/>
+		    </c:if>
+		  </c:forEach>
+		
+		  <button class="wish-heart" data-wished="${isWished}"
+		          onclick="toggleWish(${room.roomSeq}, this)">
+		    <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
+		  </button>
+        
         </div>
       </div>
     </div>
@@ -555,7 +657,7 @@ $(window).on("scroll", function () {
 
 <!-- 여기에 로딩 메시지 -->
 <div id="loadingIndicator" style="display:none; text-align:center; padding:16px; color:#555;">
-  로딩중… 잠시만 기다려주세요
+  로딩중…   잠시만 기다려주세요
 </div>
   <!-- ✅ 페이지네이션 
   <nav>
@@ -586,7 +688,7 @@ $(window).on("scroll", function () {
 
 <!-- ✅ 폼 -->
 <form name="roomForm" id="roomForm" method="post">
-  <input type="hidden" name="roomSeq" value="${roomSeq}" />
+  <input type="hidden" name="roomSeq" value="" />
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
   <input type="hidden" name="regionList" id="regionList" value="${regionList}" />

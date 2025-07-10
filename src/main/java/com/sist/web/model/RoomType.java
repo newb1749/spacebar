@@ -27,6 +27,8 @@ public class RoomType implements Serializable{
 	private String regDt;							// 데이터 등록일
 	private String updateDt;						// 데이터 최종 수정일
 	
+	private int reservationCheck;
+	
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomTypeImage> RoomTypeImageList; 	// list로 RoomTypeImage 관리
 	private String hostId;
@@ -48,18 +50,31 @@ public class RoomType implements Serializable{
 		maxDay = 0;
 		regDt = "";
 		updateDt = "";
+		reservationCheck = 0;
 	}
 
 	
 	
 	public String getHostId() {
+<<<<<<< HEAD
 		return hostId;
+=======
+		return hostId;}
+	public int getReservationCheck() {
+		return reservationCheck;
+>>>>>>> base
 	}
 
 
 
 	public void setHostId(String hostId) {
+<<<<<<< HEAD
 		this.hostId = hostId;
+=======
+		this.hostId = hostId;}
+	public void setReservationCheck(int reservationCheck) {
+		this.reservationCheck = reservationCheck;
+>>>>>>> base
 	}
 
 

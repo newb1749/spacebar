@@ -129,7 +129,11 @@ public class RoomController_mj
                 model.addAttribute("room", room);
 
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
+<<<<<<< HEAD
                 List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
+=======
+                List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
+>>>>>>> base
                 model.addAttribute("roomTypes", roomTypes);
                 
                 //QNA 총 개수

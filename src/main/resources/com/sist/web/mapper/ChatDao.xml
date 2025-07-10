@@ -66,52 +66,52 @@
         ORDER BY M.SEND_DATE ASC
     </select>
     
-<select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
- WITH LAST_MSG AS (
-            SELECT
-                CHAT_ROOM_SEQ,
-                MESSAGE_CONTENT AS LAST_MESSAGE,
-                SEND_DATE AS LAST_MESSAGE_DATE,
-                ROW_NUMBER() OVER (PARTITION BY CHAT_ROOM_SEQ ORDER BY SEND_DATE DESC) AS RN
-            FROM
-                CHAT_MESSAGE
-        ),
-        UNREAD_CNT AS (
-            SELECT
-                CHAT_ROOM_SEQ,
-                COUNT(*) AS UNREAD_COUNT
-            FROM
-                CHAT_MESSAGE
-            WHERE
-                READ_COUNT = 1
-                AND SENDER_ID != #{userId}
-            GROUP BY
-                CHAT_ROOM_SEQ
-        )
-        SELECT
-            A.CHAT_ROOM_SEQ,
-            C.USER_ID AS OTHER_USER_ID,  
-            C.NICKNAME AS OTHER_USER_NICKNAME,
-            C.PROF_IMG_EXT,
-            NVL(LM.LAST_MESSAGE, '아직 대화 내용이 없습니다.') AS LAST_MESSAGE,
-            COALESCE(LM.LAST_MESSAGE_DATE, A.CREATE_DATE) AS LAST_MESSAGE_DATE,
-            NVL(UC.UNREAD_COUNT, 0) AS UNREAD_COUNT
-        FROM
-            CHAT_PARTICIPANT ME 
-        JOIN 
-            CHAT_PARTICIPANT OTHER ON ME.CHAT_ROOM_SEQ = OTHER.CHAT_ROOM_SEQ AND ME.USER_ID != OTHER.USER_ID
-        JOIN 
-            CHAT_ROOM A ON ME.CHAT_ROOM_SEQ = A.CHAT_ROOM_SEQ
-        JOIN 
-            SB_USER C ON OTHER.USER_ID = C.USER_ID
-        LEFT JOIN
-            LAST_MSG LM ON A.CHAT_ROOM_SEQ = LM.CHAT_ROOM_SEQ AND LM.RN = 1
-        LEFT JOIN
-            UNREAD_CNT UC ON A.CHAT_ROOM_SEQ = UC.CHAT_ROOM_SEQ
-        WHERE
-            ME.USER_ID = #{userId}
-        ORDER BY
-            LAST_MESSAGE_DATE DESC
+	<select id="findChatRoomsByUserId" resultMap="chatRoomResultMap" parameterType="string">
+	 WITH LAST_MSG AS (
+	            SELECT
+	                CHAT_ROOM_SEQ,
+	                MESSAGE_CONTENT AS LAST_MESSAGE,
+	                SEND_DATE AS LAST_MESSAGE_DATE,
+	                ROW_NUMBER() OVER (PARTITION BY CHAT_ROOM_SEQ ORDER BY SEND_DATE DESC) AS RN
+	            FROM
+	                CHAT_MESSAGE
+	        ),
+	        UNREAD_CNT AS (
+	            SELECT
+	                CHAT_ROOM_SEQ,
+	                COUNT(*) AS UNREAD_COUNT
+	            FROM
+	                CHAT_MESSAGE
+	            WHERE
+	                READ_COUNT = 1
+	                AND SENDER_ID != #{userId}
+	            GROUP BY
+	                CHAT_ROOM_SEQ
+	        )
+	        SELECT
+	            A.CHAT_ROOM_SEQ,
+	            C.USER_ID AS OTHER_USER_ID,  
+	            C.NICKNAME AS OTHER_USER_NICKNAME,
+	            C.PROF_IMG_EXT,
+	            NVL(LM.LAST_MESSAGE, '아직 대화 내용이 없습니다.') AS LAST_MESSAGE,
+	            COALESCE(LM.LAST_MESSAGE_DATE, A.CREATE_DATE) AS LAST_MESSAGE_DATE,
+	            NVL(UC.UNREAD_COUNT, 0) AS UNREAD_COUNT
+	        FROM
+	            CHAT_PARTICIPANT ME 
+	        JOIN 
+	            CHAT_PARTICIPANT OTHER ON ME.CHAT_ROOM_SEQ = OTHER.CHAT_ROOM_SEQ AND ME.USER_ID != OTHER.USER_ID
+	        JOIN 
+	            CHAT_ROOM A ON ME.CHAT_ROOM_SEQ = A.CHAT_ROOM_SEQ
+	        JOIN 
+	            SB_USER C ON OTHER.USER_ID = C.USER_ID
+	        LEFT JOIN
+	            LAST_MSG LM ON A.CHAT_ROOM_SEQ = LM.CHAT_ROOM_SEQ AND LM.RN = 1
+	        LEFT JOIN
+	            UNREAD_CNT UC ON A.CHAT_ROOM_SEQ = UC.CHAT_ROOM_SEQ
+	        WHERE
+	            ME.USER_ID = #{userId}
+	        ORDER BY
+	            LAST_MESSAGE_DATE DESC
 	</select>
 
     <insert id="saveMessage" parameterType="com.sist.web.model.ChatMessage">
@@ -128,6 +128,10 @@
            AND READ_COUNT = 1
     </update>
     
-    
+    <select id="findUserIdsByRoomSeq" resultType="string" parameterType="int">
+        SELECT USER_ID
+          FROM CHAT_PARTICIPANT
+         WHERE CHAT_ROOM_SEQ = #{chatRoomSeq}
+    </select>
     
 </mapper>

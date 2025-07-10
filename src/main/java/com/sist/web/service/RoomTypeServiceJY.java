@@ -1,5 +1,9 @@
 package com.sist.web.service;
 
+<<<<<<< HEAD
+=======
+import com.sist.web.model.Room;
+>>>>>>> base
 import com.sist.web.model.RoomType;
 import com.sist.web.dao.RoomTypeDao;
 
@@ -22,8 +26,14 @@ public class RoomTypeServiceJY
         return roomTypeDao.selectRoomTypeBySeq(roomTypeSeq);
     }
     
+<<<<<<< HEAD
 	public List<RoomType> getRoomTypesByRoomSeq(int roomSeq) 
 	{
 	    return roomTypeDao.selectRoomTypesByRoomSeq(roomSeq);
+=======
+	public List<RoomType> getRoomTypesByRoomSeq(Room room) 
+	{
+	    return roomTypeDao.selectRoomTypesByRoomSeq(room);
+>>>>>>> base
 	}
 }
