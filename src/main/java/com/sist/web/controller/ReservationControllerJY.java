@@ -245,10 +245,10 @@ public class ReservationControllerJY {
             redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+            return "redirect:/reservation/reservationHistoryJY";
         }
 
-        return "redirect:/reservation/reservationHistoryJY";
+        return "redirect:/payment/mileageHistory";
     }
 
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {

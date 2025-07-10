@@ -73,7 +73,7 @@
     <div class="alert alert-success">
       <p>
         <strong>
-          보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" /> 원
+          보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" />원
         </strong>
       </p>
     </div>
