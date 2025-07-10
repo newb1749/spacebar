@@ -88,7 +88,7 @@ public class ReservationControllerJY {
                                    Model model, HttpServletRequest request) 
     {
 
-        String sessionUserId = (String) request.getSession().getAttribute("sessionUserId");
+        String sessionUserId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (sessionUserId == null || sessionUserId.isEmpty()) {
             model.addAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";

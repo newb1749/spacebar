@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.sist.web.model.Facility;
 import com.sist.web.model.Paging;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
@@ -419,16 +420,7 @@ public class RoomControllerSh {
 		int maxPrice = HttpUtil.get(request, "maxPrice", 0);
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
-		//편의시설 리스트
-		String facilityListStr = HttpUtil.get(request, "facilityList", ""); // "와이파이,주차"	
-		List<String> facilityList = new ArrayList<>();
-		if (!facilityListStr.isEmpty()) 
-		{ 
-			facilityList = Arrays.stream(facilityListStr.split(","))
-		                         .map(String::trim)
-		                         .filter(s -> !s.isEmpty()) // Java 8에서도 사용 가능
-		                         .collect(Collectors.toList());
-		}
+
 		//체크인 시간(대여공간)
 		String startTime = HttpUtil.get(request, "startTime", "");
 		//체크아웃 시간(대여공간)
@@ -442,6 +434,7 @@ public class RoomControllerSh {
 			if(room != null)
 			{
 				List<RoomImage> roomImg = roomImgService.getRoomImgDetail(roomSeq);
+				List<Facility> facilityList = roomService.facilityList(roomSeq);
 				if(roomImg != null)
 				{
 					room.setStartDate(startDate);
@@ -474,8 +467,10 @@ public class RoomControllerSh {
 				
 				model.addAttribute("startDate",startDate);
 				model.addAttribute("endDate",endDate);
+				model.addAttribute("facilityList",facilityList);
 			}
 		}
+
 		
 		model.addAttribute("roomSeq",roomSeq);
 		model.addAttribute("searchValue",searchValue);
@@ -489,7 +484,6 @@ public class RoomControllerSh {
 	    model.addAttribute("personCount",personCount);
 	    model.addAttribute("minPrice",minPrice);
 	    model.addAttribute("maxPrice",maxPrice);
-	    model.addAttribute("facilityList",facilityList);
 		
 		return "/room/roomDetailSh";
 	}
