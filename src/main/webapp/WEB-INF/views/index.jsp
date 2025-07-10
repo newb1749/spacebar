@@ -40,12 +40,16 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   	<style>
+  	
+  	
   /* pulsate effect for heart */
 @keyframes pulse {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.4); }
   100% { transform: scale(1); }
 }
+
+/*****************************최근등록공간****************************/
 .wish-heart.clicked {
   animation: pulse 0.3s ease;
 }
@@ -205,11 +209,17 @@ body {
 	  gap: 1rem;
 	  justify-items: center;
 	}
-	/* 아이콘 크기 키우기 */
-	.category-item img {
-	  width: 80px;
-	  height: 80px;
-	}
+.category-grid .category-btn img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover; /* 필요에 따라 비율 유지용 */
+}
+
+.category-grid .category2-btn img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover; /* 필요에 따라 비율 유지용 */
+}
 	
 .property-slider-wrap .property-item {
   display: flex;
@@ -255,6 +265,65 @@ body {
   object-fit: cover;
   object-position: center; /* 가운데 중심으로 자를 때 유용합니다 */
 }
+
+.property-slider-wrap {
+  position: relative;
+}
+
+.property-slider-wrap .controls .prev,
+.property-slider-wrap .controls .next {
+  /* width/height/border 설정 삭제 → 문자 ◀ ▶ 가 자연스럽게 보이도록 */
+  width: auto !important;
+  height: auto !important;
+  border: none !important;
+  background: none !important;
+
+  /* 텍스트 화살표 크기 / 컬러 조절 */
+  font-size: 1.5rem;
+  color: #00204a;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 컨테이너 flex 정렬 유지 */
+.property-slider-wrap .controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -8px;
+  padding: 0 10px;
+  pointer-events: none;
+}
+.property-slider-wrap .controls span {
+  pointer-events: auto;
+}
+
+
+/*****************************후기****************************/
+.testimonial {
+  /* 아이템 너비 안에서만 줄바꿈하도록 보장 */
+  overflow-wrap: break-word;   /* IE11+, Chrome, FF */
+  word-wrap: break-word;       /* 구 IE 지원 */
+  word-break: break-word;      /* 아주 긴 단어라도 줄바꿈 */
+  white-space: normal !important; /* 강제 줄바꿈을 허용 */
+}
+
+.testimonial .fw-bold,
+.testimonial .text-muted {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal !important;
+}
+
+.testimonial-slider .item .testimonial img.img-fluid {
+  width: 100%;        /* 부모 컨테이너 폭에 딱 맞게 */
+  height: 200px;      /* 원하는 높이로 통일 */
+  object-fit: cover;  /* 비율 똑같이 자르기 */
+}
+
+
+
 	</style>
 
 
@@ -277,23 +346,43 @@ body {
 
 	<div class="section py-5">
   <div class="container">
-    <h2 class="text-center mb-4">spacebar</h2>
-    <div class="category-grid">
-      <c:forEach var="cat" items="${categoryList}">
-        <a href="${pageContext.request.contextPath}/rooms?category=${cat.roomCatSeq}"
-           class="category-item text-center text-decoration-none">
-          <img src="${pageContext.request.contextPath}/resources/images/category/${cat.roomCatSeq}.${cat.roomCatIconExt}"
-               alt="${cat.roomCatName}"
-               class="img-fluid mb-2"/>
-          <div class="small text-dark">${cat.roomCatName}</div>
-        </a>
+    <h2 class="text-center mb-4">s p a c e b a r</h2>
+    
+      <div class="category-grid">
+      <c:forEach var="cat2" items="${spaceCategoryList}">
+        <button type="button"
+              class="category2-btn"
+              data-name="${cat2.roomCatName}">
+        <img src="${pageContext.request.contextPath}/resources/images/category/${cat2.roomCatSeq}.${cat2.roomCatIconExt}"/>
+        <div class="small text-dark">${cat2.roomCatName}</div>
+      </button>
       </c:forEach>
     </div>
+    
+        </br>
+    
+    <div class="category-grid">
+      <c:forEach var="cat" items="${roomCategoryList}">
+        <button type="button"
+              class="category-btn"
+              data-name="${cat.roomCatName}">
+        <img src="${pageContext.request.contextPath}/resources/images/category/${cat.roomCatSeq}.${cat.roomCatIconExt}"/>
+        <div class="small text-dark">${cat.roomCatName}</div>
+      </button>
+      </c:forEach>
+    </div>
+    
+
+    
+  
+    
   </div>
 </div>
 
 
-<div class="section">
+
+
+<div class="section section-space">
   <div class="container">
     <div class="row mb-5 align-items-center">
       <div class="col-lg-6">
@@ -303,7 +392,7 @@ body {
       </div>
       <div class="col-lg-6 text-lg-end">
         <p>
-          <a href="${pageContext.request.contextPath}/room"
+          <a href="${pageContext.request.contextPath}/room/spaceList"
              class="btn btn-primary text-white py-3 px-4">
             모든공간보기
           </a>
@@ -313,11 +402,97 @@ body {
     <div class="row">
       <div class="col-12">
         <div class="property-slider-wrap">
-          <div class="property-slider">
+          <div class="property-slider space-slider">
+            <c:forEach var="newSpaceList" items="${spaceList}">
+              <div class="property-item">
+                <!-- 1) 클릭 가능한 썸네일 -->
+                <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
+                   class="img">
+                  <img
+                    src="${pageContext.request.contextPath}/resources/upload/room/main/${newSpaceList.roomImgName}"
+                    onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+                    alt="${newSpaceList.roomTitle}"
+                    class="img-fluid"
+                  />
+                </a>
+
+                <!-- 2) 카드 하단 정보 -->
+                <div class="property-content">
+                  <div>
+                    <span class="d-block mb-2 text-black-50 room-addr">
+                      ${newSpaceList.roomAddr}
+                    </span>
+                    <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
+					   class="city d-block mb-3 text-decoration-none text-black">
+					  ${newSpaceList.roomTitle}
+					</a>
+                    <div class="specs d-flex mb-4">
+                      <span class="d-block d-flex align-items-center me-3">
+                        <span class="caption">⭐ ${newSpaceList.averageRating}</span>&nbsp;
+                        <span class="caption">(${newSpaceList.reviewCount}명)</span>
+                      </span>
+                    </div>
+                    <div class="room-price">
+                      <strong>
+                        <fmt:formatNumber value="${newSpaceList.weekdayAmt}" pattern="#,###" />원~
+                      </strong>
+                      <c:set var="isWished" value="false" />
+                      <c:forEach var="seq" items="${wishSeqs}">
+                        <c:if test="${seq eq newSpaceList.roomSeq}">
+                          <c:set var="isWished" value="true" />
+                        </c:if>
+                      </c:forEach>
+                      <!-- 3) 하트 토글 버튼 -->
+                      <button class="wish-heart"
+                              data-wished="${isWished}"
+                              onclick="toggleWish(${newSpaceList.roomSeq}, this)">
+                        <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </c:forEach>
+          </div>
+          <div id="space-nav"
+               class="controls"
+               tabindex="0"
+               aria-label="Carousel Navigation">
+            <span class="prev" data-controls="prev" aria-controls="property">◀</span>
+            <span class="next" data-controls="next" aria-controls="property">▶</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section section-room">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="font-weight-bold text-primary heading">
+          신규등록숙소
+        </h2>
+      </div>
+      <div class="col-lg-6 text-lg-end">
+        <p>
+          <a href="${pageContext.request.contextPath}/room/roomList"
+             class="btn btn-primary text-white py-3 px-4">
+            모든숙소보기
+          </a>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="property-slider-wrap">
+          <div class="property-slider room-slider">
             <c:forEach var="newList" items="${roomList}">
               <div class="property-item">
                 <!-- 1) 클릭 가능한 썸네일 -->
-                <a href="${pageContext.request.contextPath}/room/detail?roomSeq=${newList.roomSeq}"
+                <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
                    class="img">
                   <img
                     src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
@@ -333,9 +508,10 @@ body {
                     <span class="d-block mb-2 text-black-50 room-addr">
                       ${newList.roomAddr}
                     </span>
-                    <span class="city d-block mb-3">
-                      ${newList.roomTitle}
-                    </span>
+                    <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
+						   class="city d-block mb-3 text-decoration-none text-black">
+						  ${newList.roomTitle}
+						</a>
                     <div class="specs d-flex mb-4">
                       <span class="d-block d-flex align-items-center me-3">
                         <span class="caption">⭐ ${newList.averageRating}</span>&nbsp;
@@ -364,7 +540,7 @@ body {
               </div>
             </c:forEach>
           </div>
-          <div id="property-nav"
+          <div id="room-nav"
                class="controls"
                tabindex="0"
                aria-label="Carousel Navigation">
@@ -448,6 +624,7 @@ body {
           <div class="item">
             <div class="testimonial text-center p-4">
               <div class="mb-3">
+              
                 <img
                   src="${pageContext.request.contextPath}/resources/upload/userprofile/${rev.userId}.${rev.profImgExt}"
                   onerror="this.src='${pageContext.request.contextPath}/resources/upload/userprofile/회원.png'"
@@ -457,12 +634,13 @@ body {
                 <strong class="d-block mt-2">${rev.userNickname}</strong>
               </div>
               <div class="mb-3">
-                <img
-                  src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
-                  onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
-                  class="img-fluid rounded"
-                  style="max-height:200px; object-fit:cover;"
-                />
+                 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${rev.roomSeq}">
+		          <img
+		            src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
+		            onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+		            class="img-fluid rounded"
+		          />
+		        </a>
               </div>
               <blockquote class="mb-2">&ldquo;${rev.reviewContent}&rdquo;</blockquote>
               <div class="fw-bold mb-1">${rev.roomTitle} (${rev.roomTypeTitle})</div>
@@ -843,6 +1021,11 @@ body {
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
+    
+    <form id="searchForm" method="post">
+	  <input type="hidden" name="curPage" value="${curPage}" />
+	  <input type="hidden" name="category" id="category" value="${category}" />
+	</form>
 
     <script src="/resources/js/bootstrap.bundle.min.js"></script>
     <script src="/resources/js/tiny-slider.js"></script>
@@ -896,6 +1079,22 @@ body {
   	    });
   	}
 
+    $(".category-btn, .category2-btn").on("click", function(){
+        const name   = $(this).data("name");
+        // 버튼에 따라 action 바꾸기
+        const target = $(this).hasClass("category2-btn")
+                        ? "${pageContext.request.contextPath}/room/spaceList"
+                        : "${pageContext.request.contextPath}/room/roomList";
+
+        $("#searchForm")
+          .attr("action", target)
+          .find("#category").val(name);
+
+        $("#searchForm").find("input[name=curPage]").val(1);
+        $("#searchForm")[0].submit();
+      });
+
+   
     </script>
     
 
