@@ -19,6 +19,7 @@
 		<result property="profImgExt" column="PROF_IMG_EXT" />
 		<result property="roomAddr" column="ROOM_ADDR" />
 		<result property="reviewImgName" column="REVIEW_IMG_NAME" />
+		<result property="roomSeq" column="ROOM_SEQ" />
 		
     </resultMap>
     
@@ -191,6 +192,7 @@
 		    ROOM_ADDR,
 		    ROOM_TITLE,
 		    ROOM_TYPE_TITLE,
+		    ROOM_SEQ,
 		    REVIEW_IMG_NAME
 		FROM (
 		  SELECT
@@ -208,6 +210,7 @@
 		    C.ROOM_TYPE_SEQ,
 		    D.ROOM_ADDR,
 		    D.ROOM_TITLE,
+		    D.ROOM_SEQ,
 		    E.ROOM_TYPE_TITLE,
 		    ( SELECT F.REVIEW_IMG_NAME
 		        FROM REVIEW_IMAGE F

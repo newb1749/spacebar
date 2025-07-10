@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +31,11 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.service.RoomImgServiceSh;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.WishlistService;
+import com.sist.web.service.RoomTypeServiceSh;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
@@ -55,7 +58,13 @@ public class RoomControllerSh {
 	private String AUTH_SESSION_NAME;
 	
 	@Autowired
-	private RoomServiceSh roomService;	
+	private RoomServiceSh roomService;
+	
+	@Autowired
+	private RoomImgServiceSh roomImgService;
+	
+	@Autowired
+	private RoomTypeServiceSh roomTypeService;
 	
 	@Autowired
 	private WishlistService wishlistService;
@@ -384,6 +393,106 @@ public class RoomControllerSh {
 //        
 //        return "/room/testSearch"; // search.jsp
 //    }
+	
+	
+	//////////////////////////////////////////////
+	@RequestMapping(value="/room/roomDetailSh")
+	public String roomDetailSh(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		//방 Seq
+		int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+		//체크인 날짜
+		String startDate = HttpUtil.get(request, "startDate","");
+		//체크아웃 날짜
+		String endDate = HttpUtil.get(request, "endDate","");
+		//조회값
+		String searchValue = HttpUtil.get(request, "searchValue","");
+		// 현재 페이지
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		//필터 값
+		String regionList = HttpUtil.get(request, "regionList","");
+		//인원수
+		int personCount = HttpUtil.get(request, "personCount", 0);
+		//최소 금액
+		int minPrice = HttpUtil.get(request, "minPrice", 0);
+		//최대 금액
+		int maxPrice = HttpUtil.get(request, "maxPrice", 0);
+		//카테고리
+		String category = HttpUtil.get(request, "category","");
+		//편의시설 리스트
+		String facilityListStr = HttpUtil.get(request, "facilityList", ""); // "와이파이,주차"	
+		List<String> facilityList = new ArrayList<>();
+		if (!facilityListStr.isEmpty()) 
+		{ 
+			facilityList = Arrays.stream(facilityListStr.split(","))
+		                         .map(String::trim)
+		                         .filter(s -> !s.isEmpty()) // Java 8에서도 사용 가능
+		                         .collect(Collectors.toList());
+		}
+		//체크인 시간(대여공간)
+		String startTime = HttpUtil.get(request, "startTime", "");
+		//체크아웃 시간(대여공간)
+		String endTime = HttpUtil.get(request, "endTime","");
+		
+		
+		if(roomSeq > 0)
+		{
+			Room room = roomService.getRoomDetail(roomSeq);
+			
+			if(room != null)
+			{
+				List<RoomImage> roomImg = roomImgService.getRoomImgDetail(roomSeq);
+				if(roomImg != null)
+				{
+					room.setStartDate(startDate);
+					room.setEndDate(endDate);
+					room.setRoomImageList(roomImg);
+					RoomImage mainImages = null;
+					List<RoomImage> detailImages = new ArrayList<>();
+					
+					for(RoomImage img : roomImg)
+					{
+						if("main".equals(img.getImgType()))
+						{
+							mainImages = img;
+						}
+						else
+						{
+							detailImages.add(img);
+						}
+					}
+					
+					model.addAttribute("mainImages",mainImages);
+					model.addAttribute("detailImages",detailImages);
+				}
+				
+				model.addAttribute("room",room);
+				model.addAttribute("roomCatSeq",room.getRoomCatSeq());
+				
+				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
+				model.addAttribute("roomTypes",roomTypes);
+				
+				model.addAttribute("startDate",startDate);
+				model.addAttribute("endDate",endDate);
+			}
+		}
+		
+		model.addAttribute("roomSeq",roomSeq);
+		model.addAttribute("searchValue",searchValue);
+		model.addAttribute("curPage",curPage);
+		model.addAttribute("regionList",regionList);
+		model.addAttribute("startTime",startTime);
+		model.addAttribute("endTime",endTime);
+		model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("category",category);
+	    model.addAttribute("personCount",personCount);
+	    model.addAttribute("minPrice",minPrice);
+	    model.addAttribute("maxPrice",maxPrice);
+	    model.addAttribute("facilityList",facilityList);
+		
+		return "/room/roomDetailSh";
+	}
 
 }
 

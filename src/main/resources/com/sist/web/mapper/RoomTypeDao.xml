@@ -18,6 +18,7 @@
         <result column="MAX_DAY" property="maxDay" />
         <result column="REG_DT" property="regDt" />
         <result column="UPDATE_DT" property="updateDt" />
+        <result column="RESERVATION_CHECK" property="reservationCheck" />
     </resultMap>
     
   	<insert id="insertRoomType" parameterType="com.sist.web.model.RoomType">
@@ -63,5 +64,56 @@
 	        AND 
 	        TO_DATE(ROOM_CHECK_OUT_DT, 'YYYYMMDD') &gt;= TO_DATE(#{roomCheckOutDt}, 'YYYYMMDD')
 	</select>
+	
+	    <select id="selectRoomTypeBySeq" parameterType="int" resultMap="roomTypeResultMap">
+      SELECT 
+          ROOM_TYPE_SEQ,
+          ROOM_SEQ,
+          ROOM_TYPE_TITLE,
+          ROOM_TYPE_DESC,
+          WEEKDAY_AMT,
+          WEEKEND_AMT,
+          ROOM_CHECK_IN_DT,
+          ROOM_CHECK_OUT_DT,
+          ROOM_CHECK_IN_TIME,
+          ROOM_CHECK_OUT_TIME,
+          MAX_GUESTS,
+          MIN_DAY,
+          MAX_DAY,
+          REG_DT,
+          UPDATE_DT
+      FROM ROOM_TYPE
+      WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+    </select>
+    
+        <select id="selectRoomTypesByRoomSeq" parameterType="com.sist.web.model.Room" resultMap="roomTypeResultMap">
+        SELECT
+		    A.ROOM_TYPE_SEQ ROOM_TYPE_SEQ,
+		    A.ROOM_SEQ ROOM_SEQ,
+		    A.ROOM_TYPE_TITLE ROOM_TYPE_TITLE,
+		    A.ROOM_TYPE_DESC ROOM_TYPE_DESC,
+		    A.WEEKDAY_AMT WEEKDAY_AMT,
+		    A.WEEKEND_AMT WEEKEND_AMT,
+		    A.ROOM_CHECK_IN_DT ROOM_CHECK_IN_DT,
+		    A.ROOM_CHECK_OUT_DT ROOM_CHECK_OUT_DT,
+		    A.ROOM_CHECK_IN_TIME ROOM_CHECK_IN_TIME,
+		    A.ROOM_CHECK_OUT_TIME ROOM_CHECK_OUT_TIME,
+		    A.MAX_GUESTS MAX_GUESTS,
+		    A.MIN_DAY MIN_DAY,
+		    A.MAX_DAY MAX_DAY,
+		    A.REG_DT REG_DT,
+		    A.UPDATE_DT UPDATE_DT,
+		    (SELECT COUNT(RSV_SEQ)
+		        FROM RESERVATION B
+		        WHERE B.ROOM_TYPE_SEQ = A.ROOM_TYPE_SEQ
+		       AND TO_DATE(B.RSV_CHECK_IN_DT,  'YYYYMMDD')
+		           <![CDATA[<]]> TO_DATE(#{endDate},'YYYYMMDD')
+		       AND TO_DATE(B.RSV_CHECK_OUT_DT, 'YYYYMMDD')
+		           <![CDATA[>]]> TO_DATE(#{startDate},'YYYYMMDD')
+		           ) RESERVATION_CHECK
+		FROM
+		    ROOM_TYPE A
+		WHERE ROOM_SEQ = #{roomSeq}
+    </select>
 	
 </mapper>
