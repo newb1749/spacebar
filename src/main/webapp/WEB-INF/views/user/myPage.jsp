@@ -227,41 +227,64 @@ $(function(){
                 <div class="sub-message">보유하고 계신 쿠폰 목록입니다.</div>
                 <div class="detail-content">
                     <h3>보유 쿠폰</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                            	<th>번호</th>
-                                <th>쿠폰명</th>
-                                <th>할인율/금액</th>
-                                <th>유효기간</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:choose>
-                                <c:when test="${not empty couponList}">
-                                    <c:forEach var="coupon" items="${couponList}" varStatus="status">
-                                        <tr>
-                                        	<td>${status.count}</td>
-                                            <td>${coupon.couponName}</td>
-                                            <td>${coupon.discountInfo}</td> <%-- 예: 10% 또는 5000원 --%>
-                                            <td>${coupon.expiryDate}</td>
-                                            <td>${coupon.status}</td>
-                                        </tr>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <tr>
-                                        <td colspan="5" class="no-data">보유하신 쿠폰이 없습니다.</td>
-                                    </tr>
-                                </c:otherwise>
-                            </c:choose>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+				  <table class="table table-bordered">
+				    <thead>
+				      <tr>
+				        <th>쿠폰번호</th>
+				        <th>쿠폰명</th>
+				        <th>설명</th>
+				        <th>쿠폰 발급일</th>
+				        <th>쿠폰 사용 여부</th>
+				        <th>사용 가능 쿠폰</th>
+				      </tr>
+				    </thead>
+				    <tbody>
+				      <c:forEach var="coupon" items="${couponList}">
+				        <tr>
+				          <td>${coupon.cpnSeq}</td>
+				          <td>
+				            <c:choose>
+				              <c:when test="${coupon.cpnStat eq 'Y'}">
+				                <span class="clickable">${coupon.cpnName}</span>
+				              </c:when>
+				              <c:otherwise>
+				                ${coupon.cpnName}
+				              </c:otherwise>
+				            </c:choose>
+				          </td>
+				          <td>
+				            <c:choose>
+				              <c:when test="${coupon.cpnStat eq 'Y'}">
+				                <span class="clickable">${coupon.cpnDesc}</span>
+				              </c:when>
+				              <c:otherwise>
+				                ${coupon.cpnDesc}
+				              </c:otherwise>
+				            </c:choose>
+				          </td> 
+				          <td>${coupon.issueDt}</td>
+				          <td>
+				            <c:choose>
+				              <c:when test="${coupon.userCpnIsUsed eq 'Y'}">
+				                <span class="badge bg-success">사용</span>
+				              </c:when>
+				              <c:otherwise>
+				                <span class="badge bg-secondary">미사용</span>
+				              </c:otherwise>
+				            </c:choose>
+				          </td>
+				          <td>${coupon.userCpnCnt}</td>
+				        </tr>
+				      </c:forEach>
+				      <c:if test="${empty couponList}">
+				        <tr><td colspan="8">등록된 쿠폰이 없습니다.</td></tr>
+				      </c:if>
+				    </tbody>
+				  </table>
+			    </div>
+			</div>
 
-			<%-- 예약 내역 --%><!-- ------------------수정필요------------------ -->
+			<%-- 예약 내역 --%><!-- ------------------체크인/아웃 수정필요------------------ -->
             <div id="reservation-content" class="content-area hidden">
                 <div class="welcome-message">예약 내역</div>
                 <div class="sub-message">회원님이 예약 내역 목록입니다.</div>
@@ -331,8 +354,6 @@ $(function(){
                 <div class="detail-content">
                     <h3>마일리지 충전 내역</h3>
                     <div class="info-item">
-                        <span class="info-label">현재 보유 마일리지 :</span>
-                        <span class="info-value"><fmt:formatNumber value="${user.mile}" pattern="#,###"/>원</span>
                     </div>
                     <table class="table table-hover">
                         <thead>
@@ -409,12 +430,12 @@ $(function(){
 			<%-- 위시리스트 --%>
             <div id="wishlist-content" class="content-area hidden">
 	            <div class="welcome-message">위시리스트</div>
-	            <div class="sub-message">회원님이 작성하신 게시글 목록입니다.</div>
+	            <div class="sub-message">회원님의 위시리스트 목록입니다.</div>
 				<div class="container">
 				<div class="detail-content">
 					 <h3>위시리스트</h3>
 					  <c:if test="${empty wishList}">
-					    <p>찜한 숙소가 없습니다.</p>
+					    <p>위시리스트 목록이 없습니다.</p>
 					  </c:if>
 				
 					  <div id="wishlistBody">

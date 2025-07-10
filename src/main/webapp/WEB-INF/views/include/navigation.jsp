@@ -25,12 +25,12 @@
           <li><a href="/room/spaceList">공간대여목록</a></li>
           <li><a href="/kakao/pay2">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
-            <li><a href="/user/myPage_mj">마이페이지</a></li>
+            <li><a href="/user/myPage">마이페이지</a></li>
             <li><a href="/user/loginOut">로그아웃</a></li>
           </c:if>
           <c:if test="<%= !isLoggedIn %>">
-            <li><a href="/user/loginForm_mj">로그인</a></li>
-            <li><a href="/user/regForm_mj">회원가입</a></li>
+            <li><a href="/user/loginForm">로그인</a></li>
+            <li><a href="/user/regForm">회원가입</a></li>
           </c:if>
         </ul>
 

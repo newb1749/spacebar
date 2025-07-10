@@ -19,6 +19,10 @@
 }
 
 #mile-content td[data-type="결제"]::before {
+    background-color: #35cedc;
+}
+
+#mile-content td[data-type="환불"]::before {
     background-color: #dc3545;
 }
 

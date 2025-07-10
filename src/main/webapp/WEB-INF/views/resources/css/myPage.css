@@ -166,11 +166,11 @@ body {
 
 .detail-content {
     text-align: left;
-    padding: 20px;
     background: white;
     border-radius: 10px;
     margin-top: 20px;
     width: 100%; /* 너비 조정 */
+    max-width: none;
 }
 
 .detail-content h3 {

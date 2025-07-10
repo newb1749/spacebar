@@ -31,7 +31,6 @@
        AND MILE >= #{amount}
   </update>
 
-<<<<<<< HEAD
   <insert id="insertMileageHistory" parameterType="com.sist.web.model.MileageHistory">
 	  INSERT INTO 
 	  MILEAGE_HISTORY (
@@ -59,20 +58,3 @@
 	</update>
 
 </mapper>
-=======
-  <insert id="insertMileageHistory" parameterType="com.sist.web.model.MileageHistory" useGeneratedKeys="true" keyProperty="mileHistorySeq">
-    INSERT INTO 
-    MILEAGE_HISTORY (USER_ID, 
-				     TRX_TYPE, 
-				     TRX_AMT, 
-				     BALANCE_AFTER_TRX,
-					 TRX_DT)
-    VALUES (#{userId}, 
-		    #{trxType}, 
-		    #{trxAmt}, 
-		    #{balanceAfterTrx}, 
-		    SYSDATE)
-  </insert>
-
-</mapper>
->>>>>>> d445e1b (QnA 병합 후 수정사항 반영)
