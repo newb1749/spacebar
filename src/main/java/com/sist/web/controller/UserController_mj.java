@@ -9,8 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -74,16 +77,23 @@ public class UserController_mj
 	@Value("#{env['upload.profile.dir']}")
 	private String UPLOAD_PROFILE_DIR;
 	
-
 	@Value("#{env['auth.session.name']}")
 	private String AUTH_SESSION_NAME;
 
+	@Value("${kakao.client.id}")
+	String clientId;
+	
+	@Value("${kakao.redirect.uri}")
+	String redirectUri;
+	
+	@Value("${kakao.client.secret}")
+	String clientSecret;
 	
 	//로그인 화면
-	@RequestMapping(value="/user/loginForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/loginForm", method=RequestMethod.GET)
 	public String loginForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
-		return "/user/loginForm_mj";
+		return "/user/loginForm";
 	}
 	
 	//로그인
@@ -147,7 +157,7 @@ public class UserController_mj
 	}
 	
 	//회원가입 화면
-	@RequestMapping(value="/user/regForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/regForm", method=RequestMethod.GET)
 	public String regForm(HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
@@ -160,7 +170,7 @@ public class UserController_mj
 		}
 		else
 		{
-			return "/user/regForm_mj";
+			return "/user/regForm";
 		}	
 	}
 	
@@ -310,7 +320,7 @@ public class UserController_mj
 	}
 	
 	//회원정보수정화면
-	@RequestMapping(value="/user/updateForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/updateForm", method=RequestMethod.GET)
 	public String updateFrom(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
@@ -324,7 +334,7 @@ public class UserController_mj
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
-		return "/user/updateForm_mj";
+		return "/user/updateForm";
 	}
 	
 	//회원정보수정
@@ -432,7 +442,7 @@ public class UserController_mj
 	}
 	
 	//회원탈퇴 화면
-	@RequestMapping(value="/user/deleteForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/deleteForm", method=RequestMethod.GET)
 	public String deleteForm(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
@@ -446,7 +456,7 @@ public class UserController_mj
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
-		return "/user/deleteForm_mj";
+		return "/user/deleteForm";
 	}
 	
 	//회원탈퇴 
@@ -509,14 +519,14 @@ public class UserController_mj
 	}
 	
 	//아이디 찾기 화면
-	@RequestMapping(value="/user/findIdForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/findIdForm", method=RequestMethod.GET)
 	public String findIdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
-		return "/user/findIdForm_mj";
+		return "/user/findIdForm";
 	}
 	
 	//아이디 찾기
-	@RequestMapping(value="/user/searchResultId_mj", method=RequestMethod.POST)
+	@RequestMapping(value="/user/searchResultId", method=RequestMethod.POST)
 	public String searchResultId(Model model,HttpServletRequest request, HttpServletResponse response)
 	{
 		String userName = HttpUtil.get(request, "userName");
@@ -536,18 +546,18 @@ public class UserController_mj
 		{
 			model.addAttribute("msg", "일치하는 회원정보가 없습니다.");
 		}
-		return "/user/searchResultId_mj";
+		return "/user/searchResultId";
 	}
 	
 	//비밀번호 찾기 
-	@RequestMapping(value="/user/findPwdForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/findPwdForm", method=RequestMethod.GET)
 	public String findPwdForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
-		return "/user/findPwdForm_mj";
+		return "/user/findPwdForm";
 	}
 
 	//비밀번호 찾기
-	@RequestMapping(value="/user/searchResultPwd_mj", method=RequestMethod.POST)
+	@RequestMapping(value="/user/searchResultPwd", method=RequestMethod.POST)
 	public String searchResultPwd(Model model,HttpServletRequest request, HttpServletResponse response)
 	{
 		String userId = HttpUtil.get(request, "userId");
@@ -569,16 +579,19 @@ public class UserController_mj
 		{
 			model.addAttribute("msg", "일치하는 회원정보가 없습니다.");
 		}
-		return "/user/searchResultPwd_mj";
+		return "/user/searchResultPwd";
 	}
 
 	
 	//마이페이지
-	@RequestMapping(value="/user/myPage_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/user/myPage", method=RequestMethod.GET)
 	public String myPageForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+		int cpnSeq = HttpUtil.get(request, "cpnSeq", 0);
+		
 		logger.debug("sessionUserId : " + sessionUserId);
+		logger.debug("cpnSeq : " + cpnSeq);
 		
 		if(StringUtil.isEmpty(sessionUserId))
 		{
@@ -590,16 +603,14 @@ public class UserController_mj
 		model.addAttribute("user", user);
 		
 		//쿠폰 정보
-		List<Coupon> coupon = couponService.getAllCoupons();
-		model.addAttribute("coupon", coupon);
+		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);
+		//boolean isIssued = couponService.isAlreadyIssued(sessionUserId, cpnSeq);
 		
+		model.addAttribute("couponList", couponList);
+		//model.addAttribute("isIssued", isIssued);
+
 		//예약 정보
 		List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
-		for (Reservation r : reservations) {
-		    System.out.println("체크인: " + r.getRsvCheckInDateObj());
-		    System.out.println("체크아웃: " + r.getRsvCheckOutDateObj());
-		}
-		
 		model.addAttribute("reservations", reservations);
 		
 		
@@ -638,8 +649,36 @@ public class UserController_mj
 	    model.addAttribute("cartList", cartList);
 	    model.addAttribute("cartTotalAmt", cartTotalAmt);
 		
-		return "/user/myPage_mj";
+		return "/user/myPage";
 	}
+	
+
+	//카카오 로그인
+//	@RequestMapping(value="/user/loginForm/kakao", method=RequestMethod.GET)
+//	public String kakaoConnect()
+//	{
+//		StringBuffer url = new StringBuffer();
+//		
+//		url.append("https://kauth.kakao.com/oauth/authorize?");
+//		url.append("clientId=" + clientId);
+//		url.append("&redirect_uri="+redirectUri);
+//		url.append("&response_type=code");
+//		
+//		return "redirect:" + url.toString();
+//	}
+	
+//    @PostMapping("/kakao/signup")
+//    public ResponseEntity<User> kakaoSignUp(
+//            @RequestBody Kakaoinfo kakaoDTO
+//            ){
+//        try {
+//            return ResponseEntity.status(201).body(this.authService.kakaoSignUp(kakaoDTO));
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return ResponseEntity.status(400).body(null);
+//        }
+//    }
+
 	
 }
 

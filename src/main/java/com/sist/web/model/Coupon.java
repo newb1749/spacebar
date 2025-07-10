@@ -20,6 +20,15 @@ public class Coupon implements Serializable
     private String regDt;        // Date → String 변경
     private String updateDt;     // Date → String 변경
 
+    //USER_COUPON 테이블에 있는 것 
+    private int userCpnSeq;			//사용자 쿠폰 시퀀스 (기본키)
+    private String userId;			//사용자 ID (외래키)
+    private String issueDt;			//쿠폰 발급일
+    private String usageDt;			//쿠폰 사용일
+    private String userCpnIsUsed;	//쿠폰 사용 여부 (Y: 사용, N: 미사용)
+    private int userCpnCnt;			//보유 개수
+    
+    
     public Coupon() {
         this.cpnSeq = 0;
         this.cpnName = "";
@@ -34,6 +43,14 @@ public class Coupon implements Serializable
         this.totalCpnCnt = 0;
         this.regDt = "";
         this.updateDt = "";
+        
+        //USER_COUPON 테이블에 있는 것 
+        userCpnSeq = 0;
+        userId = "";
+        issueDt = "";
+        usageDt = "";
+        userCpnIsUsed = "N";
+        userCpnCnt = 0;
     }
 
     // getter / setter
@@ -141,4 +158,55 @@ public class Coupon implements Serializable
     public void setUpdateDt(String updateDt) {
         this.updateDt = updateDt;
     }
+    
+    //USER_COUPON 테이블에 있는 것 
+	public int getUserCpnSeq() {
+		return userCpnSeq;
+	}
+
+	public void setUserCpnSeq(int userCpnSeq) {
+		this.userCpnSeq = userCpnSeq;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getIssueDt() {
+		return issueDt;
+	}
+
+	public void setIssueDt(String issueDt) {
+		this.issueDt = issueDt;
+	}
+
+	public String getUsageDt() {
+		return usageDt;
+	}
+
+	public void setUsageDt(String usageDt) {
+		this.usageDt = usageDt;
+	}
+
+	public String getUserCpnIsUsed() {
+		return userCpnIsUsed;
+	}
+
+	public void setUserCpnIsUsed(String userCpnIsUsed) {
+		this.userCpnIsUsed = userCpnIsUsed;
+	}
+
+	public int getUserCpnCnt() {
+		return userCpnCnt;
+	}
+
+	public void setUserCpnCnt(int userCpnCnt) {
+		this.userCpnCnt = userCpnCnt;
+	}
+    
+    
 }

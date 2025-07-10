@@ -20,6 +20,18 @@
     <result property="regDt" column="REG_DT"/>
     <result property="updateDt" column="UPDATE_DT"/>
   </resultMap>
+  
+  <resultMap type="com.sist.web.model.Coupon" id="mycouponResultMap">
+    <result property="userCpnSeq" column="USER_CPN_SEQ"/>
+    <result property="userId" column="USER_ID"/>
+    <result property="cpnSeq" column="CPN_SEQ"/>
+    <result property="cpnName" column="CPN_NAME"/>
+    <result property="cpnDesc" column="CPN_DESC"/>
+    <result property="issueDt" column="ISSUE_DT"/>
+    <result property="usageDt" column="USAGE_DT"/>
+    <result property="userCpnIsUsed" column="USER_CPN_IS_USED"/>
+    <result property="userCpnCnt" column="USER_CPN_CNT"/>
+  </resultMap>
 
   <select id="selectAllCoupons" resultMap="couponResultMap">
     SELECT NVL(CPN_SEQ, 0) CPN_SEQ,
@@ -66,4 +78,22 @@
 	    1
 	  )
 	</insert>
+	
+	<!-- 마이페이지용(쿠폰 조회) -->
+	<select id="couponListByUser" parameterType="string" resultMap="mycouponResultMap">
+		SELECT A.USER_CPN_SEQ,
+		       A.USER_ID,
+		       A.CPN_SEQ,
+		       NVL(B.CPN_NAME,'') CPN_NAME,
+		       NVL(B.CPN_DESC,'') CPN_DESC,
+		       NVL(TO_CHAR(A.ISSUE_DT,'YYYY.MM.DD'),'') ISSUE_DT,
+		       NVL(TO_CHAR(A.USAGE_DT,'YYYY.MM.DD'),'') USAGE_DT,
+		       NVL(A.USER_CPN_IS_USED,'N') USER_CPN_IS_USED,
+		       NVL(A.USER_CPN_CNT,0) USER_CPN_CNT
+		  FROM USER_COUPON A, COUPON B
+		 WHERE A.CPN_SEQ = B.CPN_SEQ
+		   AND A.USER_ID = #{value}
+	</select>
+
+	
 </mapper>

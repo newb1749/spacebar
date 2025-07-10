@@ -1,37 +1,70 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>내 예약 내역</title>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+  <script src="${pageContext.request.contextPath}/resources/js/tiny-slider.js" defer></script>
+  <script src="${pageContext.request.contextPath}/resources/js/custom.js" defer></script>
+  <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js" defer></script>
+
   <style>
     body {
-      padding-top: 100px;
+      padding-top: 80px;
+      background-color: #f8f9fa;
+    }
+    h2 {
+      margin-top: 120px;
+      text-align: left !important;
     }
     .container {
-      max-width: 800px;
+      max-width: 960px;
+      margin: 0 auto;
     }
-    .table th {
+    table {
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+    .table thead tr {
       background-color: #343a40;
+    }
+    .table thead tr th {
       color: #fff;
       text-align: center;
     }
     .table td {
       text-align: center;
+      vertical-align: middle;
+    }
+    .table td.amount {
+      text-align: right;
+      padding-right: 12px;
+    }
+    .btn, .btn-sm {
+      font-size: 1.1rem;
+      padding: 0.5rem 1.2rem;
+      margin-top: 6px;
+    }
+    form {
+      display: inline-block; /* 환불 버튼 form이 인라인 유지되도록 */
     }
   </style>
 </head>
 <body>
+
 <jsp:include page="/WEB-INF/views/include/navigation.jsp" />
 
-<div class="container mt-5">
-  <h3 class="mb-4">내 예약 내역</h3>
-  
+<div class="container">
+  <h2>내 예약 내역</h2>
+
   <c:if test="${empty reservations}">
-    <div class="alert alert-info">예약 내역이 없습니다.</div>
+    <div class="alert alert-info text-center">예약 내역이 없습니다.</div>
   </c:if>
 
   <c:if test="${not empty reservations}">
@@ -52,11 +85,33 @@
           <tr>
             <td>${r.rsvSeq}</td>
             <td>${r.roomTypeSeq}</td>
-            <td><fmt:formatDate value="${r.rsvCheckInDt}" pattern="yyyy-MM-dd"/></td>
-            <td><fmt:formatDate value="${r.rsvCheckOutDt}" pattern="yyyy-MM-dd"/></td>
-            <td>${r.rsvStat}</td>
-            <td>${r.rsvPaymentStat}</td>
-            <td><fmt:formatNumber value="${r.finalAmt}" type="currency"/></td>
+            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
+            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+            <td>
+              <c:choose>
+                <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
+                <c:when test="${r.rsvStat eq '취소'}">예약취소</c:when>
+                <c:when test="${r.rsvStat eq 'PENDING'}">결제대기</c:when>
+                <c:otherwise>-</c:otherwise>
+              </c:choose>
+            </td>
+            <td>
+              <c:choose>
+                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
+                <c:otherwise>-</c:otherwise>
+              </c:choose>
+            </td>
+            <td class="amount">
+              <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
+              <c:if test="${r.rsvStat eq 'CONFIRMED'}">
+                <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('정말 취소하시겠습니까?')">
+                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+                  <button type="submit" class="btn btn-sm btn-danger">환불</button>
+                </form>
+              </c:if>
+            </td>
           </tr>
         </c:forEach>
       </tbody>
@@ -65,6 +120,5 @@
 </div>
 
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
-<script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

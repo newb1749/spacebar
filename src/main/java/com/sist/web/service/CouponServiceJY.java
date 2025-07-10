@@ -1,6 +1,9 @@
 package com.sist.web.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,4 +79,22 @@ public class CouponServiceJY
             throw e;  // 예외 다시 던져서 컨트롤러가 알 수 있도록
         }
     }
+    
+    //마이페이지용 (쿠폰 조회)
+    public List<Coupon> couponListByUser(String userId)
+    {
+    	List<Coupon> list = null;
+    	
+        try 
+        {
+        	list = couponDao.couponListByUser(userId);
+        } 
+        catch(Exception e) 
+        {
+            logger.error("[CouponServiceJY] couponListByUser Exception", e);
+        }
+    	
+    	return list;
+    }
+    
 }
