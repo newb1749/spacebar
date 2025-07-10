@@ -37,7 +37,7 @@
 		<result column="REG_DT" property="regDt" />
   </resultMap>
   
-  <select id="roomListCount" parameterType="com.sist.web.model.Room" resultType="long">
+  <select id="spaceListCount" parameterType="com.sist.web.model.Room" resultType="long">
 		  SELECT COUNT(ROOM_SEQ) CNT
 		    FROM (
 					SELECT ROWNUM RNUM, INNER.*

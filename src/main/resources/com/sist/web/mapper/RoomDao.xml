@@ -40,6 +40,12 @@
 		<result column="REG_DT" property="regDt" />
   </resultMap>
   
+   <resultMap id="facilityResultMap" type="com.sist.web.model.Facility">
+	<id column="FAC_SEQ" property="facSeq" />
+	<result column="FAC_NAME" property="facName" />
+	<result column="FAC_ICON_EXT" property="facIconExt" />
+  </resultMap>
+  
   <select id="newRoomList" resultMap="roomResultMap">
   		SELECT ROOM_SEQ,
            ROOM_ADDR,
@@ -427,6 +433,15 @@
 		) OUTER
 		WHERE RNUM <![CDATA[>=]]> #{startRow}
 		  AND RNUM <![CDATA[<=]]> #{endRow}
+	</select>
+	
+	<select id="facilityList" parameterType="int" resultMap="facilityResultMap">
+		SELECT A.FAC_SEQ FAC_SEQ,
+		       FAC_NAME FAC_NAME,
+		       FAC_ICON_EXT FAC_ICON_EXT
+		  FROM FACILITY A, ROOM_FACILITY B
+		 WHERE A.FAC_SEQ = B.FAC_SEQ
+		   AND ROOM_SEQ = 150
 	</select>
   	<!-- 성혁 끝 -->
   
