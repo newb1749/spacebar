@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,6 +53,7 @@ public class CartController {
 
     @Autowired
     private ReservationDao reservationDao;
+    
 
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
@@ -157,9 +159,10 @@ public class CartController {
             }
  
             // 2) 총 금액 합산
-            int totalAmt = carts.stream()
-                                .mapToInt(Cart::getCartTotalAmt)
-                                .sum();
+            int totalAmt = 0;
+            for (int i = 0; i < carts.size(); i++) {
+                totalAmt += carts.get(i).getCartTotalAmt();
+            }
 
             // 3) 마일리지 체크
             int userMileage = mileageService.getUserMileage(userId);
@@ -173,6 +176,19 @@ public class CartController {
                 rt.addFlashAttribute("error", "마일리지 결제 오류");
                 return "redirect:/cart/list";
             }
+            
+            /* 마일리지 이력 등록해야함
+            int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, amount);
+            if (updatedRows > 0) {
+                MileageHistory history = new MileageHistory();
+                history.setUserId(userId);
+                history.setTrxType("결제");
+                history.setTrxAmt(-amount);
+                history.setBalanceAfterTrx(currentMileage - amount);
+                mileageHistoryDao.insertMileageHistory(history);
+                return true;
+            }
+            */
 
             // 5) Cart → ReservationJY 변환 & 저장
             for (Cart c : carts) {
@@ -184,6 +200,8 @@ public class CartController {
                 r.setRsvCheckInTime(c.getCartCheckInTime());
                 r.setRsvCheckOutTime(c.getCartCheckOutTime());
                 r.setNumGuests(c.getCartGuestsNum());
+                r.setTotalAmt(c.getCartTotalAmt());
+                r.setFinalAmt(c.getCartTotalAmt());
 
                 // hostId 세팅 (1번 방법)
                 RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
@@ -207,7 +225,7 @@ public class CartController {
             cartService.deleteCarts(cartSeqs, userId);
 
             rt.addFlashAttribute("msg", "예약이 완료되었습니다.");
-            return "redirect:/reservation/list";
+            return "redirect:/index";
         }
     
 }
