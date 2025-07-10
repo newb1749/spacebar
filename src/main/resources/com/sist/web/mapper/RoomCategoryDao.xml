@@ -9,13 +9,25 @@
 	</resultMap>
 
   	
-  
-  <select id="categoryList" resultMap="categoryResultMap">
+  <!-- 숙소 카테고리 리스트 -->
+  <select id="roomCategoryList" resultMap="categoryResultMap">
   	 SELECT
       ROOM_CAT_SEQ,
       ROOM_CAT_NAME,
       ROOM_CAT_ICON_EXT
     FROM ROOM_CATEGORY
+    WHERE ROOM_CAT_SEQ BETWEEN 8 AND 14
+    ORDER BY ROOM_CAT_SEQ
+  </select>
+  
+  <!-- 공간 카테고리 리스트 -->
+  <select id="spaceCategoryList" resultMap="categoryResultMap">
+  	 SELECT
+      ROOM_CAT_SEQ,
+      ROOM_CAT_NAME,
+      ROOM_CAT_ICON_EXT
+    FROM ROOM_CATEGORY
+    WHERE ROOM_CAT_SEQ BETWEEN 1 AND 7
     ORDER BY ROOM_CAT_SEQ
   </select>
   

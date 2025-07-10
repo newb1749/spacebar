@@ -33,7 +33,8 @@
   // ✅ 오타 수정: tinySdlier → tinySlider
   var tinySlider = function () {
     var heroSlider = document.querySelectorAll('.hero-slide');
-    var propertySlider = document.querySelectorAll('.property-slider');
+    var spaceSlider = document.querySelectorAll('.space-slider');
+    var roomSlider = document.querySelectorAll('.room-slider');
     var imgPropertySlider = document.querySelectorAll('.img-property-slide');
     var testimonialSlider = document.querySelectorAll('.testimonial-slider');
 
@@ -64,23 +65,41 @@
       });
     }
 
-    if (propertySlider.length > 0) {
+	 if (roomSlider.length > 0) {
       tns({
-        container: '.property-slider',
+        container: '.room-slider',
         mode: 'carousel',
         speed: 700,
         gutter: 30,
         items: 3,
         autoplay: true,
         autoplayButtonOutput: false,
-        controlsContainer: '#property-nav',
+        controlsContainer: '#room-nav',
         responsive: {
           0: { items: 1 },
           700: { items: 2 },
           900: { items: 3 }
         }
       });
-    }
+      }
+      
+      if (spaceSlider.length > 0) {
+      tns({
+        container: '.space-slider',
+        mode: 'carousel',
+        speed: 700,
+        gutter: 30,
+        items: 3,
+        autoplay: true,
+        autoplayButtonOutput: false,
+        controlsContainer: '#space-nav',
+        responsive: {
+          0: { items: 1 },
+          700: { items: 2 },
+          900: { items: 3 }
+        }
+      });
+     }
 
     if (testimonialSlider.length > 0) {
       tns({

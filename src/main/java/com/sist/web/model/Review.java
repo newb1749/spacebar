@@ -31,6 +31,7 @@ public class Review implements Serializable{
     private String profImgExt;					// 프로필이미지타입
     private String roomAddr;					// 숙소주소
     private String reviewImgName;				// 최초등록리뷰이미지
+    private String roomSeq;
     
     
 	public Review()
@@ -48,11 +49,26 @@ public class Review implements Serializable{
 		profImgExt = "";
 		roomAddr = "";
 		reviewImgName = "";
+		roomSeq = "";
 	}
 
 	
 	
 	
+	public String getRoomSeq() {
+		return roomSeq;
+	}
+
+
+
+
+	public void setRoomSeq(String roomSeq) {
+		this.roomSeq = roomSeq;
+	}
+
+
+
+
 	public String getProfImgExt() {
 		return profImgExt;
 	}
