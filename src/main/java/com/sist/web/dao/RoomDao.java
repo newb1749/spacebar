@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.sist.web.model.Facility;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 
@@ -41,6 +42,17 @@ public interface RoomDao {
   	
   	//룸 리스트
   	public List<Room> roomList(Room room);
+  	
+  	//최신순 숙소
+  	public List<Room> newRoomList();
+  	
+
+  	//최신순 공간
+  	public List<Room> newSpaceList();
+
+  	//편의시설 리스트
+  	public List<Facility> facilityList(int roomSeq);
+
 }
 
 

@@ -24,4 +24,14 @@ public class CartService {
     public int deleteCart(int cartSeq) {
         return cartDao.deleteCart(cartSeq);
     }
+    
+    public List<Cart> getCartsBySeqs(List<Integer> cartSeqs, String userId) {
+        return cartDao.getCartsBySeqs(cartSeqs, userId);
+    }
+
+    /** 결제 후 장바구니 항목 일괄 삭제 */
+    public int deleteCarts(List<Integer> cartSeqs, String userId) {
+        return cartDao.deleteCarts(cartSeqs, userId);
+    }
+    
 }

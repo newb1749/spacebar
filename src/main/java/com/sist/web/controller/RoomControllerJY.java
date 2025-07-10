@@ -81,7 +81,11 @@ public class RoomControllerJY
                 logger.debug("roomCatSeq = " + room.getRoomCatSeq());
                 
                 // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
+<<<<<<< HEAD
                 List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
+=======
+                List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
+>>>>>>> base
                 model.addAttribute("roomTypes", roomTypes);
             }
         }

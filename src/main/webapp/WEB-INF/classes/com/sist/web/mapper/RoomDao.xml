@@ -23,6 +23,12 @@
       <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
       <result column="AMT" property="amt" />
       <result column="ROOM_IMAGE_NAME" property="roomImageName" />
+<<<<<<< HEAD
+=======
+      
+      <result column="WEEKDAY_AMT" property="weekdayAmt" />
+      <result column="ROOM_IMG_NAME" property="roomImgName" />
+>>>>>>> base
   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
@@ -36,6 +42,119 @@
 		<result column="ROOM_IMG_NAME" property="roomImgName" />
 		<result column="REG_DT" property="regDt" />
   </resultMap>
+  
+
+  <!-- 메인페이지용 최근 등록 숙소 조회 -->
+	  <select id="newRoomList" resultMap="roomResultMap">
+	  		SELECT ROOM_SEQ,
+	           ROOM_ADDR,
+	           ROOM_TITLE,
+	           AVERAGE_RATING,
+	           REVIEW_COUNT,
+	           ROOM_IMG_NAME,
+	           WEEKDAY_AMT
+		    FROM (
+		      SELECT 
+		        A.ROOM_SEQ        AS ROOM_SEQ,
+		        A.ROOM_ADDR       AS ROOM_ADDR,
+		        A.ROOM_TITLE      AS ROOM_TITLE,
+		        A.AVERAGE_RATING  AS AVERAGE_RATING,
+		        A.REVIEW_COUNT    AS REVIEW_COUNT,
+		        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+		        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+		        ROW_NUMBER() OVER (
+		          PARTITION BY A.ROOM_SEQ 
+		          ORDER BY B.WEEKDAY_AMT ASC
+		        ) AS rn
+		      FROM ROOM A
+		      JOIN ROOM_IMAGE C
+		        ON A.ROOM_SEQ = C.ROOM_SEQ
+		       AND C.IMG_TYPE = 'main'
+		      JOIN ROOM_TYPE B
+		        ON A.ROOM_SEQ = B.ROOM_SEQ
+		        AND A.ROOM_CAT_SEQ BETWEEN 8 AND 14
+		        
+		    ) tmp
+		    WHERE rn = 1
+		      AND ROWNUM <![CDATA[<=]]>  9
+		    ORDER BY ROOM_SEQ		
+	  </select>
+	  
+	  <!-- 메인페이지용 최근 등록 공간 조회 -->
+	  <select id="newSpaceList" resultMap="roomResultMap">
+	  		SELECT ROOM_SEQ,
+	           ROOM_ADDR,
+	           ROOM_TITLE,
+	           AVERAGE_RATING,
+	           REVIEW_COUNT,
+	           ROOM_IMG_NAME,
+	           WEEKDAY_AMT
+		    FROM (
+		      SELECT 
+		        A.ROOM_SEQ        AS ROOM_SEQ,
+		        A.ROOM_ADDR       AS ROOM_ADDR,
+		        A.ROOM_TITLE      AS ROOM_TITLE,
+		        A.AVERAGE_RATING  AS AVERAGE_RATING,
+		        A.REVIEW_COUNT    AS REVIEW_COUNT,
+		        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+		        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+		        ROW_NUMBER() OVER (
+		          PARTITION BY A.ROOM_SEQ 
+		          ORDER BY B.WEEKDAY_AMT ASC
+		        ) AS rn
+		      FROM ROOM A
+		      JOIN ROOM_IMAGE C
+		        ON A.ROOM_SEQ = C.ROOM_SEQ
+		       AND C.IMG_TYPE = 'main'
+		      JOIN ROOM_TYPE B
+		        ON A.ROOM_SEQ = B.ROOM_SEQ
+		        AND A.ROOM_CAT_SEQ BETWEEN 1 AND 7
+		        
+		    ) tmp
+		    WHERE rn = 1
+		      AND ROWNUM <![CDATA[<=]]>  9
+		    ORDER BY ROOM_SEQ		
+	  </select>
+
+   <resultMap id="facilityResultMap" type="com.sist.web.model.Facility">
+	<id column="FAC_SEQ" property="facSeq" />
+	<result column="FAC_NAME" property="facName" />
+	<result column="FAC_ICON_EXT" property="facIconExt" />
+  </resultMap>
+  
+  <select id="newRoomList" resultMap="roomResultMap">
+  		SELECT ROOM_SEQ,
+           ROOM_ADDR,
+           ROOM_TITLE,
+           AVERAGE_RATING,
+           REVIEW_COUNT,
+           ROOM_IMG_NAME,
+           WEEKDAY_AMT
+	    FROM (
+	      SELECT 
+	        A.ROOM_SEQ        AS ROOM_SEQ,
+	        A.ROOM_ADDR       AS ROOM_ADDR,
+	        A.ROOM_TITLE      AS ROOM_TITLE,
+	        A.AVERAGE_RATING  AS AVERAGE_RATING,
+	        A.REVIEW_COUNT    AS REVIEW_COUNT,
+	        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+	        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+	        ROW_NUMBER() OVER (
+	          PARTITION BY A.ROOM_SEQ 
+	          ORDER BY B.WEEKDAY_AMT ASC
+	        ) AS rn
+	      FROM ROOM A
+	      JOIN ROOM_IMAGE C
+	        ON A.ROOM_SEQ = C.ROOM_SEQ
+	       AND C.IMG_TYPE = 'main'
+	      JOIN ROOM_TYPE B
+	        ON A.ROOM_SEQ = B.ROOM_SEQ
+	    )
+	    WHERE rn = 1
+	      AND ROWNUM <![CDATA[<=]]>  9
+	    ORDER BY ROOM_SEQ
+  				
+  </select>
     
 	  <insert id="insertRoom" parameterType="com.sist.web.model.Room">
 	  		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
@@ -391,6 +510,18 @@
 		WHERE RNUM <![CDATA[>=]]> #{startRow}
 		  AND RNUM <![CDATA[<=]]> #{endRow}
 	</select>
+<<<<<<< HEAD
+=======
+	
+	<select id="facilityList" parameterType="int" resultMap="facilityResultMap">
+		SELECT A.FAC_SEQ FAC_SEQ,
+		       FAC_NAME FAC_NAME,
+		       FAC_ICON_EXT FAC_ICON_EXT
+		  FROM FACILITY A, ROOM_FACILITY B
+		 WHERE A.FAC_SEQ = B.FAC_SEQ
+		   AND ROOM_SEQ = 150
+	</select>
+>>>>>>> base
   	<!-- 성혁 끝 -->
   
 </mapper>

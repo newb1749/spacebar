@@ -1,10 +1,17 @@
 package com.sist.web.controller;
 
+
 import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
+
+import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Reservation;
+import com.sist.web.model.RoomType;
+import com.sist.web.service.MileageServiceJY;
+
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomServiceJY;
 import com.sist.web.service.RoomTypeServiceJY;
@@ -45,9 +52,15 @@ public class ReservationControllerJY {
     @Autowired
     private RoomTypeServiceJY roomTypeService;
 
+    /**
+     * 예약 관련 DB 직접 접근 (CRUD 등)
+     */
     @Autowired
     private ReservationDao reservationDao;
 
+    /**
+     * 개별 객실(Room) 정보 조회 등 담당
+     */
     @Autowired
     private RoomServiceJY roomService;
 
@@ -82,12 +95,19 @@ public class ReservationControllerJY {
         return "/reservation/step1JY";
     }
 
+    /**
+     * 숙소 예약 정보를 데이터베이스에 저장하는 기능을 수행
+     * @param reservation
+     * @throws Exception
+     */
     private void insertReservation(Reservation reservation) throws Exception {
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
-            if (roomTypeSeq == null) {
+            if (roomTypeSeq == null) 
+            {
                 throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
             }
+            
             RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             if (roomType == null) {
                 throw new IllegalArgumentException("roomType이 존재하지 않습니다. roomTypeSeq: " + roomTypeSeq);
@@ -116,6 +136,7 @@ public class ReservationControllerJY {
             return "redirect:/user/login";
         }
         List<Reservation> reservations = reservationDao.selectReservationsByGuestId(guestId);
+
         model.addAttribute("reservations", reservations);
         return "/reservation/reservationHistoryJY";
     }
@@ -245,10 +266,26 @@ public class ReservationControllerJY {
             redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+            return "redirect:/reservation/reservationHistoryJY";
         }
 
-        return "redirect:/reservation/reservationHistoryJY";
+        return "redirect:/payment/mileageHistory";
+    }
+    /**
+     * 예약 취소 요청을 처리하는 컨트롤러 메서드
+     * @param reservation    폼에서 전달된 예약 정보 (rsvSeq, cancelReason 등)
+	 * @param redirectAttrs  리다이렉트 시 플래시 메시지 전달을 위한 객체
+	 * @return 예약 목록 또는 예약 상세 페이지로의 리다이렉션 경로
+     */
+    @PostMapping("/cancel")
+    public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
+        try {
+            reservationService.cancelReservation(reservation);
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+        }
+        return "redirect:/reservation/list";
     }
 
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
@@ -321,6 +358,11 @@ public class ReservationControllerJY {
             return "redirect:/user/login";
         }
 
+        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
+        if (roomType == null) {
+            redirectAttrs.addFlashAttribute("error", "유효하지 않은 객실 정보입니다. 예약을 다시 시도해주세요.");
+            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+        }
         try {
             reservation.setRsvCheckInDt(LocalDate.parse(request.getParameter("rsvCheckInDt"), INPUT_FORMAT).format(DB_FORMAT));
             reservation.setRsvCheckOutDt(LocalDate.parse(request.getParameter("rsvCheckOutDt"), INPUT_FORMAT).format(DB_FORMAT));

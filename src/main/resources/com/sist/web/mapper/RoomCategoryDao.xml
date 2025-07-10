@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.RoomCategoryDao">
+
+	<resultMap type="com.sist.web.model.RoomCategory" id="categoryResultMap">
+		  	<id column="ROOM_CAT_SEQ" property="roomCatSeq" />
+		  	<result column="ROOM_CAT_NAME" property="roomCatName" />
+		  	<result column="ROOM_CAT_ICON_EXT" property="roomCatIconExt" />
+	</resultMap>
+
+  	
+  <!-- 숙소 카테고리 리스트 -->
+  <select id="roomCategoryList" resultMap="categoryResultMap">
+  	 SELECT
+      ROOM_CAT_SEQ,
+      ROOM_CAT_NAME,
+      ROOM_CAT_ICON_EXT
+    FROM ROOM_CATEGORY
+    WHERE ROOM_CAT_SEQ BETWEEN 8 AND 14
+    ORDER BY ROOM_CAT_SEQ
+  </select>
+  
+  <!-- 공간 카테고리 리스트 -->
+  <select id="spaceCategoryList" resultMap="categoryResultMap">
+  	 SELECT
+      ROOM_CAT_SEQ,
+      ROOM_CAT_NAME,
+      ROOM_CAT_ICON_EXT
+    FROM ROOM_CATEGORY
+    WHERE ROOM_CAT_SEQ BETWEEN 1 AND 7
+    ORDER BY ROOM_CAT_SEQ
+  </select>
+  
+</mapper>

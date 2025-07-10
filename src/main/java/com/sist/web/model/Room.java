@@ -58,6 +58,9 @@ public class Room implements Serializable{
 	private int maxPrice;
 	private List<String> facilityList;
 	
+	private String roomImgName;
+	private long weekdayAmt;
+	
 	public Room()
 	{
 		roomSeq = 0;
@@ -95,9 +98,38 @@ public class Room implements Serializable{
 		personCount = 0;
 		minPrice = 0;
 		maxPrice = 0;
+		
+		roomImgName = "";
+		weekdayAmt = 0;
 	}
 
-    // getter / setter
+	
+	
+    public String getRoomImgName() {
+		return roomImgName;
+	}
+
+
+
+	public void setRoomImgName(String roomImgName) {
+		this.roomImgName = roomImgName;
+	}
+
+
+
+	public long getWeekdayAmt() {
+		return weekdayAmt;
+	}
+
+
+
+	public void setWeekdayAmt(long weekdayAmt) {
+		this.weekdayAmt = weekdayAmt;
+	}
+
+
+
+	// getter / setter
     public int getRoomTypeSeq() {
         return roomTypeSeq;
     }

@@ -276,4 +276,9 @@ public class ReviewService {
     public String getRoomTitle(int roomSeq) {
         return reviewDao.selectRoomTitle(roomSeq);
     }
+    
+    public List<Review> allReviewList()
+    {
+    	return reviewDao.allReviewList();
+    }
 }
