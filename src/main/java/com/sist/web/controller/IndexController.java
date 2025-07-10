@@ -29,8 +29,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.sist.web.model.Review;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomCategory;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.RoomCategoryService;
 import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.WishlistService;
@@ -72,6 +74,9 @@ public class IndexController
 	@Autowired
 	private WishlistService wishlistService;
 	
+	@Autowired
+	private ReviewService reviewService;
+	
 	@Value("#{env['auth.session.name']}") 
 	private String AUTH_SESSION_NAME;
 
@@ -80,7 +85,13 @@ public class IndexController
 	{
 		List<Room> rooms = roomService.newRoomList();
 		
-        List<RoomCategory> cats = roomategoryService.categoryList();
+		List<Room> spaces = roomService.newSpaceList();
+		
+        List<RoomCategory> cats = roomategoryService.roomCategoryList();
+        
+        List<RoomCategory> cats2 = roomategoryService.spaceCategoryList();
+        
+        List<Review> reviews = reviewService.allReviewList();
         
         String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 	    if (sessionUserId != null && !sessionUserId.isEmpty()) {
@@ -91,8 +102,11 @@ public class IndexController
 	        model.addAttribute("wishSeqs", Collections.emptyList());
 	    }
         
+	    model.addAttribute("spaceCategoryList", cats2);
+	    model.addAttribute("spaceList", spaces);
         model.addAttribute("roomList", rooms);
-        model.addAttribute("categoryList", cats);
+        model.addAttribute("roomCategoryList", cats);
+        model.addAttribute("reviewList", reviews);
         
         return "/index";  // /WEB-INF/views/index.jsp
     }

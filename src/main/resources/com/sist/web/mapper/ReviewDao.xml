@@ -15,7 +15,15 @@
 		<result property="roomTitle" column="ROOM_TITLE" />         
 		<result property="roomTypeTitle" column="ROOM_TYPE_TITLE" />
 		<result property="userNickname" column="USER_NICKNAME" />
+		
+		<result property="profImgExt" column="PROF_IMG_EXT" />
+		<result property="roomAddr" column="ROOM_ADDR" />
+		<result property="reviewImgName" column="REVIEW_IMG_NAME" />
+		<result property="roomSeq" column="ROOM_SEQ" />
+		
     </resultMap>
+    
+    
 	
 	<!-- 1. 리뷰 쓰기 전 예약 상태, 결제 상태 확인 -->
 	<select id="findStatbyRsvSeq" resultType="com.sist.web.model.Reservation" parameterType="int">
@@ -163,5 +171,61 @@
 	<!--  10. 숙소 제목 조회 (페이지 제목 표시용) -->
 	<select id="selectRoomTitle" parameterType="int" resultType="string">
 	    SELECT ROOM_TITLE FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
+	</select>
+	
+	
+	<!-- 메인페이지용 모든 후기 조회 -->
+	<select id="allReviewList" resultMap="reviewResultMap">
+		SELECT
+		    REVIEW_SEQ,
+		    RSV_SEQ,
+		    USER_ID,
+		    REVIEW_TITLE,
+		    REVIEW_CONTENT,
+		    RATING,
+		    REVIEW_STAT,
+		    REG_DT,
+		    UPDATE_DT,
+		    PROF_IMG_EXT,
+		    USER_NICKNAME,
+		    ROOM_TYPE_SEQ,
+		    ROOM_ADDR,
+		    ROOM_TITLE,
+		    ROOM_TYPE_TITLE,
+		    ROOM_SEQ,
+		    REVIEW_IMG_NAME
+		FROM (
+		  SELECT
+		    A.REVIEW_SEQ,
+		    A.RSV_SEQ,
+		    A.USER_ID,
+		    A.REVIEW_TITLE,
+		    A.REVIEW_CONTENT,
+		    A.RATING,
+		    A.REVIEW_STAT,
+		    A.REG_DT,
+		    A.UPDATE_DT,
+		    B.PROF_IMG_EXT,
+		    B.NICKNAME      AS USER_NICKNAME,
+		    C.ROOM_TYPE_SEQ,
+		    D.ROOM_ADDR,
+		    D.ROOM_TITLE,
+		    D.ROOM_SEQ,
+		    E.ROOM_TYPE_TITLE,
+		    ( SELECT F.REVIEW_IMG_NAME
+		        FROM REVIEW_IMAGE F
+		       WHERE F.REVIEW_SEQ = A.REVIEW_SEQ
+		         AND ROWNUM = 1
+		    ) AS REVIEW_IMG_NAME
+		  FROM REVIEW A
+		  JOIN SB_USER    B ON A.USER_ID        = B.USER_ID
+		  JOIN RESERVATION C ON A.RSV_SEQ       = C.RSV_SEQ
+		  JOIN ROOM_TYPE   E ON C.ROOM_TYPE_SEQ = E.ROOM_TYPE_SEQ
+		  JOIN ROOM        D ON E.ROOM_SEQ       = D.ROOM_SEQ
+		  WHERE A.REVIEW_STAT = 'Y'
+		  ORDER BY A.REG_DT DESC
+		) TMP
+		WHERE ROWNUM <![CDATA[<=]]> 13
+
 	</select>
 </mapper>

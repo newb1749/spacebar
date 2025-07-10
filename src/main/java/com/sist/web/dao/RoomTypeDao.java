@@ -3,9 +3,12 @@ package com.sist.web.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
+import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
 
+@Repository
 public interface RoomTypeDao {
 
     /**
@@ -27,5 +30,7 @@ public interface RoomTypeDao {
      */
     RoomType selectRoomTypeBySeq(int roomTypeSeq);
 
-    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
+    List<RoomType> selectRoomTypesByRoomSeq(Room room);
+    
+    
 }

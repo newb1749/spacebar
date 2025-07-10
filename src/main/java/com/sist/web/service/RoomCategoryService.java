@@ -13,8 +13,13 @@ public class RoomCategoryService {
 	@Autowired
 	private RoomCategoryDao roomCategoryDao;
 	
-	public List<RoomCategory> categoryList()
+	public List<RoomCategory> roomCategoryList()
 	{
-		return roomCategoryDao.categoryList();
+		return roomCategoryDao.roomCategoryList();
+	}
+	
+	public List<RoomCategory> spaceCategoryList()
+	{
+		return roomCategoryDao.spaceCategoryList();
 	}
 }
