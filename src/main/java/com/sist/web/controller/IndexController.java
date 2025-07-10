@@ -85,6 +85,8 @@ public class IndexController
 	{
 		List<Room> rooms = roomService.newRoomList();
 		
+		List<Room> spaces = roomService.newSpaceList();
+		
         List<RoomCategory> cats = roomategoryService.categoryList();
         
         List<Review> reviews = reviewService.allReviewList();
@@ -99,7 +101,7 @@ public class IndexController
 	    }
         
 
-	    
+	    model.addAttribute("spaceList", spaces);
         model.addAttribute("roomList", rooms);
         model.addAttribute("categoryList", cats);
         model.addAttribute("reviewList", reviews);

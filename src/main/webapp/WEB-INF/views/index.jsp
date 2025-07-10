@@ -40,12 +40,16 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   	<style>
+  	
+  	
   /* pulsate effect for heart */
 @keyframes pulse {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.4); }
   100% { transform: scale(1); }
 }
+
+/*****************************최근등록공간****************************/
 .wish-heart.clicked {
   animation: pulse 0.3s ease;
 }
@@ -255,6 +259,31 @@ body {
   object-fit: cover;
   object-position: center; /* 가운데 중심으로 자를 때 유용합니다 */
 }
+
+
+/*****************************후기****************************/
+.testimonial {
+  /* 아이템 너비 안에서만 줄바꿈하도록 보장 */
+  overflow-wrap: break-word;   /* IE11+, Chrome, FF */
+  word-wrap: break-word;       /* 구 IE 지원 */
+  word-break: break-word;      /* 아주 긴 단어라도 줄바꿈 */
+  white-space: normal !important; /* 강제 줄바꿈을 허용 */
+}
+
+.testimonial .fw-bold,
+.testimonial .text-muted {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: normal !important;
+}
+
+.testimonial-slider .item .testimonial img.img-fluid {
+  width: 100%;        /* 부모 컨테이너 폭에 딱 맞게 */
+  height: 200px;      /* 원하는 높이로 통일 */
+  object-fit: cover;  /* 비율 똑같이 자르기 */
+}
+
 	</style>
 
 
@@ -303,9 +332,94 @@ body {
       </div>
       <div class="col-lg-6 text-lg-end">
         <p>
-          <a href="${pageContext.request.contextPath}/room"
+          <a href="${pageContext.request.contextPath}/room/spaceList"
              class="btn btn-primary text-white py-3 px-4">
-            모든공간보기
+            모든숙소보기
+          </a>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="property-slider-wrap">
+          <div class="property-slider">
+            <c:forEach var="newSpaceList" items="${spaceList}">
+              <div class="property-item">
+                <!-- 1) 클릭 가능한 썸네일 -->
+                <a href="${pageContext.request.contextPath}/room/detail?roomSeq=${newSpaceList.roomSeq}"
+                   class="img">
+                  <img
+                    src="${pageContext.request.contextPath}/resources/upload/room/main/${newSpaceList.roomImgName}"
+                    onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+                    alt="${newSpaceList.roomTitle}"
+                    class="img-fluid"
+                  />
+                </a>
+
+                <!-- 2) 카드 하단 정보 -->
+                <div class="property-content">
+                  <div>
+                    <span class="d-block mb-2 text-black-50 room-addr">
+                      ${newSpaceList.roomAddr}
+                    </span>
+                    <span class="city d-block mb-3">
+                      ${newSpaceList.roomTitle}
+                    </span>
+                    <div class="specs d-flex mb-4">
+                      <span class="d-block d-flex align-items-center me-3">
+                        <span class="caption">⭐ ${newSpaceList.averageRating}</span>&nbsp;
+                        <span class="caption">(${newSpaceList.reviewCount}명)</span>
+                      </span>
+                    </div>
+                    <div class="room-price">
+                      <strong>
+                        <fmt:formatNumber value="${newSpaceList.weekdayAmt}" pattern="#,###" />원~
+                      </strong>
+                      <c:set var="isWished" value="false" />
+                      <c:forEach var="seq" items="${wishSeqs}">
+                        <c:if test="${seq eq newSpaceList.roomSeq}">
+                          <c:set var="isWished" value="true" />
+                        </c:if>
+                      </c:forEach>
+                      <!-- 3) 하트 토글 버튼 -->
+                      <button class="wish-heart"
+                              data-wished="${isWished}"
+                              onclick="toggleWish(${newSpaceList.roomSeq}, this)">
+                        <i class="${isWished ? 'fas fa-heart wished' : 'far fa-heart'}"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </c:forEach>
+          </div>
+          <div id="property-nav"
+               class="controls"
+               tabindex="0"
+               aria-label="Carousel Navigation">
+            <span class="prev" data-controls="prev" aria-controls="property">◀</span>
+            <span class="next" data-controls="next" aria-controls="property">▶</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="section">
+  <div class="container">
+    <div class="row mb-5 align-items-center">
+      <div class="col-lg-6">
+        <h2 class="font-weight-bold text-primary heading">
+          신규등록숙소
+        </h2>
+      </div>
+      <div class="col-lg-6 text-lg-end">
+        <p>
+          <a href="${pageContext.request.contextPath}/room/roomList"
+             class="btn btn-primary text-white py-3 px-4">
+            모든숙소보기
           </a>
         </p>
       </div>
@@ -461,7 +575,7 @@ body {
                   src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
                   onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
                   class="img-fluid rounded"
-                  style="max-height:200px; object-fit:cover;"
+                  
                 />
               </div>
               <blockquote class="mb-2">&ldquo;${rev.reviewContent}&rdquo;</blockquote>

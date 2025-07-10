@@ -52,7 +52,7 @@ public class RoomServiceSh
 		return list;
 	}
 	
-	//최신순
+	//최신순 숙소
 	public List<Room> newRoomList()
 	{
 		List<Room> list = null;
@@ -64,6 +64,23 @@ public class RoomServiceSh
 		catch(Exception e)
 		{
 			logger.error("[RoomServiceList]newRoomList : ",e);
+		}
+		
+		return list;
+	}
+	
+	//최신순 공간
+	public List<Room> newSpaceList()
+	{
+		List<Room> list = null;
+		
+		try
+		{
+			list = roomDao.newSpaceList();
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceList]newSpaceList : ",e);
 		}
 		
 		return list;
