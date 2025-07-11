@@ -75,6 +75,18 @@ public class CartController {
         String checkOutTime   = HttpUtil.get(request, "rsvCheckOutTime", "");
         int    guests         = HttpUtil.get(request, "numGuests", 1);
         
+        try {
+            checkInTime = String.format("%04d", Integer.parseInt(checkInTime));
+        } catch (NumberFormatException e) {
+            checkInTime = ""; 
+        }
+        
+        try {
+            checkOutTime = String.format("%04d", Integer.parseInt(checkOutTime));
+        } catch (NumberFormatException e) {
+            checkOutTime = "";
+        }
+        
         // 1) 룸타입 정보 조회 (service/DAO 에서 WEEKDAY_AMT, WEEKEND_AMT 필드 포함)
         RoomType rt = roomTypeService.getRoomType(roomTypeSeq);
         int weekdayAmt = rt.getWeekdayAmt();
@@ -85,12 +97,27 @@ public class CartController {
         LocalDate start = LocalDate.parse(checkInDt, fmt);
         LocalDate end   = LocalDate.parse(checkOutDt, fmt);
         int totalAmt = 0;
-        for (LocalDate d = start; d.isBefore(end); d = d.plusDays(1)) {
-            DayOfWeek dow = d.getDayOfWeek();
-            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY || dow == DayOfWeek.FRIDAY) {
+        if (start.equals(end)) {
+            // 당일 예약은 1박으로 계산
+            DayOfWeek dow = start.getDayOfWeek();
+            if (dow == DayOfWeek.FRIDAY 
+             || dow == DayOfWeek.SATURDAY 
+             || dow == DayOfWeek.SUNDAY) {
                 totalAmt += weekendAmt;
             } else {
                 totalAmt += weekdayAmt;
+            }
+        } else {
+            // 기존 로직: start 부터 end 전날까지 계산
+            for (LocalDate d = start; d.isBefore(end); d = d.plusDays(1)) {
+                DayOfWeek dow = d.getDayOfWeek();
+                if (dow == DayOfWeek.FRIDAY 
+                 || dow == DayOfWeek.SATURDAY 
+                 || dow == DayOfWeek.SUNDAY) {
+                    totalAmt += weekendAmt;
+                } else {
+                    totalAmt += weekdayAmt;
+                }
             }
         }
         
@@ -229,7 +256,7 @@ public class CartController {
             cartService.deleteCarts(cartSeqs, userId);
 
             rt.addFlashAttribute("msg", "예약이 완료되었습니다.");
-            return "redirect:/index";
+            return "redirect:/reservation/list";
         }
     
 }

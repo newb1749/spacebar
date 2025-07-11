@@ -25,11 +25,17 @@
 </select>
 
   <update id="updateMileageDeduct" parameterType="map">
-    UPDATE USER_MJ
+    UPDATE SB_USER
        SET MILE = MILE - #{amount}
      WHERE USER_ID = #{userId} 
        AND MILE >= #{amount}
   </update>
+
+	<update id="updateMileageAdd" parameterType="map">
+		UPDATE SB_USER
+	       SET MILE = MILE + #{amount}
+	     WHERE USER_ID = #{userId}
+	</update>
 
   <insert id="insertMileageHistory" parameterType="com.sist.web.model.MileageHistory">
 	  INSERT INTO 
@@ -50,26 +56,6 @@
 	    SYSDATE
 	  )
 	</insert>
-
-	<update id="updateMileageAdd" parameterType="map">
-		UPDATE SB_USER
-	       SET MILE = MILE + #{amount}
-	     WHERE USER_ID = #{userId}
-	</update>
-
-  <insert id="insertMileageHistory" parameterType="com.sist.web.model.MileageHistory" useGeneratedKeys="true" keyProperty="mileHistorySeq">
-    INSERT INTO 
-    MILEAGE_HISTORY (USER_ID, 
-				     TRX_TYPE, 
-				     TRX_AMT, 
-				     BALANCE_AFTER_TRX,
-					 TRX_DT)
-    VALUES (#{userId}, 
-		    #{trxType}, 
-		    #{trxAmt}, 
-		    #{balanceAfterTrx}, 
-		    SYSDATE)
-  </insert>
 
 
 </mapper>

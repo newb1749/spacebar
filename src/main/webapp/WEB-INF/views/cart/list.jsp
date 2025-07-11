@@ -9,6 +9,7 @@
   <%@ include file="/WEB-INF/views/include/head.jsp" %>
   <title>장바구니</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
       padding-top: 100px;
@@ -122,7 +123,20 @@
       });
       updateSummary();
     });
+    
   </script>
+  
+  <c:if test="${not empty msg}">
+  <script>
+    Swal.fire({
+      icon: 'success',
+      title: '예약 완료!',
+      text: '${msg}',
+      confirmButtonText: '확인'
+    });
+  </script>
+</c:if>
+
 </head>
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %>

@@ -209,16 +209,38 @@ body {
 	  gap: 1rem;
 	  justify-items: center;
 	}
-.category-grid .category-btn img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover; /* 필요에 따라 비율 유지용 */
+.category-grid .category-btn,
+.category-grid .category2-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
 }
 
+.category-grid .category-btn img,
 .category-grid .category2-btn img {
   width: 60px;
   height: 60px;
-  object-fit: cover; /* 필요에 따라 비율 유지용 */
+  object-fit: cover;
+  border-radius: 50%;
+  background-color: #f2f2f2;   /* 원 안에 연한 배경색 */
+  padding: 8px;               /* 원 안 여백 */
+  transition: transform .2s;
+}
+
+.category-grid .category-btn:hover img,
+.category-grid .category2-btn:hover img {
+  transform: scale(1.1);
+}
+
+/* 5) 버튼 아래 카테고리 이름 간격·폰트 조정 */
+.category-grid .category-btn .small,
+.category-grid .category2-btn .small {
+  margin-top: 6px;
+  font-size: .85rem;
+  color: #333;
 }
 	
 .property-slider-wrap .property-item {
@@ -654,365 +676,6 @@ body {
     </div>
   </div>
 </div>
-
-
-    <div class="section section-4 bg-light">
-      <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-          <div class="col-lg-5">
-            <h2 class="font-weight-bold heading text-primary mb-4">
-              Let's find home that's perfect for you
-            </h2>
-            <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-              enim pariatur similique debitis vel nisi qui reprehenderit.
-            </p>
-          </div>
-        </div>
-        <div class="row justify-content-between mb-5">
-          <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2">
-            <div class="img-about dots">
-              <img src="/resources/images/hero_bg_3.jpg" alt="Image" class="img-fluid" />
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-home2"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">2M Properties</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-person"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">Top Rated Agents</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-security"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">Legit Properties</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row section-counter mt-5">
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">3298</span></span
-              >
-              <span class="caption text-black-50"># of Buy Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="400"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">2181</span></span
-              >
-              <span class="caption text-black-50"># of Sell Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="500"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">9316</span></span
-              >
-              <span class="caption text-black-50"># of All Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="600"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">7191</span></span
-              >
-              <span class="caption text-black-50"># of Agents</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="row justify-content-center footer-cta" data-aos="fade-up">
-        <div class="col-lg-7 mx-auto text-center">
-          <h2 class="mb-4">Be a part of our growing real state agents</h2>
-          <p>
-            <a
-              href="#"
-              target="_blank"
-              class="btn btn-primary text-white py-3 px-4"
-              >Apply for Real Estate agent</a
-            >
-          </p>
-        </div>
-        <!-- /.col-lg-7 -->
-      </div>
-      <!-- /.row -->
-    </div>
-
-    <div class="section section-5 bg-light">
-      <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-          <div class="col-lg-6 mb-5">
-            <h2 class="font-weight-bold heading text-primary mb-4">
-              Our Agents
-            </h2>
-            <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-              enim pariatur similique debitis vel nisi qui reprehenderit totam?
-              Quod maiores.
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_1-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">James Doe</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_2-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Jean Smith</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_3-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Alicia Huston</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="site-footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Contact</h3>
-              <address>43 Raymouth Rd. Baltemoer, London 3910</address>
-              <ul class="list-unstyled links">
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li>
-                  <a href="mailto:info@mydomain.com">info@mydomain.com</a>
-                </li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Sources</h3>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Vision</a></li>
-                <li><a href="#">Mission</a></li>
-                <li><a href="#">Terms</a></li>
-                <li><a href="#">Privacy</a></li>
-              </ul>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">Partners</a></li>
-                <li><a href="#">Business</a></li>
-                <li><a href="#">Careers</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Creative</a></li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Links</h3>
-              <ul class="list-unstyled links">
-                <li><a href="#">Our Vision</a></li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Contact us</a></li>
-              </ul>
-
-              <ul class="list-unstyled social">
-                <li>
-                  <a href="#"><span class="icon-instagram"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-twitter"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-facebook"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-linkedin"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-pinterest"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-dribbble"></span></a>
-                </li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-        </div>
-        <!-- /.row -->
-
-        <div class="row mt-5">
-          <div class="col-12 text-center">
-            <!-- 
-              **==========
-              NOTE: 
-              Please don't remove this copyright link unless you buy the license here https://untree.co/license/  
-              **==========
-            -->
-
-            <p>
-              Copyright &copy;
-              <script>
-                document.write(new Date().getFullYear());
-              </script>
-              . All Rights Reserved. &mdash; Designed with love by
-              <a href="https://untree.co">Untree.co</a>
-              <!-- License information: https://untree.co/license/ -->
-            </p>
-            <div>
-              Distributed by
-              <a href="https://themewagon.com/" target="_blank">themewagon</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- /.container -->
-    </div>
-    <!-- /.site-footer -->
 
     <!-- Preloader -->
     <div id="overlayer"></div>
