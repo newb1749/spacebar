@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -22,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.Cart;
+import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
 import com.sist.web.model.RoomType;
@@ -52,6 +55,10 @@ public class CartController {
 
     @Autowired
     private ReservationDao reservationDao;
+    
+    @Autowired
+    private MileageHistoryDao mileageHistoryDao;
+    
 
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
@@ -68,6 +75,18 @@ public class CartController {
         String checkOutTime   = HttpUtil.get(request, "rsvCheckOutTime", "");
         int    guests         = HttpUtil.get(request, "numGuests", 1);
         
+        try {
+            checkInTime = String.format("%04d", Integer.parseInt(checkInTime));
+        } catch (NumberFormatException e) {
+            checkInTime = ""; 
+        }
+        
+        try {
+            checkOutTime = String.format("%04d", Integer.parseInt(checkOutTime));
+        } catch (NumberFormatException e) {
+            checkOutTime = "";
+        }
+        
         // 1) 룸타입 정보 조회 (service/DAO 에서 WEEKDAY_AMT, WEEKEND_AMT 필드 포함)
         RoomType rt = roomTypeService.getRoomType(roomTypeSeq);
         int weekdayAmt = rt.getWeekdayAmt();
@@ -78,12 +97,27 @@ public class CartController {
         LocalDate start = LocalDate.parse(checkInDt, fmt);
         LocalDate end   = LocalDate.parse(checkOutDt, fmt);
         int totalAmt = 0;
-        for (LocalDate d = start; d.isBefore(end); d = d.plusDays(1)) {
-            DayOfWeek dow = d.getDayOfWeek();
-            if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY || dow == DayOfWeek.FRIDAY) {
+        if (start.equals(end)) {
+            // 당일 예약은 1박으로 계산
+            DayOfWeek dow = start.getDayOfWeek();
+            if (dow == DayOfWeek.FRIDAY 
+             || dow == DayOfWeek.SATURDAY 
+             || dow == DayOfWeek.SUNDAY) {
                 totalAmt += weekendAmt;
             } else {
                 totalAmt += weekdayAmt;
+            }
+        } else {
+            // 기존 로직: start 부터 end 전날까지 계산
+            for (LocalDate d = start; d.isBefore(end); d = d.plusDays(1)) {
+                DayOfWeek dow = d.getDayOfWeek();
+                if (dow == DayOfWeek.FRIDAY 
+                 || dow == DayOfWeek.SATURDAY 
+                 || dow == DayOfWeek.SUNDAY) {
+                    totalAmt += weekendAmt;
+                } else {
+                    totalAmt += weekdayAmt;
+                }
             }
         }
         
@@ -157,9 +191,10 @@ public class CartController {
             }
  
             // 2) 총 금액 합산
-            int totalAmt = carts.stream()
-                                .mapToInt(Cart::getCartTotalAmt)
-                                .sum();
+            int totalAmt = 0;
+            for (int i = 0; i < carts.size(); i++) {
+                totalAmt += carts.get(i).getCartTotalAmt();
+            }
 
             // 3) 마일리지 체크
             int userMileage = mileageService.getUserMileage(userId);
@@ -173,6 +208,18 @@ public class CartController {
                 rt.addFlashAttribute("error", "마일리지 결제 오류");
                 return "redirect:/cart/list";
             }
+            
+            /* 마일리지 이력 등록해야함 */
+            int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, totalAmt);
+            if (updatedRows > 0) {
+                MileageHistory history = new MileageHistory();
+                history.setUserId(userId);
+                history.setTrxType("결제");
+                history.setTrxAmt(-totalAmt);
+                history.setBalanceAfterTrx(userMileage - totalAmt);
+                mileageHistoryDao.insertMileageHistory(history);
+            }
+            
 
             // 5) Cart → ReservationJY 변환 & 저장
             for (Cart c : carts) {
@@ -184,6 +231,8 @@ public class CartController {
                 r.setRsvCheckInTime(c.getCartCheckInTime());
                 r.setRsvCheckOutTime(c.getCartCheckOutTime());
                 r.setNumGuests(c.getCartGuestsNum());
+                r.setTotalAmt(c.getCartTotalAmt());
+                r.setFinalAmt(c.getCartTotalAmt());
 
                 // hostId 세팅 (1번 방법)
                 RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
