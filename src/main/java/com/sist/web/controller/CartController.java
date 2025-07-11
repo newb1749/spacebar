@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.Cart;
+import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
 import com.sist.web.model.RoomType;
@@ -53,6 +55,9 @@ public class CartController {
 
     @Autowired
     private ReservationDao reservationDao;
+    
+    @Autowired
+    private MileageHistoryDao mileageHistoryDao;
     
 
     @Value("#{env['auth.session.name']}")
@@ -177,18 +182,17 @@ public class CartController {
                 return "redirect:/cart/list";
             }
             
-            /* 마일리지 이력 등록해야함
-            int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, amount);
+            /* 마일리지 이력 등록해야함 */
+            int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, totalAmt);
             if (updatedRows > 0) {
                 MileageHistory history = new MileageHistory();
                 history.setUserId(userId);
                 history.setTrxType("결제");
-                history.setTrxAmt(-amount);
-                history.setBalanceAfterTrx(currentMileage - amount);
+                history.setTrxAmt(-totalAmt);
+                history.setBalanceAfterTrx(userMileage - totalAmt);
                 mileageHistoryDao.insertMileageHistory(history);
-                return true;
             }
-            */
+            
 
             // 5) Cart → ReservationJY 변환 & 저장
             for (Cart c : carts) {
