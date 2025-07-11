@@ -12,9 +12,9 @@ import com.sist.web.dao.SpaceDao;
 import com.sist.web.model.Room;
 
 @Service("SpaceServiceSh")
-public class SpaceServiceSh
+public class SpaceService
 {
-	private static Logger logger = LoggerFactory.getLogger(SpaceServiceSh.class);
+	private static Logger logger = LoggerFactory.getLogger(SpaceService.class);
 	
 	@Autowired
 	private SpaceDao spaceDao;

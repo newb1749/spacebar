@@ -33,7 +33,7 @@ import com.sist.web.model.RoomType;
 import com.sist.web.service.CartService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomTypeServiceJY;
+import com.sist.web.service.RoomTypeService;
 import com.sist.web.util.HttpUtil;
 
 @Controller("cartController")
@@ -51,7 +51,7 @@ public class CartController {
     private MileageServiceJY mileageService;
     
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
 
     @Autowired
     private ReservationDao reservationDao;

@@ -14,27 +14,10 @@ import com.sist.web.model.RoomImage;
 @Service("roomImgService")
 public class RoomImgService 
 {
-	private static Logger logger = LoggerFactory.getLogger(RoomService.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomServiceInterface.class);
 	
 	@Autowired
 	private RoomDao roomDao;
-	
-	// 룸정보
-	public Room getRoomDetail(int roomSeq)
-	{
-		Room room = null;
-		
-		try
-		{
-			room = roomDao.getRoomDetail(roomSeq);
-		}
-		catch(Exception e)
-		{
-			logger.error("[RoomService]getRoomDetail Exception", e);
-		}
-		
-		return room;
-	}
 	
 	// 룸에 대한 전체 이미지 정보
 	public List<RoomImage> getRoomImgDetail(int roomSeq)

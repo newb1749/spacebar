@@ -6,8 +6,8 @@ import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceJY;
-import com.sist.web.service.RoomTypeServiceJY;
+import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 
 import org.slf4j.Logger;
@@ -41,13 +41,13 @@ public class ReservationControllerJY {
     private UserService_mj userService;  // 회원 서비스는 유지 (필요시 사용)
 
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
 
     @Autowired
     private ReservationDao reservationDao;
 
     @Autowired
-    private RoomServiceJY roomService;
+    private RoomService roomService;
 
     @Autowired  // 의존성 자동 주입
     private ReservationServiceJY reservationService;
