@@ -3,6 +3,10 @@ package com.sist.web.dao;
 import com.sist.web.model.MileageHistory;
 import java.util.List;
 
+
+import org.apache.ibatis.annotations.Param;
+
+
 public interface MileageHistoryDao 
 {
     /**
@@ -33,6 +37,9 @@ public interface MileageHistoryDao
      */
     void insertMileageHistory(MileageHistory mileageHistory);
     
+
+    // 마일리지 충전 (환불 포함) 시 마일리지 증가
+    int updateMileageAdd(@Param("userId") String userId, @Param("amount") int amount);
 
 
 }
