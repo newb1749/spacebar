@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import com.sist.web.model.MiliageHistory;
+import com.sist.web.model.MileageHistory;
 import com.sist.web.model.User;
 
 @Repository("userDao")
@@ -36,11 +36,11 @@ public interface UserDao
 
     int updateMileage(@Param("userId") String userId, @Param("amount") int amount);
 
-    int insertMileageHistory(MiliageHistory history);
+    int insertMileageHistory(MileageHistory history);
     
     int selectMileage(String userId); // 현재 마일리지 조회
     
-    List<MiliageHistory> selectMileageHistory(String userId);
+    List<MileageHistory> selectMileageHistory(String userId);
 	
 	/**
 	 * 사용자 목록 조회(검색 기능 포함) 

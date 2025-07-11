@@ -317,8 +317,26 @@
 		        UPDATE_DT = SYSDATE
 		    WHERE FREE_BOARD_CMT_SEQ = #{freeBoardCmtSeq}
 		</update>
-	
-	
+		
+	<!-- 게시글 조회(마이페이지용) -->
+	<select id="boardListByUser" parameterType="String" resultMap="freeBoardResultMap">
+    SELECT A.FREE_BOARD_SEQ FREE_BOARD_SEQ,
+           NVL(A.FREE_BOARD_TITLE, '') FREE_BOARD_TITLE,
+           NVL(A.FREE_BOARD_CONTENT, '') FREE_BOARD_CONTENT,
+           A.USER_ID USER_ID,
+           NVL(A.FREE_BOARD_STAT, 'Y') FREE_BOARD_STAT,
+           NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'), '') REG_DT,
+           NVL(TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS'), '') UPDATE_DT,
+           NVL(A.FREE_BOARD_VIEWS, 0) FREE_BOARD_VIEWS,
+           NVL(B.USER_NAME, '') USER_NAME,
+           NVL(B.EMAIL, '') EMAIL,
+           (SELECT COUNT(C.FREE_BOARD_CMT_SEQ) FROM FREE_BOARD_COMMENT C WHERE C.FREE_BOARD_SEQ = A.FREE_BOARD_SEQ AND FREE_BOARD_CMT_STAT = 'Y') AS COMMENT_COUNT
+      FROM FREE_BOARD A, SB_USER B
+     WHERE A.USER_ID = B.USER_ID
+       AND A.USER_ID = #{userId}
+       AND A.FREE_BOARD_STAT = 'Y'
+     ORDER BY A.FREE_BOARD_SEQ DESC
+</select>
 	
 	
 </mapper>

@@ -9,9 +9,9 @@ import com.sist.web.dao.RoomQnaCommentDao;
 import com.sist.web.model.RoomQnaComment;
 
 @Service("roomQnaCommentService_mj")
-public class RoomQnaCommentService_mj 
+public class RoomQnaCommentService 
 {
-	private static Logger logger = LoggerFactory.getLogger(RoomService_mj.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomServiceJY.class);
     
 	@Autowired
 	private RoomQnaCommentDao roomQnaCommentDao;
@@ -66,4 +66,21 @@ public class RoomQnaCommentService_mj
 		
 		return count;
 	}
+	
+    //QNA 답글 삭제
+  	public int qnaCommentDelete(int roomQnaCmtSeq)
+  	{
+  		int count = 0;
+  		
+    	try
+    	{
+    		count = roomQnaCommentDao.qnaCommentDelete(roomQnaCmtSeq);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[RoomService]qnaCommentDelete Exception", e);
+    	}
+  		
+  		return count;
+  	}
 }

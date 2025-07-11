@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.dao.UserDao;
-import com.sist.web.model.MiliageHistory;
+import com.sist.web.model.MileageHistory;
 import com.sist.web.model.User;
 
 @Service("userService_mj")
@@ -165,7 +165,7 @@ public class UserService_mj
 	        int result = userDao.updateMileage(userId, amount);
 
 	        // 이력 저장
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("충전");
 	        history.setTrxAmt(amount);
@@ -194,7 +194,7 @@ public class UserService_mj
 	}
 	
 	// 마일리지 이력 조회
-	public List<MiliageHistory> getMileageHistory(String userId) 
+	public List<MileageHistory> getMileageHistory(String userId) 
 	{
 	    try 
 	    {
@@ -220,7 +220,7 @@ public class UserService_mj
 	        int updated = userDao.updateMileage(userId, -amount); // 마일리지 차감
 
 	        // 마일리지 거래 내역 기록
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("결제");
 	        history.setTrxAmt(-amount);
@@ -245,7 +245,7 @@ public class UserService_mj
 	        int updated = userDao.updateMileage(userId, amount); // 마일리지 환불(충전)
 
 	        // 마일리지 거래 내역 기록
-	        MiliageHistory history = new MiliageHistory();
+	        MileageHistory history = new MileageHistory();
 	        history.setUserId(userId);
 	        history.setTrxType("환불");
 	        history.setTrxAmt(amount);

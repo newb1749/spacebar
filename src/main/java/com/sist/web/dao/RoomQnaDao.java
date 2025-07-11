@@ -25,5 +25,7 @@ public interface RoomQnaDao
 	public int qnaUpdate(RoomQna roomQna);
 	
 	//QNA 삭제
-	public int qnaDelete(int roomSeq);
+	public int qnaDelete(int roomQnaSeq);
+
+	
 }

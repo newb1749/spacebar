@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+#mile-content td:nth-child(3) {
+    text-align: center;
+}
+
+#mile-content td:nth-child(3)::before {
+    content: attr(data-type);
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+#mile-content td[data-type="충전"]::before {
+    background-color: #28a745;
+}
+
+#mile-content td[data-type="결제"]::before {
+    background-color: #35cedc;
+}
+
+#mile-content td[data-type="환불"]::before {
+    background-color: #dc3545;
+}
+
+#mile-content td:last-child {
+    text-align: right;
+}
+
+
+/*거래금액 가운데 정렬*/
+#mile-content td:nth-child(4) {
+    text-align: right;
+}
+/*거래일시 가운데 정렬*/
+#mile-content th,
+#mile-content td:nth-child(2) {
+    text-align: center;
+}
+/*번호 가운데 정렬*/
+#mile-content th:nth-child(1),
+#mile-content td:nth-child(1) {
+    text-align: center;
+}

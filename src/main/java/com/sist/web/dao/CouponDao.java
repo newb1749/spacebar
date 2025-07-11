@@ -14,4 +14,7 @@ public interface CouponDao
 
     // 쿠폰 발급(user_coupon 테이블에 insert)
     int insertUserCoupon(@Param("userId") String userId, @Param("cpnSeq") int cpnSeq);
+    
+    //마이페이지용 (쿠폰 조회)
+    List<Coupon> couponListByUser(String userId);
 }

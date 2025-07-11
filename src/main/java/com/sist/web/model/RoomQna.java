@@ -18,6 +18,7 @@ public class RoomQna implements Serializable
 	private int startRow;			//시작페이지 rownum	
 	private int endRow;				//끝페이지 rownum
 	private String nickName;		//회원 닉네임
+	private String profImgExt;		//회원 이미지 확장자
 	
 	private RoomQnaComment roomQnaComment;	//Q&A 답글
 	
@@ -37,6 +38,14 @@ public class RoomQna implements Serializable
 		nickName = "";
 		
 		roomQnaComment = null;
+	}
+
+	public String getProfImgExt() {
+		return profImgExt;
+	}
+
+	public void setProfImgExt(String profImgExt) {
+		this.profImgExt = profImgExt;
 	}
 
 	public RoomQnaComment getRoomQnaComment() {

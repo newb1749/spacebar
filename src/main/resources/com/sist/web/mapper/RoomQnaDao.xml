@@ -9,6 +9,7 @@
 	  	<result column="ROOM_QNA_CONTENT" property="roomQnaContent" />
 	  	<result column="USER_ID" property="userId" />
 	  	<result column="NICKNAME" property="nickName" />
+	  	<result column="PROF_IMG_EXT" property="profImgExt" />
 	  	<result column="ROOM_QNA_STAT" property="roomQnaStat" />
 	  	<result column="REG_DT" property="regDt" />
 	  	<result column="UPDATE_DT" property="updateDt" />
@@ -22,6 +23,7 @@
 		       ROOM_QNA_CONTENT,
 		       USER_ID,
 		       NICKNAME,
+		       PROF_IMG_EXT,
 		       ROOM_QNA_STAT,
 		       REG_DT,
 		       UPDATE_DT
@@ -32,6 +34,7 @@
 		               ROOM_QNA_CONTENT,
 		               USER_ID,
 		               NICKNAME,
+		               PROF_IMG_EXT,
 		               ROOM_QNA_STAT,
 		               REG_DT,
 		               UPDATE_DT
@@ -41,12 +44,14 @@
 		                       NVL(A.ROOM_QNA_CONTENT,'') ROOM_QNA_CONTENT,
 		                       A.USER_ID USER_ID,
 		                       NVL(B.NICKNAME,'') NICKNAME,
+		                       NVL(B.PROF_IMG_EXT,'') PROF_IMG_EXT,
 		                       NVL(A.ROOM_QNA_STAT,'Y') ROOM_QNA_STAT,
 		                       NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'),'') REG_DT,
 		                       NVL(TO_CHAR(A.UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
 		                  FROM ROOM_QNA A,  SB_USER B
 		                 WHERE A.ROOM_SEQ = #{roomSeq}
 		                   AND A.USER_ID = B. USER_ID
+		                   AND ROOM_QNA_STAT = 'Y'
 		                 ORDER BY REG_DT DESC))
 		  WHERE RNUM <![CDATA[>=]]> #{startRow}
 		    AND RNUM <![CDATA[<=]]> #{endRow}
@@ -105,7 +110,10 @@
 	
 	<!-- Q&A 삭제 -->
 	<update id="qnaDelete" parameterType="com.sist.web.model.RoomQna">
-		
+		UPDATE ROOM_QNA
+		   SET ROOM_QNA_STAT = 'N'
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
 	</update>
   
 </mapper>
+

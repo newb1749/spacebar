@@ -30,7 +30,16 @@ public class Reservation implements Serializable{
 	    private Date regDt;
 	    private Date updateDt;
 	    private int roomTypeSeq;
-	    
+	    private Date rsvCheckInDateObj;
+	    private Date rsvCheckOutDateObj;
+
+	    // getter, setter 추가
+	    public Date getRsvCheckInDateObj() { return rsvCheckInDateObj; }
+	    public void setRsvCheckInDateObj(Date rsvCheckInDateObj) { this.rsvCheckInDateObj = rsvCheckInDateObj; }
+
+	    public Date getRsvCheckOutDateObj() { return rsvCheckOutDateObj; }
+	    public void setRsvCheckOutDateObj(Date rsvCheckOutDateObj) { this.rsvCheckOutDateObj = rsvCheckOutDateObj; }
+
 	    
 	    public Reservation()
 	    {

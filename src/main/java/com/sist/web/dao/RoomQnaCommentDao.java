@@ -15,4 +15,7 @@ public interface RoomQnaCommentDao
 	
 	//Q&A 답글 수정
 	public int qnaCommentUpdate(RoomQnaComment roomQnaCmtSeq);
+	
+	//Q&A 답글 삭제
+	public int qnaCommentDelete(int roomQnaSeq);
 }

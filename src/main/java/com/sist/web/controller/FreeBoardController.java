@@ -1,5 +1,6 @@
 package com.sist.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -113,6 +114,7 @@ public class FreeBoardController {
 	
 		return "/board/list";
 	}
+	
 	
 	//게시판 상세 조회(댓글도 같이 조회되도록)
 	@RequestMapping(value="/board/view")
