@@ -29,7 +29,8 @@ public interface MileageHistoryDao
      * @param amount 차감할 마일리지 양
      * @return 업데이트된 행 수
      */
-    int updateMileageDeduct(String userId, int amount);
+    int updateMileageDeduct(@Param("userId") String userId,
+            @Param("amount")  int amount);
 
     /**
      * 마일리지 거래 내역 추가
