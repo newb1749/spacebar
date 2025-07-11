@@ -111,6 +111,7 @@ public class FreeBoardController {
 		model.addAttribute("searchValue", searchValue);
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("paging", paging);
+		model.addAttribute("boardType", "free");
 	
 		return "/board/list";
 	}
