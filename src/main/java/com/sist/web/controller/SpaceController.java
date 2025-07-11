@@ -30,9 +30,8 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
-import com.sist.web.service.RoomService;
-import com.sist.web.service.RoomServiceSh;
-import com.sist.web.service.SpaceServiceSh;
+import com.sist.web.service.RoomServiceInterface;
+import com.sist.web.service.SpaceService;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -42,9 +41,9 @@ import com.sist.common.util.StringUtil;
 
 
 @Controller("spaceControllerSh")
-public class SpaceControllerSh {
+public class SpaceController {
 	
-	private static Logger logger = LoggerFactory.getLogger(SpaceControllerSh.class);
+	private static Logger logger = LoggerFactory.getLogger(SpaceController.class);
 	
 	@Value("#{env['auth.cookie.name']}")
 	private String AUTH_COOKIE_NAME;
@@ -56,7 +55,7 @@ public class SpaceControllerSh {
 	private String AUTH_SESSION_NAME;
 	
 	@Autowired
-	private SpaceServiceSh spaceService;	
+	private SpaceService spaceService;	
 	
 	@Autowired
 	private WishlistService wishlistService;

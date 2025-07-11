@@ -11,7 +11,7 @@ import com.sist.web.model.RoomQnaComment;
 @Service("roomQnaCommentService_mj")
 public class RoomQnaCommentService 
 {
-	private static Logger logger = LoggerFactory.getLogger(RoomServiceJY.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomService.class);
     
 	@Autowired
 	private RoomQnaCommentDao roomQnaCommentDao;

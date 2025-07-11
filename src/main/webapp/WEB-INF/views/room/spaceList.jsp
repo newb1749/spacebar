@@ -515,7 +515,7 @@ function toggleWish(roomSeq, btn) {
 function fn_roomDetail(roomSeq)
 {
 	document.roomForm.roomSeq.value = roomSeq;
-	document.roomForm.action = "/room/roomDetailSh";
+	document.roomForm.action = "/room/roomDetail";
 	document.roomForm.submit();
 }
 </script>
@@ -739,7 +739,7 @@ function fn_roomDetail(roomSeq)
 
 
 <!-- ✅ 폼 -->
-<form name="roomForm" id="roomForm" method="post">
+<form name="roomForm" id="roomForm" method="get" action="${pageContext.request.contextPath}/room/roomDetail">
   <input type="hidden" name="roomSeq" value="${roomSeq}" />
   <input type="hidden" name="searchValue" value="${searchValue}" />
   <input type="hidden" name="curPage"  value="${curPage}" />
