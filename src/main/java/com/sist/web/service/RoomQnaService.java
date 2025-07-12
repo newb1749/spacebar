@@ -43,13 +43,13 @@ public class RoomQnaService
     
     
     //QNA 총 갯수
-    public int qnaListCount(int roomSeq)
+    public int qnaListCount(RoomQna roomQna)
     {
     	int count = 0;
     	
     	try
     	{
-    		count = roomQnaDao.qnaListCount(roomSeq);
+    		count = roomQnaDao.qnaListCount(roomQna);
     	}
     	catch(Exception e)
     	{
