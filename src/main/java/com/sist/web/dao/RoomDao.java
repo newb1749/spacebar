@@ -52,6 +52,9 @@ public interface RoomDao {
 
   	//편의시설 리스트
   	public List<Facility> facilityList(int roomSeq);
+  	
+  	//마이페이지용 호스트의 숙소 리스트 조회
+  	public List<Room> selectHostRoomList(String hostId);
 
 }
 
