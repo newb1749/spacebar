@@ -189,9 +189,9 @@ $(document).ready(function(){
                   <c:if test="${not empty rt.roomTypeDesc}">
                     <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
                   </c:if>
-                  <p class="mb-1"><strong>정원:</strong> ${rt.maxGuests}명</p>
-                  <p class="mb-2"><strong>주중가격:</strong> ${rt.weekdayAmt}원</p>
-                  <p class="mb-3"><strong>주말 가격:</strong> ${rt.weekendAmt}원</p>
+                  <p class="mb-1"><strong>정원 : </strong> ${rt.maxGuests}명</p>
+				  <p class="mb-2"><strong>주중 가격 : </strong><fmt:formatNumber value="${rt.weekdayAmt}" pattern="#,###"/>원</p>
+                  <p class="mb-2"><strong>주말 가격 : </strong><fmt:formatNumber value="${rt.weekendAmt}" pattern="#,###"/>원</p>
 
                   <c:choose>
                     <c:when test="${rt.reservationCheck > 0}">

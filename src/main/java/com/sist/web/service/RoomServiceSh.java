@@ -119,6 +119,23 @@ public class RoomServiceSh
 		
 		return list;
 	}
+	
+	//마이페이지용 호스트의 숙소 리스트 조회
+	public List<Room> selectHostRoomList(String hostId)
+	{
+		List<Room> hostList = null;
+		
+		try
+		{
+			hostList = roomDao.selectHostRoomList(hostId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomServiceSh]selectHostRoomList : ", e);
+		}
+		
+		return hostList;
+	}
 }
 
 

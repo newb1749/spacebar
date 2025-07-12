@@ -61,7 +61,7 @@ public class RoomController_mj
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
 	
-	private static final int LIST_COUNT = 5; 		//한 페이지의 게시물 수
+	private static final int LIST_COUNT = 3; 		//한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 5; 		//페이징 수
 
 	//ROOM 상세페이지 + Q&A 리스트
@@ -69,7 +69,7 @@ public class RoomController_mj
     public String roomDetail(HttpServletRequest request, Model model) 
     {
         int roomSeq = HttpUtil.get(request, "roomSeq", 0);
-        int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
+        //int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
         int curPage = HttpUtil.get(request, "curPage", 1);
         
         //userType = 'G' 'H'인지 구분하여 Q&A 질문 / 답변 버튼 보여주기 위함
@@ -77,7 +77,7 @@ public class RoomController_mj
         
         logger.debug("ROOM 상세페이지 sessionUserId : " + sessionUserId);
         logger.debug("roomSeq : " + roomSeq);
-        logger.debug("roomQnaSeq : " + roomQnaSeq);
+        //logger.debug("roomQnaSeq : " + roomQnaSeq);
         logger.debug("curPage : " + curPage);
         
         String userType = null;
@@ -95,8 +95,8 @@ public class RoomController_mj
         model.addAttribute("userType", userType);
         
         //Q&A수정시 roomQnaSeq로 조회하기 위함
-        RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
-        model.addAttribute("roomQna", roomQna);
+        //RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
+        //model.addAttribute("roomQna", roomQna);
         
         List<RoomQna> qnaList = null;
         RoomQna search = new RoomQna();
@@ -149,14 +149,17 @@ public class RoomController_mj
                 List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
                 model.addAttribute("roomTypes", roomTypes);
                 
-                //QNA 총 개수
-                totalCount = roomQnaService.qnaListCount(roomSeq);
+                //QNA 총 개수.
+                search.setRoomSeq(roomSeq);
+                
+                totalCount = roomQnaService.qnaListCount(search);
                 logger.debug("totalCount : " + totalCount);
                 
                 if(totalCount > 0)
                 {
                 	paging = new Paging("/room/roomDetail_mj", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
-                	search.setRoomSeq(roomSeq);
+                	;
+                	
                 	search.setStartRow((int)paging.getStartRow());
                 	search.setEndRow((int)paging.getEndRow());
                 	
