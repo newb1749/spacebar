@@ -43,6 +43,7 @@ public class User implements Serializable
 		userStat = "Y";	
 		mile = 0;	
 		updateDt = "";	
+		
 	}
 
 	public String getUserId() {

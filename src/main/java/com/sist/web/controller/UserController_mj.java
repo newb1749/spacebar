@@ -9,11 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,7 +34,7 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceJY;
+import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
@@ -57,7 +54,7 @@ public class UserController_mj
 	private RoomServiceSh roomServiceSh;
 	
 	@Autowired
-	private RoomServiceJY roomServiceJY;
+	private RoomService roomServiceJY;
 	
 	@Autowired
 	private CouponServiceJY couponService;
@@ -79,6 +76,9 @@ public class UserController_mj
 	
 	@Autowired
 	private FreeBoardService freeBoardService;
+	
+    @Autowired
+    //private KakaoLoginService kakaoLoginService;
 	
 	@Value("#{env['upload.save.dir']}")
 	private String UPLOAD_SAVE_DIR;
@@ -669,29 +669,22 @@ public class UserController_mj
 	
 
 	//카카오 로그인
-//	@RequestMapping(value="/user/loginForm/kakao", method=RequestMethod.GET)
-//	public String kakaoConnect()
-//	{
-//		StringBuffer url = new StringBuffer();
-//		
-//		url.append("https://kauth.kakao.com/oauth/authorize?");
-//		url.append("clientId=" + clientId);
-//		url.append("&redirect_uri="+redirectUri);
-//		url.append("&response_type=code");
-//		
-//		return "redirect:" + url.toString();
-//	}
-	
-//    @PostMapping("/kakao/signup")
-//    public ResponseEntity<User> kakaoSignUp(
-//            @RequestBody Kakaoinfo kakaoDTO
-//            ){
-//        try {
-//            return ResponseEntity.status(201).body(this.authService.kakaoSignUp(kakaoDTO));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return ResponseEntity.status(400).body(null);
-//        }
+//    @RequestMapping("/loginForm/kakao")
+//    public String kakaoCallback(@RequestParam("code") String code, HttpSession session) {
+//        // 1. access_token 발급
+//        String accessToken = kakaoLoginService.getAccessToken(code);
+//
+//        // 2. 사용자 정보 요청
+//        KakaoUser kakaoUser = kakaoLoginService.getKakaoUserInfo(accessToken);
+//
+//        // 3. 회원 DB 확인 및 로그인 처리
+//        User user = kakaoLoginService.processLogin(kakaoUser);
+//
+//        // 4. 세션에 로그인 사용자 정보 저장
+//        session.setAttribute("loginUser", user);
+//
+//        // 5. 로그인 후 메인 페이지로 이동
+//        return "redirect:/";
 //    }
 
 	
