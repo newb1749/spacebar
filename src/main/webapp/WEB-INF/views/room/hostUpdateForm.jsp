@@ -222,7 +222,7 @@ $(document).ready(function(){
 				            <!-- ✅ 수정/삭제 버튼 추가 -->
 				            <div class="mt-3 d-flex gap-2">
 				              <button type="button" class="btn btn-sm btn-primary"
-				                      onclick="location.href='/room/hostDetailUpdateForm?roomSeq=${room.roomSeq}?roomTypeSeq=${room.roomTypeSeq}'">수정하기</button>
+				                      onclick="location.href='/room/hostDetailUpdateForm?roomSeq=${room.roomSeq}&roomTypeSeq=${roomType.roomTypeSeq}'">수정하기</button>
 				              <button type="button" class="btn btn-sm btn-danger"
 				                      onclick="hostDetailDeleteRoom('${room.roomTypeSeq}')">삭제하기</button>
 				            </div>

@@ -275,8 +275,9 @@ function fn_emailCheck(value)
              
                 <input type="hidden" id="userId" name="userId" value="${user.userId}" />
                 <input type="hidden" id="userPwd" name="userPwd" value="" />
-                <input type="hidden" id="userAddr" name="userAddr" value="" />
-                <br/><button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
+                <input type="hidden" id="userAddr" name="userAddr" value="" /><br/>                
+                <button type="button" class="btn btn-primary btn" id="btnBack" onclick="history.back()">뒤로가기</button>
+                <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
             </form>
         </div>
     </div>

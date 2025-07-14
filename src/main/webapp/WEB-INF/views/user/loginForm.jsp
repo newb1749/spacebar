@@ -83,7 +83,7 @@ $(document).ready(function(){
 	});
 	
 	$("#btnReg").on("click",function(){
-		location.href = "/user/loginForm";
+		location.href = "/user/regForm";
 	});
 });
 
@@ -177,9 +177,9 @@ function fn_loginCheck()
 		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인</button>
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
 		<div class="links mt-3">
-            <a href="/user/findIdForm_mj">아이디 찾기</a>
-            <a href="/user/findPwdForm_mj">비밀번호 찾기</a>
-        </div>
+            <a href="/user/findIdForm">아이디 찾기</a>
+            <a href="/user/findPwdForm">비밀번호 찾기</a>
+        </div>      
 	</form>
 </div>
 <%@ include file="/WEB-INF/views/include/footer.jsp"%>

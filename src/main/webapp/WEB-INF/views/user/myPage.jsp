@@ -348,7 +348,11 @@ $(function(){
 			            </div>
 			            
 			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> 
+<<<<<<< HEAD
 			            	 <button type="button" id="btnUpdate" class="btn btn-primary mt-3">수정하기</button>
+=======
+			            	<button type="button" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
+>>>>>>> feature/qna
 			            </div>
 			        </form>
 			    </div>
@@ -615,8 +619,8 @@ $(function(){
 			<%-- 장바구니 --%>
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
-			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=cart-container>
+			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
+			<div  class=container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
