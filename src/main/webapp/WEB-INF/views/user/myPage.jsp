@@ -348,11 +348,7 @@ $(function(){
 			            </div>
 			            
 			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> 
-<<<<<<< HEAD
-			            	 <button type="button" id="btnUpdate" class="btn btn-primary mt-3">수정하기</button>
-=======
 			            	<button type="button" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
->>>>>>> feature/qna
 			            </div>
 			        </form>
 			    </div>

@@ -91,6 +91,11 @@
             			<value>/user/searchResultId</value>
             			<value>/user/findPwdForm</value>
             			<value>/user/searchResultPwd</value>
+            			<value>/room/roomList</value>
+            			<value>/room/spaceList</value>
+            			<value>/board/list</value>
+            			<value>/room/roomDetail</value>
+            			
             		</list>
             	</constructor-arg>
             </bean>
