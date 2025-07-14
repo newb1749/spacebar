@@ -59,7 +59,7 @@ function fn_submit()
 
     if (confirm("비밀번호를 찾으시겠습니까?")) 
     {
-		$("#findPwdForm").attr("action","searchResultPwd_mj").submit();
+		$("#findPwdForm").attr("action","searchResultPwd").submit();
     }
 }
 
@@ -95,10 +95,10 @@ function fn_submit()
                                 </form>
                                 <hr>
                                 <div class="text-center">
-                                    <a class="small" href="/user/findIdForm_mj">아이디 찾기</a>
+                                    <a class="small" href="/user/findIdForm">아이디 찾기</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small" href="/user/regForm_mj">회원가입</a>
+                                    <a class="small" href="/user/regForm">회원가입</a>
                                 </div>
                                 <div class="text-center">
                                     <a class="small" href="/index">로그인</a>

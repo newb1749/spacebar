@@ -154,7 +154,7 @@
 </div>
 </div>
       
-		<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
+<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
 <div class="paging text-center mt-4">
   <nav>
     <ul class="pagination justify-content-center">

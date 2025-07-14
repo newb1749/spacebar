@@ -347,7 +347,8 @@ $(function(){
 			                </div>
 			            </div>
 			            
-			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> <button type="submit" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
+			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> 
+			            	<button type="button" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
 			            </div>
 			        </form>
 			    </div>
@@ -614,8 +615,8 @@ $(function(){
 			<%-- 장바구니 --%>
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
-			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=cart-container>
+			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
+			<div  class=container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
@@ -736,11 +737,11 @@ $(function(){
     
     $(document).ready(function(){
         $("#btnUpdate").on("click",function(){
-        	location.href = "/user/updateForm_mj";	
+        	location.href = "/user/updateForm";	
         });
         
         $("#btnDelete").on("click",function(){
-        	location.href = "/user/deleteForm_mj";	
+        	location.href = "/user/deleteForm";	
         });
     });
 

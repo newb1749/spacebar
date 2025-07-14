@@ -80,11 +80,17 @@
             		<list>
             			<value>/index</value>
             			<value>/first</value>
-            			<value>/user/login</value>
-            			<value>/user/loginOut</value>
+            			<value>/user/loginForm</value>
+            			<value>/user/loginProc</value>
             			<value>/user/regForm</value>
             			<value>/user/regProc</value>
             			<value>/user/idCheck</value>
+            			<value>/user/nickNameCheck</value>
+            			<value>/user/loginOut</value>
+            			<value>/user/findIdForm</value>
+            			<value>/user/searchResultId</value>
+            			<value>/user/findPwdForm</value>
+            			<value>/user/searchResultPwd</value>
             		</list>
             	</constructor-arg>
             </bean>
