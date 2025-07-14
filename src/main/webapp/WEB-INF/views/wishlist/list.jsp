@@ -255,7 +255,7 @@ function toggleWish(roomSeq, btn) {
   <div id="wishlistBody">
     <c:forEach var="room" items="${list}">
 	  <div class="wishlist-item">
-		  <a href="/room/roomDetailSh?roomSeq=${room.roomSeq}">
+		  <a href="/room/roomDetail?roomSeq=${room.roomSeq}">
 		    <img src="/resources/upload/room/main/${room.roomImgName}" 
 			     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 			     alt="${room.roomTitle}" 
@@ -263,7 +263,7 @@ function toggleWish(roomSeq, btn) {
 		  </a>
 		
 		  <div class="wishlist-details">
-		    <a href="/room/roomDetailSh?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
+		    <a href="/room/roomDetail?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
 		      ${room.roomTitle}
 		    </a>
 		
