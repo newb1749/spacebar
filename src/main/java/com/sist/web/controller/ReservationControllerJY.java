@@ -5,6 +5,7 @@ import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
+import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomTypeService;
@@ -51,6 +52,9 @@ public class ReservationControllerJY {
 
     @Autowired  // 의존성 자동 주입
     private ReservationServiceJY reservationService;
+    
+    @Autowired
+    private MileageHistoryService mileageHistoryService;
 
 
     // DAO 직접 주입
@@ -209,16 +213,45 @@ public class ReservationControllerJY {
     }
 
     @PostMapping("/cancel")
-    public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
+    public String cancelReservation(@ModelAttribute Reservation reservation,
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttrs) {
         try {
-            reservationDao.cancelReservation(reservation);
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
-        }
-        return "redirect:/reservation/reservationHistoryJY";
-    }
+            String userId = (String) session.getAttribute("SESSION_USER_ID");
+            if (userId == null || userId.isEmpty()) {
+                redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
+                return "redirect:/user/login";
+            }
 
+            Reservation fullReservation = reservationDao.selectReservationBySeq(reservation.getRsvSeq());
+            if (fullReservation == null || !userId.equals(fullReservation.getGuestId())) {
+                redirectAttrs.addFlashAttribute("error", "잘못된 접근입니다.");
+                return "redirect:/reservation/reservationHistoryJY";
+            }
+
+            // 예약 상태 취소 및 환불 상태 업데이트
+            fullReservation.setRsvStat("취소");
+            fullReservation.setRsvPaymentStat("취소");
+            fullReservation.setCancelDt(new Date());
+            fullReservation.setRefundAmt(fullReservation.getFinalAmt());
+
+            // 예약 취소 DB 반영
+            reservationService.cancelReservation(fullReservation);
+
+            // 마일리지 환불 처리
+            mileageHistoryService.refundMileage(userId, fullReservation.getRefundAmt());
+
+            redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
+        } catch (Exception e) {
+            redirectAttrs.addFlashAttribute("error", "환불 처리 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/reservation/reservationHistoryJY";
+        }
+
+        return "redirect:/payment/mileageHistory";
+
+    }
+    
+    
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
         if (roomType == null) {

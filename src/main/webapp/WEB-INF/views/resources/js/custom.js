@@ -37,6 +37,19 @@
     var roomSlider = document.querySelectorAll('.room-slider');
     var imgPropertySlider = document.querySelectorAll('.img-property-slide');
     var testimonialSlider = document.querySelectorAll('.testimonial-slider');
+    
+    const slider = tns({
+      container: '.hero-slider',
+  items: 1,
+  slideBy: 'page',
+  autoplay: true,
+  autoplayTimeout: 7000,   // ← 5초
+  speed: 600,
+  controls: false,
+  nav:     false,
+  loop:    true,
+  autoplayButtonOutput: false
+  });
 
     if (heroSlider.length > 0) {
       tns({

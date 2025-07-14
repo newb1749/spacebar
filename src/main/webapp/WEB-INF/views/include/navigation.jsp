@@ -23,8 +23,10 @@
           <li><a href="/board/list">게시판</a></li>
           <li><a href="/kakao/pay2">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
+          	<li><a href="/cart/list">장바구니</a></li>
             <li><a href="/user/myPage">마이페이지</a></li>
             <li><a href="/user/loginOut">로그아웃</a></li>
+            
           </c:if>
           <c:if test="<%= !isLoggedIn %>">
             <li><a href="/user/loginForm">로그인</a></li>
