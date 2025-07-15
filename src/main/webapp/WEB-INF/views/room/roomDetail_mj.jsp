@@ -47,14 +47,14 @@
         <!-- 질문 작성 버튼 -->
 		<div class="d-flex justify-content-end gap-2 mb-3 mt-4">
 		  <c:if test="${user.userType eq 'G'}">
-		    <a href="/room/qnaForm_mj?roomSeq=${room.roomSeq}" class="btn btn-outline-primary">
+		    <a href="/room/qnaForm?roomSeq=${room.roomSeq}" class="btn btn-outline-primary">
 		      ✏ Q&A 작성하기
 		    </a>
 		  </c:if>
 
 		  <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
 		  <!-- <c:if test="${sessionUserId == roomQna.userId}">
-		    <a href="/room/qnaUpdateForm_mj?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+		    <a href="/room/qnaUpdateForm?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
 		      ✏ Q&A 수정하기
 		    </a>
 		  </c:if> -->
@@ -103,7 +103,7 @@
             
             <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
             <c:if test="${sessionUserId == qna.userId}">
-                <a href="/room/qnaUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+                <a href="/room/qnaUpdateForm?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
                   ✏ Q&A 수정하기
                 </a>
             </c:if> 
@@ -131,14 +131,14 @@
             <!-- 답글 작성 버튼 -->
             <div class="d-flex justify-content-end gap-2 mb-3 mt-4">
              <c:if test="${user.userType =='H' and empty qna.roomQnaComment}">
-                 <a href="/room/qnaCmtForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
+                 <a href="/room/qnaCmtForm?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
                    ✏ 답글 작성하기
                  </a>
             </c:if> 
             
             <!-- 답글 수정 버튼 -->
             <c:if test="${user.userType =='H' and !empty qna.roomQnaComment}">
-              <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
+              <a href="/room/qnaCmtUpdateForm?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
                 ✏ 답글 수정하기
               </a>
             </c:if>                      
@@ -292,7 +292,7 @@ function fn_list(curPage)
 {
 	document.roomQnaForm.roomSeq.value = "${room.roomSeq}";
 	document.roomQnaForm.curPage.value = curPage;
-	document.roomQnaForm.action = "/room/roomDetail_mj";
+	document.roomQnaForm.action = "/room/roomDetail";
 	document.roomQnaForm.submit();
 }
 </script>

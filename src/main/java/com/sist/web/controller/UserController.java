@@ -630,12 +630,14 @@ public class UserController
 		model.addAttribute("reservations", reservations);
 		
 		//마일리지 조회 내역
-		int mile = mileageService.getUserMileage(sessionUserId);
-		model.addAttribute("mile", mile);
+//		int mile = mileageService.getUserMileage(sessionUserId);
+//		model.addAttribute("mile", mile);
 		
 		//마일리지 충전 내역
 		List<MileageHistory> mileHistory = mileageHistoryService.getMileageHistory(sessionUserId);
 		model.addAttribute("mileHistory", mileHistory);
+		
+		
 		
 		//게시글 정보
 		FreeBoard freeboard = new FreeBoard();

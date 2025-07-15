@@ -2,7 +2,8 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> <%-- fmt 태그 라이브러리 추가 --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -487,8 +488,6 @@ $(function(){
                 <div class="sub-message">마일리지 충전하신 내역을 확인하실 수 있습니다.</div>
                 <div class="detail-content">
                     <h3>마일리지 충전 내역</h3>
-                    <div class="info-item">
-                    </div>
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -500,24 +499,33 @@ $(function(){
                             </tr>
                         </thead>
                         <tbody>
-                            <c:choose>
-                                <c:when test="${not empty mileHistory}">
-                                    <c:forEach var="mile" items="${mileHistory}" varStatus="status">
-                                        <tr>
-                                        	<td>${status.count}</td>
-                                            <td><fmt:formatDate value="${mile.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-                                            <td data-type="${mile.trxType}"></td>
-                                            <td><fmt:formatNumber value="${mile.trxAmt}" pattern="#,###"/>원</td>
-                                            <td><fmt:formatNumber value="${mile.balanceAfterTrx}" pattern="#,###"/>원</td>
-                                        </tr>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <tr>
-                                        <td colspan="5" class="no-data">결제 내역이 없습니다.</td>
-                                    </tr>
-                                </c:otherwise>
-                            </c:choose>
+				          <c:forEach var="entry" items="${mileHistory}" varStatus="status">
+				            <tr>
+				              <td>${status.count}</td>
+				              <td><fmt:formatDate value="${entry.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+				              <td>
+				                <c:choose>
+				                  <c:when test="${entry.trxType eq '충전'}">
+				                    <span class="badge bg-success">충전</span>
+				                  </c:when>
+				                  <c:when test="${entry.trxType eq '결제'}">
+				                    <span class="badge bg-danger">결제</span>
+				                  </c:when>
+				                  <c:when test="${entry.trxType eq '환불'}">
+				                    <span class="badge bg-info text-dark">환불</span>
+				                  </c:when>
+				                  <c:otherwise>
+				                    <span class="badge bg-secondary"><c:out value="${entry.trxType}" /></span>
+				                  </c:otherwise>
+				                </c:choose>
+				              </td>
+				              <td class="amount"><fmt:formatNumber value="${entry.trxAmt}" groupingUsed="true" /> 원</td>
+				              <td class="amount"><fmt:formatNumber value="${entry.balanceAfterTrx}" groupingUsed="true" /> 원</td>
+				            </tr>
+				          </c:forEach>
+				          <c:if test="${empty mileHistory}">
+				            <tr><td colspan="5" class="text-center">거래 내역이 없습니다.</td></tr>
+				          </c:if>
                         </tbody>
                     </table>
                 </div>
@@ -575,8 +583,7 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-						  	  <a href="/room/roomDetailSh">
-							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
+							   <a href="/room/roomDetail?roomSeq=${room.roomSeq}"> 
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 								     alt="${room.roomTitle}" 

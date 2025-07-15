@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
-import com.sist.web.model.RoomQnaComment;
-import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomQnaComment;
 import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
@@ -52,7 +51,7 @@ public class RoomQnaController
     private String AUTH_SESSION_NAME;
 
     //Q&A 등록 화면
-    @RequestMapping(value="/room/qnaForm_mj", method=RequestMethod.GET)
+    @RequestMapping(value="/room/qnaForm", method=RequestMethod.GET)
     public String qnaForm(Model model, HttpServletRequest request, HttpServletResponse response)
     {
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
@@ -73,7 +72,7 @@ public class RoomQnaController
 		model.addAttribute("room", room);
 		model.addAttribute("roomSeq", roomSeq);
 		
-    	return "/room/qnaForm_mj";
+    	return "/room/qnaForm";
     }
     
     //Q&A 등록
@@ -121,7 +120,7 @@ public class RoomQnaController
     }
 
     //Q&A 수정 화면
-    @RequestMapping(value="/room/qnaUpdateForm_mj", method=RequestMethod.GET)
+    @RequestMapping(value="/room/qnaUpdateForm", method=RequestMethod.GET)
     public String qnaUpdateForm(Model model, HttpServletRequest request, HttpServletResponse response)
     {
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
@@ -146,7 +145,7 @@ public class RoomQnaController
 		RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
 		model.addAttribute("roomQna", roomQna);
     	
-    	return "/room/qnaUpdateForm_mj";
+    	return "/room/qnaUpdateForm";
     }
     
     //Q&A 수정
@@ -195,7 +194,7 @@ public class RoomQnaController
     }
     
     //Q&A 답글 등록 화면
-    @RequestMapping(value="/room/qnaCmtForm_mj", method=RequestMethod.GET)
+    @RequestMapping(value="/room/qnaCmtForm", method=RequestMethod.GET)
     public String qnaCmtForm(Model model, HttpServletRequest request, HttpServletResponse response)
     {
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
@@ -222,7 +221,7 @@ public class RoomQnaController
 		model.addAttribute("roomQna", roomQna);
 		model.addAttribute("roomQnaSeq", roomQnaSeq);
 		
-    	return "/room/qnaCmtForm_mj";
+    	return "/room/qnaCmtForm";
     }
     
     
@@ -268,7 +267,7 @@ public class RoomQnaController
     }
     
     //Q&A 답글 수정 화면
-	@RequestMapping(value="/room/qnaCmtUpdateForm_mj", method=RequestMethod.GET)
+	@RequestMapping(value="/room/qnaCmtUpdateForm", method=RequestMethod.GET)
 	public String qnaCommentUpdateForm(Model model, HttpServletRequest request, HttpServletResponse response)
 	{
 		int roomSeq = HttpUtil.get(request, "roomSeq", 0);
@@ -300,7 +299,7 @@ public class RoomQnaController
 		model.addAttribute("roomQnaCmtSeq", roomQnaCmtSeq);
 		
 		
-		return "/room/qnaCmtUpdateForm_mj";
+		return "/room/qnaCmtUpdateForm";
 	}
     
     //Q&A 답글 수정
@@ -389,5 +388,5 @@ public class RoomQnaController
     	
     	return ajaxRes;
     }
-
+    
 }
