@@ -11,8 +11,12 @@ import com.sist.web.model.NoticeReply;
 public interface NoticeDao 
 {
 	List<Notice> selectNoticeList();
+	
     Notice selectNoticeById(int noticeSeq);
+    
     void insertNotice(Notice notice);
+    
     void insertReply(NoticeReply reply);
+    
     List<NoticeReply> selectRepliesByNotice(int noticeSeq);
 }

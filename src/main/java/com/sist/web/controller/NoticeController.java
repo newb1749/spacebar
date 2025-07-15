@@ -25,13 +25,13 @@ public class NoticeController {
     @GetMapping("/list")
     public String list(Model model) {
         model.addAttribute("noticeList", noticeService.getNoticeList());
-        return "notice/noticeList";
+        return "/notice/noticeList";
     }
 
     @GetMapping("/detail")
     public String detail(@RequestParam int noticeSeq, Model model) {
         model.addAttribute("notice", noticeService.getNoticeById(noticeSeq));
-        return "notice/noticeDetail";
+        return "/notice/noticeDetail";
     }
 
     @GetMapping("/write")
@@ -39,7 +39,7 @@ public class NoticeController {
         if (!"ADMIN".equals(session.getAttribute("sessionRole"))) {
             return "redirect:/notice/list";
         }
-        return "notice/noticeForm";
+        return "/notice/noticeForm";
     }
 
     @PostMapping("/write")

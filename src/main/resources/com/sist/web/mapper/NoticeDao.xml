@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.example.notice.dao.NoticeDao">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- src/main/resources/mapper/NoticeMapper.xml -->
+<mapper namespace="com.sist.web.dao.NoticeDao">
 
-    <select id="selectNoticeList" resultType="NoticeDTO">
-        SELECT * FROM NOTICE ORDER BY NOTICE_SEQ DESC
-    </select>
+    <!-- 공지사항 목록 -->
+    <!-- 공지사항 목록 조회 쿼리 예시 -->
+	<select id="selectNoticeList" resultType="com.sist.web.model.Notice">
+	    SELECT 
+	        n.NOTICE_SEQ          AS noticeSeq,
+	        n.NOTICE_TITLE        AS noticeTitle,
+	        n.NOTICE_CONTENT      AS noticeContent,
+	        n.ADMIN_ID            AS adminId,
+	        a.ADMIN_NAME          AS adminName,  <!-- 관리자 이름 추가 -->
+	        n.NOTICE_STAT         AS noticeStat,
+	        n.REG_DT              AS regDt,
+	        n.UPDATE_DT           AS updateDt
+	    FROM NOTICE n
+	    LEFT JOIN ADMIN a ON n.ADMIN_ID = a.ADMIN_ID
+	    WHERE n.NOTICE_STAT = 'Y'
+	    ORDER BY n.REG_DT DESC
+	</select>
 
-    <select id="selectNoticeById" resultType="NoticeDTO" parameterType="int">
+    <!-- 공지사항 상세 -->
+    <select id="selectNoticeDetail" resultType="com.sist.web.model.Notice" parameterType="int">
         SELECT * FROM NOTICE WHERE NOTICE_SEQ = #{noticeSeq}
     </select>
 
-    <insert id="insertNotice" parameterType="NoticeDTO">
+    <!-- 공지사항 등록 -->
+    <insert id="insertNotice" parameterType="com.sist.web.model.Notice">
         INSERT INTO NOTICE (NOTICE_SEQ, NOTICE_TITLE, NOTICE_CONTENT, ADMIN_ID)
         VALUES (NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContent}, #{adminId})
     </insert>
 
-    <insert id="insertReply" parameterType="NoticeReplyDTO">
+    <!-- 댓글 등록 -->
+    <insert id="insertReply" parameterType="com.sist.web.model.NoticeReply">
         INSERT INTO NOTICE_REPLY (REPLY_SEQ, NOTICE_SEQ, USER_ID, REPLY_CONTENT)
         VALUES (NOTICE_REPLY_SEQ.NEXTVAL, #{noticeSeq}, #{userId}, #{replyContent})
     </insert>
 
-    <select id="selectRepliesByNotice" resultType="NoticeReplyDTO" parameterType="int">
+    <!-- 댓글 목록 -->
+    <select id="selectRepliesByNotice" resultType="com.sist.web.model.NoticeReply" parameterType="int">
         SELECT * FROM NOTICE_REPLY WHERE NOTICE_SEQ = #{noticeSeq} ORDER BY REPLY_SEQ
     </select>
 
 </mapper>
+
