@@ -338,141 +338,21 @@ $(document).ready(function(){
 		        <!-- 질문 작성 버튼 -->
 			<div class="d-flex justify-content-end gap-2 mb-3 mt-4">
 			  <c:if test="${user.userType eq 'G'}">
-			    <a href="/room/qnaForm_mj?roomSeq=${room.roomSeq}" class="btn btn-outline-primary">
+			    <a href="/room/qnaForm?roomSeq=${room.roomSeq}" class="btn btn-outline-primary">
 			      ✏ Q&A 작성하기
 			    </a>
 			  </c:if>
 	
 			  <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
 			  <!-- <c:if test="${sessionUserId == roomQna.userId}">
-			    <a href="/room/qnaUpdateForm_mj?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+			    <a href="/room/qnaUpdateForm?roomSeq=${room.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
 			      ✏ Q&A 수정하기
 			    </a>
 			  </c:if> -->
 			</div>     
+	<!-- QnA 리스트 -->
+	<iframe id="qnaIframe" src="/room/qnaList?roomSeq=${room.roomSeq}" width="100%" height="700" frameborder="0"></iframe>
 	
-	        <!-- QnA 리스트 -->
-	        <div class="clearfix">
-	        <div class="qna-list mt-3">
-	          <c:forEach var="qna" items="${qnaList}">
-	            <div class="qna-item d-flex mb-4 pb-4 border-bottom">
-	              <div class="qna-avatar me-3">
-	              <!-- 게스트 Q&A -->
-	              <c:choose>
-	              <c:when test="${!empty qna.profImgExt}">
-	                <img src="/resources/upload/userprofile/${qna.userId}.${qna.profImgExt}"  
-	                alt="profile" width="40" height="40" style="border-radius: 50%;" />
-	               </c:when>
-	               <c:otherwise>
-	               	<img src="/resources/upload/userprofile/default_profile.png"  
-	                alt="profile" width="40" height="40" style="border-radius: 50%;" />
-	               </c:otherwise>
-	              </c:choose>
-	              </div>
-	              <div class="qna-content w-100">
-	                <p class="fw-bold mb-1">${qna.nickName}</p>
-	                <p class="mb-1">${qna.roomQnaContent}</p>
-					<p class="text-muted mb-2" style="font-size: 0.9em;">
-					    <c:choose>
-					    	<%-- 수정일자가 있을 경우 --%>
-					        <c:when test="${!empty qna.updateDt}">
-					            수정일자: ${qna.updateDt}
-					        </c:when>
-					        <%-- 수정일자가 없을 경우 --%>
-					        <c:otherwise>
-					            등록일자: ${qna.regDt}
-					        </c:otherwise>
-					    </c:choose>
-					</p>
-	                
-	           <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
-			   <c:if test="${sessionUserId == qna.userId}">
-			    <a href="/room/qnaUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
-			      ✏ Q&A 수정하기
-			    </a>
-			  </c:if> 
-	                
-	                <!-- 호스트 답글 -->
-	                <c:if test="${!empty qna.roomQnaComment}">
-	                  <div class="qna-answer bg-light p-2 rounded">
-	                    <p class="text-primary fw-semibold mb-1">호스트의 답글</p>
-	                    <p class="mb-1">${qna.roomQnaComment.roomQnaCmtContent}</p>                  
-	                    <p class="text-muted mb-2" style="font-size: 0.9em;">
-						    <c:choose>
-						    	<%-- 수정일자가 있을 경우 --%>
-						        <c:when test="${!empty qna.roomQnaComment.updateDt}">
-						            수정일자: ${qna.roomQnaComment.updateDt}
-						        </c:when>
-						        <%-- 수정일자가 없을 경우 --%>
-						        <c:otherwise>
-						            등록일자: ${qna.roomQnaComment.createDt}
-						        </c:otherwise>
-						    </c:choose>
-						</p>
-	                  </div>
-	                </c:if>
-	                <!-- 답글 작성 버튼 -->
-	                <div class="d-flex justify-content-end gap-2 mb-3 mt-4">
-	                 <c:if test="${user.userType =='H' and empty qna.roomQnaComment}">
-	                     <a href="/room/qnaCmtForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
-	                       ✏ 답글 작성하기
-	                     </a>
-	                </c:if> 
-	                <!-- 답글 수정 버튼 -->
-				    <c:if test="${user.userType =='H' and !empty qna.roomQnaComment}">
-				      <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
-				        ✏ 답글 수정하기
-				      </a>
-				    </c:if>                      
-	              </div>
-	              </div>
-	            </div>
-	          </c:forEach>
-	          <c:if test="${empty qnaList}">
-	            <p class="text-muted text-center">등록된 Q&A가 없습니다.</p>
-	          </c:if>
-	        </div>
-	      </div>
-	      
-			<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
-	<div class="paging text-center mt-4">
-	  <nav>
-	    <ul class="pagination justify-content-center">
-	      <c:if test="${!empty paging}">
-	        <!-- 이전 블럭 -->
-	        <c:if test="${paging.prevBlockPage gt 0}">
-	          <li class="page-item">
-	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블럭</a>
-	          </li>
-	        </c:if>
-	
-	        <!-- 페이지 번호 -->
-	        <c:forEach var="i" begin="${paging.startPage}" end="${paging.endPage}">
-	          <c:choose>
-	            <c:when test="${i ne curPage}">
-	              <li class="page-item">
-	                <a class="page-link" href="javascript:void(0)" onclick="fn_list(${i})">${i}</a>
-	              </li>
-	            </c:when>
-	            <c:otherwise>
-	              <li class="page-item active">
-	                <a class="page-link" href="javascript:void(0)" style="cursor:default;">${i}</a>
-	              </li>
-	            </c:otherwise>
-	          </c:choose>
-	        </c:forEach>
-	
-	        <!-- 다음 블럭 -->
-	        <c:if test="${paging.nextBlockPage gt 0}">
-	          <li class="page-item">
-	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">다음블럭</a>
-	          </li>
-	        </c:if>
-	      </c:if>
-	    </ul>
-	  </nav>
-	</div>
-	<!-- 📌 QnA 리스트 아래 페이징 영역 끝 -->
 	</div>
 </section>
 
@@ -757,10 +637,18 @@ function fn_addCart(roomTypeSeq, maxGuests, roomCheckInTime, roomCheckOutTime)
 
 function fn_list(curPage)
 {
-   document.roomQnaForm.roomSeq.value = "${room.roomSeq}";
-   document.roomQnaForm.curPage.value = curPage;
-   document.roomQnaForm.action = "/room/roomDetail#qnaSection";
-   document.roomQnaForm.submit();
+   //document.roomQnaForm.roomSeq.value = "${room.roomSeq}";
+   //document.roomQnaForm.curPage.value = curPage;
+   //document.roomQnaForm.action = "/room/roomDetail#qnaSection";
+   //document.roomQnaForm.submit();
+   
+    var roomSeq = document.getElementById("roomSeq").value;
+    var iframe = document.getElementById("qnaIframe");
+
+    if (iframe && roomSeq) {
+        iframe.src = "/room/qnaList?roomSeq=" + roomSeq + "&curPage=" + curPage;
+    }
+   
 }
 	
 </script>
@@ -788,8 +676,8 @@ function fn_list(curPage)
 </form>
 
 <form name="roomQnaForm" id="roomQnaForm">
-	<input type="hidden" name="roomSeq" value="${room.roomSeq}" />
-	<input type="hidden" name="curPage" value="${curPage}" />
+	<input type="hidden" id="roomSeq" name="roomSeq" value="${room.roomSeq}" />
+	<input type="hidden" id="curPage" name="curPage" value="${curPage}" />
 </form>
 
 </body>

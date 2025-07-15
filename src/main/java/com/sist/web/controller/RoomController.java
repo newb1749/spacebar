@@ -22,6 +22,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -817,38 +818,103 @@ public class RoomController {
 		return "/room/hostUpdateForm";
 	}
 	
-	//마이페이지 호스트 숙소/공간 룸 정보 삭제
-	@RequestMapping(value="/room/hostDeleteProc", method=RequestMethod.POST)
-	public Response<Object> hostDeleteProc(Model model, HttpServletRequest request, HttpServletResponse response)
+	//Q&A 리스트 (iframe)
+	@RequestMapping(value="/room/qnaList", method=RequestMethod.GET)
+	public String qnaList(Model model, HttpServletRequest request) 
 	{
-		Response<Object> ajaxRes = new Response<Object>();
-		
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+	    int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
-		logger.debug("숙소/공간 룸 정보 삭제  sessionUserId : " + sessionUserId);
-        logger.debug("roomSeq : " + roomSeq);
+        logger.debug("Q&A 리스트 iframe페이지 sessionUserId : " + sessionUserId);
+        logger.debug("Q&A 리스트 iframe페이지 roomSeq : " + roomSeq);
+        logger.debug("curPage : " + curPage);
+		
+	    RoomQna search = new RoomQna();
+	    search.setRoomSeq(roomSeq);
+	    
+	    List<RoomQna> qnaList = roomQnaService.qnaList(search);
+	    User user = userService.userSelect(sessionUserId);	
+
+    	int totalCount = roomQnaService.qnaListCount(search);
+    	Paging paging = null;
+	    
+    	if(totalCount > 0)
+    	{
+    		paging = new Paging("/room/roomDetail", totalCount, QNA_LIST_COUNT, QNA_PAGE_COUNT, curPage, "curPage");
+    		search.setStartRow((int)paging.getStartRow());
+    		search.setEndRow((int)paging.getEndRow());
+    		
+    		qnaList = roomQnaService.qnaList(search);
+    		
+    		if(qnaList != null)
+    		{
+    			int i;
+    			for(i = 0; i < qnaList.size(); i++)
+    			{
+    				qnaList.get(i).setRoomQnaComment(roomQnaCommentService.roomQnaCommontSelect(qnaList.get(i).getRoomQnaSeq()));
+    			}
+    		}
+    	}
+    	
+    	model.addAttribute("sessionUserId", sessionUserId);
+	    model.addAttribute("qnaList", qnaList);
+	    model.addAttribute("roomSeq", roomSeq);
+	    model.addAttribute("user", user);
+	    model.addAttribute("curPage", curPage);
+	    model.addAttribute("paging", paging);
+
+	    return "/room/qnaList"; 
+	}
+	
+	
+    //Q&A 리스트 AJAX
+    @RequestMapping(value="/room/qnaListJson", method=RequestMethod.POST)
+    @ResponseBody
+    public Response<Object> qnaListJson(Model model, HttpServletRequest request, HttpServletResponse response)
+    {
+    	Response<Object> ajaxRes = new Response<Object>();
+    	int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+    	//int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
+    	long curPage = HttpUtil.get(request, "curPage", (long)1);
+    	
+    	logger.debug("Q&A 리스트 AJAX roomSeq : " + roomSeq);
+    	//logger.debug("roomQnaSeq : " + roomQnaSeq);
+    	logger.debug("curPage : " + curPage);
+    	
+    	RoomQna search = new RoomQna();
+    	search.setRoomSeq(roomSeq);
+    	
+    	int totalCount = roomQnaService.qnaListCount(search);
+    	Paging paging = null;
+    	
+    	List<RoomQna> qnaList = new ArrayList<>();
+
+    	if(totalCount > 0)
+    	{
+    		paging = new Paging("/room/roomDetail", totalCount, QNA_LIST_COUNT, QNA_PAGE_COUNT, curPage, "curPage");
+    		search.setStartRow((int)paging.getStartRow());
+    		search.setEndRow((int)paging.getEndRow());
+    		
+    		qnaList = roomQnaService.qnaList(search);
+    		
+    		if(qnaList != null)
+    		{
+    			int i;
+    			for(i = 0; i < qnaList.size(); i++)
+    			{
+    				qnaList.get(i).setRoomQnaComment(roomQnaCommentService.roomQnaCommontSelect(qnaList.get(i).getRoomQnaSeq()));
+    			}
+    		}
+    	}
+    	
+    	model.addAttribute("qnaList", qnaList);
+    	model.addAttribute("totalCount", totalCount);
+    	model.addAttribute("curPage", curPage);
+    	model.addAttribute("paging", paging);
         
-        if(roomSeq > 0)
-        {
-        	
-        }
-        else
-        {
-        	
-        }
-		
-		return ajaxRes;
-	}
-	
-	//호스트 숙소/공간 detail 수정화면
-	@RequestMapping(value="/room/hostDetailUpdateForm", method=RequestMethod.GET)
-	public String hostDetailUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
-	{
-		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		logger.debug("숙소/공간 룸 타입 정보 수정 화면  sessionUserId : " + sessionUserId);
-		
-		return "/room/hostDetailUpdateForm";
-	}
-	
+        ajaxRes.setResponse(0, "success");
+        
+    	return ajaxRes;
+    }
 }
