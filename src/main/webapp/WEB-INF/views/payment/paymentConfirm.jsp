@@ -27,6 +27,16 @@
       margin-top: 0;
     }
   </style>
+    <script>
+    // 로그인 여부 체크
+    $(document).ready(function() {
+      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
+      if (!sessionUserId) {
+        alert("로그인이 필요합니다.");
+        window.location.href = '${pageContext.request.contextPath}/index.jsp';
+      }
+    });
+  </script>
 </head>
 <body>
   <jsp:include page="/WEB-INF/views/include/navigation.jsp" />

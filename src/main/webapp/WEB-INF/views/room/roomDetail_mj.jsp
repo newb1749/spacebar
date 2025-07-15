@@ -60,88 +60,99 @@
 		  </c:if> -->
 		</div>     
 
-        <!-- QnA 리스트 -->
-        <div class="clearfix">
-        <div class="qna-list mt-3">
-          <c:forEach var="qna" items="${qnaList}">
-            <div class="qna-item d-flex mb-4 pb-4 border-bottom">
-              <div class="qna-avatar me-3">
-              <!-- 게스트 Q&A -->
-              <c:choose>
-              <c:when test="${!empty qna.profImgExt}">
-                <img src="/resources/upload/userprofile/${qna.userId}.${qna.profImgExt}"  
-                alt="profile" width="40" height="40" style="border-radius: 50%;" />
-               </c:when>
-               <c:otherwise>
-               	<img src="/resources/upload/userprofile/default_profile.png"  
-                alt="profile" width="40" height="40" style="border-radius: 50%;" />
-               </c:otherwise>
-              </c:choose>
-              </div>
-              <div class="qna-content w-100">
-                <p class="fw-bold mb-1">${qna.nickName}</p>
-                <p class="mb-1">${qna.roomQnaContent}</p>
-				<p class="text-muted mb-2" style="font-size: 0.9em;">
-				    <c:choose>
-				    	<%-- 수정일자가 있을 경우 --%>
-				        <c:when test="${!empty qna.updateDt}">
-				            수정일자: ${qna.updateDt}
-				        </c:when>
-				        <%-- 수정일자가 없을 경우 --%>
-				        <c:otherwise>
-				            등록일자: ${qna.regDt}
-				        </c:otherwise>
-				    </c:choose>
-				</p>
-                
-           <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
-		   <c:if test="${sessionUserId == qna.userId}">
-		    <a href="/room/qnaUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
-		      ✏ Q&A 수정하기
-		    </a>
-		  </c:if> 
-                
-                <!-- 호스트 답글 -->
-                <c:if test="${!empty qna.roomQnaComment}">
-                  <div class="qna-answer bg-light p-2 rounded">
-                    <p class="text-primary fw-semibold mb-1">호스트의 답글</p>
-                    <p class="mb-1">${qna.roomQnaComment.roomQnaCmtContent}</p>                  
-                    <p class="text-muted mb-2" style="font-size: 0.9em;">
-					    <c:choose>
-					    	<%-- 수정일자가 있을 경우 --%>
-					        <c:when test="${!empty qna.roomQnaComment.updateDt}">
-					            수정일자: ${qna.roomQnaComment.updateDt}
-					        </c:when>
-					        <%-- 수정일자가 없을 경우 --%>
-					        <c:otherwise>
-					            등록일자: ${qna.roomQnaComment.createDt}
-					        </c:otherwise>
-					    </c:choose>
-					</p>
-                  </div>
-                </c:if>
-                <!-- 답글 작성 버튼 -->
-                <div class="d-flex justify-content-end gap-2 mb-3 mt-4">
-                 <c:if test="${user.userType =='H' and empty qna.roomQnaComment}">
-                     <a href="/room/qnaCmtForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
-                       ✏ 답글 작성하기
-                     </a>
-                </c:if> 
-                <!-- 답글 수정 버튼 -->
-			    <c:if test="${user.userType =='H' and !empty qna.roomQnaComment}">
-			      <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
-			        ✏ 답글 수정하기
-			      </a>
-			    </c:if>                      
-              </div>
-              </div>
-            </div>
-          </c:forEach>
-          <c:if test="${empty qnaList}">
-            <p class="text-muted text-center">등록된 Q&A가 없습니다.</p>
-          </c:if>
-        </div>
+<!-- QnA 리스트 -->
+<div class="clearfix">
+<div class="qna-list mt-3">
+  <c:forEach var="qna" items="${qnaList}">
+    <div class="qna-item d-flex mb-4 pb-4 border-bottom">
+      <div class="qna-avatar me-3">
+      <!-- 게스트 Q&A -->
+      <c:choose>
+      <c:when test="${!empty qna.profImgExt}">
+        <img src="/resources/upload/userprofile/${qna.userId}.${qna.profImgExt}"  
+        alt="profile" width="40" height="40" style="border-radius: 50%;" />
+       </c:when>
+       <c:otherwise>
+       	<img src="/resources/upload/userprofile/default_profile.png"  
+        alt="profile" width="40" height="40" style="border-radius: 50%;" />
+       </c:otherwise>
+      </c:choose>
       </div>
+      <div class="qna-content w-100">
+        <!-- 삭제된 게시물 표시 -->
+        <c:choose>
+          <c:when test="${qna.roomQnaStat eq 'N'}">
+			<span class="deleted-title">삭제된 게시물입니다.</span>
+          </c:when>
+          <c:otherwise>
+            <!-- 일반 게시물 -->
+            <p class="fw-bold mb-1">${qna.nickName}</p>
+            <p class="mb-1">${qna.roomQnaContent}</p>
+            <p class="text-muted mb-2" style="font-size: 0.9em;">
+                <c:choose>
+                	<%-- 수정일자가 있을 경우 --%>
+                    <c:when test="${!empty qna.updateDt}">
+                        수정일자: ${qna.updateDt}
+                    </c:when>
+                    <%-- 수정일자가 없을 경우 --%>
+                    <c:otherwise>
+                        등록일자: ${qna.regDt}
+                    </c:otherwise>
+                </c:choose>
+            </p>
+            
+            <!-- 수정 버튼 (작성자가 회원 본인일 경우에만 노출) -->
+            <c:if test="${sessionUserId == qna.userId}">
+                <a href="/room/qnaUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-warning btn">
+                  ✏ Q&A 수정하기
+                </a>
+            </c:if> 
+            
+            <!-- 호스트 답글 -->
+            <c:if test="${!empty qna.roomQnaComment}">
+              <div class="qna-answer bg-light p-2 rounded">
+                <p class="text-primary fw-semibold mb-1">호스트의 답글</p>
+                <p class="mb-1">${qna.roomQnaComment.roomQnaCmtContent}</p>                  
+                <p class="text-muted mb-2" style="font-size: 0.9em;">
+                    <c:choose>
+                    	<%-- 수정일자가 있을 경우 --%>
+                        <c:when test="${!empty qna.roomQnaComment.updateDt}">
+                            수정일자: ${qna.roomQnaComment.updateDt}
+                        </c:when>
+                        <%-- 수정일자가 없을 경우 --%>
+                        <c:otherwise>
+                            등록일자: ${qna.roomQnaComment.createDt}
+                        </c:otherwise>
+                    </c:choose>
+                </p>
+              </div>
+            </c:if>
+            
+            <!-- 답글 작성 버튼 -->
+            <div class="d-flex justify-content-end gap-2 mb-3 mt-4">
+             <c:if test="${user.userType =='H' and empty qna.roomQnaComment}">
+                 <a href="/room/qnaCmtForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}" class="btn btn-outline-primary">
+                   ✏ 답글 작성하기
+                 </a>
+            </c:if> 
+            
+            <!-- 답글 수정 버튼 -->
+            <c:if test="${user.userType =='H' and !empty qna.roomQnaComment}">
+              <a href="/room/qnaCmtUpdateForm_mj?roomSeq=${qna.roomSeq}&roomQnaSeq=${qna.roomQnaSeq}&roomQnaCmtSeq=${qna.roomQnaComment.roomQnaCmtSeq}" class="btn btn-outline-warning btn">
+                ✏ 답글 수정하기
+              </a>
+            </c:if>                      
+          </div>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </div>
+  </c:forEach>
+  <c:if test="${empty qnaList}">
+    <p class="text-muted text-center">등록된 Q&A가 없습니다.</p>
+  </c:if>
+</div>
+</div>
       
 		<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
 <div class="paging text-center mt-4">

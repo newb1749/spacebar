@@ -60,6 +60,7 @@ public class Room implements Serializable{
 	
 	private String roomImgName;
 	private long weekdayAmt;
+	private long weekendAmt;
 	
 	public Room()
 	{
@@ -101,11 +102,18 @@ public class Room implements Serializable{
 		
 		roomImgName = "";
 		weekdayAmt = 0;
+		weekendAmt = 0;
 	}
 
-	
-	
-    public String getRoomImgName() {
+	public long getWeekendAmt() {
+		return weekendAmt;
+	}
+
+	public void setWeekendAmt(long weekendAmt) {
+		this.weekendAmt = weekendAmt;
+	}
+
+	public String getRoomImgName() {
 		return roomImgName;
 	}
 

@@ -11,6 +11,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>마이페이지</title>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" href="/resources/css/myPage.css">
 <link rel="stylesheet" href="/resources/css/cart.css">
 <link rel="stylesheet" href="/resources/css/wishList.css">
@@ -137,6 +139,7 @@ $(function(){
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
+<<<<<<< HEAD
             <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
             <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
             <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
@@ -145,6 +148,19 @@ $(function(){
             <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
             <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
             <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+=======
+            <c:if test="${user.userType == 'H'}">
+	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
+            </c:if>
+	            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
+	            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
+	            <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
+	            <div class="menu-item"  onclick="showContent('mile')">마일리지 충전 내역</div>
+	            <div class="menu-item"  onclick="showContent('posts')">내가 쓴 게시글</div>
+	            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
+	            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
+	            <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+>>>>>>> e6bcdb4938f0734e97499302b774512f1b7ea22f
         </div>
 
         <div class="main-content">
@@ -182,43 +198,171 @@ $(function(){
 
 
             <%-- 각 섹션별 콘텐츠 --%>
+            <!-- 호스트일때 숙소/공간 정보 관리 -->
+			<div id="roomHost-content" class="content-area hidden">
+			    <div class="welcome-message">숙소/공간 정보 관리</div>
+			    <div class="sub-message">호스트님이 등록하신 숙소/공간의 상세 정보를 확인하고 수정/삭제할 수 있습니다.</div>
+			    <div class="detail-content">
+			        <h3>등록된 숙소/공간 상세 정보</h3>
+			        <c:choose>
+			            <c:when test="${!empty hostRoomList}"> 
+			            <c:forEach var="room" items="${hostRoomList}">
+							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
+							  <div class="row g-3 align-items-center">
+						    	 <div class="col-md-6">
+							      <div class="cart-img">
+							        <img src="/resources/upload/room/main/${room.roomImgName}"
+							             alt="숙소 이미지"
+							             style="width: 190%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+							      </div>
+							     </div>
+							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+							    <p class="mb-3 fs-5"><strong>숙소명:</strong> ${room.roomTitle}</p>
+						        <div class="d-flex flex-row justify-content-center gap-3">
+						          <button type="button" class="btn btn-primary btn"
+						                  onclick="location.href='/room/hostUpdateForm?roomSeq=${room.roomSeq}'">수정하기</button>
+						          <button type="button" class="btn btn-danger btn"
+						                  onclick="hostDeleteRoom('${room.roomSeq}')">삭제하기</button>
+						        </div>  
+							   </div>
+							  </div>
+							</div>
+			                </c:forEach>
+			            </c:when>
+			            <c:otherwise>
+			                <div class="alert alert-info text-center">등록된 숙소/공간 정보가 없습니다.</div>
+			                <div class="d-flex justify-content-center mt-3">
+			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
+			                </div>
+			            </c:otherwise>
+			        </c:choose>
+			
+			        <h3 class="mt-5">숙소/공간 예약 내역</h3>
+			        <div class="sub-message">호스트님 숙소와 관련된 모든 예약 및 결제 내역입니다.</div>
+			        <c:if test="${empty reservations}">
+			            <div class="alert alert-info text-center">예약 내역이 없습니다.</div>
+			        </c:if>
+			        <c:if test="${not empty reservations}">
+			            <table class="table table-hover">
+			                <thead>
+			                    <tr>
+			                        <th>예약번호</th>
+			                        <th>숙소명</th> <th>객실유형</th>
+			                        <th>체크인</th>
+			                        <th>체크아웃</th>
+			                        <th>상태</th>
+			                        <th>결제상태</th>
+			                        <th>총금액</th>
+			                        <th>관리</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                    <c:forEach var="r" items="${reservations}">
+			                        <tr>
+			                            <td>${r.rsvSeq}</td>
+			                            <td></td> <td>${r.roomTypeSeq}</td>
+			                            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
+			                            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+			                            <td>
+			                                <c:choose>
+			                                    <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
+			                                    <c:when test="${r.rsvStat eq 'CANCELED'}">예약취소</c:when>
+			                                    <c:when test="${r.rsvStat eq 'PENDING'}">결제대기</c:when>
+			                                    <c:otherwise>-</c:otherwise>
+			                                </c:choose>
+			                            </td>
+			                            <td>
+			                                <c:choose>
+			                                    <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+			                                    <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+			                                    <c:when test="${r.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
+			                                    <c:otherwise>-</c:otherwise>
+			                                </c:choose>
+			                            </td>
+			                            <td class="amount">
+			                                <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
+			                            </td>
+			                            <td>
+			                                <c:if test="${r.rsvStat eq 'CONFIRMED'}">
+			                                    <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('이 예약을 정말 취소(환불)하시겠습니까?')">
+			                                        <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+			                                        <button type="submit" class="btn btn-sm btn-danger">환불</button>
+			                                    </form>
+			                                </c:if>
+			                            </td>
+			                        </tr>
+			                    </c:forEach>
+			                </tbody>
+			            </table>
+			        </c:if>
+			    </div>
+			</div>
+            
             <%-- 회원정보 수정 --%>
-            <div id="editInfo-content" class="content-area hidden">
-                <div class="welcome-message">회원정보 수정</div>
-                <div class="sub-message">회원정보를 확인하실 수 있습니다.</div>
-                <div class="detail-content">
-                    <h3>회원정보</h3>
-                    <div class="info-item">
-                        <span class="info-label">아이디 :</span>
-                        <span class="info-value">${user.userId}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">이름 :</span>
-                        <span class="info-value">${user.userName}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">연락처 :</span>
-                        <span class="info-value">${user.phone}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">주소 :</span>
-                        <span class="info-value">${user.userAddr}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">이메일 :</span>
-                        <span class="info-value">${user.email}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">가입일 :</span>
-                        <span class="info-value">${user.joinDt}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">등급 :</span>
-                        <span class="info-value">${user.grade}</span>
-                    </div>
-                </div>
-                <button type="button" id="btnUpdate" class="btn btn-primary mt-3">수정하기</button>
-            </div>
+			<div id="editInfo-content" class="content-area hidden">
+			    <div class="welcome-message">회원정보 수정</div>
+			    <div class="sub-message">회원정보를 확인하고 수정하실 수 있습니다.</div>
+			    
+			    <div class="detail-content p-4"> <h3 class="mb-4">회원정보</h3> <form id="userUpdateForm"> <div class="mb-3 row info-item"> <label for="userId" class="col-sm-3 col-form-label info-label">아이디 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="userId" value="${user.userId}">
+			                </div>
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="userName" class="col-sm-3 col-form-label info-label">이름 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="userName" value="${user.userName}">
+			                </div>
+			            </div>
+			 
+			            <div class="mb-3 row info-item">
+			                <label for="nickName" class="col-sm-3 col-form-label info-label">닉네임 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="nickName" value="${user.nickName}">
+			                </div>
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="phone" class="col-sm-3 col-form-label info-label">연락처 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="phone" value="${user.phone}">
+			                </div>               
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="userAddr" value="${user.userAddr}">
+			                </div> 
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="email" class="col-sm-3 col-form-label info-label">이메일 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="email" value="${user.email}">
+			                </div> 
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="joinDt" class="col-sm-3 col-form-label info-label">가입일 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="joinDt" value="${user.joinDt}">
+			                </div>
+			            </div>
+			            
+			            <div class="mb-3 row info-item">
+			                <label for="grade" class="col-sm-3 col-form-label info-label">등급 :</label>
+			                <div class="col-sm-9">
+			                    <input type="text" readonly class="form-control-plaintext info-value" id="grade" value="${user.grade}">
+			                </div>
+			            </div>
+			            
+			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> <button type="submit" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
+			            </div>
+			        </form>
+			    </div>
+			</div>
            
 			<%-- 쿠폰내역 --%>
             <div id="coupon-content" class="content-area hidden"> 
@@ -441,7 +585,8 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-							  <a href="/room/detail?roomSeq=${room.roomSeq}">
+						  	  <a href="/room/roomDetailSh">
+							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 								     alt="${room.roomTitle}" 
