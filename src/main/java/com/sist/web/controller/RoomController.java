@@ -1,3 +1,4 @@
+
 package com.sist.web.controller;
 
 import java.io.File;
@@ -6,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -723,101 +726,7 @@ public class RoomController {
 		
 		return "/room/roomDetail";
 	} 
-	
-	//호스트 숙소/공간 정보 관리 수정화면(마이페이지에서 수정버튼 눌렀을때) 
-	@RequestMapping(value="/room/hostUpdateForm", method=RequestMethod.GET)
-	public String hostUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
-	{
-		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		logger.debug("숙소/공간 룸 정보 수정 화면 sessionUserId : " + sessionUserId);
-		//방 Seq
-		int roomSeq = HttpUtil.get(request, "roomSeq", 0);
-		//체크인 날짜
-		String startDate = HttpUtil.get(request, "startDate","");
-		//체크아웃 날짜
-		String endDate = HttpUtil.get(request, "endDate","");
-		//조회값
-		String searchValue = HttpUtil.get(request, "searchValue","");
-		// 현재 페이지
-		long curPage = HttpUtil.get(request, "curPage", (long)1);
-		//필터 값
-		String regionList = HttpUtil.get(request, "regionList","");
-		//인원수
-		int personCount = HttpUtil.get(request, "personCount", 0);
-		//최소 금액
-		int minPrice = HttpUtil.get(request, "minPrice", 0);
-		//최대 금액
-		int maxPrice = HttpUtil.get(request, "maxPrice", 0);
-		//카테고리
-		String category = HttpUtil.get(request, "category","");
 
-		//체크인 시간(대여공간)
-		String startTime = HttpUtil.get(request, "startTime", "");
-		//체크아웃 시간(대여공간)
-		String endTime = HttpUtil.get(request, "endTime","");
-		
-		
-		if(roomSeq > 0)
-		{
-			Room room = roomService.getRoomDetail(roomSeq);
-			
-			if(room != null)
-			{
-				List<RoomImage> roomImg = roomImgService.getRoomImgDetail(roomSeq);
-				List<Facility> facilityList = roomService.facilityList(roomSeq);
-				if(roomImg != null)
-				{
-					room.setStartDate(startDate);
-					room.setEndDate(endDate);
-					room.setRoomImageList(roomImg);
-					RoomImage mainImages = null;
-					List<RoomImage> detailImages = new ArrayList<>();
-					
-					for(RoomImage img : roomImg)
-					{
-						if("main".equals(img.getImgType()))
-						{
-							mainImages = img;
-						}
-						else
-						{
-							detailImages.add(img);
-						}
-					}
-					
-					model.addAttribute("mainImages",mainImages);
-					model.addAttribute("detailImages",detailImages);
-				}
-				
-				model.addAttribute("room",room);
-				model.addAttribute("roomCatSeq",room.getRoomCatSeq());
-				
-				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
-				model.addAttribute("roomTypes",roomTypes);
-				
-				model.addAttribute("startDate",startDate);
-				model.addAttribute("endDate",endDate);
-				model.addAttribute("facilityList",facilityList);
-			}
-		}
-
-		
-		model.addAttribute("roomSeq",roomSeq);
-		model.addAttribute("searchValue",searchValue);
-		model.addAttribute("curPage",curPage);
-		model.addAttribute("regionList",regionList);
-		model.addAttribute("startTime",startTime);
-		model.addAttribute("endTime",endTime);
-		model.addAttribute("startDate", startDate);
-	    model.addAttribute("endDate", endDate);
-	    model.addAttribute("category",category);
-	    model.addAttribute("personCount",personCount);
-	    model.addAttribute("minPrice",minPrice);
-	    model.addAttribute("maxPrice",maxPrice);
-		
-		return "/room/hostUpdateForm";
-	}
-	
 	//Q&A 리스트 (iframe)
 	@RequestMapping(value="/room/qnaList", method=RequestMethod.GET)
 	public String qnaList(Model model, HttpServletRequest request) 
