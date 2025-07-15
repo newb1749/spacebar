@@ -391,24 +391,3 @@ public class RoomQnaController
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -11,36 +11,35 @@
       /*max-width: 1200px;
       margin: 0 auto;
       padding: 12px 0;*/
-  width: 100%;
-  max-width: none;       /* ✅ 너비 제한 제거 */
-  padding: 0 24px;       /* ✅ 좌우 여백 추가 (선택) */
+      width: 100%;
+	  max-width: none;       /* ✅ 너비 제한 제거 */
+	  padding: 0 24px;       /* ✅ 좌우 여백 추가 (선택) */
     }
     .cart-container h2 {
       margin-bottom: 12px;
       text-align: left; 
     }
     .cart-card {
-  position: relative;
-  padding-left: 32px;
-  display: flex;
+      position: relative;         /* 체크박스 절대 위치를 위해 */
+      padding-left: 32px;         /* 체크박스 공간 확보 */
+      display: flex;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-
-  /* ✅ 아래 스타일들 추가 또는 수정 */
-  margin-bottom: 20px;       /* 카드 사이 간격 */
-  padding: 20px;             /* 내부 여백을 전체적으로 넉넉하게 */
-  min-height: 140px;         /* 카드 높이를 늘림 (기본 100~140px 추천) */
-  width: 100%;               /* 가로 폭 전체 사용 */
-  
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  border: 1px solid #3B5B6D;
-      
-        padding: 24px;          /* ✅ 내부 여백 */
-  min-height: 160px;      /* ✅ 높이 늘림 */
-  width: 100%;            /* ✅ 부모 기준으로 가득 채우기 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 선택사항: 그림자 강조 */
+	/* ✅ 아래 스타일들 추가 또는 수정 */
+	margin-bottom: 20px;       /* 카드 사이 간격 */
+	padding: 20px;             /* 내부 여백을 전체적으로 넉넉하게 */
+	min-height: 140px;         /* 카드 높이를 늘림 (기본 100~140px 추천) */
+	width: 115%;               /* 가로 폭 전체 사용 */
+	box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	border: 1px solid #3B5B6D;    
+	padding: 24px;          /* ✅ 내부 여백 */
+	min-height: 160px;      /* ✅ 높이 늘림 */
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 선택사항: 그림자 강조 */
+	
     }
 
     /* 체크박스 */
@@ -85,6 +84,14 @@
       display: flex; justify-content: space-between; align-items:center;
       background:#fff; padding:8px 12px; border-radius:8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      width: 115%;
+      
+      	/* ✅ 아래 스타일들 추가 또는 수정 */
+	    margin-bottom: 20px;       /* 카드 사이 간격 */
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		border: 1px solid #3B5B6D;    
+		padding: 10px;          /* ✅ 내부 여백 */
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 선택사항: 그림자 강조 */
     }
     .cart-summary .total-amt { font-weight:bold; color:#007B5E; }
     .btn-buy {

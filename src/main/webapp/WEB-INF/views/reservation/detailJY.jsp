@@ -16,6 +16,7 @@
       font-family: 'Noto Sans KR', sans-serif;
     }
     h3 {
+      margin-top: 120px;
       color: #343a40;
       font-weight: 700;
       margin-bottom: 30px;
@@ -59,6 +60,16 @@
       margin: 0 auto;
     }
   </style>
+    <script>
+    // 로그인 여부 체크
+    $(document).ready(function() {
+      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
+      if (!sessionUserId) {
+        alert("로그인이 필요합니다.");
+        window.location.href = '${pageContext.request.contextPath}/index.jsp';
+      }
+    });
+  </script>
 </head>
 <body>
 
