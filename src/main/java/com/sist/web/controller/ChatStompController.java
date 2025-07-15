@@ -51,19 +51,8 @@ public ChatMessage sendMessageStomp(@DestinationVariable int chatRoomSeq, ChatMe
     	String senderId = (String) sessionAttributes.get("sessionUserId");
         chatMessage.setSenderId(senderId);
         
-<<<<<<< HEAD
-        // senderId는 클라이언트가 보낸 chatMessage 객체에서 직접 가져옵니다.
-        String senderId = chatMessage.getSenderId();
-        
-        // senderId로 DB에서 사용자 정보를 다시 조회하여 닉네임과 프로필 정보를 덮어씁니다.
-        User sender = userService_mj.userSelect(senderId);
-        
-        if(sender != null)
-        {
-=======
         User sender = userService.userSelect(senderId);
         if(sender != null) {
->>>>>>> base
             chatMessage.setSenderName(sender.getNickName());
             chatMessage.setSenderProfileImgExt(sender.getProfImgExt());
         }

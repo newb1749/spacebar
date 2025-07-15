@@ -28,10 +28,6 @@ function sample4_execDaumPostcode()
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	$("#btndelete").on("click",function(){
-		location.href = "/user/deleteForm_mj";	
-	});
-	
 	$("#changeAddrBtn").on("click", function(){
 		 $("#addrView").hide(); 
          $("#addrUpdate").show(); 
@@ -287,8 +283,7 @@ function fn_emailCheck(value)
                 <input type="hidden" id="userPwd" name="userPwd" value="" />
                 <input type="hidden" id="userAddr" name="userAddr" value="" />
                 <br/><button type="button" id="btnBack" onclick="history.back()" class="btn btn-primary">뒤로가기</button>
-                <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>
-                <button type="button" id="btnDelete" class="btn btn-danger">회원탈퇴</button>        
+                <button type="button" id="btnUpdate" class="btn btn-primary">수정</button>       
             </form>
         </div>
     </div>

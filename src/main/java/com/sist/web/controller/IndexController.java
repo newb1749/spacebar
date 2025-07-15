@@ -34,7 +34,7 @@ import com.sist.web.model.Room;
 import com.sist.web.model.RoomCategory;
 import com.sist.web.service.ReviewService;
 import com.sist.web.service.RoomCategoryService;
-import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.RoomService;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
 
@@ -69,7 +69,7 @@ public class IndexController
     private RoomCategoryService roomategoryService;
 	
 	@Autowired
-	private RoomServiceSh roomService;
+	private RoomService roomService;
 	
 	@Autowired
 	private WishlistService wishlistService;

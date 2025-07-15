@@ -6,17 +6,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.sist.web.dao.RoomQnaCommentDao;
 import com.sist.web.dao.RoomQnaDao;
 import com.sist.web.model.RoomQna;
 
 @Service("roomQnaService_mj")
-public class RoomQnaService_mj 
+public class RoomQnaService 
 {		
-	private static Logger logger = LoggerFactory.getLogger(RoomQnaService_mj.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomQnaService.class);
 	
 	@Autowired
 	private RoomQnaDao roomQnaDao;
+	
+	@Autowired
+	private RoomQnaCommentDao roomQnaCommentDao;
 	
     //QNA 리스트
     public List<RoomQna> qnaList(RoomQna roomQna)
@@ -104,19 +110,16 @@ public class RoomQnaService_mj
   		return count;
   	}
   	
-    //QNA 삭제
-  	public int qnaDelete(int roomSeq)
+    //QNA 삭제(Q&A 답글도 같이 삭제 => sts 'N' 변경)
+  	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+  	public int qnaDelete(int roomQnaSeq)throws Exception
   	{
   		int count = 0;
   		
-    	try
-    	{
-    		count = roomQnaDao.qnaDelete(roomSeq);
-    	}
-    	catch(Exception e)
-    	{
-    		logger.error("[RoomService]qnaUpdate Exception", e);
-    	}
+  		//Q&A 답글 삭제
+  		roomQnaCommentDao.qnaCommentDelete(roomQnaSeq);
+  		//Q&A 삭제
+  		count = roomQnaDao.qnaDelete(roomQnaSeq);
   		
   		return count;
   	}

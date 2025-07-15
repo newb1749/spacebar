@@ -1,9 +1,8 @@
 package com.sist.web.service;
 
-import com.sist.web.dao.RoomTypeDao;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
-import com.sist.web.model.RoomTypeImage;
+import com.sist.web.dao.RoomTypeDao;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoomTypeServiceSh 
+public class RoomTypeService 
 {
     @Autowired
     private RoomTypeDao roomTypeDao;

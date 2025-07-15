@@ -30,11 +30,7 @@ public interface RoomTypeDao {
      */
     RoomType selectRoomTypeBySeq(int roomTypeSeq);
 
-<<<<<<< HEAD
-    List<RoomType> selectRoomTypesByRoomSeq(int roomSeq);
-=======
     List<RoomType> selectRoomTypesByRoomSeq(Room room);
     
     
->>>>>>> base
 }

@@ -15,10 +15,10 @@ public class ReservationServiceJY
     private ReservationDao reservationDao;
     
     @Autowired
-    private RoomServiceJY roomService;
+    private RoomService roomService;
     
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
     
     @Autowired
     private MileageHistoryService mileageHistoryService;

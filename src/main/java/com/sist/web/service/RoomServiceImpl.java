@@ -23,8 +23,8 @@ import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
 
-@Service("roomService")
-public class RoomServiceImpl implements RoomService {
+@Service("roomServiceImpl")
+public class RoomServiceImpl implements RoomServiceInterface {
 	
 	private static Logger logger = LoggerFactory.getLogger(RoomServiceImpl.class);
 	

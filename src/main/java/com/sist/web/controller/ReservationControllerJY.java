@@ -13,8 +13,8 @@ import com.sist.web.model.RoomType;
 import com.sist.web.service.MileageServiceJY;
 
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceJY;
-import com.sist.web.service.RoomTypeServiceJY;
+import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.MileageHistoryService;
 
@@ -50,7 +50,7 @@ public class ReservationControllerJY {
     private UserService_mj userService;  // 회원 서비스는 유지 (필요시 사용)
 
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
 
     /**
      * 예약 관련 DB 직접 접근 (CRUD 등)
@@ -62,7 +62,7 @@ public class ReservationControllerJY {
      * 개별 객실(Room) 정보 조회 등 담당
      */
     @Autowired
-    private RoomServiceJY roomService;
+    private RoomService roomService;
 
     @Autowired  // 의존성 자동 주입
     private ReservationServiceJY reservationService;

@@ -22,7 +22,8 @@
 		       NVL(TO_CHAR(CREATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') CREATE_DT,
 		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
 		  FROM ROOM_QNA_COMMENT
-		 WHERE ROOM_QNA_SEQ = #{value}
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
+		   AND ROOM_QNA_CMT_STAT = 'Y'
 		 ORDER BY CREATE_DT DESC
 	</select>
 	
@@ -51,6 +52,13 @@
 		   SET ROOM_QNA_CMT_CONTENT = #{roomQnaCmtContent},
 		       UPDATE_DT = SYSDATE
 		 WHERE ROOM_QNA_CMT_SEQ = #{roomQnaCmtSeq}
+	</update>
+  
+  	<!-- Q&A 답글 삭제 -->
+	<update id="qnaCommentDelete" parameterType="com.sist.web.model.RoomQnaComment">
+		UPDATE ROOM_QNA_COMMENT
+		   SET ROOM_QNA_CMT_STAT = 'N'
+		 WHERE ROOM_QNA_SEQ = #{roomQnaSeq}
 	</update>
   
 </mapper>

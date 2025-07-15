@@ -56,25 +56,17 @@ public class RoomType implements Serializable{
 	
 	
 	public String getHostId() {
-<<<<<<< HEAD
-		return hostId;
-=======
 		return hostId;}
 	public int getReservationCheck() {
 		return reservationCheck;
->>>>>>> base
 	}
 
 
 
 	public void setHostId(String hostId) {
-<<<<<<< HEAD
-		this.hostId = hostId;
-=======
 		this.hostId = hostId;}
 	public void setReservationCheck(int reservationCheck) {
 		this.reservationCheck = reservationCheck;
->>>>>>> base
 	}
 
 

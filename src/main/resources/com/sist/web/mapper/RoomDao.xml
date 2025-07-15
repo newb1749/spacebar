@@ -20,6 +20,7 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+<<<<<<< HEAD
       <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
       <result column="AMT" property="amt" />
       <result column="ROOM_IMAGE_NAME" property="roomImageName" />
@@ -30,6 +31,9 @@
       <result column="ROOM_IMG_NAME" property="roomImgName" />
 >>>>>>> base
   </resultMap>
+=======
+   </resultMap>
+>>>>>>> 38c15b6 (수정)
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
 		<id column="ROOM_IMG_SEQ" property="roomImgSeq" />

@@ -80,7 +80,7 @@ $(document).ready(function(){
   <form name="qnaCmtUpdateForm" id="qnaCmtUpdateForm" method="post" enctype="multipart/form-data">
     <input type="hidden" name="roomSeq" value="${room.roomSeq}" />
     <input type="hidden" name="roomQnaSeq" value="${roomQna.roomQnaSeq}" />
-	<input type="hidden" name="roomQnaCmtSeq" value="${roomQnaComment.roomQnaCmtSeq}" />
+	<input type="hidden" name="roomQnaCmtSeq" value="${roomQnaCmtSeq}" />
 	
 	<div class="mb-3">
       <label for="userId" class="form-label">아이디</label>

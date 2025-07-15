@@ -14,11 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.dao.UserDao;
-<<<<<<< HEAD
 import com.sist.web.model.MileageHistory;
-=======
-import com.sist.web.model.MiliageHistory;
->>>>>>> base
 import com.sist.web.model.User;
 
 @Service("userService_mj")
