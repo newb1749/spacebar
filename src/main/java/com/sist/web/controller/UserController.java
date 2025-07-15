@@ -1,5 +1,7 @@
 package com.sist.web.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -626,7 +628,23 @@ public class UserController
 		//model.addAttribute("isIssued", isIssued);
 
 		//예약 정보
-		List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
+        List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        for (Reservation r : reservations) {
+            try {
+                if (r.getRsvCheckInDt() != null) {
+                    Date checkInDate = sdf.parse(r.getRsvCheckInDt());
+                    r.setRsvCheckInDateObj(checkInDate);
+                }
+                if (r.getRsvCheckOutDt() != null) {
+                    Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
+                    r.setRsvCheckOutDateObj(checkOutDate);
+                }
+            } catch (Exception e) {
+                // 필요시 로그 기록
+            }
+        }
 		model.addAttribute("reservations", reservations);
 		
 		//마일리지 조회 내역

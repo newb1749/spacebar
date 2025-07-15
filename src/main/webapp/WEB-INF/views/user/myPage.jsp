@@ -348,7 +348,8 @@ $(function(){
 			                </div>
 			            </div>
 			            
-			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> <button type="submit" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
+			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> 
+			            	<button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
 			            </div>
 			        </form>
 			    </div>
@@ -737,11 +738,11 @@ $(function(){
     
     $(document).ready(function(){
         $("#btnUpdate").on("click",function(){
-        	location.href = "/user/updateForm_mj";	
+        	location.href = "/user/updateForm";	
         });
         
         $("#btnDelete").on("click",function(){
-        	location.href = "/user/deleteForm_mj";	
+        	location.href = "/user/deleteForm";	
         });
     });
 
