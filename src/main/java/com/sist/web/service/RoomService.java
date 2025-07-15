@@ -24,7 +24,6 @@ public class RoomService
 	@Autowired
 	private RoomDao roomDao;
 	
-	
 	// 룸정보
 	public Room getRoomDetail(int roomSeq)
 	{
@@ -157,5 +156,4 @@ public class RoomService
 		
 		return list;
 	}
-    
 }

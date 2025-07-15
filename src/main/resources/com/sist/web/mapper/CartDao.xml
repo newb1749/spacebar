@@ -24,6 +24,8 @@
 	    <result column="ROOM_ADDR" property="roomAddr" />
 	    <result column="CANCEL_POLICY" property="cancelPolicy" />
 	    <result column="ROOM_CAT_NAME" property="roomCatName" />
+	    
+	    <result column="ROOM_SEQ" property="roomSeq" />
 	  </resultMap>
 	 
 
@@ -72,6 +74,7 @@
 			       D.ROOM_TITLE,
 			       D.ROOM_ADDR,
 			       D.CANCEL_POLICY,
+			       D.ROOM_SEQ,
 			       
 			       E.ROOM_CAT_NAME
 			       

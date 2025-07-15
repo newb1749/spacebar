@@ -13,7 +13,7 @@ public interface RoomQnaDao
 	public List<RoomQna> qnaList(RoomQna roomQna);
 	
 	//QNA 총 갯수
-	public int qnaListCount(int roomSeq);
+	public int qnaListCount(RoomQna roomQna);
 	
 	//QNA 등록
 	public int qnaInsert(RoomQna roomQna);

@@ -4,7 +4,9 @@ import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.model.MileageHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,5 +61,26 @@ public class MileageHistoryService
     public List<MileageHistory> getMileageHistory(String userId) 
     {
         return mileageHistoryDao.selectMileageHistoryByUserId(userId);
+    }
+    
+    @Transactional
+    public void refundMileage(String userId, int refundAmt) throws Exception
+    {
+    	System.out.println("=== 환불 메서드 호출됨 ===");
+
+        int currentMileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
+        int newBalance = currentMileage + refundAmt;
+        System.out.println("[refundMileage] 마일리지 환불 시작: " + userId + ", " + refundAmt);
+
+        mileageHistoryDao.updateMileageAdd(userId, refundAmt);
+
+        MileageHistory history = new MileageHistory();
+        history.setUserId(userId);
+        history.setTrxType("환불");
+        history.setTrxAmt(refundAmt);
+        history.setBalanceAfterTrx(newBalance);
+        history.setTrxDt(new Date());
+
+        mileageHistoryDao.insertMileageHistory(history);
     }
 }
