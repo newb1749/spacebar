@@ -534,7 +534,7 @@ body {
             <c:forEach var="newSpaceList" items="${spaceList}">
               <div class="property-item">
                 <!-- 1) 클릭 가능한 썸네일 -->
-                <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
+                <a href="${pageContext.request.contextPath}/room/roomDetailSh?roomSeq=${newSpaceList.roomSeq}"
                    class="img">
                   <img
                     src="${pageContext.request.contextPath}/resources/upload/room/main/${newSpaceList.roomImgName}"
@@ -550,7 +550,7 @@ body {
                     <span class="d-block mb-2 text-black-50 room-addr">
                       ${newSpaceList.roomAddr}
                     </span>
-                    <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
+                    <a href="${pageContext.request.contextPath}/room/roomDetailSh?roomSeq=${newSpaceList.roomSeq}"
 					   class="city d-block mb-3 text-decoration-none text-black">
 					  ${newSpaceList.roomTitle}
 					</a>
@@ -620,7 +620,7 @@ body {
             <c:forEach var="newList" items="${roomList}">
               <div class="property-item">
                 <!-- 1) 클릭 가능한 썸네일 -->
-                <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
+                <a href="${pageContext.request.contextPath}/room/roomDetailSh?roomSeq=${newList.roomSeq}"
                    class="img">
                   <img
                     src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
@@ -636,7 +636,7 @@ body {
                     <span class="d-block mb-2 text-black-50 room-addr">
                       ${newList.roomAddr}
                     </span>
-                    <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
+                    <a href="${pageContext.request.contextPath}/room/roomDetailSh?roomSeq=${newList.roomSeq}"
 						   class="city d-block mb-3 text-decoration-none text-black">
 						  ${newList.roomTitle}
 						</a>
@@ -762,7 +762,7 @@ body {
                 <strong class="d-block mt-2">${rev.userNickname}</strong>
               </div>
               <div class="mb-3">
-                 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${rev.roomSeq}">
+                 <a href="${pageContext.request.contextPath}/room/roomDetailSh?roomSeq=${rev.roomSeq}">
 		          <img
 		            src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
 		            onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"

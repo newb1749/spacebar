@@ -259,4 +259,29 @@ body {
 
 
 
+<<<<<<< HEAD
+=======
+
+.cart-img {
+  margin-top: 10px;
+  text-align: left;
+  width: 100%;
+  max-width: 1200px; /* 전체 너비 확보 */
+  overflow: visible;
+}
+
+.cart-img img {
+  width: 100%;             /* 가득 채우기 */
+  height: 250px;           /* 더 크게 만들고 싶다면 이 값을 늘리세요! */
+  /* 또는 */
+  /* height: auto; */      /* 가로 너비에 맞춰 비율 유지 */
+  object-fit: cover;       /* 비율 유지 + 넘치면 자르기 */
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+>>>>>>> e6bcdb4938f0734e97499302b774512f1b7ea22f
 </style>

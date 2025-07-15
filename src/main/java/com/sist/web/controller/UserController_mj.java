@@ -28,6 +28,7 @@ import com.sist.web.model.FreeBoard;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
+import com.sist.web.model.Room;
 import com.sist.web.model.User;
 import com.sist.web.model.Wishlist;
 import com.sist.web.service.CartService;
@@ -36,6 +37,8 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
+import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.HttpUtil;
@@ -49,6 +52,12 @@ public class UserController_mj
 	
 	@Autowired
 	private UserService_mj userService;
+	
+	@Autowired
+	private RoomServiceSh roomServiceSh;
+	
+	@Autowired
+	private RoomService roomServiceJY;
 	
 	@Autowired
 	private CouponServiceJY couponService;
@@ -602,6 +611,13 @@ public class UserController_mj
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
+		//호스트일때 숙소/공간 정보관리
+		if(user != null && StringUtil.equals(user.getUserType(), "H"))
+		{
+		    List<Room> hostRoomList = roomServiceSh.selectHostRoomList(sessionUserId);
+		    model.addAttribute("hostRoomList", hostRoomList);
+		}
+		
 		//쿠폰 정보
 		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);
 		//boolean isIssued = couponService.isAlreadyIssued(sessionUserId, cpnSeq);
@@ -612,7 +628,6 @@ public class UserController_mj
 		//예약 정보
 		List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
 		model.addAttribute("reservations", reservations);
-		
 		
 		//마일리지 조회 내역
 		int mile = mileageService.getUserMileage(sessionUserId);

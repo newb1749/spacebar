@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.notice.dao.NoticeDao">
+
+    <select id="selectNoticeList" resultType="NoticeDTO">
+        SELECT * FROM NOTICE ORDER BY NOTICE_SEQ DESC
+    </select>
+
+    <select id="selectNoticeById" resultType="NoticeDTO" parameterType="int">
+        SELECT * FROM NOTICE WHERE NOTICE_SEQ = #{noticeSeq}
+    </select>
+
+    <insert id="insertNotice" parameterType="NoticeDTO">
+        INSERT INTO NOTICE (NOTICE_SEQ, NOTICE_TITLE, NOTICE_CONTENT, ADMIN_ID)
+        VALUES (NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContent}, #{adminId})
+    </insert>
+
+    <insert id="insertReply" parameterType="NoticeReplyDTO">
+        INSERT INTO NOTICE_REPLY (REPLY_SEQ, NOTICE_SEQ, USER_ID, REPLY_CONTENT)
+        VALUES (NOTICE_REPLY_SEQ.NEXTVAL, #{noticeSeq}, #{userId}, #{replyContent})
+    </insert>
+
+    <select id="selectRepliesByNotice" resultType="NoticeReplyDTO" parameterType="int">
+        SELECT * FROM NOTICE_REPLY WHERE NOTICE_SEQ = #{noticeSeq} ORDER BY REPLY_SEQ
+    </select>
+
+</mapper>

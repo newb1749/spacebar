@@ -27,6 +27,23 @@
     WHERE USER_ID = #{userId}
   </update>
 
-
+  <!-- 마일리지 내역 삽입 -->
+  <insert id="insertMileageHistory" parameterType="map">
+    INSERT INTO MILEAGE_HISTORY (
+      MH_SEQ,
+      USER_ID,
+      AMOUNT,
+      TYPE,
+      DESCRIPTION,
+      REG_DT
+    ) VALUES (
+      MILEAGE_HISTORY_SEQ.NEXTVAL,
+      #{userId},
+      #{amount},
+      #{type},
+      #{description},
+      SYSDATE
+    )
+  </insert>
 
 </mapper>
