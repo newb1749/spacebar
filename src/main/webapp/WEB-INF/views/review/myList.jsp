@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
-
+<!-- 본인이 작성한 리뷰 조회 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -52,7 +52,7 @@
                         </td>
                         <td class="title">${review.reviewTitle}</td>
                         <td>⭐ ${review.rating}</td>
-                        <td><fmt:formatDate value="${review.regDt}" pattern="yyyy-MM-dd" /></td>
+                        <td>${review.regDt}</td>
                         <td>
                             <button type="button" class="btn" onclick="location.href='/review/updateForm?reviewSeq=${review.reviewSeq}'">수정</button>
                             <form action="/review/inactiveProc" method="post" style="display:inline;" onsubmit="return confirm('정말 삭제하시겠습니까?');">

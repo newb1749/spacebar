@@ -27,12 +27,15 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.web.model.Facility;
 import com.sist.web.model.Paging;
+import com.sist.web.model.Review;
+import com.sist.web.model.ReviewImage;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
 import com.sist.web.model.User;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomQnaCommentService;
 import com.sist.web.service.RoomQnaService;
@@ -86,6 +89,10 @@ public class RoomController {
 	
 	@Autowired
 	private RoomQnaCommentService roomQnaCommentService;
+	
+	@Autowired
+	private ReviewService reviewService;
+
 	
 	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
@@ -589,6 +596,8 @@ public class RoomController {
 		String searchValue = HttpUtil.get(request, "searchValue","");
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		// 리뷰 페이지
+		long reviewCurPage = HttpUtil.get(request, "reviewCurPage", (long)1);
 		//필터 값
 		String regionList = HttpUtil.get(request, "regionList","");
 		//인원수
@@ -671,6 +680,35 @@ public class RoomController {
 				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
 				model.addAttribute("roomTypes",roomTypes);
 				
+				// 리뷰
+		        List<Review> reviewList = null;
+		        int reviewTotalCount = reviewService.getReviewCountByRoom(roomSeq);
+		        Paging reviewPaging = null;
+		        
+		        logger.debug("[리뷰 디버그] roomSeq: " + roomSeq + ", reviewTotalCount: " + reviewTotalCount);
+		        
+		        // 리뷰 목록과 페이징
+		        if (reviewTotalCount > 0) {
+		            // 한 페이지에 5개, 페이지 블럭은 5개로 임의 지정
+		            reviewPaging = new Paging("/room/roomDetail", reviewTotalCount, 3, 3, reviewCurPage, "reviewCurPage");
+		            
+		            Review reviewSearch = new Review();
+		            reviewSearch.setRoomSeq(roomSeq);
+		            reviewSearch.setStartRow((int) reviewPaging.getStartRow());
+		            reviewSearch.setEndRow((int) reviewPaging.getEndRow());
+		            
+		            reviewList = reviewService.getReviewsByRoomWithPaging(reviewSearch);
+		            
+		            logger.debug("[리뷰 디버그] 조회된 reviewList 사이즈: " + (reviewList != null ? reviewList.size() : "null"));
+
+		            // 각 리뷰에 이미지 첨부
+		            if (reviewList != null && !reviewList.isEmpty()) {
+		                for (Review review : reviewList) {
+		                    review.setReviewImageList(reviewService.selectReviewImages(review.getReviewSeq()));
+		                }
+		            }
+		        }
+		        
 				//QNA 총 개수
                 totalCount = roomQnaService.qnaListCount(roomSeq);
                 logger.debug("totalCount : " + totalCount);
@@ -694,7 +732,12 @@ public class RoomController {
                       
                    }
                 }
-              
+                
+                // review
+                model.addAttribute("reviewList", reviewList);
+                model.addAttribute("reviewPaging", reviewPaging);
+
+                // qna
                 model.addAttribute("qnaList", qnaList);
                 model.addAttribute("paging", paging);
         		model.addAttribute("curPage",curPage);
@@ -705,7 +748,8 @@ public class RoomController {
 			}
 		}
 
-		
+		model.addAttribute("reviewCurPage", reviewCurPage); // ✅ 이거 빠져 있었음
+
 		model.addAttribute("roomSeq",roomSeq);
 		model.addAttribute("searchValue",searchValue);
 		model.addAttribute("regionList",regionList);
@@ -719,5 +763,5 @@ public class RoomController {
 	    model.addAttribute("maxPrice",maxPrice);
 		
 		return "/room/roomDetail";
-	} 
+	} 	
 }

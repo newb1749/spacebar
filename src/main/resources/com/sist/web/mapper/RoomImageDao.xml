@@ -24,5 +24,11 @@
             SYSDATE
         )
     </insert>
+    
+    <select id="selectMaxRoomImgSeq" parameterType="int" resultType="short">
+	    SELECT NVL(MAX(ROOM_IMG_SEQ), 0)
+	    FROM ROOM_IMAGE
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</select>
 
 </mapper>

@@ -136,7 +136,84 @@
 
   </style>
 <script>
+// 리뷰 비동기로
+function loadReviewList(page) {
+    const roomSeq = "${room.roomSeq}";
+
+    $.ajax({
+        url: "/review/list",
+        type: "GET",
+        data: {
+            roomSeq: roomSeq,
+            reviewCurPage: page
+        },
+        success: function(fragment) {
+            $("#reviewContainer").html(fragment);
+
+            // ✅ 리뷰 렌더링 완료 후 댓글 비동기 호출 시작
+            $(".review").each(function () {
+                const reviewSeq = $(this).data("review-seq");
+                
+                console.log("🔥 리뷰시퀀스:", reviewSeq);
+
+                if (reviewSeq && !isNaN(reviewSeq)) {
+                    fetch("/review/comment/list?reviewSeq=" + reviewSeq)
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log("💬 댓글 응답: ", data);
+
+                            // ✅ DOM에 댓글 삽입 예시 (id 규칙이 review-comment-2처럼 가정)
+                            const commentListHtml = data.data.map(comment => `
+                                <div class="comment">
+                                    <span><b>${comment.userId}</b></span> :
+                                    <span>${comment.reviewCmtContent}</span>
+                                </div>
+                            `).join("");
+
+                            $("#review-comment-" + reviewSeq).html(commentListHtml);
+                        })
+                        .catch(err => {
+                            console.error("댓글 호출 실패", err);
+                        });
+                }
+            });
+        },
+        error: function(xhr) {
+            alert("리뷰 목록을 불러오는 데 실패했습니다.");
+        }
+    });
+}
+
+/*
+function loadReviewList(page) {
+    const roomSeq = "${room.roomSeq}";
+
+    $.ajax({
+        url: "${pageContext.request.contextPath}/review/list",
+        type: "GET",
+        data: {
+            roomSeq: roomSeq,
+            reviewCurPage: page
+        },
+        success: function(responseHtml) {
+            $("#reviewContainer").html(responseHtml);
+
+            // 🚀 댓글 JS 바인딩
+            if (typeof bindCommentScripts === 'function') {
+                bindCommentScripts();
+            }
+        }
+        error: function(xhr) {
+            alert("리뷰 목록을 불러오는 데 실패했습니다.");
+            console.error(xhr);
+        }
+    });
+}*/
+
 $(document).ready(function(){
+	console.log("✅ 리뷰 호출 시작");
+	loadReviewList(1); // 첫 페이지 로딩
+	
 	$("#btnRoomList, #btnSpaceList").on("click", function(){
 	  // 예: 룸 리스트로
 	  const url = "${pageContext.request.contextPath}/room/roomList"
@@ -154,10 +231,35 @@ $(document).ready(function(){
 	      scrollTop: $("#roomTypesSection").offset().top
 	    }, 50);
 	  });
+	 
+	 
 });
 
 
 
+// 리뷰 페이지 이동 함수 (AJAX)
+function fn_review_list(page) {
+    const roomSeq = '${room.roomSeq}';
+
+    $.ajax({
+        type: "GET",
+        url: "/room/reviewListAjax", // 1단계에서 만든 컨트롤러 메소드 URL
+        data: {
+            roomSeq: roomSeq,
+            reviewCurPage: page
+        },
+        beforeSend: function() {
+            $("#review-list-area").html('<div class="text-center p-5"><i class="fa fa-spinner fa-spin"></i> 로딩 중...</div>');
+        },
+        success: function(responseHtml) {
+            $("#review-list-area").html(responseHtml);
+        },
+        error: function(xhr, status, error) {
+            alert("리뷰 목록을 불러오는 데 실패했습니다.");
+            console.error("Review AJAX Error: ", error);
+        }
+    });
+}
 
 
 </script>
@@ -192,9 +294,9 @@ $(document).ready(function(){
 <!-- fixed 탭바 -->
 <div class="sticky-tabs" id="tabBar">
   <ul class="tabs-list">
-    <li><a href="#typeSection">상품상세</a></li>
-    <li><a href="#placeSection">상품평</a></li>
-    <li><a href="#qnaSection">상품문의</a></li>
+    <li><a href="#typeSection">정보</a></li>
+    <li><a href="#reviewSection">후기</a></li>
+    <li><a href="#qnaSection">문의</a></li>
     <li><a href="#shippingInfo">배송/교환/반품 안내</a></li>
   </ul>
 </div>
@@ -331,6 +433,12 @@ $(document).ready(function(){
     </div>
   </div>
 </section>
+
+<section id="reviewSection" class="review-section section-block">
+<h2 class="section-heading">리뷰 목록</h2>
+    <div id="reviewContainer"></div>
+</section>
+
 
 <section id="qnaSection" class="Qna-section section-block">
 	<div class="container">
@@ -502,7 +610,7 @@ $(document).ready(function(){
           <ul class="list-unstyled mt-4">
             <li><strong>등록일:</strong> ${room.regDt}</li>
             <li><strong>이용 시간:</strong> ${room.minTimes} ~ ${room.maxTimes}시간</li>
-            <li><strong>자동 예약 확정:</strong>
+            <li><strong>자동 예약 확정:</strong>	
               <c:choose>
                 <c:when test="${room.autoConfirmYn == 'Y'}">예</c:when>
                 <c:otherwise>아니오</c:otherwise>
@@ -762,6 +870,8 @@ function fn_list(curPage)
    document.roomQnaForm.action = "/room/roomDetail#qnaSection";
    document.roomQnaForm.submit();
 }
+
+
 	
 </script>
 
@@ -791,6 +901,12 @@ function fn_list(curPage)
 	<input type="hidden" name="roomSeq" value="${room.roomSeq}" />
 	<input type="hidden" name="curPage" value="${curPage}" />
 </form>
+<%--  리뷰 페이징을 위한 폼  --%>
+<form name="reviewPageForm" id="reviewPageForm" method="get">
+    <input type="hidden" name="roomSeq" value="${room.roomSeq}" />
+    <input type="hidden" name="reviewCurPage" value="${reviewCurPage}" />
+</form>
+
 
 </body>
 </html>

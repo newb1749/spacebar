@@ -162,5 +162,13 @@
   <select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
     SELECT HOST_ID FROM ROOM WHERE ROOM_SEQ = #{roomSeq}
   </select>
+  
+  <!-- 예약 번호로 roomSeq 값 구하기(리뷰에 쓰임) -->
+  <select id="selectRoomSeqByRsvSeq" parameterType="int" resultType="int">
+    SELECT rt.ROOM_SEQ
+    FROM RESERVATION r
+    JOIN ROOM_TYPE rt ON r.ROOM_TYPE_SEQ = rt.ROOM_TYPE_SEQ
+    WHERE r.RSV_SEQ = #{rsvSeq}
+  </select>
 
 </mapper>

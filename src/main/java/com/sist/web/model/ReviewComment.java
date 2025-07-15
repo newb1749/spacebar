@@ -16,9 +16,12 @@ public class ReviewComment implements Serializable{
 	private String userId;
 	private String reviewCmtContent;
 	private String reviewCmtStat;
-	private Date createDt;
-	private Date updateDt;
+	private String createDt;
+	private String updateDt;
 	
+	// ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
+	private String userNickname;
+	private String profImgExt;
 	
 	public ReviewComment()
 	{
@@ -30,6 +33,34 @@ public class ReviewComment implements Serializable{
 		createDt = null;
 		updateDt = null;
 	}
+	
+	
+	
+
+	public String getProfImgExt() {
+		return profImgExt;
+	}
+
+
+
+
+	public void setProfImgExt(String profImgExt) {
+		this.profImgExt = profImgExt;
+	}
+
+
+
+
+	public String getUserNickname() {
+		return userNickname;
+	}
+
+
+
+	public void setUserNickname(String userNickname) {
+		this.userNickname = userNickname;
+	}
+
 
 
 	public int getReviewCmtSeq() {
@@ -82,22 +113,27 @@ public class ReviewComment implements Serializable{
 	}
 
 
-	public Date getCreateDt() {
+
+
+
+	public String getCreateDt() {
 		return createDt;
 	}
 
 
-	public void setCreateDt(Date createDt) {
+
+	public void setCreateDt(String createDt) {
 		this.createDt = createDt;
 	}
 
 
-	public Date getUpdateDt() {
+
+	public String getUpdateDt() {
 		return updateDt;
 	}
 
 
-	public void setUpdateDt(Date updateDt) {
+	public void setUpdateDt(String updateDt) {
 		this.updateDt = updateDt;
 	}
 	
