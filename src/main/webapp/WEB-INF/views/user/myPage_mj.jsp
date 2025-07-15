@@ -7,276 +7,139 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
-    <%@ include file="/WEB-INF/views/include/head.jsp" %> <%-- 기존 head.jsp 포함 --%>
-<style>
-/* 초기 CSS를 새로운 구조에 맞춰 재조정 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지</title>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<link rel="stylesheet" href="/resources/css/myPage.css">
+<link rel="stylesheet" href="/resources/css/cart.css">
+<link rel="stylesheet" href="/resources/css/wishList.css">
+<link rel="stylesheet" href="/resources/css/mileage.css">
+<link rel="stylesheet" href="/resources/css/reservation.css">
+<script>
 
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5;
-    padding-bottom: 40px; /* 푸터를 위한 하단 여백 */
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    gap: 20px;
-    padding-top: 50px; /* 상단 네비게이션과의 간격 */
-}
-
-.sidebar {
-    width: 250px;
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    height: fit-content;
-}
-
-.sidebar h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 18px;
-}
-
-.menu-item {
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #666;
-    font-size: 14px;
-}
-
-.menu-item:hover {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.menu-item.active {
-    background-color: #3B5B6D;
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.main-content {
-    flex: 1;
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.stats-container {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.stat-card {
-    flex: 1;
-    text-align: center;
-    padding: 20px;
-    background: #e3f2fd;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-}
-
-.stat-number {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1976d2;
-    margin-bottom: 5px;
-}
-
-.stat-label {
-    color: #666;
-    font-size: 14px;
-}
-
-.content-area {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 40px;
-    text-align: center;
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    /* 기본적으로 숨겨진 상태로 시작 */
-    display: none;
-}
-
-.content-area:not(.hidden) {
-    display: flex; /* hidden 클래스가 없으면 보이도록 */
-}
-
-
-.arrow {
-    width: 0;
-    height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-top: 30px solid #4CAF50;
-    margin: 20px 0;
-    position: relative;
-    animation: bounce 2s infinite;
-}
-
-.arrow::before {
-    content: '';
-    position: absolute;
-    top: -35px;
-    left: -10px;
-    width: 20px;
-    height: 20px;
-    background: #4CAF50;
-    border-radius: 3px;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
+//==========================위시리스트 시작==========================//
+// 찜 취소 예시 (AJAX)
+function removeWish(roomSeq, element) {
+  Swal.fire({
+    title: "찜 해제하시겠습니까?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#e74c3c",
+    cancelButtonColor: "#aaa",
+    confirmButtonText: "네, 삭제할게요",
+    cancelButtonText: "아니요"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "POST",
+        url: "/wishlist/remove",
+        data: { roomSeq: roomSeq },
+        success: function(response) {
+          if(response.code === 0) {
+            Swal.fire("삭제 완료", "찜에서 제거됐습니다.", "success");
+            $(element).closest(".wishlist-item").fadeOut(300, function() {
+              $(this).remove();
+            });
+          }
+        }
+      });
     }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
+  });
+}
+  
+function toggleWish(roomSeq, btn) {
+  const $btn    = $(btn);
+  const $icon   = $btn.find('i.fa-heart');
+  const wished  = $btn.data('wished');              // true면 지금은 찜된 상태
+  const url     = wished ? "/wishlist/remove" : "/wishlist/add";
+  
+  $.post(url, { roomSeq: roomSeq })
+    .done(function(res) {
+      if (res.code === 0) {
+        if (wished) {
+          // → 삭제(하얀 하트) & 알림
+          $icon
+            .removeClass("fas wished")
+            .addClass("far");
+          $btn.data('wished', false);
+          Swal.fire({
+            icon: "success",
+            title: "삭제됐습니다",
+            text: "찜 목록에서 제거되었습니다.",
+            timer: 1500,
+            showConfirmButton: false
+          });
+        } else {
+          // → 추가(빨간 하트) & 알림
+          $icon
+            .removeClass("far")
+            .addClass("fas wished");
+          $btn.data('wished', true);
+          Swal.fire({
+            icon: "success",
+            title: "추가되었습니다",
+            text: "찜 목록에 추가되었습니다.",
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      } else {
+        Swal.fire("오류", res.message, "error");
+      }
+    })
+    .fail(function() {
+      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
+    });
+}
+//==========================위시리스트 끝==========================//
+//==========================장바구니 시작==========================//
+// 삭제
+function deleteCart(cartSeq) {
+  if (!confirm("정말 삭제하시겠습니까?")) return;
+  $.post("${pageContext.request.contextPath}/cart/delete", { cartSeq }, function(res) {
+    if (res.code === 0) location.reload();
+    else alert("삭제 실패: " + res.message);
+  });
 }
 
-.welcome-message {
-    font-size: 20px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.sub-message {
-    color: #666;
-    font-size: 14px;
-}
-
-.hidden {
-    display: none !important; /* JavaScript에서 hidden 클래스를 사용하여 숨김 */
-}
-
-.detail-content {
-    text-align: left;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    margin-top: 20px;
-    width: 100%; /* 너비 조정 */
-}
-
-.detail-content h3 {
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.detail-content p, .detail-content ul {
-    color: #666;
-    line-height: 1.6;
-}
-
-.detail-content ul {
-    list-style: none; /* 리스트 스타일 제거 */
-    padding-left: 0;
-}
-.detail-content li {
-    margin-bottom: 8px;
-}
-
-/* 테이블 스타일 */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.table th, .table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.table thead th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-.table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.no-data {
-    text-align: center;
-    padding: 20px;
-    color: #888;
-}
-
-.text-right {
-    text-align: right;
-}
-.mt-3 {
-    margin-top: 1rem;
-}
-.ml-3 {
-    margin-left: 1rem;
-}
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    text-decoration: none;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    border: 1px solid transparent;
-}
-.btn-success {
-    color: #fff;
-    background-color: #28a745;
-    border-color: #28a745;
-}
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
-}
-    
-.info-item {
-	font-size: 1.2em; /* info-item 안의 모든 텍스트를 크게 만듭니다 */
-	margin-bottom: 10px; /* 각 항목 간의 간격을 늘립니다 (선택 사항) */
-}
-</style>
+// 체크박스 선택 요약
+$(function(){
+  function updateSummary(){
+    let cnt=0, amt=0;
+    $('.itemCheckbox:checked').each(function(){
+      cnt++;
+      amt += parseInt($(this).data('amt'),10) || 0;
+    });
+    $('#summaryCnt').text(cnt);
+    $('#summaryAmt').text(amt.toLocaleString());
+    $('#btnCheckout').prop('disabled', cnt===0);
+  }
+  $('#selectAll').on('change', function(){
+    $('.itemCheckbox').prop('checked', this.checked);
+    updateSummary();
+  });
+  $(document).on('change', '.itemCheckbox', function(){
+    $('#selectAll').prop(
+      'checked',
+      $('.itemCheckbox').length === $('.itemCheckbox:checked').length
+    );
+    updateSummary();
+  });
+  updateSummary();
+});
+//==========================장바구니 끝==========================//
+</script>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-<br/><br/><br/><br/><br/>
+
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
             <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
             <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
-            <div class="menu-item"  onclick="showContent('payments')">결제 내역</div>
+            <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
             <div class="menu-item"  onclick="showContent('mile')">마일리지 충전 내역</div>
             <div class="menu-item"  onclick="showContent('posts')">내가 쓴 게시글</div>
             <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
@@ -287,7 +150,7 @@ body {
         <div class="main-content">
             <div class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-number"><fmt:formatNumber value="${user.mile}" pattern="#,###"/>P</div>
+                    <div class="stat-number"><fmt:formatNumber value="${user.mile}" pattern="#,###"/>원</div>
                     <div class="stat-label">마일리지</div>
                 </div>
                 <div class="stat-card">
@@ -326,6 +189,10 @@ body {
                 <div class="detail-content">
                     <h3>회원정보</h3>
                     <div class="info-item">
+                        <span class="info-label">아이디 :</span>
+                        <span class="info-value">${user.userId}</span>
+                    </div>
+                    <div class="info-item">
                         <span class="info-label">이름 :</span>
                         <span class="info-value">${user.userName}</span>
                     </div>
@@ -363,6 +230,7 @@ body {
                     <table class="table">
                         <thead>
                             <tr>
+                            	<th>번호</th>
                                 <th>쿠폰명</th>
                                 <th>할인율/금액</th>
                                 <th>유효기간</th>
@@ -372,8 +240,9 @@ body {
                         <tbody>
                             <c:choose>
                                 <c:when test="${not empty couponList}">
-                                    <c:forEach var="coupon" items="${couponList}">
+                                    <c:forEach var="coupon" items="${couponList}" varStatus="status">
                                         <tr>
+                                        	<td>${status.count}</td>
                                             <td>${coupon.couponName}</td>
                                             <td>${coupon.discountInfo}</td> <%-- 예: 10% 또는 5000원 --%>
                                             <td>${coupon.expiryDate}</td>
@@ -383,7 +252,7 @@ body {
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="4" class="no-data">보유하신 쿠폰이 없습니다.</td>
+                                        <td colspan="5" class="no-data">보유하신 쿠폰이 없습니다.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -393,67 +262,98 @@ body {
             </div>
 
 			<%-- 예약 내역 --%><!-- ------------------수정필요------------------ -->
-            <div id="payments-content" class="content-area hidden">
-                <div class="welcome-message">결제 내역</div>
-                <div class="sub-message">최근 결제하신 내역을 확인하실 수 있습니다.</div>
+            <div id="reservation-content" class="content-area hidden">
+                <div class="welcome-message">예약 내역</div>
+                <div class="sub-message">회원님이 예약 내역 목록입니다.</div>
                 <div class="detail-content">
-                    <h3>결제 내역</h3>
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>주문번호</th>
-                                <th>상품명</th>
-                                <th>결제일</th>
-                                <th>금액</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:choose>
-                                <c:when test="${not empty paymentList}">
-                                    <c:forEach var="payment" items="${paymentList}">
-                                        <tr>
-                                            <td>${payment.orderNo}</td>
-                                            <td>${payment.productName}</td>
-                                            <td>${payment.paymentDate}</td>
-                                            <td><fmt:formatNumber value="${payment.amount}" pattern="#,###"/>원</td>
-                                            <td>${payment.status}</td>
-                                        </tr>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <tr>
-                                        <td colspan="5" class="no-data">결제 내역이 없습니다.</td>
-                                    </tr>
-                                </c:otherwise>
-                            </c:choose>
-                        </tbody>
-                    </table>
+                    <h3>예약 내역</h3>
+					<c:if test="${empty reservations}">
+					    <div class="alert alert-info text-center">예약 내역이 없습니다.</div>
+					  </c:if>
+					
+					  <c:if test="${not empty reservations}">
+					    <table class="table table-bordered">
+					      <thead>
+					        <tr>
+					          <th>예약번호</th>
+					          <th>객실유형</th>
+					          <th>체크인</th>
+					          <th>체크아웃</th>
+					          <th>상태</th>
+					          <th>결제상태</th>
+					          <th>총금액</th>
+					        </tr>
+					      </thead>
+					      <tbody>
+					        <c:forEach var="r" items="${reservations}">
+					          <tr>
+					            <td>${r.rsvSeq}</td>
+					            <td>${r.roomTypeSeq}</td>
+					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
+					            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+					            <td>
+					              <c:choose>
+					                <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
+					                <c:when test="${r.rsvStat eq '취소'}">예약취소</c:when>
+					                <c:when test="${r.rsvStat eq 'PENDING'}">결제대기</c:when>
+					                <c:otherwise>-</c:otherwise>
+					              </c:choose>
+					            </td>
+					            <td>
+					              <c:choose>
+					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+					                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+					                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
+					                <c:otherwise>-</c:otherwise>
+					              </c:choose>
+					            </td>
+					            <td class="amount">
+					              <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
+					              <c:if test="${r.rsvStat eq 'CONFIRMED'}">
+					                <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('정말 취소하시겠습니까?')">
+					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+					                  <button type="submit" class="btn btn-sm btn-danger">환불</button>
+					                </form>
+					              </c:if>
+					            </td>
+					          </tr>
+					        </c:forEach>
+					      </tbody>
+					    </table>
+					  </c:if>
                 </div>
             </div>
             
-           <%-- 마일리지 충전 내역 --%><!-- ------------------수정필요------------------ -->
+           <%-- 마일리지 충전 내역 --%>
             <div id="mile-content" class="content-area hidden">
                 <div class="welcome-message">마일리지 충전 내역</div>
                 <div class="sub-message">마일리지 충전하신 내역을 확인하실 수 있습니다.</div>
                 <div class="detail-content">
                     <h3>마일리지 충전 내역</h3>
+                    <div class="info-item">
+                        <span class="info-label">현재 보유 마일리지 :</span>
+                        <span class="info-value"><fmt:formatNumber value="${user.mile}" pattern="#,###"/>원</span>
+                    </div>
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>결제일</th>
-                                <th>금액</th>
-                                <th>유형</th>
+                                <th>번호</th>
+                                <th>거래 일시</th>
+                                <th>거래 유형</th>
+                                <th>거래 금액</th>                                
+                                <th>거래 후 잔액</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:choose>
                                 <c:when test="${not empty mileHistory}">
-                                    <c:forEach var="mile" items="${mileHistory}">
+                                    <c:forEach var="mile" items="${mileHistory}" varStatus="status">
                                         <tr>
-                                            <td>${mile.trxDt}</td>
-                                            <td><fmt:formatNumber value="${mile.trxAmt}" pattern="#,###"/>P</td>
-                                            <td>${mile.trxType}</td>
+                                        	<td>${status.count}</td>
+                                            <td><fmt:formatDate value="${mile.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+                                            <td data-type="${mile.trxType}"></td>
+                                            <td><fmt:formatNumber value="${mile.trxAmt}" pattern="#,###"/>원</td>
+                                            <td><fmt:formatNumber value="${mile.balanceAfterTrx}" pattern="#,###"/>원</td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>
@@ -468,7 +368,7 @@ body {
                 </div>
             </div>
 
-			<%-- 내가 쓴 게시글 --%><!-- ------------------수정필요------------------ -->
+			<%-- 내가 쓴 게시글 --%>
             <div id="posts-content" class="content-area hidden">
                 <div class="welcome-message">내가 쓴 게시글</div>
                 <div class="sub-message">회원님이 작성하신 게시글 목록입니다.</div>
@@ -477,23 +377,23 @@ body {
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                            	<th>번호</th>
                                 <th>제목</th>
-                                <th>게시판</th>
                                 <th>작성일</th>
                                 <th>조회수</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:choose>
-                                <c:when test="${not empty freeBoard}">
-                                    <c:forEach var="post" items="${freeBoard}">
-                                        <tr>
-                                            <td><a href="/board/view?postNo=${post.postNo}">${post.title}</a></td>
-                                            <td>${post.boardName}</td>
-                                            <td>${post.regDate}</td>
-                                            <td><fmt:formatNumber value="${post.viewCount}" pattern="#,###"/></td>
-                                        </tr>
-                                    </c:forEach>
+                                <c:when test="${!empty freeBoard}">
+								<c:forEach var="post" items="${freeBoard}" varStatus="status">
+								    <tr>
+								    	<td>${status.count}</td>
+								        <td><a href="/board/view?freeBoardSeq=${post.freeBoardSeq}">${post.freeBoardTitle}</a></td>
+								        <td>${post.regDt}</td>
+								        <td><fmt:formatNumber value="${post.freeBoardViews}" pattern="#,###"/></td>
+								    </tr>
+								</c:forEach>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
@@ -506,10 +406,135 @@ body {
                 </div>
             </div>
 
-			<%-- 위시리스트 --%><!-- ------------------수정필요------------------ -->
+			<%-- 위시리스트 --%>
+            <div id="wishlist-content" class="content-area hidden">
+	            <div class="welcome-message">위시리스트</div>
+	            <div class="sub-message">회원님이 작성하신 게시글 목록입니다.</div>
+				<div class="container">
+				<div class="detail-content">
+					 <h3>위시리스트</h3>
+					  <c:if test="${empty wishList}">
+					    <p>찜한 숙소가 없습니다.</p>
+					  </c:if>
+				
+					  <div id="wishlistBody">
+					    <c:forEach var="room" items="${wishList}">
+						  <div class="wishlist-item">
+							  <a href="/room/detail?roomSeq=${room.roomSeq}">
+							    <img src="/resources/upload/room/main/${room.roomImgName}" 
+								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
+								     alt="${room.roomTitle}" 
+								     class="wishlist-thumb">
+							  </a>
+							
+							  <div class="wishlist-details">
+							    <a href="/room/roomDetail?roomSeq=${room.roomSeq}" class="wishlist-title" title="${room.roomTitle}">
+							      ${room.roomTitle}
+							    </a>
+							
+							    <div class="wishlist-info">
+							      <div>
+							        <div class="wishlist-location">
+									    ${room.region} / <strong><fmt:formatNumber value="${room.weekdayAmt}" pattern="#,###" />원~</strong>
+									</div>
+							        <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
+							      </div>
+							      
+							
+							      <!-- ❤️ 우측하단 꽉 찬 빨간 하트 아이콘 (클릭 시 삭제) -->
+									<button class="wish-heart" 
+										     data-wished="true"                
+										     onclick="toggleWish(${room.roomSeq}, this)" >
+								      <i class="fas fa-heart wished"></i>
+								    </button>
+							    </div>
+							  </div>
+							</div>
+						</c:forEach>
+						</div>
+					</div>
+				</div>
+            </div> 
 
-
-			<%-- 장바구니 --%><!-- ------------------수정필요------------------ -->
+			<%-- 장바구니 --%>
+			<div id="cart-content" class="content-area  hidden">
+			<div class="welcome-message">장바구니</div>
+			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
+			<div  class=cart-container>
+			  <div class="detail-content">
+			  	<h3>장바구니</h3>
+			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
+			    <label>
+			      <input type="checkbox" id="selectAll"/> 전체선택
+			    </label><br/><br/>
+			
+			    <c:forEach var="cart" items="${cartList}">
+			      <div class="cart-card">
+			        <input type="checkbox"
+			               class="cart-checkbox itemCheckbox"
+			               name="cartSeqs"
+			               value="${cart.cartSeq}"
+			               data-amt="${cart.cartTotalAmt}"/>
+			
+			        <div class="cart-img">
+			          <img src="/resources/upload/roomtype/main/${cart.roomTypeImgName}"
+			               alt="숙소 이미지"/>
+			        </div>
+			        <div class="cart-info">
+			          <div class="room-title">${cart.roomTitle}</div>
+			          <div class="cart-location">
+			            ${cart.roomCatName} &nbsp;/&nbsp; ${cart.roomAddr}
+			          </div>
+			          <div class="divider"></div>
+			          <div class="type-title">${cart.roomTypeTitle}</div>
+			
+			          <fmt:parseDate var="inDate"
+			                         value="${cart.cartCheckInDt}"
+			                         pattern="yyyyMMdd"/>
+			          <fmt:parseDate var="outDate"
+			                         value="${cart.cartCheckOutDt}"
+			                         pattern="yyyyMMdd"/>
+			          <fmt:parseDate var="inTime"
+			                         value="${cart.cartCheckInTime}"
+			                         pattern="HHmm"/>
+			          <fmt:parseDate var="outTime"
+			                         value="${cart.cartCheckOutTime}"
+			                         pattern="HHmm"/>
+			
+			          <div class="cart-meta">
+			            <fmt:formatDate value="${inDate}" pattern="yyyy년 M월 d일"/> ~
+			            <fmt:formatDate value="${outDate}" pattern="yyyy년 M월 d일"/>
+			            &nbsp;|&nbsp;
+			            <fmt:formatDate value="${inTime}" pattern="a h시"/> ~
+			            <fmt:formatDate value="${outTime}" pattern="a h시"/>
+			            &nbsp;|&nbsp; ${cart.cartGuestsNum}명
+			          </div>
+			
+			          <div class="cart-price">
+			            <fmt:formatNumber value="${cart.cartTotalAmt}" type="number"/>원
+			          </div>
+			          <div class="cancel-rule">(${cart.cancelPolicy})</div>
+			          <div class="cart-actions">
+			            <a href="javascript:;" class="btn-delete"
+			               onclick="deleteCart(${cart.cartSeq})">&times; 삭제</a>
+			          </div>
+			        </div>
+			      </div>
+			    </c:forEach>
+			
+			    <div class="cart-summary">
+			      <span>총 <strong id="summaryCnt">0</strong>건</span>
+			      <span>결제 예상 금액
+			        <strong class="total-amt" id="summaryAmt">0</strong>원
+			      </span>
+			      <button type="submit" id="btnCheckout" class="btn-buy" disabled>
+			        구매하기
+			      </button>
+			    </div>
+			  </form>
+			  </div>
+			</div>
+			</div>
 
             
             <%-- 회원 탈퇴 --%>

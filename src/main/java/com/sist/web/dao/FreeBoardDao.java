@@ -62,4 +62,7 @@ public interface FreeBoardDao {
 	
 	//댓글 수정
 	public int commentUpdate(FreeBoardComment comment);
+	
+	// 
+	public List<FreeBoard> boardListByUser(String sessionUserId);
 }

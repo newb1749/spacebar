@@ -128,8 +128,7 @@ public class KakaoPayControllerJY
 
             // 2. 예약 흐름일 경우 → detailJY로 이동
             Reservation pending = (Reservation) session.getAttribute("pendingReservation");
-            if (pending != null) {
-                model.addAttribute("reservation", pending);
+            if (pending != null && pending.getRsvSeq() != 0) {
                 session.removeAttribute("pendingReservation");
                 return "redirect:/reservation/detailJY?rsvSeq=" + pending.getRsvSeq();
             }
@@ -261,5 +260,4 @@ public class KakaoPayControllerJY
 
         return "/payment/mileageHistory";
     }
-
 }
