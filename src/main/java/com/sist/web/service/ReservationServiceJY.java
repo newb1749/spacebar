@@ -4,40 +4,43 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.sist.web.dao.ReservationDaoJY;
-import com.sist.web.model.ReservationJY;
-import com.sist.web.model.RoomTypeJY;
+import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Reservation;
+import com.sist.web.model.RoomType;
 
 @Service
 public class ReservationServiceJY 
 {
     @Autowired
-    private ReservationDaoJY reservationDao;
+    private ReservationDao reservationDao;
     
     @Autowired
-    private RoomServiceJY roomService;
+    private RoomService roomService;
     
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
+    
+    @Autowired
+    private MileageHistoryService mileageHistoryService;
     
     /**
      * 예약 등록 - hostId 자동 설정 포함
      */
     @Transactional
-    public void insertReservation(ReservationJY reservation) throws Exception
+    public void insertReservation(Reservation reservation) throws Exception
     {
-        // 🔥 디버깅 로그 추가
+        // 디버깅 로그
         System.out.println("=== insertReservation 시작 ===");
         System.out.println("전달받은 roomTypeSeq: " + reservation.getRoomTypeSeq());
         System.out.println("전달받은 hostId: " + reservation.getHostId());
         
-        // 🔥 hostId 검증 및 설정
+        // hostId 검증 및 설정
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) 
         {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
             if(roomTypeSeq == null) throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
 
-            RoomTypeJY roomType = roomTypeService.getRoomType(roomTypeSeq);
+            RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             String hostId = null;
 
             if(roomType != null && roomType.getHostId() != null && !roomType.getHostId().trim().isEmpty()) 
@@ -66,12 +69,12 @@ public class ReservationServiceJY
             System.out.println("최종 설정된 hostId: '" + reservation.getHostId() + "'");
         }
         
-        // 🔥 최종 검증
+        // 최종 검증
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             throw new IllegalArgumentException("HOST_ID가 설정되지 않았습니다.");
         }
         
-        // 🔥 필수 필드 검증
+        // 필수 필드 검증
         if (reservation.getGuestId() == null || reservation.getGuestId().trim().isEmpty()) {
             throw new IllegalArgumentException("GUEST_ID가 설정되지 않았습니다.");
         }
@@ -83,7 +86,7 @@ public class ReservationServiceJY
     /**
      * 특정 게스트의 예약 목록 조회
      */
-    public List<ReservationJY> getReservationsByGuestId(String guestId)
+    public List<Reservation> getReservationsByGuestId(String guestId)
     {
         return reservationDao.selectReservationsByGuestId(guestId);
     }
@@ -91,7 +94,7 @@ public class ReservationServiceJY
     /**
      * 특정 예약 상세 조회
      */
-    public ReservationJY getReservationBySeq(int rsvSeq) 
+    public Reservation getReservationBySeq(int rsvSeq) 
     {
         return reservationDao.selectReservationBySeq(rsvSeq);
     }
@@ -116,8 +119,18 @@ public class ReservationServiceJY
      * 예약 취소 처리 (취소일, 사유, 환불액 등 포함)
      */
     @Transactional
-    public void cancelReservation(ReservationJY reservation) throws Exception
-    {
+    public void cancelReservation(Reservation reservation) throws Exception {
+        System.out.println("[cancelReservation] 예약 취소 시작, refundAmt=" + reservation.getRefundAmt() + ", guestId=" + reservation.getGuestId());
+
         reservationDao.cancelReservation(reservation);
+
+        if (reservation.getRefundAmt() > 0) {
+            System.out.println("[cancelReservation] 환불 마일리지 처리 시작");
+            mileageHistoryService.refundMileage(reservation.getGuestId(), reservation.getRefundAmt());
+            System.out.println("[cancelReservation] 환불 마일리지 처리 완료");
+        } else {
+            System.out.println("[cancelReservation] 환불 금액 없음, 마일리지 환불 처리 안함");
+        }
     }
+
 }

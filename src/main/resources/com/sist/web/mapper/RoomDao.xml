@@ -20,6 +20,13 @@
       <result column="REVIEW_COUNT" property="reviewCount" />
       <result column="REG_DT" property="regDt" />
       <result column="UPDATE_DT" property="updateDt" />
+      <result column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
+      <result column="AMT" property="amt" />
+      <result column="ROOM_IMAGE_NAME" property="roomImageName" />
+      <result column="WEEKEND_AMT" property="weekEndAmt" />
+      <result column="WEEKDAY_AMT" property="weekdayAmt" />
+      <result column="ROOM_IMG_NAME" property="roomImgName" />
+      
   </resultMap>
   
   <resultMap id="roomImgResultMap" type="com.sist.web.model.RoomImage">
@@ -33,85 +40,476 @@
 		<result column="ROOM_IMG_NAME" property="roomImgName" />
 		<result column="REG_DT" property="regDt" />
   </resultMap>
+  
+
+  <!-- 메인페이지용 최근 등록 숙소 조회 -->
+	  <select id="newRoomList" resultMap="roomResultMap">
+	  		SELECT ROOM_SEQ,
+	           ROOM_ADDR,
+	           ROOM_TITLE,
+	           AVERAGE_RATING,
+	           REVIEW_COUNT,
+	           ROOM_IMG_NAME,
+	           WEEKDAY_AMT
+		    FROM (
+		      SELECT 
+		        A.ROOM_SEQ        AS ROOM_SEQ,
+		        A.ROOM_ADDR       AS ROOM_ADDR,
+		        A.ROOM_TITLE      AS ROOM_TITLE,
+		        A.AVERAGE_RATING  AS AVERAGE_RATING,
+		        A.REVIEW_COUNT    AS REVIEW_COUNT,
+		        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+		        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+		        ROW_NUMBER() OVER (
+		          PARTITION BY A.ROOM_SEQ 
+		          ORDER BY B.WEEKDAY_AMT ASC
+		        ) AS rn
+		      FROM ROOM A
+		      JOIN ROOM_IMAGE C
+		        ON A.ROOM_SEQ = C.ROOM_SEQ
+		       AND C.IMG_TYPE = 'main'
+		      JOIN ROOM_TYPE B
+		        ON A.ROOM_SEQ = B.ROOM_SEQ
+		        AND A.ROOM_CAT_SEQ BETWEEN 8 AND 14
+		        
+		    ) tmp
+		    WHERE rn = 1
+		      AND ROWNUM <![CDATA[<=]]>  9
+		    ORDER BY ROOM_SEQ		
+	  </select>
+	  
+	  <!-- 메인페이지용 최근 등록 공간 조회 -->
+	  <select id="newSpaceList" resultMap="roomResultMap">
+	  		SELECT ROOM_SEQ,
+	           ROOM_ADDR,
+	           ROOM_TITLE,
+	           AVERAGE_RATING,
+	           REVIEW_COUNT,
+	           ROOM_IMG_NAME,
+	           WEEKDAY_AMT
+		    FROM (
+		      SELECT 
+		        A.ROOM_SEQ        AS ROOM_SEQ,
+		        A.ROOM_ADDR       AS ROOM_ADDR,
+		        A.ROOM_TITLE      AS ROOM_TITLE,
+		        A.AVERAGE_RATING  AS AVERAGE_RATING,
+		        A.REVIEW_COUNT    AS REVIEW_COUNT,
+		        C.ROOM_IMG_NAME   AS ROOM_IMG_NAME,
+		        B.WEEKDAY_AMT     AS WEEKDAY_AMT,
+		        ROW_NUMBER() OVER (
+		          PARTITION BY A.ROOM_SEQ 
+		          ORDER BY B.WEEKDAY_AMT ASC
+		        ) AS rn
+		      FROM ROOM A
+		      JOIN ROOM_IMAGE C
+		        ON A.ROOM_SEQ = C.ROOM_SEQ
+		       AND C.IMG_TYPE = 'main'
+		      JOIN ROOM_TYPE B
+		        ON A.ROOM_SEQ = B.ROOM_SEQ
+		        AND A.ROOM_CAT_SEQ BETWEEN 1 AND 7
+		        
+		    ) tmp
+		    WHERE rn = 1
+		      AND ROWNUM <![CDATA[<=]]>  9
+		    ORDER BY ROOM_SEQ		
+	  </select>
+
+   <resultMap id="facilityResultMap" type="com.sist.web.model.Facility">
+	<id column="FAC_SEQ" property="facSeq" />
+	<result column="FAC_NAME" property="facName" />
+	<result column="FAC_ICON_EXT" property="facIconExt" />
+  </resultMap>
     
-  <insert id="insertRoom" parameterType="com.sist.web.model.Room">
-  		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
-  			SELECT SEQ_ROOM_SEQ.NEXTVAL FROM DUAL
-  		</selectKey>
-  		
-	  		INSERT INTO ROOM (
-			    ROOM_SEQ, ROOM_CAT_SEQ, HOST_ID, ROOM_ADDR,
-			    LATITUDE, LONGITUDE, REGION, REG_DT, 
-			    UPDATE_DT, AUTO_CONFIRM_YN, ROOM_TITLE, ROOM_DESC,
-			    CANCEL_POLICY, MIN_TIMES, MAX_TIMES
-			) VALUES (
-			    #{roomSeq},
-			    #{roomCatSeq}, 
-			    #{hostId}, 
-			    #{roomAddr},
-			    #{latitude}, 
-			    #{longitude}, 
-			    #{region}, 
-			    SYSDATE,
-			    SYSDATE,
-			    #{autoConfirmYn}, 
-			    #{roomTitle}, 
-			    #{roomDesc},
-			    #{cancelPolicy}, 
-			    #{minTimes}, 
-			    #{maxTimes}
-			)
-  </insert>
+	  <insert id="insertRoom" parameterType="com.sist.web.model.Room">
+	  		<selectKey keyProperty="roomSeq" resultType="int" order="BEFORE">
+	  			SELECT SEQ_ROOM_SEQ.NEXTVAL FROM DUAL
+	  		</selectKey>
+	  		
+		  		INSERT INTO ROOM (
+				    ROOM_SEQ, ROOM_CAT_SEQ, HOST_ID, ROOM_ADDR,
+				    LATITUDE, LONGITUDE, REGION, REG_DT, 
+				    UPDATE_DT, AUTO_CONFIRM_YN, ROOM_TITLE, ROOM_DESC,
+				    CANCEL_POLICY, MIN_TIMES, MAX_TIMES
+				) VALUES (
+				    #{roomSeq},
+				    #{roomCatSeq}, 
+				    #{hostId}, 
+				    #{roomAddr},
+				    #{latitude}, 
+				    #{longitude}, 
+				    #{region}, 
+				    SYSDATE,
+				    SYSDATE,
+				    #{autoConfirmYn}, 
+				    #{roomTitle}, 
+				    #{roomDesc},
+				    #{cancelPolicy}, 
+				    #{minTimes}, 
+				    #{maxTimes}
+				)
+	  </insert>
+  	
+  	
+  		<!-- 지연 시작 -->
+		<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
+			SELECT 
+				ROOM_SEQ, 
+				ROOM_CAT_SEQ, 
+				HOST_ID, 
+				ROOM_ADDR, 
+				LATITUDE, 
+				LONGITUDE, 
+				REGION, 
+				AUTO_CONFIRM_YN, 
+				ROOM_TITLE, 
+				ROOM_DESC, 
+				CANCEL_POLICY, 
+				MIN_TIMES, 
+				MAX_TIMES,
+				AVERAGE_RATING,
+				REVIEW_COUNT, 
+				TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, 
+				TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
+			FROM ROOM
+			WHERE ROOM_SEQ = #{roomSeq}
+		</select>
+	  
+		<select id="getRoomImgDetail" resultMap="roomImgResultMap" parameterType="int">
+			SELECT 
+			    ROOM_IMG_SEQ, 
+			    ROOM_SEQ, 
+			    ROOM_IMG_ORIG_NAME, 
+			    ROOM_IMG_EXT, 
+			    IMG_SIZE, 
+			    IMG_TYPE, 
+			    SORT_ORDER, 
+			    ROOM_IMG_NAME,
+			    TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT
+			FROM ROOM_IMAGE
+			WHERE ROOM_SEQ = #{roomSeq}
+		</select>
+	  
+		<select id="getRoomImagesByRoomSeq" parameterType="int" resultType="com.sist.web.model.RoomImage">
+			SELECT 
+				ROOM_IMG_SEQ, 
+				ROOM_SEQ, 
+				ROOM_IMG_ORIG_NAME, 
+				ROOM_IMG_EXT, 
+				IMG_SIZE, IMG_TYPE, 
+				SORT_ORDER, ROOM_IMG_NAME
+			FROM ROOM_IMAGE
+			WHERE ROOM_SEQ = #{roomSeq}
+			ORDER BY SORT_ORDER ASC
+		</select>	
+		
+		<select id="getRoomTypesByRoomSeq" resultType="com.sist.web.model.RoomType">
+	    SELECT * FROM ROOM_TYPE WHERE ROOM_SEQ = #{roomSeq}
+		</select>
+	
+	
+	
+		
+		<select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">
+		    SELECT HOST_ID 
+		    FROM ROOM 
+		    WHERE ROOM_SEQ = #{roomSeq}
+		</select>
+	    <!-- 지연 끝 -->
+	  
+		<!-- 성혁 시작 -->	  
+	  	<select id="roomListCount" parameterType="com.sist.web.model.Room" resultType="long">
+			  SELECT COUNT(ROOM_SEQ) CNT
+			    FROM (
+						SELECT ROWNUM RNUM, INNER.*
+						  FROM (
+						    SELECT ROOM_SEQ,
+						           NVL(A.ROOM_CAT_SEQ, 0) ROOM_CAT_SEQ,
+						           HOST_ID,
+						           NVL(ROOM_ADDR, '') ROOM_ADDR,
+						           NVL(LATITUDE, 0) LATITUDE,
+						           NVL(LONGITUDE, 0) LONGITUDE,
+						           NVL(REGION, '') REGION,
+						           TO_CHAR(REG_DT, 'YYYY.MM.DD HH24:MI:SS') REG_DT,
+						           TO_CHAR(UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS') UPDATE_DT,
+						           NVL(AUTO_CONFIRM_YN, '') AUTO_CONFIRM_YN,
+						           NVL(ROOM_TITLE, '') ROOM_TITLE,
+						           NVL(ROOM_DESC, '') ROOM_DESC,
+						           NVL(CANCEL_POLICY, '') CANCEL_POLICY,
+						           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
+						           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
+						           NVL(MIN_TIMES, 0) MIN_TIMES,
+						           NVL(MAX_TIMES, 0) MAX_TIMES
+						      FROM ROOM A, ROOM_CATEGORY B
+				         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+				         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
+				         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
+					                                FROM ROOM_TYPE
+					                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[>=]]> MIN_DAY
+					                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[<=]]> MAX_DAY)
+						         <if test='searchValue != null and searchValue != ""'>
+						           AND (
+						             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
+						             OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
+						             OR DBMS_LOB.INSTR(ROOM_DESC, #{searchValue}) > 0
+						           )
+						         </if>
+						         <if test='regionList != null and regionList != ""'>
+						         	AND REGION = #{regionList}
+						         </if>
+						         <if test='category != null and category != ""'>
+						         	AND ROOM_CAT_NAME = #{category}
+						         </if>
+						         <if test='personCount != null and personCount != 0'>
+						         AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
+						                               FROM ROOM_TYPE
+						                              WHERE MAX_GUESTS >= #{personCount})
+						         </if>
+						         <if test='minPrice != 0 or maxPrice != 0'>
+						         AND (
+				        SELECT ROUND(SUM(
+				                 CASE 
+				                   WHEN TO_CHAR(DATES2.DAY, 'DY', 'NLS_DATE_LANGUAGE=AMERICAN')
+				                        IN ('FRI','SAT','SUN')
+				                   THEN RT2.WEEKEND_AMT
+				                   ELSE RT2.WEEKDAY_AMT
+				                 END
+				               ) / COUNT(*), 0)
+				          FROM (
+				                SELECT TO_DATE(#{startDate},'YYYYMMDD') + LEVEL - 1 AS DAY
+				                  FROM DUAL
+				               CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate},'YYYYMMDD')
+				                                - TO_DATE(#{startDate},'YYYYMMDD')
+				               ) DATES2
+				              , ROOM_TYPE RT2
+				         WHERE RT2.ROOM_TYPE_SEQ = (
+				                SELECT ROOM_TYPE_SEQ
+				                  FROM (
+				                        SELECT ROOM_TYPE_SEQ
+				                          FROM ROOM_TYPE
+				                         WHERE ROOM_SEQ = A.ROOM_SEQ
+				                         ORDER BY WEEKDAY_AMT ASC
+				                       )
+				                 WHERE ROWNUM = 1
+				               )
+				      ) 
+				      <choose>
+						  <when test="minPrice != 0 and maxPrice != 0">
+						    <![CDATA[BETWEEN #{minPrice} AND #{maxPrice}]]>
+						  </when>
+						  <when test="minPrice != 0 and maxPrice == 0">
+						    <![CDATA[>=]]> #{minPrice}
+						  </when>
+						  <when test="minPrice == 0 and maxPrice != 0">
+						    <![CDATA[<=]]> #{maxPrice}
+						  </when>
+						</choose>
+						         </if>
+						         
+					           <if test="facilityList != null and facilityList.size() &gt; 0">
+								  AND (
+								    <foreach collection="facilityList" item="fac" separator=" AND ">
+								      EXISTS (
+								        SELECT 1
+								          FROM ROOM_FACILITY RF
+								          JOIN FACILITY      F  ON RF.FAC_SEQ = F.FAC_SEQ
+								         WHERE RF.ROOM_SEQ      = A.ROOM_SEQ
+								           AND F.FAC_NAME       = #{fac}
+								      )
+								    </foreach>
+								  )     
+								</if>                  
+						     ORDER BY ROOM_SEQ DESC
+						  ) INNER
+					) OUTER
+						   WHERE 1 = 1
+	  </select>
   
-	<select id="getRoomDetail" resultMap="roomResultMap" parameterType="int">
-		SELECT 
-			ROOM_SEQ, 
-			ROOM_CAT_SEQ, 
-			HOST_ID, 
-			ROOM_ADDR, 
-			LATITUDE, 
-			LONGITUDE, 
-			REGION, 
-			AUTO_CONFIRM_YN, 
-			ROOM_TITLE, 
-			ROOM_DESC, 
-			CANCEL_POLICY, 
-			MIN_TIMES, 
-			MAX_TIMES,
-			AVERAGE_RATING,
-			REVIEW_COUNT, 
-			TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT, 
-			TO_CHAR(UPDATE_DT, 'YY/MM/DD') AS UPDATE_DT
-		FROM ROOM
-		WHERE ROOM_SEQ = #{roomSeq}
+	  <select id="roomList" parameterType="com.sist.web.model.Room" resultMap="roomResultMap">
+		SELECT ROOM_SEQ,
+		       ROOM_CAT_SEQ,
+		       HOST_ID,
+		       ROOM_ADDR,
+		       LATITUDE,
+		       LONGITUDE,
+		       REGION,
+		       REG_DT,
+		       UPDATE_DT,
+		       AUTO_CONFIRM_YN,
+		       ROOM_TITLE,
+		       ROOM_DESC,
+		       CANCEL_POLICY,
+		       AVERAGE_RATING,
+		       REVIEW_COUNT,
+		       MIN_TIMES,
+		       MAX_TIMES, 	 
+		       (SELECT ROOM_IMG_NAME 
+		          FROM ROOM_IMAGE
+		         WHERE ROOM_SEQ = OUTER.ROOM_SEQ
+		           AND IMG_TYPE = 'main') ROOM_IMAGE_NAME,
+		       (SELECT ROUND(SUM(
+		                     CASE 
+		                       WHEN TO_CHAR(DATES.DAY, 'DY', 'NLS_DATE_LANGUAGE=AMERICAN') IN ('FRI','SAT','SUN')
+		                       THEN RT.WEEKEND_AMT
+		                       ELSE RT.WEEKDAY_AMT
+		                     END
+		                   ) / COUNT(*), 0)
+		              FROM (
+		                SELECT TO_DATE(#{startDate}, 'YYYYMMDD') + LEVEL - 1 AS DAY
+		                FROM DUAL
+		                CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD')
+		              ) DATES, ROOM_TYPE RT
+		              WHERE RT.ROOM_TYPE_SEQ = (
+		                SELECT ROOM_TYPE_SEQ
+		                FROM (
+		                  SELECT ROOM_TYPE_SEQ
+		                  FROM ROOM_TYPE
+		                  WHERE ROOM_SEQ = OUTER.ROOM_SEQ
+		                  ORDER BY WEEKDAY_AMT ASC
+		                )
+		                WHERE ROWNUM = 1
+		              )
+		            ) AS AMT
+		FROM (
+			SELECT ROWNUM RNUM, INNER.*
+			  FROM (
+			    SELECT ROOM_SEQ,
+			           NVL(A.ROOM_CAT_SEQ, 0) ROOM_CAT_SEQ,
+			           HOST_ID,
+			           NVL(ROOM_ADDR, '') ROOM_ADDR,
+			           NVL(LATITUDE, 0) LATITUDE,
+			           NVL(LONGITUDE, 0) LONGITUDE,
+			           NVL(REGION, '') REGION,
+			           TO_CHAR(REG_DT, 'YYYY.MM.DD HH24:MI:SS') REG_DT,
+			           TO_CHAR(UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS') UPDATE_DT,
+			           NVL(AUTO_CONFIRM_YN, '') AUTO_CONFIRM_YN,
+			           NVL(ROOM_TITLE, '') ROOM_TITLE,
+			           NVL(ROOM_DESC, '') ROOM_DESC,
+			           NVL(CANCEL_POLICY, '') CANCEL_POLICY,
+			           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
+			           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
+			           NVL(MIN_TIMES, 0) MIN_TIMES,
+			           NVL(MAX_TIMES, 0) MAX_TIMES
+			      FROM ROOM A, ROOM_CATEGORY B
+	         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+	         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
+	         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
+		                                FROM ROOM_TYPE
+		                               WHERE TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[>=]]> MIN_DAY
+		                                 AND TO_DATE(#{endDate}, 'YYYYMMDD') - TO_DATE(#{startDate}, 'YYYYMMDD') <![CDATA[<=]]> MAX_DAY)
+			         <if test='searchValue != null and searchValue != ""'>
+			           AND (
+			             ROOM_TITLE LIKE '%' || #{searchValue} || '%'
+			             OR ROOM_ADDR LIKE '%' || #{searchValue} || '%'
+			             OR DBMS_LOB.INSTR(ROOM_DESC, #{searchValue}) > 0
+			           )
+			         </if>
+			         <if test='regionList != null and regionList != ""'>
+			         	AND REGION = #{regionList}
+			         </if>
+			         <if test='category != null and category != ""'>
+			         	AND ROOM_CAT_NAME = #{category}
+			         </if>
+			         <if test='personCount != null and personCount != 0'>
+			         AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
+			                               FROM ROOM_TYPE
+			                              WHERE MAX_GUESTS >= #{personCount})
+			         </if>
+			         <if test='minPrice != 0 or maxPrice != 0'>
+			         AND (
+	        SELECT ROUND(SUM(
+	                 CASE 
+	                   WHEN TO_CHAR(DATES2.DAY, 'DY', 'NLS_DATE_LANGUAGE=AMERICAN')
+	                        IN ('FRI','SAT','SUN')
+	                   THEN RT2.WEEKEND_AMT
+	                   ELSE RT2.WEEKDAY_AMT
+	                 END
+	               ) / COUNT(*), 0)
+	          FROM (
+	                SELECT TO_DATE(#{startDate},'YYYYMMDD') + LEVEL - 1 AS DAY
+	                  FROM DUAL
+	               CONNECT BY LEVEL <![CDATA[<=]]> TO_DATE(#{endDate},'YYYYMMDD')
+	                                - TO_DATE(#{startDate},'YYYYMMDD')
+	               ) DATES2
+	              , ROOM_TYPE RT2
+	         WHERE RT2.ROOM_TYPE_SEQ = (
+	                SELECT ROOM_TYPE_SEQ
+	                  FROM (
+	                        SELECT ROOM_TYPE_SEQ
+	                          FROM ROOM_TYPE
+	                         WHERE ROOM_SEQ = A.ROOM_SEQ
+	                         ORDER BY WEEKDAY_AMT ASC
+	                       )
+	                 WHERE ROWNUM = 1
+	               )
+	      ) 
+	      <choose>
+			  <when test="minPrice != 0 and maxPrice != 0">
+			    <![CDATA[BETWEEN #{minPrice} AND #{maxPrice}]]>
+			  </when>
+			  <when test="minPrice != 0 and maxPrice == 0">
+			    <![CDATA[>=]]> #{minPrice}
+			  </when>
+			  <when test="minPrice == 0 and maxPrice != 0">
+			    <![CDATA[<=]]> #{maxPrice}
+			  </when>
+			</choose>
+			         </if>
+			         
+		           <if test="facilityList != null and facilityList.size() &gt; 0">
+					  AND (
+					    <foreach collection="facilityList" item="fac" separator=" AND ">
+					      EXISTS (
+					        SELECT 1
+					          FROM ROOM_FACILITY RF
+					          JOIN FACILITY      F  ON RF.FAC_SEQ = F.FAC_SEQ
+					         WHERE RF.ROOM_SEQ      = A.ROOM_SEQ
+					           AND F.FAC_NAME       = #{fac}
+					      )
+					    </foreach>
+					  )     
+					</if>                  
+			     ORDER BY ROOM_SEQ DESC
+			  ) INNER
+		) OUTER
+		WHERE RNUM <![CDATA[>=]]> #{startRow}
+		  AND RNUM <![CDATA[<=]]> #{endRow}
 	</select>
-  
-	<select id="getRoomImgDetail" resultMap="roomImgResultMap" parameterType="int">
-		SELECT 
-		    ROOM_IMG_SEQ, 
-		    ROOM_SEQ, 
-		    ROOM_IMG_ORIG_NAME, 
-		    ROOM_IMG_EXT, 
-		    IMG_SIZE, 
-		    IMG_TYPE, 
-		    SORT_ORDER, 
-		    ROOM_IMG_NAME,
-		    TO_CHAR(REG_DT, 'YY/MM/DD') AS REG_DT
-		FROM ROOM_IMAGE
-		WHERE ROOM_SEQ = #{roomSeq}
+	
+	<select id="facilityList" parameterType="int" resultMap="facilityResultMap">
+		SELECT A.FAC_SEQ FAC_SEQ,
+		       FAC_NAME FAC_NAME,
+		       FAC_ICON_EXT FAC_ICON_EXT
+		  FROM FACILITY A, ROOM_FACILITY B
+		 WHERE A.FAC_SEQ = B.FAC_SEQ
+		   AND ROOM_SEQ = 150
 	</select>
-  
-	<select id="getRoomImagesByRoomSeq" parameterType="int" resultType="com.sist.web.model.RoomImage">
-		SELECT 
-			ROOM_IMG_SEQ, 
-			ROOM_SEQ, 
-			ROOM_IMG_ORIG_NAME, 
-			ROOM_IMG_EXT, 
-			IMG_SIZE, IMG_TYPE, 
-			SORT_ORDER, ROOM_IMG_NAME
-		FROM ROOM_IMAGE
-		WHERE ROOM_SEQ = #{roomSeq}
-		ORDER BY SORT_ORDER ASC
-	</select>	
+  	<!-- 성혁 끝 -->	
+  	
+	<!-- 민정 시작 -->
+	<!-- 마이페이지용 호스트의 숙소 리스트 조회 -->
+	<select id="selectHostRoomList" parameterType="com.sist.web.model.Room" resultMap="roomResultMap">
+	SELECT A.ROOM_SEQ,
+	       A.ROOM_CAT_SEQ,
+	       A.HOST_ID,
+	       NVL(A.ROOM_ADDR,'') ROOM_ADDR,
+	       NVL(A.LATITUDE,0) LATITUDE,
+	       NVL(A.LONGITUDE,0) LONGITUDE,
+	       NVL(A.REGION,'') REGION,
+	       NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD'),'') REG_DT,
+	       NVL(TO_CHAR(A.UPDATE_DT,'YYYY.MM.DD'),'') UPDATE_DT,
+	       NVL(A.AUTO_CONFIRM_YN,'N') AUTO_CONFIRM_YN,
+	       NVL(A.ROOM_TITLE,'') ROOM_TITLE,
+	       NVL(A.ROOM_DESC,'') ROOM_DESC,
+	       NVL(A.CANCEL_POLICY,'') CANCEL_POLICY,
+	       NVL(A.AVERAGE_RATING,0) AVERAGE_RATING,
+	       NVL(A.REVIEW_COUNT,0) REVIEW_COUNT,
+	       NVL(A.MIN_TIMES,0) MIN_TIMES,
+	       NVL(A.MAX_TIMES,0) MAX_TIMES,
+	       NVL(B.ROOM_IMG_NAME,'') ROOM_IMG_NAME
+	  FROM ROOM A, ROOM_IMAGE B
+	 WHERE A.HOST_ID = #{hostId}
+	   AND A.ROOM_SEQ = B.ROOM_SEQ
+	   AND B.IMG_TYPE = 'main'
+	</select>
   
 </mapper>

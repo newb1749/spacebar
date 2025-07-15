@@ -1,14 +1,17 @@
 package com.sist.web.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sist.web.dao.CouponDaoJY;
-import com.sist.web.model.CouponJY;
+import com.sist.web.dao.CouponDao;
+import com.sist.web.model.Coupon;
 
 @Service("couponServiceJY")
 public class CouponServiceJY 
@@ -16,11 +19,11 @@ public class CouponServiceJY
     private static final Logger logger = LoggerFactory.getLogger(CouponServiceJY.class);
 
     @Autowired
-    private CouponDaoJY couponDao;
+    private CouponDao couponDao;
 
-    public List<CouponJY> getAllCoupons() 
+    public List<Coupon> getAllCoupons() 
     {
-        List<CouponJY> coupons = null;
+        List<Coupon> coupons = null;
 
         try
         {
@@ -29,7 +32,7 @@ public class CouponServiceJY
             if(coupons != null) 
             {
                 logger.debug("===== [CouponServiceJY] 쿠폰 개수: " + coupons.size() + " =====");
-                for(CouponJY c : coupons) 
+                for(Coupon c : coupons) 
                 {
                     logger.debug(">> 쿠폰명: " + c.getCpnName() + ", 할인율: " + c.getDiscountRate() + ", 할인금액: " + c.getDiscountAmt());
                 }
@@ -76,4 +79,22 @@ public class CouponServiceJY
             throw e;  // 예외 다시 던져서 컨트롤러가 알 수 있도록
         }
     }
+    
+    //마이페이지용 (쿠폰 조회)
+    public List<Coupon> couponListByUser(String userId)
+    {
+    	List<Coupon> list = null;
+    	
+        try 
+        {
+        	list = couponDao.couponListByUser(userId);
+        } 
+        catch(Exception e) 
+        {
+            logger.error("[CouponServiceJY] couponListByUser Exception", e);
+        }
+    	
+    	return list;
+    }
+    
 }
