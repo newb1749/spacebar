@@ -673,13 +673,14 @@ public class RoomController {
 				model.addAttribute("roomTypes",roomTypes);
 				
 				//QNA 총 개수
-                totalCount = roomQnaService.qnaListCount(roomSeq);
+				search.setRoomSeq(roomSeq);
+                totalCount = roomQnaService.qnaListCount(search);
                 logger.debug("totalCount : " + totalCount);
                 
                 if(totalCount > 0)
                 {
                    paging = new Paging("/room/roomDetail", totalCount, QNA_LIST_COUNT, QNA_PAGE_COUNT, curPage, "curPage");
-                   search.setRoomSeq(roomSeq);
+                   
                    search.setStartRow((int)paging.getStartRow());
                    search.setEndRow((int)paging.getEndRow());
                    

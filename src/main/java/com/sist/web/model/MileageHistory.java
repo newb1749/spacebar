@@ -58,8 +58,4 @@ public class MileageHistory {
 	public void setTrxDt(Date trxDt) {
 		this.trxDt = trxDt;
 	} 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e6bcdb4938f0734e97499302b774512f1b7ea22f

@@ -128,7 +128,8 @@ public class KakaoPayControllerJY
 
             // 2. 예약 흐름일 경우 → detailJY로 이동
             Reservation pending = (Reservation) session.getAttribute("pendingReservation");
-            if (pending != null && pending.getRsvSeq() != 0) {
+            if (pending != null) {
+                model.addAttribute("reservation", pending);
                 session.removeAttribute("pendingReservation");
                 return "redirect:/reservation/detailJY?rsvSeq=" + pending.getRsvSeq();
             }
@@ -231,34 +232,6 @@ public class KakaoPayControllerJY
             return null;
         }
         return timeStr.replace(":", "");
-    }
-
-    private int getUserMileage(String userId) {
-        Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
-        return (mileage != null) ? mileage.intValue() : 0;
-    }
-
-    @GetMapping("/mileageHistory")
-    public String showMileageHistory(@RequestParam(value = "code", required = false) Integer code,
-                                     @RequestParam(value = "msg", required = false) String msg,
-                                     HttpSession session,
-                                     Model model)
-    {
-        String userId = (String) session.getAttribute("SESSION_USER_ID");
-        
-        if (userId == null || userId.isEmpty()) {
-            return "redirect:/user/login";
-        }
-
-        List<MileageHistory> historyList = mileageHistoryDao.selectMileageHistoryByUserId(userId);
-        int remainingMileage = getUserMileage(userId);  // 잔여 마일리지 조회
-
-        model.addAttribute("code", code);
-        model.addAttribute("msg", msg);
-        model.addAttribute("mileageHistoryList", historyList);
-        model.addAttribute("remainingMileage", remainingMileage);  // 추가
-
-        return "/payment/mileageHistory";
     }
 
     private int getUserMileage(String userId) {
