@@ -53,7 +53,7 @@ $(document).ready(function(){
 				if(res.code == 0)
 				{
 					alert("Q&A가 등록되었습니다.");
-					location.href = "/room/roomDetail_mj?roomSeq=" + $("input[name=roomSeq]").val();
+					location.href = "/room/roomDetail?roomSeq=" + $("input[name=roomSeq]").val();
 				}
 				else if(res.code == 400)
 				{

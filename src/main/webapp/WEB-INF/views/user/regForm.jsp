@@ -4,6 +4,32 @@
 <html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+<style>
+/* 1. 라디오 버튼 그룹의 레이블/텍스트 크기 키우기 */
+.form-label-large {
+    font-size: 1.2em; /* 기본 폰트 크기보다 1.2배 크게 */
+    font-weight: bold; /* 선택적으로 글씨를 더 두껍게 */
+}
+
+.radio-text-large {
+    font-size: 1.1em; /* 라디오 버튼 옆 텍스트 크기 조절 */
+}
+
+/* 2. 생년월일 입력 필드 크기 키우기 */
+.date-input-large {
+    padding: 8px 12px; /* 내부 여백을 늘려 필드 자체의 크기 키우기 */
+    font-size: 1.1em; /* 입력 필드 내 텍스트 크기 키우기 */
+    width: 200px; /* 너비 조절 (필요에 따라 %나 다른 px 값 사용) */
+    height: 40px; /* 높이 조절 */
+    box-sizing: border-box; /* 패딩과 보더가 width/height에 포함되도록 */
+}
+
+/* 라디오 버튼 자체의 크기를 조절하고 싶다면 (브라우저별 차이가 있을 수 있음) */
+input[type="radio"] {
+    transform: scale(1.2); /* 라디오 버튼 아이콘 자체를 1.2배 확대 */
+    margin-right: 5px; /* 라디오 버튼과 텍스트 사이 간격 조절 */
+}
+</style>
 <!-- 카카오 주소 시작 -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
@@ -496,20 +522,29 @@ function addrCheck()
 					<p class="error-message" id="phone-error"></p>
                 </div>
                 
-                <div class="form-group">
-					<div>
-						<label for="gender">성별</label>
-						<input type="radio" name="gender" value="M"> 남성 (M)					
-						<input type="radio" name="gender" value="F"> 여성 (F)
-					</div>
-					<p class="error-message" id="gender-error"></p>
-				</div>
-				
-				<div class="form-group">
-					<label for="birthDt">생년월일</label> 
-					<input type="date" id="birthDt" name="birthDt" required>
-					<p class="error-message" id="birthdate-error"></p>
-				</div>
+<div class="form-group">
+    <div>
+        <label for="gender" class="form-label-large">성별</label>
+        <input type="radio" name="gender" value="M"> <span class="radio-text-large">남성 (M)</span>
+        <input type="radio" name="gender" value="F"> <span class="radio-text-large">여성 (F)</span>
+    </div>
+    <p class="error-message" id="gender-error"></p>
+</div>
+
+<div class="form-group">
+    <div>
+        <label for="userType" class="form-label-large">사용자 타입</label>
+        <input type="radio" name="userType" value="G" checked> <span class="radio-text-large">게스트</span>
+        <input type="radio" name="userType" value="H"> <span class="radio-text-large">호스트</span>
+    </div>
+    <p class="error-message" id="usertype-error"></p>
+</div>
+
+<div class="form-group">
+    <label for="birthDt" class="form-label-large">생년월일</label>
+    <input type="date" id="birthDt" name="birthDt" required class="date-input-large">
+    <p class="error-message" id="birthdate-error"></p>
+</div>
                               
                                 
 				<div class="form-group">
@@ -519,14 +554,7 @@ function addrCheck()
 					<input type="text" class="form-control form-control-user" id="detailAdr" name="detailAdr" placeholder="상세 주소" onclick="addrCheck()">
 				</div>
 				
-				<div class="form-group">
-					<div>
-						<label for="userType">사용자 타입</label> 
-						<input type="radio" name="userType" value="G" checked> 게스트
-						<input type="radio" name="userType" value="H"> 호스트
-					</div>
-					<p class="error-message" id="usertype-error"></p>
-				</div>	
+
              
 				<input type="hidden" id="userPwd" name="userPwd" value="" />
 				<input type="hidden" id="userAddr" name="userAddr" value="" />
