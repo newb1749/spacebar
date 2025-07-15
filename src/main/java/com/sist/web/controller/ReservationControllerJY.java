@@ -276,7 +276,7 @@ public class ReservationControllerJY {
      * @param reservation    폼에서 전달된 예약 정보 (rsvSeq, cancelReason 등)
 	 * @param redirectAttrs  리다이렉트 시 플래시 메시지 전달을 위한 객체
 	 * @return 예약 목록 또는 예약 상세 페이지로의 리다이렉션 경로
-     */
+     
     @PostMapping("/cancel")
     public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
         try {
@@ -287,7 +287,7 @@ public class ReservationControllerJY {
         }
         return "redirect:/reservation/list";
     }
-
+*/
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
         if (roomType == null) {
