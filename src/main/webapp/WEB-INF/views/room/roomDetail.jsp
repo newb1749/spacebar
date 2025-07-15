@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
@@ -645,7 +646,8 @@ function fn_list(curPage)
     var roomSeq = document.getElementById("roomSeq").value;
     var iframe = document.getElementById("qnaIframe");
 
-    if (iframe && roomSeq) {
+    if (iframe && roomSeq) 
+    {
         iframe.src = "/room/qnaList?roomSeq=" + roomSeq + "&curPage=" + curPage;
     }
    
