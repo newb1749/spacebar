@@ -110,6 +110,7 @@
 		           <![CDATA[<]]> TO_DATE(#{endDate},'YYYYMMDD')
 		       AND TO_DATE(B.RSV_CHECK_OUT_DT, 'YYYYMMDD')
 		           <![CDATA[>]]> TO_DATE(#{startDate},'YYYYMMDD')
+		       AND RSV_STAT <![CDATA[<>]]> '취소'
 		           ) RESERVATION_CHECK
 		FROM
 		    ROOM_TYPE A

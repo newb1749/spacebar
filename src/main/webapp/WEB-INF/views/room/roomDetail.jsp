@@ -152,7 +152,7 @@ $(document).ready(function(){
 	    e.preventDefault();  // form submit 방지
 	    $('html, body').animate({
 	      scrollTop: $("#roomTypesSection").offset().top
-	    }, 50);
+	    }, 0);
 	  });
 });
 

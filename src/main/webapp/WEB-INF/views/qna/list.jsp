@@ -29,34 +29,33 @@ body {
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#btnSearch").on("click", function(){
-		document.bbsForm.freeBoardSeq.value = "";
-		document.bbsForm.searchType.value = $("#_searchType").val();
+		document.bbsForm.qnaSeq.value = "";
 		document.bbsForm.searchValue.value = $("#_searchValue").val();
 		document.bbsForm.curPage.value = "1";
-		document.bbsForm.action = "/board/list";
+		document.bbsForm.action = "/qna/list";
 		document.bbsForm.submit();
 	});
 
 	$("#btnWrite").on("click", function(){
-		document.bbsForm.freeBoardSeq.value = "";
-		document.bbsForm.action = "/board/writeForm";
+		document.bbsForm.qnaSeq.value = "";
+		document.bbsForm.action = "/qna/writeForm";
 		document.bbsForm.submit();
 	});
 });
 
 
-function fn_view(freeBoardSeq)
+function fn_view(qnaSeq)
 {
-	document.bbsForm.freeBoardSeq.value = freeBoardSeq;
-	document.bbsForm.action = "/board/view"; 
+	document.bbsForm.qnaSeq.value = qnaSeq;
+	document.bbsForm.action = "/qna/view"; 
 	document.bbsForm.submit();
 }
 
 function fn_list(curPage)
 {
-	document.bbsForm.freeBoardSeq.value = "";
+	document.bbsForm.qnaSeq.value = "";
 	document.bbsForm.curPage.value = curPage;
-	document.bbsForm.action = "/board/list";
+	document.bbsForm.action = "/qna/list";
 	document.bbsForm.submit();
 	
 }
@@ -107,12 +106,12 @@ function fn_list(curPage)
       <h2>QnA게시판</h2>
     </div>
 
-<%--     <!-- 오른쪽: 검색창 전체 우측 정렬 -->
+     <!-- 오른쪽: 검색창 전체 우측 정렬 -->
 
     <div class="col-6 d-flex justify-content-end">
       <div class="d-flex align-items-center" style="gap: 10px;">
 
-        <!-- 조회 항목 드롭다운 -->
+<%--         <!-- 조회 항목 드롭다운 -->
         <select name="_searchType" id="_searchType"
                 class="form-select"
                 style="width: 160px; height: 38px; font-size: 14px;">
@@ -121,7 +120,7 @@ function fn_list(curPage)
           <option value="2" <c:if test='${searchType eq "2"}'>selected</c:if>>제목</option>
           <option value="3" <c:if test='${searchType eq "3"}'>selected</c:if>>내용</option>
           <option value="4" <c:if test='${searchType eq "4"}'>selected</c:if>>제목+내용</option>
-        </select>
+        </select> --%>
 
         <!-- 검색어 입력 -->
         <input type="text" name="_searchValue" id="_searchValue"
@@ -139,7 +138,7 @@ function fn_list(curPage)
         </button>
 
       </div>
-    </div> --%>
+    </div> 
     
   </div>
 
@@ -151,31 +150,43 @@ function fn_list(curPage)
          <th scope="col" class="text-center" style="width:55%">제목</th>
          <th scope="col" class="text-center" style="width:10%">작성자</th>
          <th scope="col" class="text-center" style="width:15%">날짜</th>
-         <th scope="col" class="text-center" style="width:10%">조회수</th>
+         <th scope="col" class="text-center" style="width:10%">답변상황</th>
       </tr>
       </thead>
       <tbody>
  
 <c:if test="${!empty list}">
 	<!-- var:for문 내부에서 사용할 변수, items: 리스트가 받아올 배열이름, varStatus: 상태용 변수 -->
-	<c:forEach var="freeBoard" items="${list}" varStatus="status">
+	<c:forEach var="qna" items="${list}" varStatus="status">
       <tr>
-         <td class="text-center">${freeBoard.freeBoardSeq}</td>
+         <td class="text-center">${qna.qnaSeq}</td>
          <td class="text-left">
 		  <c:choose>
-		    <c:when test="${freeBoard.freeBoardStat eq 'N'}">
+		    <c:when test="${qna.qnaStat eq 'N'}">
 		      <span class="deleted-title">삭제된 게시물입니다.</span>
 		    </c:when>
 		    <c:otherwise>
-		      <a href="javascript:void(0)" onclick="fn_view(${freeBoard.freeBoardSeq})">            
-		          <c:out value="${freeBoard.freeBoardTitle}" /> (${freeBoard.commentCount})
+		      <a href="javascript:void(0)" onclick="fn_view(${qna.qnaSeq})">            
+		          <c:out value="${qna.qnaTitle}" /> 
 		      </a>
 		    </c:otherwise>
 		  </c:choose>
 		</td>
-         <td class="text-center">${freeBoard.userName}</td>
-         <td class="text-center">${freeBoard.regDt}</td>
-         <td class="text-center"><fmt:formatNumber type="number" maxFractionDigits="3" groupingUsed="true" value="${freeBoard.freeBoardViews}" /></td>
+         <td class="text-center">${qna.userName}</td>
+         <td class="text-center">${qna.regDt}</td>
+         <td class="text-center">
+         <c:choose>
+    	    <c:when test="${qna.qnaStat eq 'N'}">
+         		질문 삭제
+         	</c:when>
+         	<c:when test="${qna.qnaCmtSeq > 0}">
+         		답변완료
+         	</c:when>
+         	<c:otherwise>
+         		답변대기중
+         	</c:otherwise>
+         </c:choose>
+         </td>
       </tr>
      </c:forEach>
 </c:if>
@@ -211,11 +222,10 @@ function fn_list(curPage)
       </ul>
    </nav>
    
-   <button type="button" id="btnWrite" class="btn btn-secondary mb-3">글쓰기</button>
+   <button type="button" id="btnWrite" class="btn btn-secondary mb-3">질문하기</button>
 
 	<form name="bbsForm" id="bbsForm" method="post">
-		<input type="hidden" name="freeBoardSeq" value="${freeBoardSeq}" />
-		<input type="hidden" name="searchType" value="${searchType}" />
+		<input type="hidden" name="qnaSeq" value="${qnaSeq}" />
 		<input type="hidden" name="searchValue" value="${searchValue}" />
 		<input type="hidden" name="curPage"  value="${curPage}" />
 	</form>

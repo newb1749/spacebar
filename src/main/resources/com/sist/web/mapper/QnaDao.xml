@@ -2,8 +2,158 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.QnaDao">
 
+	<resultMap type="com.sist.web.model.Qna" id="qnaResultMap">
+		<id column="QNA_SEQ" property="qnaSeq" />
+		<result column="QNA_TITLE" property="qnaTitle" />
+		<result column="QNA_CONTENT" property="qnaContent" />
+		<result column="USER_ID" property="userId" />
+		<result column="QNA_STAT" property="qnaStat" />
+		<result column="REG_DT" property="regDt" />
+		<result column="UPDATE_DT" property="updateDt" />
+		<result column="USER_NAME" property="userName" />
+		<result column="EMAIL" property="userEmail" />
+		<result column="QNA_CMT_SEQ" property="qnaCmtSeq" />
+	</resultMap>
+	
+	<resultMap type="com.sist.web.model.QnaComment" id="qnaCommentResultMap">
+		<id column="QNA_CMT_SEQ" property="qnaCmtSeq" />
+		<result column="QNA_SEQ" property="qnaSeq" />
+		<result column="ADMIN_ID" property="adminId" />
+		<result column="QNA_CMT_CONTENT" property="qnaCmtContent" />
+		<result column="QNA_CMT_STAT" property="qnaCmtStat" />
+		<result column="CREATE_DT" property="createDt" />
+		<result column="UPDATE_DT" property="updateDt" />
+	</resultMap>
+
 	<select id="qnaListCount" parameterType="com.sist.web.model.Qna" resultType="int">
 		SELECT COUNT(QNA_SEQ) CNT
   		  FROM QNA
+  		  <if test='searchValue != null and searchValue != "" '>
+  		  WHERE QNA_TITLE LIKE '%' || #{searchValue} || '%'
+  		     OR QNA_CONTENT LIKE '%' || #{searchValue} || '%'
+  		  </if>
 	</select>
+	
+	<select id="qnaList" parameterType="com.sist.web.model.Qna" resultMap="qnaResultMap">
+		SELECT QNA_SEQ,
+		       QNA_TITLE,
+		       QNA_CONTENT,
+		       USER_ID,
+		       QNA_STAT,
+		       REG_DT,
+		       UPDATE_DT,
+		       USER_NAME,
+               EMAIL,
+               QNA_CMT_SEQ
+		  FROM (SELECT ROWNUM RNUM,
+		               QNA_SEQ,
+		               QNA_TITLE,
+		               QNA_CONTENT,
+		               USER_ID,
+		               QNA_STAT,
+		               REG_DT,
+		               UPDATE_DT,
+		               USER_NAME,
+                   	   EMAIL,
+                   	   QNA_CMT_SEQ
+		        FROM(SELECT A.QNA_SEQ QNA_SEQ,
+		                       NVL(A.QNA_TITLE,'') QNA_TITLE, 
+		                       NVL(A.QNA_CONTENT,'') QNA_CONTENT,
+		                       NVL(A.USER_ID,'') USER_ID,
+		                       NVL(A.QNA_STAT,'') QNA_STAT,
+		                       NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'), '') REG_DT,
+		                       NVL(TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS'), '') UPDATE_DT,
+		                       NVL(B.USER_NAME, '') USER_NAME,
+                               NVL(B.EMAIL, '') EMAIL,
+                               NVL(C.QNA_CMT_SEQ, 0) QNA_CMT_SEQ
+		                  FROM QNA A, SB_USER B, QNA_COMMENT C
+		                 WHERE A.USER_ID = B.USER_ID
+		                 <if test='searchValue != null and searchValue != "" '>
+		                   AND (A.QNA_TITLE LIKE '%' || #{searchValue} || '%'
+		                    OR A.QNA_CONTENT LIKE '%' || #{searchValue} || '%')
+		                </if>
+		                   AND A.QNA_SEQ = C.QNA_SEQ(+)
+		                 ORDER BY A.QNA_SEQ DESC))
+	     WHERE RNUM <![CDATA[>=]]> #{startRow}
+	       AND RNUM <![CDATA[<=]]> #{endRow}
+	</select>
+	
+	<select id="qnaSelect" parameterType="long" resultMap="qnaResultMap">
+		SELECT A.QNA_SEQ QNA_SEQ,
+	       NVL(A.QNA_TITLE,'') QNA_TITLE, 
+	       NVL(A.QNA_CONTENT,'') QNA_CONTENT,
+	       NVL(A.USER_ID,'') USER_ID,
+	       NVL(A.QNA_STAT,'') QNA_STAT,
+	       NVL(TO_CHAR(A.REG_DT,'YYYY.MM.DD HH24:MI:SS'), '') REG_DT,
+	       NVL(TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS'), '') UPDATE_DT,
+	       NVL(B.USER_NAME, '') USER_NAME,
+	       NVL(B.EMAIL, '') EMAIL                         
+	  FROM QNA A, SB_USER B
+	 WHERE A.USER_ID = B.USER_ID
+	   AND A.QNA_SEQ = #{value}
+	</select>
+	
+	<select id="qnaCommentSelect" parameterType="long" resultMap="qnaCommentResultMap">
+		SELECT A.QNA_CMT_SEQ QNA_CMT_SEQ,
+	       NVL(A.QNA_SEQ,0) QNA_SEQ,
+	       NVL(A.ADMIN_ID,'') ADMIN_ID,
+	       NVL(A.QNA_CMT_CONTENT,'') QNA_CMT_CONTENT,
+	       NVL(A.QNA_CMT_STAT,'') QNA_CMT_STAT,
+	       NVL(TO_CHAR(A.CREATE_DT,'YYYY.MM.DD HH24:MI:SS'), '') CREATE_DT,
+	       NVL(TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS'), '') UPDATE_DT
+	  FROM QNA_COMMENT A, QNA B
+	 WHERE A.QNA_SEQ = B.QNA_SEQ
+	   AND A.QNA_SEQ = #{value}
+	</select>
+	
+	<update id="qnaCommentDelete" parameterType="long">
+		UPDATE QNA_COMMENT
+		   SET QNA_CMT_STAT = 'N'
+		 WHERE QNA_SEQ = #{value}
+	</update>
+	
+	<update id="qnaDelete" parameterType="long">
+		UPDATE QNA
+		   SET QNA_STAT = 'N'
+		 WHERE QNA_SEQ = #{value}
+	</update>
+	
+	<insert id="qnaInsert" parameterType="com.sist.web.model.Qna">
+			
+		<selectKey resultType="long" keyProperty="qnaSeq" order="BEFORE">
+			SELECT SEQ_QNA_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+			INSERT INTO QNA (
+		    QNA_SEQ,
+		    QNA_TITLE,
+		    QNA_CONTENT,
+		    USER_ID,
+		    QNA_STAT,
+		    REG_DT,
+		    UPDATE_DT
+		) VALUES ( #{qnaSeq},
+		           #{qnaTitle},
+		           #{qnaContent},
+		           #{userId},
+		           'Y',
+		           SYSDATE,
+		           SYSDATE )
+	</insert>
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -24,7 +24,7 @@ public class QnaComment implements Serializable
 		qnaSeq = 0;
 		adminId = "";
 		qnaCmtContent = "";
-		qnaCmtStat = "";
+		qnaCmtStat = "Y";
 		createDt = "";
 		updateDt = "";
 	}
