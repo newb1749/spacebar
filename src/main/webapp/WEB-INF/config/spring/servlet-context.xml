@@ -95,7 +95,8 @@
             			<value>/room/spaceList</value>
             			<value>/board/list</value>
             			<value>/room/roomDetail</value>
-            			<value>/room/qnaListJson</value>
+            			<value>/room/qnaList</value>
+            			
             			
             		</list>
             	</constructor-arg>

@@ -651,6 +651,7 @@ function fn_list(curPage)
         iframe.src = "/room/qnaList?roomSeq=" + roomSeq + "&curPage=" + curPage;
     }
    
+
 }
 	
 </script>
