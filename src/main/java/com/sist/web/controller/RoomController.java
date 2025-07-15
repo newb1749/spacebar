@@ -764,6 +764,7 @@ public class RoomController {
     			}
     		}
     	}
+    	
     	model.addAttribute("sessionUserId", sessionUserId);
 	    model.addAttribute("qnaList", qnaList);
 	    model.addAttribute("roomSeq", roomSeq);
