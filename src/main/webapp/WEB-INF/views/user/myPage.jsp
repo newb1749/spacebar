@@ -2,8 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> <%-- fmt 태그 라이브러리 추가 --%>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -140,6 +139,16 @@ $(function(){
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
+<<<<<<< HEAD
+            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
+            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
+            <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
+            <div class="menu-item"  onclick="showContent('mile')">마일리지 충전 내역</div>
+            <div class="menu-item"  onclick="showContent('posts')">내가 쓴 게시글</div>
+            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
+            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
+            <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+=======
             <c:if test="${user.userType == 'H'}">
 	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
             </c:if>
@@ -151,6 +160,7 @@ $(function(){
 	            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
 	            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
 	            <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+>>>>>>> e6bcdb4938f0734e97499302b774512f1b7ea22f
         </div>
 
         <div class="main-content">
@@ -348,8 +358,7 @@ $(function(){
 			                </div>
 			            </div>
 			            
-			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> 
-			            	<button type="button" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
+			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> <button type="submit" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
 			            </div>
 			        </form>
 			    </div>
@@ -488,6 +497,8 @@ $(function(){
                 <div class="sub-message">마일리지 충전하신 내역을 확인하실 수 있습니다.</div>
                 <div class="detail-content">
                     <h3>마일리지 충전 내역</h3>
+                    <div class="info-item">
+                    </div>
                     <table class="table table-hover">
                         <thead>
                             <tr>
@@ -499,33 +510,24 @@ $(function(){
                             </tr>
                         </thead>
                         <tbody>
-				          <c:forEach var="entry" items="${mileHistory}" varStatus="status">
-				            <tr>
-				              <td>${status.count}</td>
-				              <td><fmt:formatDate value="${entry.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
-				              <td>
-				                <c:choose>
-				                  <c:when test="${entry.trxType eq '충전'}">
-				                    <span class="badge bg-success">충전</span>
-				                  </c:when>
-				                  <c:when test="${entry.trxType eq '결제'}">
-				                    <span class="badge bg-danger">결제</span>
-				                  </c:when>
-				                  <c:when test="${entry.trxType eq '환불'}">
-				                    <span class="badge bg-info text-dark">환불</span>
-				                  </c:when>
-				                  <c:otherwise>
-				                    <span class="badge bg-secondary"><c:out value="${entry.trxType}" /></span>
-				                  </c:otherwise>
-				                </c:choose>
-				              </td>
-				              <td class="amount"><fmt:formatNumber value="${entry.trxAmt}" groupingUsed="true" /> 원</td>
-				              <td class="amount"><fmt:formatNumber value="${entry.balanceAfterTrx}" groupingUsed="true" /> 원</td>
-				            </tr>
-				          </c:forEach>
-				          <c:if test="${empty mileHistory}">
-				            <tr><td colspan="5" class="text-center">거래 내역이 없습니다.</td></tr>
-				          </c:if>
+                            <c:choose>
+                                <c:when test="${not empty mileHistory}">
+                                    <c:forEach var="mile" items="${mileHistory}" varStatus="status">
+                                        <tr>
+                                        	<td>${status.count}</td>
+                                            <td><fmt:formatDate value="${mile.trxDt}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+                                            <td data-type="${mile.trxType}"></td>
+                                            <td><fmt:formatNumber value="${mile.trxAmt}" pattern="#,###"/>원</td>
+                                            <td><fmt:formatNumber value="${mile.balanceAfterTrx}" pattern="#,###"/>원</td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="5" class="no-data">결제 내역이 없습니다.</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
                         </tbody>
                     </table>
                 </div>
@@ -583,7 +585,8 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-							   <a href="/room/roomDetail?roomSeq=${room.roomSeq}"> 
+						  	  <a href="/room/roomDetailSh">
+							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 								     alt="${room.roomTitle}" 
@@ -622,8 +625,8 @@ $(function(){
 			<%-- 장바구니 --%>
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
-			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
-			<div  class=container>
+			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
+			<div  class=cart-container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
@@ -744,11 +747,11 @@ $(function(){
     
     $(document).ready(function(){
         $("#btnUpdate").on("click",function(){
-        	location.href = "/user/updateForm";	
+        	location.href = "/user/updateForm_mj";	
         });
         
         $("#btnDelete").on("click",function(){
-        	location.href = "/user/deleteForm";	
+        	location.href = "/user/deleteForm_mj";	
         });
     });
 

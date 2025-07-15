@@ -1,8 +1,11 @@
 package com.sist.web.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -220,6 +223,8 @@ public class CartController {
                 mileageHistoryDao.insertMileageHistory(history);
             }
             
+            SimpleDateFormat inSdf = new SimpleDateFormat("yyyyMMdd");
+            
 
             // 5) Cart → ReservationJY 변환 & 저장
             for (Cart c : carts) {
@@ -233,21 +238,37 @@ public class CartController {
                 r.setNumGuests(c.getCartGuestsNum());
                 r.setTotalAmt(c.getCartTotalAmt());
                 r.setFinalAmt(c.getCartTotalAmt());
+                r.setRsvStat("CONFIRMED");
+                r.setRsvPaymentStat("PAID");
 
-                // hostId 세팅 (1번 방법)
-                RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
-                String hostId = rtObj != null ? rtObj.getHostId() : null;
-                if (hostId == null || hostId.trim().isEmpty()) {
-                    hostId = reservationDao.selectHostIdByRoomSeq(rtObj.getRoomSeq());
-                }
-                r.setHostId(hostId);
-
-                // ← 여기서 checked Exception 처리
                 try {
+                    // 4) 날짜 파싱해서 Date 객체 셋팅
+                    Date inDate  = inSdf.parse(c.getCartCheckInDt());
+                    Date outDate = inSdf.parse(c.getCartCheckOutDt());
+                    r.setRsvCheckInDateObj(inDate);
+                    r.setRsvCheckOutDateObj(outDate);
+
+                    // 5) HostId 세팅
+                    RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
+                    String hostId = (rtObj != null ? rtObj.getHostId() : null);
+                    if (hostId == null || hostId.trim().isEmpty()) {
+                        hostId = reservationDao.selectHostIdByRoomSeq(rtObj.getRoomSeq());
+                    }
+                    r.setHostId(hostId);
+
+                    // 6) 예약 저장
                     reservationService.insertReservation(r);
+
+                } catch (ParseException pe) {
+                    // 파싱 오류
+                    rt.addFlashAttribute("error",
+                        "날짜 형식 오류: " + c.getCartCheckInDt() + " / " + c.getCartCheckOutDt());
+                    return "redirect:/cart/list";
+
                 } catch (Exception e) {
-                    // 문제가 생기면 바로 롤백하고 에러 메시지
-                    rt.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
+                    // DB 저장 등 기타 오류
+                    rt.addFlashAttribute("error",
+                        "예약 저장 중 오류 발생: " + e.getMessage());
                     return "redirect:/cart/list";
                 }
             }

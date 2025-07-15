@@ -157,11 +157,17 @@
                  data-amt="${cart.cartTotalAmt}"/>
 
           <div class="cart-img">
+          <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${cart.roomSeq}">
             <img src="/resources/upload/roomtype/main/${cart.roomTypeImgName}"
                  alt="숙소 이미지"/>
+           </a>
           </div>
           <div class="cart-info">
-            <div class="room-title">${cart.roomTitle}</div>
+            <div class="room-title">
+            	 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${cart.roomSeq}">
+            	 	${cart.roomTitle}
+            	</a>	 
+           	</div>
             <div class="cart-location">
               ${cart.roomCatName} &nbsp;/&nbsp; ${cart.roomAddr}
             </div>

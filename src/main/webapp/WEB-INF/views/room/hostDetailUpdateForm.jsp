@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -182,7 +183,7 @@
                     <div class="card-body">
                         <div class="mb-4">
                             <label for="roomTitle" class="form-label">숙소 이름</label>
-                            <input type="text" class="form-control" id="roomTitle" name="roomTitle" value="${room.roomTitle}" placeholder="게스트에게 보여질 숙소의 이름을 입력하세요" required>
+                            <input type="text" class="form-control" id="roomTitle" name="roomTitle" placeholder="게스트에게 보여질 숙소의 이름을 입력하세요" required>
                             <div class="form-text">예: 도심 속 힐링, 남산타워가 보이는 아늑한 공간</div>
                         </div>
                         <div class="mb-4">
@@ -201,7 +202,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="roomDesc" class="form-label">숙소 설명</label>
-                            <textarea class="form-control" id="roomDesc" name="roomDesc" rows="5" placeholder="숙소의 특징, 주변 환경, 게스트에게 제공하는 특별한 경험 등을 상세히 작성해주세요.">${room.roomDesc}</textarea>
+                            <textarea class="form-control" id="roomDesc" name="roomDesc" rows="5" placeholder="숙소의 특징, 주변 환경, 게스트에게 제공하는 특별한 경험 등을 상세히 작성해주세요."></textarea>
                         </div>
                     </div>
                 </div>
@@ -212,7 +213,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="roomAddr" class="form-label">주소</label>
-                                <input type="text" class="form-control" id="roomAddr" name="roomAddr" value="${room.roomAddr}" required>
+                                <input type="text" class="form-control" id="roomAddr" name="roomAddr" required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="region" class="form-label">지역</label>
@@ -346,7 +347,7 @@
         <button type="button" class="btn-close btn-remove-room-type" aria-label="Close"></button>
         <h5 class="mb-3">새 객실 타입</h5>
         <div class="row">
-            <div class="col-12 mb-3"><label class="form-label">객실 이름</label><input type="text" class="form-control" name="roomTypeTitle" value="${roomType.roomTypeTitle}" required></div>
+            <div class="col-12 mb-3"><label class="form-label">객실 이름</label><input type="text" class="form-control" name="roomTypeTitle" required></div>
             <div class="col-md-6 mb-3"><label class="form-label">평일 가격</label><input type="number" class="form-control" name="weekdayAmt" required></div>
             <div class="col-md-6 mb-3"><label class="form-label">주말 가격</label><input type="number" class="form-control" name="weekendAmt" required></div>
             <div class="col-md-6 mb-3"><label class="form-label">체크인 날짜</label><input type="text" class="form-control" name="roomCheckInDt" value="20250701"></div>
@@ -461,7 +462,6 @@ $(document).ready(function() {
         $(".category-tag").removeClass("active");
         $(this).addClass("active");
 
-
        
         if (categorySeq >= 1 && categorySeq <= 7) {          // 1~7
             $("#minTimes, #maxTimes").prop("disabled", false)
@@ -472,27 +472,6 @@ $(document).ready(function() {
             $("#usageTimeContainer").removeClass("disabled");
         }
     });
-    
-    ///////////////수정////////////////
-    
-    // 페이지 로드 시 기존에 선택된 카테고리 활성화
-const initialRoomCatSeq = "${room.roomCatSeq}"; // 서버에서 전달받은 room.roomCatSeq 값
-if (initialRoomCatSeq) {
-    const $selectedCategoryTag = $(`.category-tag[data-value="${initialRoomCatSeq}"]`);
-    $selectedCategoryTag.addClass("active");
-
-    // 카테고리 값에 따라 최소/최대 이용시간 필드 활성화/비활성화
-    const categorySeq = parseInt(initialRoomCatSeq);
-    if (categorySeq >= 1 && categorySeq <= 7) {
-        $("#minTimes, #maxTimes").prop("disabled", false);
-        $("#usageTimeContainer").removeClass("disabled");
-    } else {
-        $("#minTimes, #maxTimes").prop("disabled", true);
-        $("#usageTimeContainer").addClass("disabled");
-    }
-}
-    
-///////////////수정////////////////
 
     // 편의시설 선택 이벤트
     $(".facility-grid").on("click", ".facility-box", function() {
@@ -618,9 +597,6 @@ if (initialRoomCatSeq) {
     
     // 페이지 로드 시 기본적으로 객실 타입 1개를 추가
     $("#btnAddRoomType").trigger("click");
-    
-    
-    
 
 }); 
 </script>

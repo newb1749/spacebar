@@ -1,3 +1,4 @@
+
 package com.sist.web.service;
 
 import com.sist.web.dao.MileageHistoryDao;
@@ -63,7 +64,6 @@ public class MileageHistoryService
         return mileageHistoryDao.selectMileageHistoryByUserId(userId);
     }
     
-    
     @Transactional
     public void refundMileage(String userId, int refundAmt) throws Exception
     {
@@ -84,5 +84,4 @@ public class MileageHistoryService
 
         mileageHistoryDao.insertMileageHistory(history);
     }
-
 }
