@@ -29,8 +29,8 @@ public class NoticeService {
         noticeDao.insertNotice(dto);
     }
 
-    public void writeReply(NoticeReply replyDTO) {
-        noticeDao.insertReply(replyDTO);
+    public void writeReply(NoticeReply reply) {
+        noticeDao.insertReply(reply);
     }
 
     public List<NoticeReply> getReplies(int noticeSeq) {

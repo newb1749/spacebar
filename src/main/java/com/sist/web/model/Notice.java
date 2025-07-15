@@ -13,6 +13,7 @@ public class Notice
     private Date regDt;
     private Date updateDt;
     private List<NoticeReply> replies;
+    
 	public int getNoticeSeq() {
 		return noticeSeq;
 	}
