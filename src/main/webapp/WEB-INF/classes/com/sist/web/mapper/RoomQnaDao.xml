@@ -50,8 +50,7 @@
 		                       NVL(TO_CHAR(A.UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
 		                  FROM ROOM_QNA A,  SB_USER B
 		                 WHERE A.ROOM_SEQ = #{roomSeq}
-		                   AND A.USER_ID = B. USER_ID
-		                   AND ROOM_QNA_STAT = 'Y'
+		                   AND A.USER_ID = B. USER_ID		                   
 		                 ORDER BY REG_DT DESC))
 		  WHERE RNUM <![CDATA[>=]]> #{startRow}
 		    AND RNUM <![CDATA[<=]]> #{endRow}
@@ -59,8 +58,8 @@
   
   	<!-- QNA 총 갯수 --> 	
   	<select id="qnaListCount" parameterType="com.sist.web.model.RoomQna" resultType="int">
-		SELECT COUNT(A.ROOM_QNA_SEQ) CNT
-		  FROM ROOM_QNA A
+		SELECT COUNT(ROOM_QNA_SEQ) CNT
+		  FROM ROOM_QNA
 		 WHERE ROOM_SEQ = #{roomSeq}
   	</select>
   	

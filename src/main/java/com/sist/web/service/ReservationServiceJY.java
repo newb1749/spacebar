@@ -23,7 +23,6 @@ public class ReservationServiceJY
     @Autowired
     private MileageHistoryService mileageHistoryService;
     
-    
     /**
      * 예약 등록 - hostId 자동 설정 포함
      */

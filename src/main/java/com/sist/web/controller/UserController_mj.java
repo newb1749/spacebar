@@ -37,7 +37,7 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceJY;
+import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
@@ -57,7 +57,7 @@ public class UserController_mj
 	private RoomServiceSh roomServiceSh;
 	
 	@Autowired
-	private RoomServiceJY roomServiceJY;
+	private RoomService roomServiceJY;
 	
 	@Autowired
 	private CouponServiceJY couponService;

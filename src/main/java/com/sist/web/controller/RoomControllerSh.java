@@ -36,8 +36,8 @@ import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.RoomImgServiceSh;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.WishlistService;
-import com.sist.web.service.RoomTypeServiceSh;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
@@ -69,7 +69,7 @@ public class RoomControllerSh {
 	private RoomImgServiceSh roomImgService;
 	
 	@Autowired
-	private RoomTypeServiceSh roomTypeService;
+	private RoomTypeService roomTypeService;
 	
 	@Autowired
 	private WishlistService wishlistService;

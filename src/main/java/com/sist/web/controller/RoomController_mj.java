@@ -30,8 +30,8 @@ import com.sist.web.model.User;
 import com.sist.web.service.RoomImgService_mj;
 import com.sist.web.service.RoomQnaCommentService;
 import com.sist.web.service.RoomQnaService;
-import com.sist.web.service.RoomServiceJY;
-import com.sist.web.service.RoomTypeServiceJY;
+import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 
@@ -41,7 +41,7 @@ public class RoomController_mj
 	private static Logger logger = LoggerFactory.getLogger(RoomController_mj.class);
 	
     @Autowired
-    private RoomServiceJY roomService;
+    private RoomService roomService;
     
     @Autowired
     private RoomQnaService roomQnaService;
@@ -53,7 +53,7 @@ public class RoomController_mj
     private RoomImgService_mj roomImgService;
 
     @Autowired
-    private RoomTypeServiceJY roomTypeService;
+    private RoomTypeService roomTypeService;
     
     @Autowired
     private UserService_mj userService;

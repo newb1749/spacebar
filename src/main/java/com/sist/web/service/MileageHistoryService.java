@@ -63,7 +63,6 @@ public class MileageHistoryService
         return mileageHistoryDao.selectMileageHistoryByUserId(userId);
     }
     
-    
     @Transactional
     public void refundMileage(String userId, int refundAmt) throws Exception
     {
