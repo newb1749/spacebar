@@ -1,89 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.ReviewCommentDao">
-  
-	 <!-- 1)*** 댓글 등록 *** -->
-	  <insert id="insertReviewComment" parameterType="map">
-	    INSERT INTO REVIEW_COMMENT (
-	          REVIEW_CMT_SEQ,
-	          REVIEW_SEQ,
-	          USER_ID,
-	          REVIEW_CMT_CONTENT,
-	          REVIEW_CMT_STAT,
-	          CREATE_DT
-	    )
-	    
-	    SELECT SEQ_REVIEW_COMMENT_SEQ.NEXTVAL,
-	           #{reviewSeq},
-	           #{userId},
-	           #{content},
-	           'Y',
-	           SYSDATE
-	      FROM DUAL
-	     WHERE EXISTS (
-	            SELECT 1
-	              FROM REVIEW       rv
-	              JOIN RESERVATION  rs ON rv.RSV_SEQ        = rs.RSV_SEQ
-	              JOIN ROOM_TYPE    rt ON rs.ROOM_TYPE_SEQ  = rt.ROOM_TYPE_SEQ
-	              JOIN ROOM         ro ON rt.ROOM_SEQ       = ro.ROOM_SEQ
-	              JOIN SB_USER        us ON us.USER_ID        = #{userId}
-	             WHERE rv.REVIEW_SEQ = #{reviewSeq}
-	               AND ro.HOST_ID    = #{userId}
-	               AND us.USER_TYPE  = 'H'
-	           )
-	  </insert>
-	
-	  <!-- 2) *** 댓글 수정 *** -->
-	  <update id="updateReviewComment" parameterType="map">
-	    UPDATE REVIEW_COMMENT rc
-	       SET rc.REVIEW_CMT_CONTENT = #{content},
-	           rc.UPDATE_DT          = SYSDATE
-	     WHERE rc.REVIEW_CMT_SEQ = #{commentSeq}
-	       AND EXISTS (                              <!-- 권한 체크 -->
-	             SELECT 1
-	               FROM REVIEW       rv
-	               JOIN RESERVATION  rs ON rv.RSV_SEQ        = rs.RSV_SEQ
-	               JOIN ROOM_TYPE    rt ON rs.ROOM_TYPE_SEQ  = rt.ROOM_TYPE_SEQ
-	               JOIN ROOM         ro ON rt.ROOM_SEQ       = ro.ROOM_SEQ
-	               JOIN SB_USER      us ON us.USER_ID        = #{userId}
-	              WHERE rv.REVIEW_SEQ = rc.REVIEW_SEQ
-	                AND ro.HOST_ID    = #{userId}
-	                AND us.USER_TYPE  = 'H'
-	           )
-	  </update>
-	
-	  <!-- 3) *** 댓글 삭제(상태값 'N' 처리) *** -->
-	  <update id="deleteReviewComment" parameterType="map">
-	    UPDATE REVIEW_COMMENT rc
-	       SET rc.REVIEW_CMT_STAT = 'N',
-	           rc.UPDATE_DT       = SYSDATE
-	     WHERE rc.REVIEW_CMT_SEQ = #{commentSeq}
-	       AND EXISTS (                              <!-- 권한 체크 -->
-	             SELECT 1
-	               FROM REVIEW       rv
-	               JOIN RESERVATION  rs ON rv.RSV_SEQ        = rs.RSV_SEQ
-	               JOIN ROOM_TYPE    rt ON rs.ROOM_TYPE_SEQ  = rt.ROOM_TYPE_SEQ
-	               JOIN ROOM         ro ON rt.ROOM_SEQ       = ro.ROOM_SEQ
-	               JOIN SB_USER        us ON us.USER_ID        = #{userId}
-	              WHERE rv.REVIEW_SEQ = rc.REVIEW_SEQ
-	                AND ro.HOST_ID    = #{userId}
-	                AND us.USER_TYPE  = 'H'
-	           )
-	  </update>
-	
-	  <!-- 4) *** 댓글 조회(활성만)*** -->
-	  <select id="selectCommentsByReview" parameterType="int"
-	          resultType="com.sist.web.model.ReviewComment">
-	    SELECT REVIEW_CMT_SEQ,
-	           REVIEW_SEQ,
-	           USER_ID,
-	           REVIEW_CMT_CONTENT,
-	           CREATE_DT,
-	           UPDATE_DT
-	      FROM REVIEW_COMMENT
-	     WHERE REVIEW_SEQ      = #{reviewSeq}
-	       AND REVIEW_CMT_STAT = 'Y'
-	     ORDER BY CREATE_DT
-	  </select> 
-  
+
+  <resultMap id="reviewCommentMap" type="com.sist.web.model.ReviewComment">
+    <result property="reviewCmtSeq" column="REVIEW_CMT_SEQ" />
+    <result property="reviewSeq" column="REVIEW_SEQ" />
+    <result property="userId" column="USER_ID" />
+    <result property="reviewCmtContent" column="REVIEW_CMT_CONTENT" />
+    <result property="reviewCmtStat" column="REVIEW_CMT_STAT" />
+    <result property="createDt" column="CREATE_DT" />
+    <result property="updateDt" column="UPDATE_DT" />
+    <result property="userNickname" column="NICKNAME" />
+    <result property="profImgExt" column="PROF_IMG_EXT" />
+  </resultMap>
+
+  <!-- 1)*** 댓글 등록 *** -->
+  <insert id="insertReviewComment" parameterType="map">
+    INSERT INTO REVIEW_COMMENT (
+      REVIEW_CMT_SEQ,
+      REVIEW_SEQ,
+      USER_ID,
+      REVIEW_CMT_CONTENT,
+      REVIEW_CMT_STAT,
+      CREATE_DT
+    )
+    SELECT SEQ_REVIEW_COMMENT_SEQ.NEXTVAL,
+           #{reviewSeq},
+           #{userId},
+           #{content},
+           'Y',
+           SYSDATE
+    FROM DUAL
+    WHERE EXISTS (
+      SELECT 1
+      FROM REVIEW rv
+      JOIN RESERVATION rs ON rv.RSV_SEQ = rs.RSV_SEQ
+      JOIN ROOM_TYPE rt ON rs.ROOM_TYPE_SEQ = rt.ROOM_TYPE_SEQ
+      JOIN ROOM ro ON rt.ROOM_SEQ = ro.ROOM_SEQ
+      JOIN SB_USER us ON us.USER_ID = #{userId}
+      WHERE rv.REVIEW_SEQ = #{reviewSeq}
+        AND ro.HOST_ID = #{userId}
+        AND us.USER_TYPE = 'H'
+    )
+  </insert>
+
+  <!-- 2) *** 댓글 수정 *** -->
+  <update id="updateReviewComment" parameterType="map">
+    UPDATE REVIEW_COMMENT rc
+    SET rc.REVIEW_CMT_CONTENT = #{content},
+        rc.UPDATE_DT = SYSDATE
+    WHERE rc.REVIEW_CMT_SEQ = #{commentSeq}
+      AND EXISTS (
+        SELECT 1
+        FROM REVIEW rv
+        JOIN RESERVATION rs ON rv.RSV_SEQ = rs.RSV_SEQ
+        JOIN ROOM_TYPE rt ON rs.ROOM_TYPE_SEQ = rt.ROOM_TYPE_SEQ
+        JOIN ROOM ro ON rt.ROOM_SEQ = ro.ROOM_SEQ
+        JOIN SB_USER us ON us.USER_ID = #{userId}
+        WHERE rv.REVIEW_SEQ = rc.REVIEW_SEQ
+          AND ro.HOST_ID = #{userId}
+          AND us.USER_TYPE = 'H'
+      )
+  </update>
+
+  <!-- 3) *** 댓글 삭제(상태값 'N' 처리) *** -->
+  <update id="deleteReviewComment" parameterType="map">
+    UPDATE REVIEW_COMMENT rc
+    SET rc.REVIEW_CMT_STAT = 'N',
+        rc.UPDATE_DT = SYSDATE
+    WHERE rc.REVIEW_CMT_SEQ = #{commentSeq}
+      AND EXISTS (
+        SELECT 1
+        FROM REVIEW rv
+        JOIN RESERVATION rs ON rv.RSV_SEQ = rs.RSV_SEQ
+        JOIN ROOM_TYPE rt ON rs.ROOM_TYPE_SEQ = rt.ROOM_TYPE_SEQ
+        JOIN ROOM ro ON rt.ROOM_SEQ = ro.ROOM_SEQ
+        JOIN SB_USER us ON us.USER_ID = #{userId}
+        WHERE rv.REVIEW_SEQ = rc.REVIEW_SEQ
+          AND ro.HOST_ID = #{userId}
+          AND us.USER_TYPE = 'H'
+      )
+  </update>
+
+  <!-- 4) *** 댓글 조회(활성만)*** -->
+  <select id="selectCommentsByReview" parameterType="int" resultMap="reviewCommentMap">
+    SELECT 
+      rc.REVIEW_CMT_SEQ, 
+      rc.REVIEW_SEQ, 
+      rc.USER_ID, 
+      rc.REVIEW_CMT_CONTENT, 
+      TO_CHAR(rc.CREATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS CREATE_DT, 
+      TO_CHAR(rc.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS UPDATE_DT,
+      u.NICKNAME AS NICKNAME, 
+      u.PROF_IMG_EXT AS PROF_IMG_EXT 
+    FROM REVIEW_COMMENT rc
+    JOIN SB_USER u ON rc.USER_ID = u.USER_ID
+    WHERE rc.REVIEW_SEQ = #{reviewSeq}
+      AND rc.REVIEW_CMT_STAT = 'Y'
+    ORDER BY rc.CREATE_DT
+  </select> 
+
 </mapper>
