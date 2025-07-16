@@ -19,6 +19,7 @@
 
         <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
           <li><a href="/">Home</a></li>
+          <li><a href="/notice/list">공지사항</a></li>
           <li><a href="/room/roomList">숙소목록</a></li>
 		  <li><a href="/room/spaceList">공간대여목록</a></li>
           <li><a href="/board/list">게시판</a></li>
