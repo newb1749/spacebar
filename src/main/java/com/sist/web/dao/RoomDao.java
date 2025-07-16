@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.sist.web.model.Facility;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
+import com.sist.web.model.RoomTypeImage;
 
 public interface RoomDao {
 	
@@ -55,6 +56,9 @@ public interface RoomDao {
   	
   	//마이페이지용 호스트의 숙소 리스트 조회
   	public List<Room> selectHostRoomList(String hostId);
+  	
+  	//룸 타입 이미지 리스트
+  	public List<RoomTypeImage> getRoomTypeImgDetail(int roomTypeSeq);
 
 }
 

@@ -134,6 +134,18 @@
   /* 헤더(56px) + 탭바 높이(48px) */
   padding-top: calc(0px + 48px);
 }
+.card.h-100, .card .row.g-0 {
+  height: 100%;
+  min-height: 220px; /* 필요시 원하는 높이로 */
+}
+.property-slider-wrap {
+  height: 100%;
+}
+.my-roomtype-slider, .my-roomtype-slider .slide-item, .my-roomtype-slider img {
+  height: 100%;
+  min-height: 220px;    /* 텍스트 영역 높이와 비슷하게 */
+  object-fit: cover;
+}
 
   </style>
 <script>
@@ -345,13 +357,21 @@ function fn_review_list(page) {
           <div class="card h-100 border rounded" style="min-height: 220px;">
             <div class="row g-0">
               <!-- 이미지 영역 -->
-              <div class="col-md-4">
-                <img
-                  src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${rt.roomTypeSeq}.jpg"
-                  class="img-fluid h-100 w-100 rounded-start"
-                  style="object-fit: cover;"
-                  alt="${rt.roomTypeTitle}" />
-              </div>
+                <div class="col-md-4">
+<div class="property-slider-wrap">      <!-- Tiny‑slider 래퍼 -->
+  <div class="my-roomtype-slider">     <!-- 실제 슬라이드 컨테이너 -->
+    <c:forEach var="img" items="${rt.roomTypeImageList}">
+      <div class="slide-item">
+        <img
+          src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
+          class="img-fluid w-100"
+          style="object-fit: cover; height: 240px;"
+          alt="${img.imgType}" />
+      </div>
+    </c:forEach>
+  </div>
+</div>
+  </div>
               <!-- 텍스트 영역 -->
               <div class="col-md-8">
                 <div class="card-body p-3">
@@ -762,7 +782,24 @@ function fn_list(curPage)
 
 }
 
-
+document.addEventListener('DOMContentLoaded', function(){
+	  // room‑type 슬라이더 전부 초기화
+	  document.querySelectorAll('.my-roomtype-slider').forEach(function(container){
+	    tns({
+	      container: container,
+	      items: 1,               // 한 슬라이드에 보여줄 개수
+	      slideBy: 'page',
+	      gutter: 10,
+	      autoplay: false,
+	      nav: false,
+	      controls: true,
+	      controlsText: [
+	        '<img src="${pageContext.request.contextPath}/resources/images/prev.png" alt="이전">',
+	        '<img src="${pageContext.request.contextPath}/resources/images/next.png" alt="다음">'
+	      ]
+	    });
+	  });
+	});
 	
 </script>
 
@@ -786,6 +823,7 @@ function fn_list(curPage)
   <input type="hidden" name="numGuests" id="numGuests" value="" />
   <input type="hidden" name="checkInTime" id="checkInTime" value="" />
   <input type="hidden" name="checkOutTime" id="checkOutTime" value="" />
+  <input type="hidden" name="roomCatSeq" id="roomCatSeq" value="${roomCatSeq}" />
 </form>
 
 <form name="roomQnaForm" id="roomQnaForm">
