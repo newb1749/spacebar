@@ -3,12 +3,12 @@ package com.sist.web.model;
 import java.util.Date;
 import java.util.List;
 
-public class Notice 
-{
+public class Notice {
     private int noticeSeq;
     private String noticeTitle;
     private String noticeContent;
     private String adminId;
+    private String adminName;   // 관리자 이름 필드 추가
     private String noticeStat;
     private Date regDt;
     private Date updateDt;
@@ -38,6 +38,12 @@ public class Notice
 	public void setAdminId(String adminId) {
 		this.adminId = adminId;
 	}
+    public String getAdminName() {
+        return adminName;
+    }
+    public void setAdminName(String adminName) {
+        this.adminName = adminName;
+    }
 	public String getNoticeStat() {
 		return noticeStat;
 	}
@@ -62,7 +68,5 @@ public class Notice
 	public void setReplies(List<NoticeReply> replies) {
 		this.replies = replies;
 	}
-
-    // Getters / Setters
     
 }

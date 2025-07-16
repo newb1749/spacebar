@@ -8,10 +8,15 @@ import com.sist.web.model.Notice;
 import com.sist.web.model.NoticeReply;
 
 @Repository
-public interface NoticeDao {
-    List<Notice> selectNoticeList();
+public interface NoticeDao 
+{
+	List<Notice> selectNoticeList();
+	
     Notice selectNoticeById(int noticeSeq);
-    void insertNotice(Notice dto);
+    
+    void insertNotice(Notice notice);
+    
     void insertReply(NoticeReply reply);
+    
     List<NoticeReply> selectRepliesByNotice(int noticeSeq);
 }

@@ -22,6 +22,7 @@ import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.Wishlist;
+import com.sist.web.service.RoomServiceInterface;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;

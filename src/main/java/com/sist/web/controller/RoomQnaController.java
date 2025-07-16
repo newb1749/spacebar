@@ -17,28 +17,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.common.util.StringUtil;
-import com.sist.web.model.Paging;
 import com.sist.web.model.Response;
 import com.sist.web.model.Room;
-import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomQnaComment;
 import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomQnaComment;
 import com.sist.web.model.RoomQna;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.User;
-import com.sist.web.service.RoomImgService_mj;
 import com.sist.web.service.RoomQnaCommentService;
 import com.sist.web.service.RoomQnaService;
 import com.sist.web.service.RoomService;
-import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.HttpUtil;
 
-@Controller("roomController_mj")
-public class RoomController_mj 
+@Controller("roomQnaController")
+public class RoomQnaController 
 {
-	private static Logger logger = LoggerFactory.getLogger(RoomController_mj.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomQnaController.class);
 	
     @Autowired
     private RoomService roomService;
@@ -48,143 +44,12 @@ public class RoomController_mj
     
     @Autowired
     private RoomQnaCommentService roomQnaCommentService;
-
-    @Autowired
-    private RoomImgService_mj roomImgService;
-
-    @Autowired
-    private RoomTypeService roomTypeService;
     
     @Autowired
     private UserService_mj userService;
     
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
-	
-	private static final int LIST_COUNT = 3; 		//한 페이지의 게시물 수
-	private static final int PAGE_COUNT = 5; 		//페이징 수
-
-	//ROOM 상세페이지 + Q&A 리스트
-    @RequestMapping(value = "/room/roomDetail_mj", method = RequestMethod.GET)
-    public String roomDetail(HttpServletRequest request, Model model) 
-    {
-        int roomSeq = HttpUtil.get(request, "roomSeq", 0);
-        //int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
-        int curPage = HttpUtil.get(request, "curPage", 1);
-        
-        //userType = 'G' 'H'인지 구분하여 Q&A 질문 / 답변 버튼 보여주기 위함
-        String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-        
-        logger.debug("ROOM 상세페이지 sessionUserId : " + sessionUserId);
-        logger.debug("roomSeq : " + roomSeq);
-        //logger.debug("roomQnaSeq : " + roomQnaSeq);
-        logger.debug("curPage : " + curPage);
-        
-        String userType = null;
-        if (sessionUserId != null) 
-        {
-            User userId = userService.userSelect(sessionUserId);
-            
-            if (userId != null) 
-            {
-                userType = userId.getUserType(); 
-                model.addAttribute("user", userId);
-                model.addAttribute("sessionUserId", sessionUserId);
-            }
-        }
-        model.addAttribute("userType", userType);
-        
-        //Q&A수정시 roomQnaSeq로 조회하기 위함
-        //RoomQna roomQna = roomQnaService.qnaSelect(roomQnaSeq);
-        //model.addAttribute("roomQna", roomQna);
-        
-        List<RoomQna> qnaList = null;
-        RoomQna search = new RoomQna();
-        int totalCount = 0;
-        Paging paging = null;
-
-        if(roomSeq > 0) 
-        {
-            Room room = roomImgService.getRoomDetail(roomSeq);
-            
-            logger.debug("##########################################");
-            logger.debug("roomSeq : " + roomSeq);
-            logger.debug("room.getRoomSeq : " + room.getRoomSeq());
-            logger.debug("##########################################");
-            
-
-            if(room != null) 
-            {
-                List<RoomImage> roomImg = roomImgService.getRoomImgDetail(roomSeq);
-                if(roomImg != null) 
-                {
-                    room.setRoomImageList(roomImg);
-                    RoomImage mainImages = null;
-                    List<RoomImage> detailImages = new ArrayList<>();
-
-                    for(RoomImage img : roomImg) 
-                    {
-                        if("main".equals(img.getImgType())) 
-                        {
-                            mainImages = img;
-                        } 
-                        else
-                        {
-                            detailImages.add(img);
-                        }
-                    }
-
-                    model.addAttribute("mainImages", mainImages);
-                    model.addAttribute("detailImages", detailImages);
-                }
-
-                logger.debug("===================================");
-                logger.debug("room.getRoomSeq : " + room.getRoomSeq());
-                
-                
-                
-                model.addAttribute("room", room);
-
-                // **여기서 roomSeq로 객실 타입 리스트 받아서 넘기기**
-                List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
-                model.addAttribute("roomTypes", roomTypes);
-                
-                //QNA 총 개수.
-                search.setRoomSeq(roomSeq);
-                
-                totalCount = roomQnaService.qnaListCount(search);
-                logger.debug("totalCount : " + totalCount);
-                
-                if(totalCount > 0)
-                {
-                	paging = new Paging("/room/roomDetail_mj", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
-                	;
-                	
-                	search.setStartRow((int)paging.getStartRow());
-                	search.setEndRow((int)paging.getEndRow());
-                	
-                	qnaList = roomQnaService.qnaList(search);
-                	
-                	if(qnaList != null)
-                	{
-                		int i;
-                		for(i=0; i<qnaList.size(); i++)
-                		{
-                			qnaList.get(i).setRoomQnaComment(roomQnaCommentService.roomQnaCommontSelect(qnaList.get(i).getRoomQnaSeq()));
-                		}
-                		
-                	}
-                }
-        		
-                model.addAttribute("qnaList", qnaList);
-                model.addAttribute("paging", paging);
-                model.addAttribute("curPage", curPage);
-            }
-           
-        }
-
-        return "/room/roomDetail_mj";
-    }
 
     //Q&A 등록 화면
     @RequestMapping(value="/room/qnaForm_mj", method=RequestMethod.GET)
@@ -526,24 +391,3 @@ public class RoomController_mj
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

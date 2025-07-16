@@ -20,40 +20,39 @@ import com.sist.web.service.NoticeService;
 public class NoticeController {
 
     @Autowired
-    private NoticeService service;
+    private NoticeService noticeService;
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("noticeList", service.getNoticeList());
-        return "notice/noticeList";
+        model.addAttribute("noticeList", noticeService.getNoticeList());
+        return "/notice/noticeList";
     }
 
     @GetMapping("/detail")
     public String detail(@RequestParam int noticeSeq, Model model) {
-        model.addAttribute("notice", service.getNoticeById(noticeSeq));
-        return "notice/noticeDetail";
+        model.addAttribute("notice", noticeService.getNoticeById(noticeSeq));
+        return "/notice/noticeDetail";
     }
 
     @GetMapping("/write")
     public String writeForm(HttpSession session) {
-        String role = (String) session.getAttribute("sessionRole");
-        if (!"ADMIN".equals(role)) {
+        if (!"ADMIN".equals(session.getAttribute("sessionRole"))) {
             return "redirect:/notice/list";
         }
-        return "notice/noticeForm";
+        return "/notice/noticeForm";
     }
 
     @PostMapping("/write")
     public String write(@ModelAttribute Notice dto, HttpSession session) {
         dto.setAdminId((String) session.getAttribute("sessionUserId"));
-        service.writeNotice(dto);
+        noticeService.writeNotice(dto);
         return "redirect:/notice/list";
     }
 
     @PostMapping("/reply")
     public String reply(@ModelAttribute NoticeReply reply, HttpSession session) {
         reply.setUserId((String) session.getAttribute("sessionUserId"));
-        service.writeReply(reply);
+        noticeService.writeReply(reply);
         return "redirect:/notice/detail?noticeSeq=" + reply.getNoticeSeq();
     }
 }

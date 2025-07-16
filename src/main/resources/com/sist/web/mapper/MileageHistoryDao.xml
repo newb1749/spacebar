@@ -25,7 +25,7 @@
 </select>
 
   <update id="updateMileageDeduct" parameterType="map">
-    UPDATE USER_MJ
+    UPDATE SB_USER
        SET MILE = MILE - #{amount}
      WHERE USER_ID = #{userId} 
        AND MILE >= #{amount}

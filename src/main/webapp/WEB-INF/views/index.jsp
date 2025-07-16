@@ -49,7 +49,19 @@
   100% { transform: scale(1); }
 }
 
+.section {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
 /*****************************최근등록공간****************************/
+
+.section-space .heading,
+.section-room .heading {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
 .wish-heart.clicked {
   animation: pulse 0.3s ease;
 }
@@ -78,7 +90,8 @@ body {
       position: relative;
   padding: 0;
   overflow: hidden; /* 보통은 hidden 으로 */
-    
+      margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   }
   
   
@@ -208,17 +221,41 @@ body {
 	  grid-template-columns: repeat(7, 1fr);
 	  gap: 1rem;
 	  justify-items: center;
+	   margin-top: 1rem;
+  margin-bottom: 1rem;
 	}
-.category-grid .category-btn img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover; /* 필요에 따라 비율 유지용 */
+.category-grid .category-btn,
+.category-grid .category2-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
 }
 
+.category-grid .category-btn img,
 .category-grid .category2-btn img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover; /* 필요에 따라 비율 유지용 */
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: #f2f2f2;   /* 원 안에 연한 배경색 */
+  padding: 10px;               /* 원 안 여백 */
+  transition: transform .2s;
+}
+
+.category-grid .category-btn:hover img,
+.category-grid .category2-btn:hover img {
+  transform: scale(1.1);
+}
+
+/* 5) 버튼 아래 카테고리 이름 간격·폰트 조정 */
+.category-grid .category-btn .small,
+.category-grid .category2-btn .small {
+  margin-top: 6px;
+  font-size: .85rem;
+  color: #333;
 }
 	
 .property-slider-wrap .property-item {
@@ -300,6 +337,11 @@ body {
 
 
 /*****************************후기****************************/
+
+.sec-testimonials {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
 .testimonial {
   /* 아이템 너비 안에서만 줄바꿈하도록 보장 */
   overflow-wrap: break-word;   /* IE11+, Chrome, FF */
@@ -322,6 +364,81 @@ body {
   object-fit: cover;  /* 비율 똑같이 자르기 */
 }
 
+.section.py-5,
+.section-space.py-5 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.section-space .row.mb-5,
+.section-room .row.mb-5 {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/****************************대문*******************************/
+.hero-overlay {
+  max-width: 1180px;
+  width: 100%;
+  height: 400px;       /* 컨테이너 높이 */
+  margin: 0 auto;
+  overflow: hidden;    /* 잘린 영역 숨기기 */
+  position: relative;
+  
+   border-radius: 8px;   /* 모서리 반경: 6px (원하는 만큼 조절) */
+  overflow: hidden;     /* 둥근 모서리 밖으로 튀어나온 부분 숨김 */
+  margin-bottom: 1rem;
+}
+
+/* 슬라이드 이미지는 배경처럼 꽉 채우기 */
+.hero-overlay .hero-slider .slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;             /* 꽉 채우되 잘린 부분은 잘림 */
+  object-position: 50% 50%;      /* 수평 50%, 수직 50% = 정확히 중앙 크롭 */
+  filter: blur(3px) brightness(70%);
+  
+}
+
+/* 글자 타이틀용 */
+.hero-overlay .hero-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 3rem;
+  color: white;
+  letter-spacing: 1rem;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0,0,0,0.6);
+  font-family: monospace;
+}
+
+#typewriter {
+  font-family: monospace;
+  font-size: 3rem;
+  letter-spacing: 1rem;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0,0,0,0.6);
+  white-space: nowrap;
+  position: relative;
+}
+
+/* 언더바는 ::after로 추가하고, 투명도만 토글 */
+#typewriter::after {
+  content: '_';
+  position: absolute;
+  /* SPACEBAR 텍스트 끝 바로 다음에 붙도록 */
+  left: calc(100% + 0.2rem);
+  /* 세로 정렬을 텍스트 중앙에 */
+  top: 0;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
 
 
 	</style>
@@ -343,30 +460,41 @@ body {
       </div>
       <div class="site-mobile-menu-body"></div>
     </div>
+    
+    <div class="hero-overlay">
+  <div class="hero-slider">
+    <c:forEach var="space" items="${roomList}">
+      <div class="slide">
+        <img src="${pageContext.request.contextPath}/resources/upload/index/${space.roomImgName}"
+        	 onerror="this.src='${pageContext.request.contextPath}/resources/upload/index/default-room.png'"
+             alt="${space.roomTitle}"/>
+      </div>
+    </c:forEach>
+  </div>
+  <div class="hero-title"><span id="typewriter"></span></div>
+</div>
 
 	<div class="section py-5">
   <div class="container">
-    <h2 class="text-center mb-4">s p a c e b a r</h2>
     
       <div class="category-grid">
       <c:forEach var="cat2" items="${spaceCategoryList}">
         <button type="button"
               class="category2-btn"
               data-name="${cat2.roomCatName}">
-        <img src="${pageContext.request.contextPath}/resources/images/category/${cat2.roomCatSeq}.${cat2.roomCatIconExt}"/>
+        <img src="${pageContext.request.contextPath}/resources/upload/category/${cat2.roomCatSeq}.${cat2.roomCatIconExt}"/>
         <div class="small text-dark">${cat2.roomCatName}</div>
       </button>
       </c:forEach>
     </div>
     
-        </br>
     
     <div class="category-grid">
       <c:forEach var="cat" items="${roomCategoryList}">
         <button type="button"
               class="category-btn"
               data-name="${cat.roomCatName}">
-        <img src="${pageContext.request.contextPath}/resources/images/category/${cat.roomCatSeq}.${cat.roomCatIconExt}"/>
+        <img src="${pageContext.request.contextPath}/resources/upload/category/${cat.roomCatSeq}.${cat.roomCatIconExt}"/>
         <div class="small text-dark">${cat.roomCatName}</div>
       </button>
       </c:forEach>
@@ -560,7 +688,7 @@ body {
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
             <div class="box-feature">
               <span class="flaticon-house"></span>
-              <h3 class="mb-3">Our Properties</h3>
+              <h3 class="mb-3">자유게시판</h3>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 Voluptates, accusamus.
@@ -571,7 +699,7 @@ body {
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
             <div class="box-feature">
               <span class="flaticon-building"></span>
-              <h3 class="mb-3">Property for Sale</h3>
+              <h3 class="mb-3">QnA게시판</h3>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 Voluptates, accusamus.
@@ -582,7 +710,7 @@ body {
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
             <div class="box-feature">
               <span class="flaticon-house-3"></span>
-              <h3 class="mb-3">Real Estate Agent</h3>
+              <h3 class="mb-3">공지사항</h3>
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 Voluptates, accusamus.
@@ -654,365 +782,6 @@ body {
     </div>
   </div>
 </div>
-
-
-    <div class="section section-4 bg-light">
-      <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-          <div class="col-lg-5">
-            <h2 class="font-weight-bold heading text-primary mb-4">
-              Let's find home that's perfect for you
-            </h2>
-            <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-              enim pariatur similique debitis vel nisi qui reprehenderit.
-            </p>
-          </div>
-        </div>
-        <div class="row justify-content-between mb-5">
-          <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2">
-            <div class="img-about dots">
-              <img src="/resources/images/hero_bg_3.jpg" alt="Image" class="img-fluid" />
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-home2"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">2M Properties</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-person"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">Top Rated Agents</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-
-            <div class="d-flex feature-h">
-              <span class="wrap-icon me-3">
-                <span class="icon-security"></span>
-              </span>
-              <div class="feature-text">
-                <h3 class="heading">Legit Properties</h3>
-                <p class="text-black-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nostrum iste.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row section-counter mt-5">
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">3298</span></span
-              >
-              <span class="caption text-black-50"># of Buy Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="400"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">2181</span></span
-              >
-              <span class="caption text-black-50"># of Sell Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="500"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">9316</span></span
-              >
-              <span class="caption text-black-50"># of All Properties</span>
-            </div>
-          </div>
-          <div
-            class="col-6 col-sm-6 col-md-6 col-lg-3"
-            data-aos="fade-up"
-            data-aos-delay="600"
-          >
-            <div class="counter-wrap mb-5 mb-lg-0">
-              <span class="number"
-                ><span class="countup text-primary">7191</span></span
-              >
-              <span class="caption text-black-50"># of Agents</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="row justify-content-center footer-cta" data-aos="fade-up">
-        <div class="col-lg-7 mx-auto text-center">
-          <h2 class="mb-4">Be a part of our growing real state agents</h2>
-          <p>
-            <a
-              href="#"
-              target="_blank"
-              class="btn btn-primary text-white py-3 px-4"
-              >Apply for Real Estate agent</a
-            >
-          </p>
-        </div>
-        <!-- /.col-lg-7 -->
-      </div>
-      <!-- /.row -->
-    </div>
-
-    <div class="section section-5 bg-light">
-      <div class="container">
-        <div class="row justify-content-center text-center mb-5">
-          <div class="col-lg-6 mb-5">
-            <h2 class="font-weight-bold heading text-primary mb-4">
-              Our Agents
-            </h2>
-            <p class="text-black-50">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-              enim pariatur similique debitis vel nisi qui reprehenderit totam?
-              Quod maiores.
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_1-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">James Doe</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_2-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Jean Smith</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
-            <div class="h-100 person">
-              <img
-                src="/resources/images/person_3-min.jpg"
-                alt="Image"
-                class="img-fluid"
-              />
-
-              <div class="person-contents">
-                <h2 class="mb-0"><a href="#">Alicia Huston</a></h2>
-                <span class="meta d-block mb-3">Real Estate Agent</span>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Facere officiis inventore cumque tenetur laboriosam, minus
-                  culpa doloremque odio, neque molestias?
-                </p>
-
-                <ul class="social list-unstyled list-inline dark-hover">
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-twitter"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-facebook"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-linkedin"></span></a>
-                  </li>
-                  <li class="list-inline-item">
-                    <a href="#"><span class="icon-instagram"></span></a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="site-footer">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Contact</h3>
-              <address>43 Raymouth Rd. Baltemoer, London 3910</address>
-              <ul class="list-unstyled links">
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li><a href="tel://11234567890">+1(123)-456-7890</a></li>
-                <li>
-                  <a href="mailto:info@mydomain.com">info@mydomain.com</a>
-                </li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Sources</h3>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Vision</a></li>
-                <li><a href="#">Mission</a></li>
-                <li><a href="#">Terms</a></li>
-                <li><a href="#">Privacy</a></li>
-              </ul>
-              <ul class="list-unstyled float-start links">
-                <li><a href="#">Partners</a></li>
-                <li><a href="#">Business</a></li>
-                <li><a href="#">Careers</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Creative</a></li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <div class="widget">
-              <h3>Links</h3>
-              <ul class="list-unstyled links">
-                <li><a href="#">Our Vision</a></li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Contact us</a></li>
-              </ul>
-
-              <ul class="list-unstyled social">
-                <li>
-                  <a href="#"><span class="icon-instagram"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-twitter"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-facebook"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-linkedin"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-pinterest"></span></a>
-                </li>
-                <li>
-                  <a href="#"><span class="icon-dribbble"></span></a>
-                </li>
-              </ul>
-            </div>
-            <!-- /.widget -->
-          </div>
-          <!-- /.col-lg-4 -->
-        </div>
-        <!-- /.row -->
-
-        <div class="row mt-5">
-          <div class="col-12 text-center">
-            <!-- 
-              **==========
-              NOTE: 
-              Please don't remove this copyright link unless you buy the license here https://untree.co/license/  
-              **==========
-            -->
-
-            <p>
-              Copyright &copy;
-              <script>
-                document.write(new Date().getFullYear());
-              </script>
-              . All Rights Reserved. &mdash; Designed with love by
-              <a href="https://untree.co">Untree.co</a>
-              <!-- License information: https://untree.co/license/ -->
-            </p>
-            <div>
-              Distributed by
-              <a href="https://themewagon.com/" target="_blank">themewagon</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- /.container -->
-    </div>
-    <!-- /.site-footer -->
 
     <!-- Preloader -->
     <div id="overlayer"></div>
@@ -1095,6 +864,30 @@ body {
       });
 
    
+    
+    document.addEventListener('DOMContentLoaded', () => {
+    	  const text   = 'SPACEBAR';
+    	  const el     = document.getElementById('typewriter');
+    	  const cursor = document.getElementById('cursor');
+    	  const INTERVAL = 7000;  // 5초
+    	  const TYPE_DELAY = 200; // 타이핑 속도
+
+    	  function runTypewriter() {
+    	    el.textContent = '';
+    	    // 1글자씩 찍기
+    	    for (let i = 0; i < text.length; i++) {
+    	      setTimeout(() => {
+    	        el.textContent += text[i];
+    	      }, TYPE_DELAY * i);
+    	    }
+    	    // 커서는 CSS 애니메이션에서 알아서 깜빡이므로 따로 처리 안 해도 됩니다
+    	  }
+
+    	  // 최초 실행
+    	  runTypewriter();
+    	  // 5초마다 다시 실행
+    	  setInterval(runTypewriter, INTERVAL);
+    	});
     </script>
     
 

@@ -83,5 +83,4 @@ public class MileageHistoryService
 
         mileageHistoryDao.insertMileageHistory(history);
     }
-
 }

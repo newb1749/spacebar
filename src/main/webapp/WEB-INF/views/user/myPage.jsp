@@ -139,6 +139,16 @@ $(function(){
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
+<<<<<<< HEAD
+            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
+            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
+            <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
+            <div class="menu-item"  onclick="showContent('mile')">마일리지 충전 내역</div>
+            <div class="menu-item"  onclick="showContent('posts')">내가 쓴 게시글</div>
+            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
+            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
+            <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+=======
             <c:if test="${user.userType == 'H'}">
 	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
             </c:if>
@@ -150,6 +160,7 @@ $(function(){
 	            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
 	            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
 	            <div class="menu-item"  onclick="showContent('deactivate')">회원 탈퇴</div>
+>>>>>>> e6bcdb4938f0734e97499302b774512f1b7ea22f
         </div>
 
         <div class="main-content">

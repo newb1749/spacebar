@@ -32,6 +32,8 @@ public class Cart implements Serializable
     private String cancelPolicy;	//취소정책
     private String roomCatName;		//룸카테고리이름
     
+    private int roomSeq;
+    
     public Cart()
     {
     	cartSeq = 0;
@@ -53,7 +55,23 @@ public class Cart implements Serializable
         roomAddr = "";
         cancelPolicy = "";
         roomCatName = "";
+        
+        roomSeq = 0;
     }
+
+    
+    
+	public int getRoomSeq() {
+		return roomSeq;
+	}
+
+
+
+	public void setRoomSeq(int roomSeq) {
+		this.roomSeq = roomSeq;
+	}
+
+
 
 	public int getCartSeq() {
 		return cartSeq;

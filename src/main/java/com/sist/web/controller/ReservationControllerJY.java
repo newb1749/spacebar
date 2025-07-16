@@ -1,17 +1,12 @@
 package com.sist.web.controller;
 
-
 import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
 
-import com.sist.web.dao.ReservationDao;
-import com.sist.web.model.Reservation;
-import com.sist.web.model.RoomType;
 import com.sist.web.service.MileageServiceJY;
-
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomTypeService;
@@ -47,38 +42,32 @@ public class ReservationControllerJY {
     private static final DateTimeFormatter DB_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @Autowired
-    private UserService_mj userService;  // 회원 서비스는 유지 (필요시 사용)
+    private UserService_mj userService;
 
     @Autowired
     private RoomTypeService roomTypeService;
 
-    /**
-     * 예약 관련 DB 직접 접근 (CRUD 등)
-     */
     @Autowired
     private ReservationDao reservationDao;
 
-    /**
-     * 개별 객실(Room) 정보 조회 등 담당
-     */
     @Autowired
     private RoomService roomService;
 
-    @Autowired  // 의존성 자동 주입
+    @Autowired
     private ReservationServiceJY reservationService;
 
-
-    // DAO 직접 주입
     @Autowired
     private MileageHistoryDao mileageHistoryDao;
+
+    @Autowired
+    private MileageHistoryService mileageHistoryService;
 
     @GetMapping("/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
                                    @RequestParam("checkOut") String checkOut,
                                    @RequestParam(value = "numGuests", defaultValue = "1") int numGuests,
-                                   Model model, HttpServletRequest request) 
-    {
+                                   Model model, HttpServletRequest request) {
         String sessionUserId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (sessionUserId == null || sessionUserId.isEmpty()) {
             model.addAttribute("error", "로그인이 필요합니다.");
@@ -95,19 +84,13 @@ public class ReservationControllerJY {
         return "/reservation/step1JY";
     }
 
-    /**
-     * 숙소 예약 정보를 데이터베이스에 저장하는 기능을 수행
-     * @param reservation
-     * @throws Exception
-     */
     private void insertReservation(Reservation reservation) throws Exception {
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             Integer roomTypeSeq = reservation.getRoomTypeSeq();
-            if (roomTypeSeq == null) 
-            {
+            if (roomTypeSeq == null) {
                 throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
             }
-            
+
             RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             if (roomType == null) {
                 throw new IllegalArgumentException("roomType이 존재하지 않습니다. roomTypeSeq: " + roomTypeSeq);
@@ -129,8 +112,7 @@ public class ReservationControllerJY {
     }
 
     @GetMapping("/list")
-    public String reservationList(HttpServletRequest request, Model model) 
-    {
+    public String reservationList(HttpServletRequest request, Model model) {
         String guestId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (guestId == null || guestId.isEmpty()) {
             return "redirect:/user/login";
@@ -159,7 +141,7 @@ public class ReservationControllerJY {
         }
 
         if (reservation == null) {
-            return "redirect:/reservation/paymentConfirm";
+            return "redirect:/payment/paymentConfirm";
         }
 
         model.addAttribute("reservation", reservation);
@@ -173,13 +155,11 @@ public class ReservationControllerJY {
         return "/reservation/detailJY";
     }
 
-    // 마일리지 조회 직접 구현
     private long getUserMileage(String userId) {
         Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
         return mileage != null ? mileage : 0;
     }
 
-    // 마일리지 차감 직접 구현
     private boolean deductMileage(String userId, int amount) {
         long currentMileage = getUserMileage(userId);
         if (currentMileage < amount) {
@@ -231,9 +211,6 @@ public class ReservationControllerJY {
         return "redirect:/reservation/confirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
-    @Autowired
-    private MileageHistoryService mileageHistoryService;
-
     @PostMapping("/cancel")
     public String cancelReservation(@ModelAttribute Reservation reservation,
                                     HttpSession session,
@@ -251,16 +228,13 @@ public class ReservationControllerJY {
                 return "redirect:/reservation/reservationHistoryJY";
             }
 
-            // 예약 상태 취소 및 환불 상태 업데이트
             fullReservation.setRsvStat("취소");
             fullReservation.setRsvPaymentStat("취소");
             fullReservation.setCancelDt(new Date());
             fullReservation.setRefundAmt(fullReservation.getFinalAmt());
 
-            // 예약 취소 DB 반영
             reservationService.cancelReservation(fullReservation);
 
-            // 마일리지 환불 처리
             mileageHistoryService.refundMileage(userId, fullReservation.getRefundAmt());
 
             redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
@@ -271,22 +245,6 @@ public class ReservationControllerJY {
 
         return "redirect:/payment/mileageHistory";
     }
-    /**
-     * 예약 취소 요청을 처리하는 컨트롤러 메서드
-     * @param reservation    폼에서 전달된 예약 정보 (rsvSeq, cancelReason 등)
-	 * @param redirectAttrs  리다이렉트 시 플래시 메시지 전달을 위한 객체
-	 * @return 예약 목록 또는 예약 상세 페이지로의 리다이렉션 경로
-     */
-    @PostMapping("/cancel")
-    public String cancelReservation(@ModelAttribute Reservation reservation, RedirectAttributes redirectAttrs) {
-        try {
-            reservationService.cancelReservation(reservation);
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
-        }
-        return "redirect:/reservation/list";
-    }
 
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
@@ -296,8 +254,8 @@ public class ReservationControllerJY {
         int weekdayAmt = roomType.getWeekdayAmt();
         int weekendAmt = roomType.getWeekendAmt();
 
-        LocalDate checkIn = LocalDate.parse(checkInDateStr.trim(), DATE_FORMATTER);
-        LocalDate checkOut = LocalDate.parse(checkOutDateStr.trim(), DATE_FORMATTER);
+        LocalDate checkIn = LocalDate.parse(checkInDateStr.trim(), DB_FORMAT);
+        LocalDate checkOut = LocalDate.parse(checkOutDateStr.trim(), DB_FORMAT);
 
         int totalAmount = 0;
         for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
@@ -364,13 +322,28 @@ public class ReservationControllerJY {
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
         try {
-            reservation.setRsvCheckInDt(LocalDate.parse(request.getParameter("rsvCheckInDt"), INPUT_FORMAT).format(DB_FORMAT));
-            reservation.setRsvCheckOutDt(LocalDate.parse(request.getParameter("rsvCheckOutDt"), INPUT_FORMAT).format(DB_FORMAT));
+            String rawCheckIn = request.getParameter("rsvCheckInDt");
+            String rawCheckOut = request.getParameter("rsvCheckOutDt");
+
+            // 날짜가 yyyyMMdd 형태인지 체크 후 처리
+            if (rawCheckIn.matches("\\d{8}")) {
+                reservation.setRsvCheckInDt(rawCheckIn);
+            } else {
+                reservation.setRsvCheckInDt(LocalDate.parse(rawCheckIn, INPUT_FORMAT).format(DB_FORMAT));
+            }
+
+            if (rawCheckOut.matches("\\d{8}")) {
+                reservation.setRsvCheckOutDt(rawCheckOut);
+            } else {
+                reservation.setRsvCheckOutDt(LocalDate.parse(rawCheckOut, INPUT_FORMAT).format(DB_FORMAT));
+            }
+
             reservation.setRsvCheckInTime(convertTimeToHHmm(request.getParameter("rsvCheckInTime")));
             reservation.setRsvCheckOutTime(convertTimeToHHmm(request.getParameter("rsvCheckOutTime")));
+
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "체크인/체크아웃 날짜 또는 시간 파싱 오류: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+            return "redirect:/reservation/confirm?error=" + e.getMessage();
         }
 
         reservation.setGuestId(userId);
@@ -430,15 +403,8 @@ public class ReservationControllerJY {
         return "/payment/paymentConfirm";
     }
 
-    /**
-     * 로그인한 사용자의 예약 내역 조회 페이지
-     * @param model 뷰에 데이터 전달용
-     * @param session 세션에서 로그인 사용자 정보 조회
-     * @return 내 예약 내역 jsp 경로
-     */
     @GetMapping("/reservationHistoryJY")
-    public String reservationHistoryJY(Model model, HttpSession session) 
-    {
+    public String reservationHistoryJY(Model model, HttpSession session) {
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         if (userId == null) {
             return "redirect:/user/login";
@@ -458,7 +424,7 @@ public class ReservationControllerJY {
                     r.setRsvCheckOutDateObj(checkOutDate);
                 }
             } catch (Exception e) {
-                // 로그 남기거나 예외 처리
+                // 필요시 로그 기록
             }
         }
 
