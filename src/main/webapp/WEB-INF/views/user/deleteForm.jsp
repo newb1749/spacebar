@@ -108,7 +108,7 @@ $(document).ready(function(){
         <div class="col-12">
             <form name="withdrawForm" id="withdrawForm" method="post" enctype="multipart/form-data">     
             
-            <h3>회원 탈퇴</h3> <p class="text-danger">회원 탈퇴 시 모든 정보가 삭제되며 복구할 수 없습니다. 신중하게 결정해주세요.</p>
+             <p class="text-danger">회원 탈퇴 시 모든 정보가 삭제되며 복구할 수 없습니다. 신중하게 결정해주세요.</p>
                   
                 <div class="form-group">
                     <label for="userId">사용자 아이디</label>
