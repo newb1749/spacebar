@@ -30,5 +30,11 @@
 	    FROM ROOM_IMAGE
 	    WHERE ROOM_SEQ = #{roomSeq}
 	</select>
+	
+	<delete id="deleteImagesByRoomSeq" parameterType="int">
+	    DELETE FROM ROOM_IMAGE
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</delete>
+	
 
 </mapper>

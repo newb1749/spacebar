@@ -25,4 +25,11 @@ public interface RoomImageDao {
      * @return INSERT가 성공적으로 수행된 행의 수 (일반적으로 1)
      */
     public int insertRoomImage(RoomImage roomImage);
+    
+    /**
+     * ROOM에 해당하는 이미지 DB에서 삭제
+     * @param roomSeq 해당 ROOM
+     * @return
+     */
+    public int deleteImagesByRoomSeq(int roomSeq);
 }

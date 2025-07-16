@@ -260,7 +260,7 @@ public class RoomController {
 	            logger.error("[RoomController] addProc Exception", e);
 	        }
 
-        return "redirect:/";
+        return "redirect:/host/main";
     }
 	 
 	/////////////////////////////////////////////////숙소 리스트 페이지/////////////////////////////////////////

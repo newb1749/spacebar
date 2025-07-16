@@ -62,6 +62,10 @@ public class Room implements Serializable{
 	private long weekdayAmt;
 	private long weekendAmt;
 	
+	private String mainImageName; // 대표 이미지 1개 (IMG_TYPE='main')
+	private List<String> detailImageNames; // 상세 이미지들 (IMG_TYPE='detail')
+
+	
 	public Room()
 	{
 		roomSeq = 0;
@@ -104,6 +108,32 @@ public class Room implements Serializable{
 		weekdayAmt = 0;
 		weekendAmt = 0;
 	}
+
+	
+	
+	public String getMainImageName() {
+		return mainImageName;
+	}
+
+
+
+	public void setMainImageName(String mainImageName) {
+		this.mainImageName = mainImageName;
+	}
+
+
+
+	public List<String> getDetailImageNames() {
+		return detailImageNames;
+	}
+
+
+
+	public void setDetailImageNames(List<String> detailImageNames) {
+		this.detailImageNames = detailImageNames;
+	}
+
+
 
 	public long getWeekendAmt() {
 		return weekendAmt;

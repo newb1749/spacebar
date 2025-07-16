@@ -1,5 +1,7 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import com.sist.web.model.RoomTypeImage;
 
 public interface RoomTypeImageDao {
@@ -26,4 +28,17 @@ public interface RoomTypeImageDao {
     public int insertRoomTypeImage(RoomTypeImage roomTypeImage);
 
 
+    /**
+     * 특정 객실 타입(RoomType)에 연결된 이미지 리스트 조회 
+     * @param roomTypeSeq 
+     * @return 정 객실 타입(RoomType)에 연결된 이미지 리스트
+     */
+    public List<RoomTypeImage> selectRoomTypeImagesByRoomTypeSeq(int roomTypeSeq);
+    
+    /**
+     * 해당 ROOM_TYPE에 해당하는 이미지 DB에서 삭제
+     * @param roomTypeSeq
+     * @return
+     */
+    public int deleteImagesByRoomTypeSeq(int roomTypeSeq);
 }

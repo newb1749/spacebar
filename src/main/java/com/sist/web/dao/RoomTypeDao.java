@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
+import com.sist.web.model.RoomTypeImage;
 
 @Repository
 public interface RoomTypeDao {
@@ -32,5 +33,6 @@ public interface RoomTypeDao {
 
     List<RoomType> selectRoomTypesByRoomSeq(Room room);
     
+
     
 }

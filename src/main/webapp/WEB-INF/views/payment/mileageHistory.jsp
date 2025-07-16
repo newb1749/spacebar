@@ -61,11 +61,8 @@
       margin-left: 10px;
     }
   </style>
-<<<<<<< HEAD
+
   <script>
-=======
-    <script>
->>>>>>> origin/base
     // 로그인 여부 체크
     $(document).ready(function() {
       var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
@@ -87,11 +84,7 @@
     <div class="alert alert-success">
       <p>
         <strong>
-<<<<<<< HEAD
           보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" />원
-=======
-          보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" /> 원
->>>>>>> origin/base
         </strong>
       </p>
     </div>
@@ -149,8 +142,5 @@
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> origin/base
+

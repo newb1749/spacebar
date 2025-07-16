@@ -6,6 +6,7 @@
 <meta charset="UTF-8">
 <title>새로운 숙소 등록</title>
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -206,90 +207,96 @@
                     </div>
                 </div>
 
-                <div class="card mb-4">
-                    <div class="card-header"><i class="fa-solid fa-map-location-dot"></i>위치 및 운영 정책</div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="roomAddr" class="form-label">주소</label>
-                                <input type="text" class="form-control" id="roomAddr" name="roomAddr" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="region" class="form-label">지역</label>
-                                <select class="form-select" id="region" name="region" required>
-                                    <option value="">지역 선택</option>
-                                    <option value="강원">강원</option><option value="경기">경기</option><option value="경남">경남</option><option value="경북">경북</option><option value="광주">광주</option><option value="대구">대구</option><option value="대전">대전</option><option value="부산">부산</option><option value="서울" selected>서울</option><option value="울산">울산</option><option value="인천">인천</option><option value="전남">전남</option><option value="전북">전북</option><option value="제주">제주</option><option value="충남">충남</option><option value="충북">충북</option>
-                                </select>
-                            </div>
-                        </div>
-                        <hr class="my-3">
-                             <div class="usage-time-container disabled" id="usageTimeContainer">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="minTimes" class="form-label">최소 이용시간</label>
-                                    <select class="form-select" id="minTimes" name="minTimes">
-                                        <option value="30">30분</option><option value="60" selected>1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600">10시간</option><option value="630">10시간 30분</option><option value="660">11시간</option><option value="690">11시간 30분</option><option value="720">12시간</option><option value="750">12시간 30분</option><option value="780">13시간</option><option value="810">13시간 30분</option><option value="840">14시간</option><option value="870">14시간 30분</option><option value="900">15시간</option><option value="930">15시간 30분</option><option value="960">16시간</option><option value="990">16시간 30분</option><option value="1020">17시간</option><option value="1050">17시간 30분</option><option value="1080">18시간</option><option value="1110">18시간 30분</option><option value="1140">19시간</option><option value="1170">19시간 30분</option><option value="1200">20시간</option><option value="1230">20시간 30분</option><option value="1260">21시간</option><option value="1290">21시간 30분</option><option value="1320">22시간</option><option value="1350">22시간 30분</option><option value="1380">23시간</option><option value="1410">23시간 30분</option><option value="1440">24시간</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="maxTimes" class="form-label">최대 이용시간</label>
-                                    <select class="form-select" id="maxTimes" name="maxTimes">
-                                        <option value="30">30분</option><option value="60">1시간</option><option value="90">1시간 30분</option><option value="120">2시간</option><option value="150">2시간 30분</option><option value="180">3시간</option><option value="210">3시간 30분</option><option value="240">4시간</option><option value="270">4시간 30분</option><option value="300">5시간</option><option value="330">5시간 30분</option><option value="360">6시간</option><option value="390">6시간 30분</option><option value="420">7시간</option><option value="450">7시간 30분</option><option value="480">8시간</option><option value="510">8시간 30분</option><option value="540">9시간</option><option value="570">9시간 30분</option><option value="600" selected>10시간</option><option value="630">10시간 30분</option><option value="660">11시간</option><option value="690">11시간 30분</option><option value="720">12시간</option><option value="750">12시간 30분</option><option value="780">13시간</option><option value="810">13시간 30분</option><option value="840">14시간</option><option value="870">14시간 30분</option><option value="900">15시간</option><option value="930">15시간 30분</option><option value="960">16시간</option><option value="990">16시간 30분</option><option value="1020">17시간</option><option value="1050">17시간 30분</option><option value="1080">18시간</option><option value="1110">18시간 30분</option><option value="1140">19시간</option><option value="1170">19시간 30분</option><option value="1200">20시간</option><option value="1230">20시간 30분</option><option value="1260">21시간</option><option value="1290">21시간 30분</option><option value="1320">22시간</option><option value="1350">22시간 30분</option><option value="1380">23시간</option><option value="1410">23시간 30분</option><option value="1440">24시간</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-text text-muted">
-                                <i class="fa-solid fa-info-circle"></i> 공간 대여 카테고리에서만 이용시간을 설정할 수 있습니다.
-                            </div>
-                        </div>
-                        <hr class="my-4">
-                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="autoConfirmYn" class="form-label">예약 자동 승인</label>
-                                <select class="form-select" id="autoConfirmYn" name="autoConfirmYn">
-                                    <option value="Y" selected>사용 (게스트 예약 시 즉시 확정)</option>
-                                    <option value="N">미사용 (호스트가 직접 확인 후 승인)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="cancelPolicy" class="form-label">취소 정책</label>
-                                <input type="text" class="form-control" id="cancelPolicy" name="cancelPolicy" value="FREE_CANCEL_1DAY">
-                                <div class="form-text">예: FREE_CANCEL_1DAY, NON_REFUNDABLE</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				<div class="card mb-4">
+				    <div class="card-header"><i class="fa-solid fa-map-location-dot"></i>위치 및 운영 정책</div>
+				    <div class="card-body">
+				        <div class="mb-3">
+				            <label for="roomAddr" class="form-label">주소</label>
+				            <input type="text" class="form-control" id="roomAddr" name="roomAddr" value="${room.roomAddr}" required>
+				        </div>
+				        <div class="mb-3">
+				            <label for="region" class="form-label">지역</label>
+				            <select class="form-select" id="region" name="region" required>
+				                <option value="">지역 선택</option>
+				                <option value="강원" <c:if test="${room.region eq '강원'}">selected</c:if>>강원</option>
+				                <option value="경기" <c:if test="${room.region eq '경기'}">selected</c:if>>경기</option>
+				                <option value="경남" <c:if test="${room.region eq '경남'}">selected</c:if>>경남</option>
+				                <option value="경북" <c:if test="${room.region eq '경북'}">selected</c:if>>경북</option>
+				                <option value="광주" <c:if test="${room.region eq '광주'}">selected</c:if>>광주</option>
+				                <option value="대구" <c:if test="${room.region eq '대구'}">selected</c:if>>대구</option>
+				                <option value="대전" <c:if test="${room.region eq '대전'}">selected</c:if>>대전</option>
+				                <option value="부산" <c:if test="${room.region eq '부산'}">selected</c:if>>부산</option>
+				                <option value="서울" <c:if test="${room.region eq '서울'}">selected</c:if>>서울</option>
+				                <option value="울산" <c:if test="${room.region eq '울산'}">selected</c:if>>울산</option>
+				                <option value="인천" <c:if test="${room.region eq '인천'}">selected</c:if>>인천</option>
+				                <option value="전남" <c:if test="${room.region eq '전남'}">selected</c:if>>전남</option>
+				                <option value="전북" <c:if test="${room.region eq '전북'}">selected</c:if>>전북</option>
+				                <option value="제주" <c:if test="${room.region eq '제주'}">selected</c:if>>제주</option>
+				                <option value="충남" <c:if test="${room.region eq '충남'}">selected</c:if>>충남</option>
+				                <option value="충북" <c:if test="${room.region eq '충북'}">selected</c:if>>충북</option>
+				            </select>
+				        </div>
+				        <div class="form-check mb-3">
+				            <c:choose>
+				                <c:when test="${room.autoConfirmYn eq 'Y'}">
+				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y" checked>
+				                </c:when>
+				                <c:otherwise>
+				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y">
+				                </c:otherwise>
+				            </c:choose>
+				            <label class="form-check-label" for="autoConfirmYn">
+				                예약 자동 승인 사용
+				            </label>
+				        </div>
+				    </div>
+				</div>
+
                 
-                <div class="card mb-4">
-                    <div class="card-header"><i class="fa-solid fa-person-shelter"></i>편의시설</div>
-                    <div class="card-body">
-                         <div class="facility-grid">
-                            <div class="facility-box" data-value="1"><input type="checkbox" name="facilitySeqs" value="1"><i class="fa-solid fa-wifi"></i><span>와이파이</span></div>
-                            <div class="facility-box" data-value="2"><input type="checkbox" name="facilitySeqs" value="2"><i class="fa-solid fa-snowflake"></i><span>냉장고</span></div>
-                            <div class="facility-box" data-value="3"><input type="checkbox" name="facilitySeqs" value="3"><i class="fa-solid fa-microwave"></i><span>전자레인지</span></div>
-                            <div class="facility-box" data-value="4"><input type="checkbox" name="facilitySeqs" value="4"><i class="fa-solid fa-faucet"></i><span>정수기</span></div>
-                            <div class="facility-box" data-value="5"><input type="checkbox" name="facilitySeqs" value="5"><i class="fa-solid fa-thermometer-half"></i><span>에어컨/난방</span></div>
-                            <div class="facility-box" data-value="6"><input type="checkbox" name="facilitySeqs" value="6"><i class="fa-solid fa-wind"></i><span>드라이기</span></div>
-                            <div class="facility-box" data-value="8"><input type="checkbox" name="facilitySeqs" value="8"><i class="fa-solid fa-mirror"></i><span>거울</span></div>
-                            <div class="facility-box" data-value="9"><input type="checkbox" name="facilitySeqs" value="9"><i class="fa-solid fa-bed"></i><span>침구</span></div>
-                            <div class="facility-box" data-value="10"><input type="checkbox" name="facilitySeqs" value="10"><i class="fa-solid fa-bath"></i><span>욕실용품</span></div>
-                            <div class="facility-box" data-value="11"><input type="checkbox" name="facilitySeqs" value="11"><i class="fa-solid fa-hanger"></i><span>옷걸이/행거</span></div>
-                            <div class="facility-box" data-value="12"><input type="checkbox" name="facilitySeqs" value="12"><i class="fa-solid fa-tv"></i><span>TV (OTT)</span></div>
-                            <div class="facility-box" data-value="13"><input type="checkbox" name="facilitySeqs" value="13"><i class="fa-solid fa-jug-detergent"></i><span>세탁기/건조기</span></div>
-                            <div class="facility-box" data-value="14"><input type="checkbox" name="facilitySeqs" value="14"><i class="fa-solid fa-utensils"></i><span>취사도구</span></div>
-                            <div class="facility-box" data-value="15"><input type="checkbox" name="facilitySeqs" value="15"><i class="fa-solid fa-fire-burner"></i><span>바베큐 시설</span></div>
-                            <div class="facility-box" data-value="16"><input type="checkbox" name="facilitySeqs" value="16"><i class="fa-solid fa-swimmer"></i><span>수영장</span></div>
-                            <div class="facility-box" data-value="17"><input type="checkbox" name="facilitySeqs" value="17"><i class="fa-solid fa-volume-mute"></i><span>방음 시설</span></div>
-                            <div class="facility-box" data-value="18"><input type="checkbox" name="facilitySeqs" value="18"><i class="fa-solid fa-microphone"></i><span>마이크/오디오</span></div>
-                            <div class="facility-box" data-value="22"><input type="checkbox" name="facilitySeqs" value="22"><i class="fa-brands fa-bluetooth-b"></i><span>블루투스 스피커</span></div>
-                            <div class="facility-box" data-value="24"><input type="checkbox" name="facilitySeqs" value="24"><i class="fa-solid fa-video"></i><span>빔프로젝터</span></div>
-                            <div class="facility-box" data-value="26"><input type="checkbox" name="facilitySeqs" value="26"><i class="fa-solid fa-chalkboard"></i><span>화이트보드</span></div>
-                            <div class="facility-box" data-value="30"><input type="checkbox" name="facilitySeqs" value="30"><i class="fa-solid fa-shower"></i><span>화장실/샤워실</span></div>
-                            <div class="facility-box" data-value="32"><input type="checkbox" name="facilitySeqs" value="32"><i class="fa-solid fa-plug"></i><span>전기 공급</span></div>
-                            <div class="facility-box" data-value="34"><input type="checkbox" name="facilitySeqs" value="34"><i class="fa-solid fa-fire"></i><span>캠프파이어</span></div>
-                        </div>
-                    </div>
-                </div>
+				<div class="card mb-4">
+				    <div class="card-header"><i class="fa-solid fa-person-shelter"></i>편의시설</div>
+				    <div class="card-body">
+				        <div class="facility-grid">
+				            <div class="facility-box" data-value="1"><input type="checkbox" name="facilitySeqs" value="1"><i class="fa-solid fa-wifi"></i><span>와이파이</span></div>
+				            <div class="facility-box" data-value="2"><input type="checkbox" name="facilitySeqs" value="2"><i class="fa-solid fa-snowflake"></i><span>냉장고</span></div>
+				            <div class="facility-box" data-value="3"><input type="checkbox" name="facilitySeqs" value="3"><i class="fa-kitchen-set"></i><span>전자레인지</span></div>
+				            <div class="facility-box" data-value="4"><input type="checkbox" name="facilitySeqs" value="4"><i class="fa-solid fa-faucet"></i><span>정수기</span></div>
+				            <div class="facility-box" data-value="5"><input type="checkbox" name="facilitySeqs" value="5"><i class="fa-solid fa-temperature-half"></i><span>에어컨/난방</span></div>
+				            <div class="facility-box" data-value="6"><input type="checkbox" name="facilitySeqs" value="6"><i class="fa-solid fa-wind"></i><span>드라이기</span></div>
+				            <div class="facility-box" data-value="7"><input type="checkbox" name="facilitySeqs" value="7"><i class="fa-solid fa-shirt"></i><span>다리미</span></div>
+				            <div class="facility-box" data-value="8"><input type="checkbox" name="facilitySeqs" value="8"><i class="fa-rectangle-vertical"></i><span>거울</span></div>
+				            <div class="facility-box" data-value="9"><input type="checkbox" name="facilitySeqs" value="9"><i class="fa-solid fa-bed"></i><span>침구</span></div>
+				            <div class="facility-box" data-value="10"><input type="checkbox" name="facilitySeqs" value="10"><i class="fa-solid fa-soap"></i><span>욕실용품</span></div>
+				            <div class="facility-box" data-value="11"><input type="checkbox" name="facilitySeqs" value="11"><i class="fa-shirt"></i><span>옷걸이/행거</span></div>
+				            <div class="facility-box" data-value="12"><input type="checkbox" name="facilitySeqs" value="12"><i class="fa-solid fa-tv"></i><span>TV (OTT)</span></div>
+				            <div class="facility-box" data-value="13"><input type="checkbox" name="facilitySeqs" value="13"><i class="fa-solid fa-jug-detergent"></i><span>세탁기/건조기</span></div>
+				            <div class="facility-box" data-value="14"><input type="checkbox" name="facilitySeqs" value="14"><i class="fa-solid fa-utensils"></i><span>취사도구</span></div>
+				            <div class="facility-box" data-value="15"><input type="checkbox" name="facilitySeqs" value="15"><i class="fa-solid fa-fire-burner"></i><span>바베큐 시설</span></div>
+				            <div class="facility-box" data-value="16"><input type="checkbox" name="facilitySeqs" value="16"><i class="fa-solid fa-person-swimming"></i><span>수영장</span></div>
+				            <div class="facility-box" data-value="17"><input type="checkbox" name="facilitySeqs" value="17"><i class="fa-solid fa-volume-xmark"></i><span>방음 시설</span></div>
+				            <div class="facility-box" data-value="18"><input type="checkbox" name="facilitySeqs" value="18"><i class="fa-solid fa-microphone"></i><span>마이크/오디오</span></div>
+				            <div class="facility-box" data-value="19"><input type="checkbox" name="facilitySeqs" value="19"><i class="fa-solid fa-speaker"></i><span>앰프/스피커</span></div>
+				            <div class="facility-box" data-value="20"><input type="checkbox" name="facilitySeqs" value="20"><i class="fa-solid fa-lightbulb"></i><span>조명 장비</span></div>
+				            <div class="facility-box" data-value="21"><input type="checkbox" name="facilitySeqs" value="21"><i class="fa-solid fa-camera"></i><span>삼각대/촬영 장비</span></div>
+				            <div class="facility-box" data-value="22"><input type="checkbox" name="facilitySeqs" value="22"><i class="fa-brands fa-bluetooth-b"></i><span>블루투스 스피커</span></div>
+				            <div class="facility-box" data-value="23"><input type="checkbox" name="facilitySeqs" value="23"><i class="fa-solid fa-drum"></i><span>악기류</span></div>
+				            <div class="facility-box" data-value="24"><input type="checkbox" name="facilitySeqs" value="24"><i class="fa-solid fa-video"></i><span>빔프로젝터</span></div>
+				            <div class="facility-box" data-value="25"><input type="checkbox" name="facilitySeqs" value="25"><i class="fa-solid fa-display"></i><span>TV 모니터</span></div>
+				            <div class="facility-box" data-value="26"><input type="checkbox" name="facilitySeqs" value="26"><i class="fa-solid fa-chalkboard"></i><span>화이트보드</span></div>
+				            <div class="facility-box" data-value="27"><input type="checkbox" name="facilitySeqs" value="27"><i class="fa-solid fa-print"></i><span>프린터/복합기</span></div>
+				            <div class="facility-box" data-value="28"><input type="checkbox" name="facilitySeqs" value="28"><i class="fa-solid fa-chair"></i><span>의자/책상</span></div>
+				            <div class="facility-box" data-value="29"><input type="checkbox" name="facilitySeqs" value="29"><i class="fa-solid fa-mug-hot"></i><span>커피머신</span></div>
+				            <div class="facility-box" data-value="30"><input type="checkbox" name="facilitySeqs" value="30"><i class="fa-solid fa-shower"></i><span>화장실/샤워실</span></div>
+				            <div class="facility-box" data-value="31"><input type="checkbox" name="facilitySeqs" value="31"><i class="fa-solid fa-sink"></i><span>취사장/개수대</span></div>
+				            <div class="facility-box" data-value="32"><input type="checkbox" name="facilitySeqs" value="32"><i class="fa-solid fa-plug"></i><span>전기 공급</span></div>
+				            <div class="facility-box" data-value="33"><input type="checkbox" name="facilitySeqs" value="33"><i class="fa-solid fa-campground"></i><span>텐트/타프</span></div>
+				            <div class="facility-box" data-value="34"><input type="checkbox" name="facilitySeqs" value="34"><i class="fa-solid fa-fire"></i><span>캠프파이어</span></div>
+				            <div class="facility-box" data-value="35"><input type="checkbox" name="facilitySeqs" value="35"><i class="fa-solid fa-table-picnic"></i><span>야외 테이블/의자</span></div>
+				            <div class="facility-box" data-value="36"><input type="checkbox" name="facilitySeqs" value="36"><i class="fa-solid fa-bug-slash"></i><span>벌레퇴치용품</span></div>
+				        </div>
+				    </div>
+				</div>
+
 
                 <div class="card mb-4">
                     <div class="card-header"><i class="fa-solid fa-images"></i>숙소 이미지</div>
