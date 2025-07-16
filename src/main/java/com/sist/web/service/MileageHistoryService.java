@@ -83,4 +83,27 @@ public class MileageHistoryService
 
         mileageHistoryDao.insertMileageHistory(history);
     }
+    
+    /* 마일리지 충전용
+     * */
+    @Transactional
+    public boolean chargeMileage(String userId, int chargeAmount) {
+        int currentMileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
+        if (currentMileage < 0) currentMileage = 0;
+
+        int updated = mileageHistoryDao.updateMileageAdd(userId, chargeAmount);
+        if (updated > 0) {
+            MileageHistory history = new MileageHistory();
+            history.setUserId(userId);
+            history.setTrxType("충전");  // 한글로 표기하거나 "CHARGE"로 변경 가능
+            history.setTrxAmt(chargeAmount);
+            history.setBalanceAfterTrx(currentMileage + chargeAmount);
+            history.setTrxDt(new Date());
+
+            mileageHistoryDao.insertMileageHistory(history);
+            return true;
+        }
+        return false;
+    }
+
 }

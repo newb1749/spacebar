@@ -41,7 +41,6 @@ public class KakaoPayControllerJY
     @Autowired
     private ReservationServiceJY reservationService;
 
-    // MileageHistoryService 삭제하고 DAO 직접 주입
     @Autowired
     private MileageHistoryDao mileageHistoryDao;
 
@@ -111,65 +110,67 @@ public class KakaoPayControllerJY
 
     @GetMapping("/success")
     public String success(HttpServletRequest req, Model model) {
-        HttpSession session = req.getSession(false);
-        String tid = String.valueOf(SessionUtil.getSession(session, TID_SESSION));
-        String orderId = String.valueOf(SessionUtil.getSession(session, ORDER_SESSION));
-        String userId = (String) session.getAttribute("SESSION_USER_ID");
-        String pg = req.getParameter("pg_token");
-
-        KakaoPayApproveRequest ar = new KakaoPayApproveRequest(tid, orderId, userId, pg);
-        KakaoPayApproveResponse ap = kakaoService.approve(ar);
-
-        if (ap != null && ap.getAmount() != null) {
-            // 1. 마일리지 충전 처리
-            userService.chargeMileage(userId, ap.getAmount().getTotal());
-            model.addAttribute("code", 0);
-            model.addAttribute("msg", "충전 완료: " + ap.getAmount().getTotal() + "원");
-
-            // 2. 예약 흐름일 경우 → detailJY로 이동
-            Reservation pending = (Reservation) session.getAttribute("pendingReservation");
-            if (pending != null) {
-                model.addAttribute("reservation", pending);
-                session.removeAttribute("pendingReservation");
-                return "redirect:/reservation/detailJY?rsvSeq=" + pending.getRsvSeq();
-            }
-
-            // 3. 충전만 한 경우 → 마일리지 내역 페이지로 이동
-            return "redirect:/payment/mileageHistory";
+        String pgToken = req.getParameter("pg_token");
+        if (pgToken == null) {
+            model.addAttribute("error", "결제 실패: pg_token이 없습니다.");
+            return "/payment/chargeMileage";
         }
+        try {
+            String tid = (String) req.getSession().getAttribute(TID_SESSION);
+            String orderId = (String) req.getSession().getAttribute(ORDER_SESSION);
+            String userId = (String) req.getSession().getAttribute("SESSION_USER_ID");
+            int amount = (int) req.getSession().getAttribute("chargeAmount");
 
-        model.addAttribute("code", -1);
-        model.addAttribute("msg", "결제 승인 실패");
+            KakaoPayApproveRequest approveReq = new KakaoPayApproveRequest(tid, orderId, userId, pgToken);
+            KakaoPayApproveResponse approveRes = kakaoService.approve(approveReq);
 
-        SessionUtil.removeSession(session, TID_SESSION);
-        SessionUtil.removeSession(session, ORDER_SESSION);
+            if (approveRes != null && approveRes.getAmount() != null) {
+                int result = userService.chargeMileage(userId, amount);  // int 반환 가정
+                boolean success = (result > 0);
 
-        return "/payment/result";
+                if (success) {
+                    model.addAttribute("msg", "마일리지 충전이 완료되었습니다.");
+                    return "redirect:/payment/mileageHistory";
+                } else {
+                    model.addAttribute("error", "마일리지 충전 DB 처리 실패");
+                    return "/payment/chargeMileage";
+                }
+            } else {
+                model.addAttribute("error", "카카오페이 결제 승인 실패");
+                return "/payment/chargeMileage";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "오류 발생: " + e.getMessage());
+            return "/payment/chargeMileage";
+        }
     }
 
     @GetMapping({"/cancel", "/fail"})
     public String cancelFail(HttpServletRequest req, Model model) 
     {
-        String uri = req.getRequestURI();
-        model.addAttribute("code", -1);
-        model.addAttribute("msg", uri.endsWith("cancel") ? "결제 취소됨" : "결제 실패");
-        return "/payment/result";
-    }
-
-    @GetMapping("/chargeMileage")
-    public String showChargeMileagePage(HttpSession session, Model model) 
-    {
-        String userId = (String) session.getAttribute("SESSION_USER_ID");
-
-        if (userId == null || userId.isEmpty()) {
-            return "redirect:/user/login";
-        }
-
-        int mileage = userService.getCurrentMileage(userId);
-        model.addAttribute("userMileage", mileage);
+        model.addAttribute("error", "결제가 취소되거나 실패하였습니다.");
         return "/payment/chargeMileage";
     }
 
+    /**
+     * 마일리지 충전 페이지(GET)
+     * URL: /payment/chargeMileage
+     */
+    @GetMapping("/chargeMileage")
+    public String showChargeMileagePage(Model model, HttpSession session) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+        long userMileage = getUserMileage(userId);
+        model.addAttribute("userMileage", userMileage);
+        return "/payment/chargeMileage";  // JSP 경로
+    }
+
+    /**
+     * 마일리지 충전 + 예약 결제 동시 처리(POST)
+     * URL: /payment/chargeMileage
+     */
     @PostMapping("/chargeMileage")
     public String chargeMileageAndPay(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
@@ -182,6 +183,7 @@ public class KakaoPayControllerJY
         }
 
         try {
+            // 날짜 포맷 변환 및 세팅
             String checkIn = request.getParameter("rsvCheckInDt");
             String checkOut = request.getParameter("rsvCheckOutDt");
             String checkInTime = request.getParameter("rsvCheckInTime");
@@ -226,8 +228,7 @@ public class KakaoPayControllerJY
         }
     }
 
-    private String convertTimeToHHmm(String timeStr) 
-    {
+    private String convertTimeToHHmm(String timeStr) {
         if (timeStr == null || timeStr.isEmpty()) {
             return null;
         }
@@ -257,9 +258,8 @@ public class KakaoPayControllerJY
         model.addAttribute("code", code);
         model.addAttribute("msg", msg);
         model.addAttribute("mileageHistoryList", historyList);
-        model.addAttribute("remainingMileage", remainingMileage);  // 추가
+        model.addAttribute("remainingMileage", remainingMileage);
 
         return "/payment/mileageHistory";
     }
-
 }

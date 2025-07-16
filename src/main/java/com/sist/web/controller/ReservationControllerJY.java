@@ -5,26 +5,21 @@ import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
-
-import com.sist.web.service.MileageServiceJY;
+import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
-import com.sist.web.service.MileageHistoryService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -33,12 +28,9 @@ import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/reservation")
 public class ReservationControllerJY {
 
     private static Logger logger = LoggerFactory.getLogger(ReservationControllerJY.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter INPUT_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter DB_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @Autowired
@@ -62,7 +54,7 @@ public class ReservationControllerJY {
     @Autowired
     private MileageHistoryService mileageHistoryService;
 
-    @GetMapping("/step1JY")
+    @GetMapping("/reservation/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
                                    @RequestParam("checkOut") String checkOut,
@@ -90,7 +82,6 @@ public class ReservationControllerJY {
             if (roomTypeSeq == null) {
                 throw new IllegalArgumentException("roomTypeSeq가 null입니다.");
             }
-
             RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
             if (roomType == null) {
                 throw new IllegalArgumentException("roomType이 존재하지 않습니다. roomTypeSeq: " + roomTypeSeq);
@@ -111,19 +102,36 @@ public class ReservationControllerJY {
         reservationDao.insertReservation(reservation);
     }
 
-    @GetMapping("/list")
-    public String reservationList(HttpServletRequest request, Model model) {
+    @PostMapping("/reservation/detailJY")
+    public String reservationDetailJY(@ModelAttribute Reservation reservation,
+                                      HttpServletRequest request,
+                                      Model model) {
         String guestId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (guestId == null || guestId.isEmpty()) {
             return "redirect:/user/login";
         }
-        List<Reservation> reservations = reservationDao.selectReservationsByGuestId(guestId);
+        reservation.setGuestId(guestId);
 
-        model.addAttribute("reservations", reservations);
-        return "/reservation/reservationHistoryJY";
+        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
+        if (roomType != null) {
+            reservation.setHostId(roomType.getHostId());
+        }
+
+        int totalAmt = calculateTotalAmount(reservation.getRoomTypeSeq(),
+                reservation.getRsvCheckInDt(),
+                reservation.getRsvCheckOutDt());
+
+        reservation.setTotalAmt(totalAmt);
+        reservation.setFinalAmt(totalAmt);
+
+        long userMileage = getUserMileage(guestId);
+        model.addAttribute("userMileage", userMileage);
+        model.addAttribute("reservation", reservation);
+
+        return "/reservation/detailJY";
     }
 
-    @GetMapping("/detailJY")
+    @GetMapping("/reservation/detailJY")
     public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                     HttpSession session,
                                     Model model) {
@@ -155,55 +163,62 @@ public class ReservationControllerJY {
         return "/reservation/detailJY";
     }
 
-    private long getUserMileage(String userId) {
-        Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
-        return mileage != null ? mileage : 0;
-    }
+    @GetMapping("/reservation/list")
+    public String reservationList(HttpSession session, Model model) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
 
-    private boolean deductMileage(String userId, int amount) {
-        long currentMileage = getUserMileage(userId);
-        if (currentMileage < amount) {
-            return false;
+        List<Reservation> reservations = reservationService.getReservationsByGuestId(userId);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        for (Reservation r : reservations) {
+            try {
+                if (r.getRsvCheckInDt() != null) {
+                    Date checkInDate = sdf.parse(r.getRsvCheckInDt());
+                    r.setRsvCheckInDateObj(checkInDate);
+                }
+                if (r.getRsvCheckOutDt() != null) {
+                    Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
+                    r.setRsvCheckOutDateObj(checkOutDate);
+                }
+            } catch (Exception e) {
+                // 필요시 로그 기록
+            }
         }
-        int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, amount);
-        if (updatedRows > 0) {
-            MileageHistory history = new MileageHistory();
-            history.setUserId(userId);
-            history.setTrxType("결제");
-            history.setTrxAmt(-amount);
-            history.setBalanceAfterTrx(currentMileage - amount);
-            mileageHistoryDao.insertMileageHistory(history);
-            return true;
-        }
-        return false;
+
+        model.addAttribute("reservations", reservations);
+        return "/reservation/reservationHistoryJY";
     }
 
     @PostMapping("/payment/mileagePay")
-    public String mileagePay(@ModelAttribute Reservation reservation, HttpSession session, RedirectAttributes redirectAttrs) {
+    public String processMileagePaymentWithReservation(@ModelAttribute Reservation reservation,
+                                                       HttpSession session,
+                                                       RedirectAttributes redirectAttrs) {
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         if (userId == null || userId.isEmpty()) {
             redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
-
         reservation.setGuestId(userId);
 
         long userMileage = getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
             session.setAttribute("pendingReservation", reservation);
-            return "redirect:/reservation/payment/chargeMileage";
+            return "redirect:/reservation/chargeMileage";
         }
 
         boolean deducted = deductMileage(userId, reservation.getFinalAmt());
         if (!deducted) {
-            redirectAttrs.addFlashAttribute("error", "마일리지 차감 실패");
+            redirectAttrs.addFlashAttribute("error", "마일리지 결제 실패");
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
 
         try {
             insertReservation(reservation);
         } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "예약 저장 실패: " + e.getMessage());
+            redirectAttrs.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
             return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
         }
 
@@ -211,7 +226,41 @@ public class ReservationControllerJY {
         return "redirect:/reservation/confirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
-    @PostMapping("/cancel")
+    // == chargeMileage 경로 확실히 /reservation/chargeMileage 로 수정 ==
+    @GetMapping("/reservation/chargeMileage")
+    public String showChargeMileagePage(HttpSession session, Model model) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null || userId.isEmpty()) {
+            return "redirect:/user/login";
+        }
+        long userMileage = getUserMileage(userId);
+        model.addAttribute("userMileage", userMileage);
+        return "/payment/chargeMileage";
+    }
+
+    @PostMapping("/reservation/chargeMileage/only")
+    public String processChargeMileageOnly(@RequestParam("chargeAmount") int chargeAmount,
+                                           HttpSession session,
+                                           RedirectAttributes redirectAttrs) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null || userId.isEmpty()) {
+            redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/user/login";
+        }
+
+        boolean chargeSuccess = mileageHistoryService.chargeMileage(userId, chargeAmount);
+
+        if (!chargeSuccess) {
+            redirectAttrs.addFlashAttribute("error", "마일리지 충전에 실패했습니다.");
+            return "redirect:/payment/chargeMileage";
+        }
+
+        redirectAttrs.addFlashAttribute("msg", "마일리지 충전이 완료되었습니다.");
+        return "redirect:/reservation/mileageHistory";
+    }
+    // == chargeMileage 경로 끝 ==
+
+    @PostMapping("/reservation/cancel")
     public String cancelReservation(@ModelAttribute Reservation reservation,
                                     HttpSession session,
                                     RedirectAttributes redirectAttrs) {
@@ -254,8 +303,8 @@ public class ReservationControllerJY {
         int weekdayAmt = roomType.getWeekdayAmt();
         int weekendAmt = roomType.getWeekendAmt();
 
-        LocalDate checkIn = LocalDate.parse(checkInDateStr.trim(), DB_FORMAT);
-        LocalDate checkOut = LocalDate.parse(checkOutDateStr.trim(), DB_FORMAT);
+        LocalDate checkIn = parseFlexibleDate(checkInDateStr);
+        LocalDate checkOut = parseFlexibleDate(checkOutDateStr);
 
         int totalAmount = 0;
         for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
@@ -269,35 +318,27 @@ public class ReservationControllerJY {
         return totalAmount;
     }
 
-    @PostMapping("/detailJY")
-    public String reservationDetailJY(@ModelAttribute Reservation reservation,
-                                      HttpServletRequest request,
-                                      Model model) {
+    private long getUserMileage(String userId) {
+        Integer mileage = mileageHistoryDao.selectCurrentMileageByUserId(userId);
+        return mileage != null ? mileage : 0;
+    }
 
-        String guestId = (String) request.getSession().getAttribute("SESSION_USER_ID");
-        if (guestId == null || guestId.isEmpty()) {
-            return "redirect:/user/login";
+    private boolean deductMileage(String userId, int amount) {
+        long currentMileage = getUserMileage(userId);
+        if (currentMileage < amount) {
+            return false;
         }
-
-        reservation.setGuestId(guestId);
-
-        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
-        if (roomType != null) {
-            reservation.setHostId(roomType.getHostId());
+        int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, amount);
+        if (updatedRows > 0) {
+            MileageHistory history = new MileageHistory();
+            history.setUserId(userId);
+            history.setTrxType("결제");
+            history.setTrxAmt(-amount);
+            history.setBalanceAfterTrx(currentMileage - amount);
+            mileageHistoryDao.insertMileageHistory(history);
+            return true;
         }
-
-        int totalAmt = calculateTotalAmount(reservation.getRoomTypeSeq(),
-                reservation.getRsvCheckInDt(),
-                reservation.getRsvCheckOutDt());
-
-        reservation.setTotalAmt(totalAmt);
-        reservation.setFinalAmt(totalAmt);
-
-        long userMileage = getUserMileage(guestId);
-        model.addAttribute("userMileage", userMileage);
-        model.addAttribute("reservation", reservation);
-
-        return "/reservation/detailJY";
+        return false;
     }
 
     private String convertTimeToHHmm(String timeStr) {
@@ -305,73 +346,7 @@ public class ReservationControllerJY {
         return timeStr.replace(":", "");
     }
 
-    @PostMapping("/payment/chargeMileage")
-    public String chargeMileageAndReserve(@ModelAttribute Reservation reservation,
-                                          HttpServletRequest request,
-                                          HttpSession session,
-                                          RedirectAttributes redirectAttrs) {
-        String userId = (String) session.getAttribute("SESSION_USER_ID");
-        if (userId == null || userId.isEmpty()) {
-            redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
-            return "redirect:/user/login";
-        }
-
-        RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
-        if (roomType == null) {
-            redirectAttrs.addFlashAttribute("error", "유효하지 않은 객실 정보입니다. 예약을 다시 시도해주세요.");
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
-        }
-        try {
-            String rawCheckIn = request.getParameter("rsvCheckInDt");
-            String rawCheckOut = request.getParameter("rsvCheckOutDt");
-
-            // 날짜가 yyyyMMdd 형태인지 체크 후 처리
-            if (rawCheckIn.matches("\\d{8}")) {
-                reservation.setRsvCheckInDt(rawCheckIn);
-            } else {
-                reservation.setRsvCheckInDt(LocalDate.parse(rawCheckIn, INPUT_FORMAT).format(DB_FORMAT));
-            }
-
-            if (rawCheckOut.matches("\\d{8}")) {
-                reservation.setRsvCheckOutDt(rawCheckOut);
-            } else {
-                reservation.setRsvCheckOutDt(LocalDate.parse(rawCheckOut, INPUT_FORMAT).format(DB_FORMAT));
-            }
-
-            reservation.setRsvCheckInTime(convertTimeToHHmm(request.getParameter("rsvCheckInTime")));
-            reservation.setRsvCheckOutTime(convertTimeToHHmm(request.getParameter("rsvCheckOutTime")));
-
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "체크인/체크아웃 날짜 또는 시간 파싱 오류: " + e.getMessage());
-            return "redirect:/reservation/confirm?error=" + e.getMessage();
-        }
-
-        reservation.setGuestId(userId);
-
-        long userMileage = getUserMileage(userId);
-        if (userMileage < reservation.getFinalAmt()) {
-            session.setAttribute("pendingReservation", reservation);
-            return "redirect:/reservation/payment/chargeMileage";
-        }
-
-        boolean success = deductMileage(userId, reservation.getFinalAmt());
-        if (!success) {
-            redirectAttrs.addFlashAttribute("error", "마일리지 결제 실패");
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
-        }
-
-        try {
-            insertReservation(reservation);
-        } catch (Exception e) {
-            redirectAttrs.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
-        }
-
-        session.removeAttribute("pendingReservation");
-        return "redirect:/reservation/confirm?rsvSeq=" + reservation.getRsvSeq();
-    }
-
-    @GetMapping("/confirm")
+    @GetMapping("/reservation/confirm")
     public String confirmReservation(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                      @RequestParam(value = "error", required = false) String error,
                                      Model model) {
@@ -395,40 +370,42 @@ public class ReservationControllerJY {
         }
 
         model.addAttribute("reservation", reservation);
-        model.addAttribute("status", "SUCCESS");
-
-        long remainingMileage = getUserMileage(reservation.getGuestId());
-        model.addAttribute("remainingMileage", remainingMileage);
-
+        model.addAttribute("status", "OK");
         return "/payment/paymentConfirm";
     }
 
-    @GetMapping("/reservationHistoryJY")
-    public String reservationHistoryJY(Model model, HttpSession session) {
+    @GetMapping("/reservation/mileageHistory")
+    public String mileageHistory(HttpSession session, Model model) {
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         if (userId == null) {
             return "redirect:/user/login";
         }
+        List<MileageHistory> mileageHistories = mileageHistoryDao.selectMileageHistoryByUserId(userId);
+        model.addAttribute("mileageHistories", mileageHistories);
+        return "/payment/mileageHistory";
+    }
+    
+    private LocalDate parseFlexibleDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            throw new IllegalArgumentException("날짜 문자열이 비어 있습니다.");
+        }
 
-        List<Reservation> reservations = reservationService.getReservationsByGuestId(userId);
+        String trimmedDate = dateStr.trim();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        for (Reservation r : reservations) {
+        DateTimeFormatter[] formatters = new DateTimeFormatter[] {
+            DateTimeFormatter.ofPattern("yyyyMMdd"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        };
+
+        for (DateTimeFormatter formatter : formatters) {
             try {
-                if (r.getRsvCheckInDt() != null) {
-                    Date checkInDate = sdf.parse(r.getRsvCheckInDt());
-                    r.setRsvCheckInDateObj(checkInDate);
-                }
-                if (r.getRsvCheckOutDt() != null) {
-                    Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
-                    r.setRsvCheckOutDateObj(checkOutDate);
-                }
-            } catch (Exception e) {
-                // 필요시 로그 기록
+                return LocalDate.parse(trimmedDate, formatter);
+            } catch (Exception ignored) {
+                // 다음 포맷 시도
             }
         }
 
-        model.addAttribute("reservations", reservations);
-        return "/reservation/reservationHistoryJY";
+        throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + trimmedDate);
     }
+
 }
