@@ -522,6 +522,9 @@ $(function(){
                         </tbody>
                     </table>
                 </div>
+                <div class="mt-3 text-end">
+			      <a href="/payment/chargeMileage" class="btn btn-outline-primary">마일리지 충전하기</a>
+			    </div>
             </div>
 
 			<%-- 내가 쓴 게시글 --%>
