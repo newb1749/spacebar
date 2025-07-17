@@ -14,6 +14,15 @@
 body {
   padding-top: 120px; /* ← 네비게이션 높이만큼 설정 (네비 높이 + 상하 패딩 합산) */
 }
+
+.nav-tabs .nav-link {
+  color: #555;
+  font-weight: 500;
+}
+.nav-tabs .nav-link.active {
+  color: #007bff;
+  border-color: #007bff #007bff transparent;
+}
 </style>
 
 
@@ -58,6 +67,35 @@ function fn_list(curPage)
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
+<div class="container mb-4">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link ${boardType=='free' ? 'active' : ''}"
+         href="${pageContext.request.contextPath}/board/list">
+        자유게시판
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link ${boardType=='qna' ? 'active' : ''}"
+         href="${pageContext.request.contextPath}/qna/list">
+        Q&amp;A 게시판
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link ${boardType=='faq' ? 'active' : ''}"
+         href="${pageContext.request.contextPath}/faq/list">
+        자주 묻는 질문
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link ${boardType=='voice' ? 'active' : ''}"
+         href="${pageContext.request.contextPath}/voice/list">
+        고객의 소리
+      </a>
+    </li>
+  </ul>
+</div>
+
 <div class="container">
    
    <div class="container">
@@ -66,7 +104,7 @@ function fn_list(curPage)
     
     <!-- 왼쪽: 제목 -->
     <div class="col-6">
-      <h2>게시판</h2>
+      <h2>자유게시판</h2>
     </div>
 
     <!-- 오른쪽: 검색창 전체 우측 정렬 -->

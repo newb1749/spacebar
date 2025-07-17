@@ -14,14 +14,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Paging;
 import com.sist.web.model.Review;
+import com.sist.web.model.ReviewComment;
 import com.sist.web.model.ReviewImage;
+import com.sist.web.service.ReservationServiceJY;
+import com.sist.web.service.ReviewCommentService;
 import com.sist.web.service.ReviewService;
+import com.sist.web.service.RoomService;
+import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
 
 @Controller("reviewController")
@@ -31,6 +39,15 @@ public class ReviewController {
 	
 	@Autowired
 	private ReviewService reviewService;
+	
+	@Autowired
+	private ReviewCommentService reviewCommentService;
+	
+	@Autowired
+	private RoomService roomService;
+
+	@Autowired
+	private ReservationServiceJY reservationService;
 	
 	@Value("#{env['auth.session.name']}")
 	private String AUTH_SESSION_NAME;
@@ -285,15 +302,33 @@ public class ReviewController {
      * @return
      */
     @GetMapping("/room/reviews/{roomSeq}")
-    public String roomReviews(@PathVariable("roomSeq") int roomSeq, Model model) {
+    public String roomReviews(@PathVariable("roomSeq") int roomSeq, Model model)
+    {	
+   	
+        logger.debug("===== [Controller] roomReviews 진입 =====");
+        logger.debug(">>> roomSeq : {}", roomSeq);
+        
         String roomTitle = reviewService.getRoomTitle(roomSeq);
         List<Review> reviewList = reviewService.getReviewsByRoom(roomSeq);
+        
+        logger.debug(">>> roomTitle : {}", roomTitle);
+        logger.debug(">>> reviewList.size : {}", reviewList.size());
+
+        for (Review r : reviewList) {
+            logger.debug(">>> review #{} - title: {}, images: {}", 
+                         r.getReviewSeq(), 
+                         r.getReviewTitle(),
+                         (r.getReviewImageList() != null ? r.getReviewImageList().size() : "null"));
+        }
         
         model.addAttribute("roomTitle", roomTitle);
         model.addAttribute("reviewList", reviewList);
         
-        return "/review/roomReviewList"; // 새로운 JSP 파일
+       
+        
+        return "/review/roomReviewList";
     }
+
 
     /**
      * 리뷰 1개 상세 보기 페이지 (댓글 기능 포함)
@@ -301,7 +336,8 @@ public class ReviewController {
     @GetMapping("/review/view/{reviewSeq}")
     public String reviewView(@PathVariable("reviewSeq") int reviewSeq, Model model) {
         Review review = reviewService.getReviewDetail(reviewSeq);
-        
+
+    	
         if (review == null) {
             // 리뷰가 없거나 삭제된 경우 목록으로 리다이렉트
             return "redirect:/"; // 혹은 다른 적절한 페이지
@@ -311,4 +347,142 @@ public class ReviewController {
         
         return "/review/reviewDetail"; // 새로운 JSP 파일
     }
+    
+    
+    /**
+     * [AJAX] 리뷰 목록과 페이징 HTML을 반환하는 메소드
+     * @param model
+     * @param request
+     * @return
+     */
+    /*
+    @GetMapping("/room/reviewListAjax")
+    public String reviewListAjax(Model model, HttpServletRequest request) {
+        int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+        long reviewCurPage = HttpUtil.get(request, "reviewCurPage", (long) 1);
+        
+        // 리뷰 데이터 조회 로직 (기존 roomDetailSh 메소드에 있던 것과 동일)
+        List<Review> reviewList = null;
+        Paging reviewPaging = null;
+        int reviewTotalCount = reviewService.getReviewCountByRoom(roomSeq);
+
+        if (reviewTotalCount > 0) {
+            reviewPaging = new Paging("/room/roomDetail", reviewTotalCount, 3, 3, reviewCurPage, "reviewCurPage");
+            //Paging paging = new Paging("/room/reviewListAjax", totalReviewCount, REVIEW_LIST_COUNT, REVIEW_PAGE_COUNT, reviewCurPage, "reviewCurPage");
+            
+            Review reviewSearch = new Review();
+            reviewSearch.setRoomSeq(roomSeq);
+            reviewSearch.setStartRow((int) reviewPaging.getStartRow());
+            reviewSearch.setEndRow((int) reviewPaging.getEndRow());
+            
+            reviewList = reviewService.getReviewsByRoomWithPaging(reviewSearch);
+
+            if (reviewList != null && !reviewList.isEmpty()) {
+                for (Review review : reviewList) {
+                    review.setReviewImageList(reviewService.selectReviewImages(review.getReviewSeq()));
+                }
+            }
+        }
+        
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("reviewPaging", reviewPaging);
+        model.addAttribute("reviewCurPage", reviewCurPage);
+        
+
+        return "/review/reviewListWithDetail"; 
+    }
+   
+    @RequestMapping(value="/review/listDetail", method=RequestMethod.GET)
+    public String reviewListDetail(Model model, 
+                                   @RequestParam("roomSeq") int roomSeq,
+                                   @RequestParam(value="curPage", defaultValue="1") long curPage) {
+
+        int totalReviewCount = reviewService.getReviewCountByRoom(roomSeq);
+        long REVIEW_LIST_COUNT = 3; // 한 페이지당 리뷰 수
+        long REVIEW_PAGE_COUNT = 3; // 한 번에 보일 페이지 버튼 수
+
+        Paging paging = new Paging(
+            "/review/listDetail", // form action
+            null, // form name (auto 생성)
+            totalReviewCount,
+            REVIEW_LIST_COUNT,
+            REVIEW_PAGE_COUNT,
+            curPage,
+            "curPage"
+        );
+
+        Review review = new Review();
+        review.setRoomSeq(roomSeq);
+        review.setStartRow(paging.getStartRow());
+        review.setEndRow(paging.getEndRow());
+
+        List<Review> reviewList = reviewService.getReviewsByRoomWithPaging(review);
+
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("paging", paging);
+        model.addAttribute("roomSeq", roomSeq);
+
+        return "/review/reviewListWithDetail"; // JSP 파일명
+    }
+    */
+    
+    /**
+     * 
+     * @param request
+     * @param model ("reviewList", reviewList)("reviewPaging", reviewPaging) ("roomSeq", roomSeq)
+     * @return
+     */
+    @RequestMapping(value="/review/list", method=RequestMethod.GET)
+    public String ajaxReviewList(HttpServletRequest request, Model model) {
+
+        int roomSeq = HttpUtil.get(request, "roomSeq", 0);
+        long reviewCurPage = HttpUtil.get(request, "reviewCurPage", 1L);
+        String sessionUserId  = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+        // 리뷰 총 개수
+        int reviewTotalCount = reviewService.getReviewCountByRoom(roomSeq);
+        // 리뷰 페이징 처리
+        Paging reviewPaging = new Paging("/review/list", reviewTotalCount, 3, 3, reviewCurPage, "reviewCurPage");
+
+        Review reviewSearch = new Review();
+        reviewSearch.setRoomSeq(roomSeq);
+        reviewSearch.setStartRow((int) reviewPaging.getStartRow());
+        reviewSearch.setEndRow((int) reviewPaging.getEndRow());
+        
+        // 해당 숙소에 대한 리뷰 목록
+        List<Review> reviewList = reviewService.getReviewsByRoomWithPaging(reviewSearch);
+        
+        logger.debug("[ReviewController] ajaxReviewList() roomSeq" + roomSeq);
+        
+        if (reviewList != null && !reviewList.isEmpty()) {
+            for (Review review : reviewList) {
+                // 이미지
+                review.setReviewImageList(reviewService.selectReviewImages(review.getReviewSeq()));
+                
+                // 댓글 목록
+                List<ReviewComment> commentList = reviewCommentService.getCommentsByReview(review.getReviewSeq());
+                review.setReviewCommentList(commentList); // review에 세터가 있어야 함
+                
+                // 호스트 여부 판단 로직 시작
+                int rsvSeq = review.getRsvSeq(); // 리뷰에 예약 번호 있어야 함
+                int reviewRoomSeq = reservationService.getRoomSeqByRsvSeq(rsvSeq); // 예약번호로 room_seq 찾기
+                String hostId = roomService.getHostIdByRoomSeq(reviewRoomSeq); // ROOM 테이블에서 HOST_ID 찾기
+                
+                logger.debug("ajaxReviewList... rsvSeq" + rsvSeq);
+                logger.debug("ajaxReviewList... hostId" + hostId);
+                
+                boolean isHostAuthor = sessionUserId != null && sessionUserId.equals(hostId);
+                logger.debug("ajaxReviewList... isHostAuthor" + isHostAuthor);
+                review.setHostAuthor(isHostAuthor); // Review 클래스에 boolean 필드 있어야 함
+                
+            }
+        }
+
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("reviewPaging", reviewPaging);
+        model.addAttribute("roomSeq", roomSeq);
+
+        return "/review/reviewList"; 
+    }
+
+
 }

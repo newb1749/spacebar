@@ -18,8 +18,8 @@ public class Review implements Serializable{
 	private String reviewContent;				// 리뷰 내용
 	private double rating;						// 평점(0.5 ~ 5.0)
 	private String reviewStat;					// 리뷰 상태 (Y: 활성, N: 비활성/블라인드)
-	private Date regDt;							// 등록일
-	private Date updateDt;						// 마지막 업데이트 일시
+	private String regDt;							// 등록일
+	private String updateDt;						// 마지막 업데이트 일시
 	
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<ReviewImage> ReviewImageList;  // 리스트로 ReviewImage
@@ -31,9 +31,14 @@ public class Review implements Serializable{
     private String profImgExt;					// 프로필이미지타입
     private String roomAddr;					// 숙소주소
     private String reviewImgName;				// 최초등록리뷰이미지
-    private String roomSeq;
+    private int roomSeq;
     
-    
+	private long startRow;
+	private long endRow;
+	
+	private List<ReviewComment> reviewCommentList;
+	private boolean hostAuthor;
+	
 	public Review()
 	{
 		reviewSeq = 0;
@@ -49,20 +54,88 @@ public class Review implements Serializable{
 		profImgExt = "";
 		roomAddr = "";
 		reviewImgName = "";
-		roomSeq = "";
+		roomSeq = 0;
 	}
 
 	
 	
 	
-	public String getRoomSeq() {
+	
+	
+	public boolean isHostAuthor() {
+	    return hostAuthor;
+	}
+
+	public void setHostAuthor(boolean hostAuthor) {
+	    this.hostAuthor = hostAuthor;
+	}
+
+
+
+
+
+	public List<ReviewComment> getReviewCommentList() {
+		return reviewCommentList;
+	}
+
+
+
+
+
+
+	public void setReviewCommentList(List<ReviewComment> reviewCommentList) {
+		this.reviewCommentList = reviewCommentList;
+	}
+
+
+
+
+
+
+	public long getStartRow() {
+		return startRow;
+	}
+
+
+
+
+
+
+	public void setStartRow(long startRow) {
+		this.startRow = startRow;
+	}
+
+
+
+
+
+
+	public long getEndRow() {
+		return endRow;
+	}
+
+
+
+
+
+
+	public void setEndRow(long endRow) {
+		this.endRow = endRow;
+	}
+
+
+
+
+
+
+	public int getRoomSeq() {
 		return roomSeq;
 	}
 
 
 
 
-	public void setRoomSeq(String roomSeq) {
+	public void setRoomSeq(int roomSeq) {
 		this.roomSeq = roomSeq;
 	}
 
@@ -235,22 +308,22 @@ public class Review implements Serializable{
 	}
 
 
-	public Date getRegDt() {
+	public String getRegDt() {
 		return regDt;
 	}
 
 
-	public void setRegDt(Date regDt) {
+	public void setRegDt(String regDt) {
 		this.regDt = regDt;
 	}
 
 
-	public Date getUpdateDt() {
+	public String getUpdateDt() {
 		return updateDt;
 	}
 
 
-	public void setUpdateDt(Date updateDt) {
+	public void setUpdateDt(String updateDt) {
 		this.updateDt = updateDt;
 	}
 	

@@ -483,6 +483,17 @@
 		 WHERE A.FAC_SEQ = B.FAC_SEQ
 		   AND ROOM_SEQ = 150
 	</select>
+  	<!-- 성혁 끝 -->
+  	
+  <insert id="insertRoomFacility">
+    INSERT INTO ROOM_FACILITY (
+        ROOM_SEQ, 
+        FAC_SEQ
+    ) VALUES (
+        #{roomSeq}, 
+        #{facSeq}
+    )
+  </insert>
   	<!-- 성혁 끝 -->	
   	
 	<!-- 민정 시작 -->
