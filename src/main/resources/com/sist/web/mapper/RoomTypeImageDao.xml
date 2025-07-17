@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.RoomTypeImageDao">
-
+	<resultMap id="roomTypeImageResultMap" type="com.sist.web.model.RoomTypeImage">
+	    <result property="roomTypeSeq" column="ROOM_TYPE_SEQ"/>
+	    <result property="roomTypeImgSeq" column="ROOM_TYPE_IMG_SEQ"/>
+	    <result property="roomTypeImgOrigName" column="ROOM_TYPE_IMG_ORIG_NAME"/>
+	    <result property="roomTypeImgName" column="ROOM_TYPE_IMG_NAME"/>
+	    <result property="imgType" column="IMG_TYPE"/>
+	    <result property="roomTypeImgExt" column="ROOM_TYPE_IMG_EXT"/>
+	    <result property="imgSize" column="IMG_SIZE"/>
+	    <result property="sortOrder" column="SORT_ORDER"/>
+	    <result property="regDt" column="REG_DT"/>
+	</resultMap>
+	
+	
     <select id="getRoomTypeImageSeq" resultType="short">
         SELECT SEQ_ROOM_TYPE_IMAGE_SEQ.NEXTVAL FROM DUAL
     </select>
@@ -28,5 +40,27 @@
             SYSDATE
         )
     </insert>
+    
+	<select id="selectRoomTypeImagesByRoomTypeSeq" resultMap="roomTypeImageResultMap" parameterType="int">
+	    SELECT 
+	        ROOM_TYPE_SEQ,
+	        ROOM_TYPE_IMG_SEQ,
+	        ROOM_TYPE_IMG_ORIG_NAME,
+	        ROOM_TYPE_IMG_NAME,
+	        IMG_TYPE,
+	        ROOM_TYPE_IMG_EXT,
+	        IMG_SIZE,
+	        SORT_ORDER,
+	        TO_CHAR(REG_DT, 'YYYY-MM-DD') AS REG_DT
+	    FROM ROOM_TYPE_IMAGE
+	    WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	    ORDER BY SORT_ORDER ASC
+	</select>
+
+	<delete id="deleteImagesByRoomTypeSeq" parameterType="int">
+	    DELETE FROM ROOM_TYPE_IMAGE
+	    WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	</delete>
+
 
 </mapper>
