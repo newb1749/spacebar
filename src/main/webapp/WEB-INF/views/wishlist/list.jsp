@@ -165,34 +165,6 @@
 </style>
 
 <script>
-  // 찜 취소 예시 (AJAX)
-function removeWish(roomSeq, element) {
-  Swal.fire({
-    title: "찜 해제하시겠습니까?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#e74c3c",
-    cancelButtonColor: "#aaa",
-    confirmButtonText: "네, 삭제할게요",
-    cancelButtonText: "아니요"
-  }).then((result) => {
-    if (result.isConfirmed) {
-      $.ajax({
-        type: "POST",
-        url: "/wishlist/remove",
-        data: { roomSeq: roomSeq },
-        success: function(response) {
-          if(response.code === 0) {
-            Swal.fire("삭제 완료", "찜에서 제거됐습니다.", "success");
-            $(element).closest(".wishlist-item").fadeOut(300, function() {
-              $(this).remove();
-            });
-          }
-        }
-      });
-    }
-  });
-}
   
 function toggleWish(roomSeq, btn) {
 	  const $btn    = $(btn);
@@ -230,7 +202,13 @@ function toggleWish(roomSeq, btn) {
 	            showConfirmButton: false
 	          });
 	        }
-	      } else {
+	      } 
+	      
+	      else if (res.code === 500) {
+		        Swal.fire("로그인 후 이용하세요", res.message, "error");
+		      }
+	      
+	      else {
 	        Swal.fire("오류", res.message, "error");
 	      }
 	    })
