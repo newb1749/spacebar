@@ -75,7 +75,6 @@
   background: none !important;
   border: none !important;
   padding: 0 !important;
-  transform: translateY(-50px) !important;
 }
 
 /* 4) 이미지 크기 */
@@ -135,6 +134,105 @@
   padding-top: calc(0px + 48px);
 }
 
+/* 1) 이미지·텍스트 칸의 h-100 해제 대상에 col‑md‑6 추가 */
+.col-md-5.h-100,
+.col-md-6.h-100,
+.col-md-7.h-100,
+.property-slider-wrap.h-100,
+.my-roomtype-slider.h-100,
+.slide-item.h-100 {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* 2) inner row.align-items-stretch 강제 해제 (g-0 행) */
+.room-types .row.g-0.align-items-stretch {
+  align-items: flex-start !important;
+}
+
+/* 3) card-body padding 좀 더 줄이기 */
+.room-types .card-body {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+
+.room-types .my-roomtype-slider img.h-100 {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.room-types .slide-item img {
+  height: auto !important;      /* 인라인 height:100% 무시 */
+  max-height: 200px;            /* 필요하면 원하는 높이(px)로 제한 */
+  object-fit: cover !important; /* 기존 object-fit 유지 */
+}
+
+/* 슬라이더 컨테이너 및 slide-item 높이 조정 */
+.my-roomtype-slider,
+.my-roomtype-slider .slide-item {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* 이미지는 가로폭에 맞추고, 세로는 자동 */
+.my-roomtype-slider .slide-item img {
+  width: 100%;
+  height: auto !important;     /* 이거 꼭 auto! */
+  max-height: 260px;           /* 세로 최대치(필요 없으면 삭제) */
+  object-fit: cover !important;
+  display: block;
+}
+
+.extra-small {
+  font-size: 0.75em; /* 기본 small(0.875em)보다 더 작음 */
+  letter-spacing: -0.01em;
+}
+
+.room-types .card {
+  border: none;
+  border-bottom: 1.5px solid #e2e6ea;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+.room-types .card:last-child {
+  border-bottom: none; /* 마지막 카드는 선X */
+  margin-bottom: 0;
+}
+/* 카드 내부 여백 */
+.room-types .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: 1.2rem !important;
+}
+/* 버튼 하단 고정 + 간격 */
+.room-types .roomtype-btns {
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+/* 버튼 스타일(작게+둥글+그림자) */
+.room-types .roomtype-btns .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 18px;
+  font-size: 1rem;
+  padding: 0.45em 0.7em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  white-space: nowrap;
+}
+/* 만실(비활성) 버튼 더 연하게 */
+.room-types .btn-secondary:disabled {
+  background: #e9ecef;
+  color: #b0b4b9;
+  border: none;
+}
+/* 이미지와 텍스트 영역 분리 */
+.room-types .row.g-0.align-items-stretch {
+  align-items: stretch !important;
+}
   </style>
 <script>
 // 리뷰 비동기로
@@ -295,10 +393,10 @@ function fn_review_list(page) {
 <!-- fixed 탭바 -->
 <div class="sticky-tabs" id="tabBar">
   <ul class="tabs-list">
-    <li><a href="#typeSection">정보</a></li>
-    <li><a href="#reviewSection">후기</a></li>
-    <li><a href="#qnaSection">문의</a></li>
-    <li><a href="#shippingInfo">배송/교환/반품 안내</a></li>
+    <li><a href="#mainContent">날짜 선택</a></li>
+    <li><a href="#roomTypesSection">예약</a></li>
+    <li><a href="#reviewSection">리뷰</a></li>
+    <li><a href="#qnaSection">QnA</a></li>
   </ul>
 </div>
 
@@ -306,7 +404,7 @@ function fn_review_list(page) {
   <div class="container">
     <div class="row justify-content-between align-items-start">
     <!-- 왼쪽 정렬 -->
-      <div class="col-lg-7">
+      <div class="col-lg-9">
         <div class="property-slider-wrap">
 		  <!-- Tiny Slider 구조 -->
 		  <div class="my-slider">
@@ -339,57 +437,70 @@ function fn_review_list(page) {
     <h2 class="section-heading" id="roomTypesSection">룸타입</h2>
     
     <!-- 카드 리스트 -->
-    <div class="row g-4 mt-4">
-      <c:forEach var="rt" items="${roomTypes}">
-        <div class="col-12">
-          <div class="card h-100 border rounded" style="min-height: 220px;">
-            <div class="row g-0">
-              <!-- 이미지 영역 -->
-              <div class="col-md-4">
-                <img
-                  src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${rt.roomTypeSeq}.jpg"
-                  class="img-fluid h-100 w-100 rounded-start"
-                  style="object-fit: cover;"
-                  alt="${rt.roomTypeTitle}" />
-              </div>
-              <!-- 텍스트 영역 -->
-              <div class="col-md-8">
-                <div class="card-body p-3">
-                  <h5 class="card-title fs-4 mb-2">${rt.roomTypeTitle}</h5>
-                  <c:if test="${not empty rt.roomTypeDesc}">
-                    <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
-                  </c:if>
-                  <p class="mb-1"><strong>정원:</strong> ${rt.maxGuests}명</p>
-                  <p class="mb-2"><strong>주중가격:</strong> ${rt.weekdayAmt}원</p>
-                  <p class="mb-3"><strong>주말 가격:</strong> ${rt.weekendAmt}원</p>
-
-                  <c:choose>
-                    <c:when test="${rt.reservationCheck > 0}">
-                      <button type="button" class="btn btn-secondary mt-3" disabled>만실</button>
-                    </c:when>
-                    <c:otherwise>
-                      <div class="d-flex gap-2 mt-3">
-                        <button type="button"
-                                class="btn btn-primary"
-                                onclick="fn_reservation(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
-                          예약하기
-                        </button>
-                        <button type="button"
-                                class="btn btn-secondary"
-                                onclick="fn_addCart(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
-                          장바구니
-                        </button>
-                      </div>
-                    </c:otherwise>
-                  </c:choose>
-
-                </div>
+<div class="row g-4 mt-4">
+  <c:forEach var="rt" items="${roomTypes}">
+    <div class="col-12">
+      <div class="card">
+        <div class="row g-0 align-items-stretch">
+          <!-- 이미지 영역 -->
+          <div class="col-md-6 h-100">
+            <div class="property-slider-wrap h-100">
+              <div class="my-roomtype-slider h-100">
+                <c:forEach var="img" items="${rt.roomTypeImageList}">
+                  <div class="slide-item">
+                    <img src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
+                      class="img-fluid w-100"
+                      style="object-fit: cover; min-height: 0;"
+                      alt="${img.imgType}" />
+                  </div>
+                </c:forEach>
               </div>
             </div>
           </div>
+          <!-- 텍스트 영역 -->
+          <div class="col-md-6 d-flex align-items-stretch h-100">
+            <div class="card-body">
+              <h5 class="card-title fs-4 mb-2">
+                ${rt.roomTypeTitle}
+              </h5>
+              <c:if test="${not empty rt.roomTypeDesc}">
+                <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+              </c:if>
+              <p class="mb-3 price-line">
+                <strong>가격:</strong>
+                <fmt:formatNumber value="${rt.weekdayAmt}" pattern="#,###"/>원
+                &nbsp;/&nbsp;
+                <fmt:formatNumber value="${rt.weekendAmt}" pattern="#,###"/>원
+                <br><strong>정원:</strong> ${rt.maxGuests}명
+              </p>
+              <!-- ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ -->
+              <div class="roomtype-btns">
+                <c:choose>
+                  <c:when test="${rt.reservationCheck > 0}">
+                    <button type="button" class="btn btn-secondary btn-sm" disabled>만실</button>
+                  </c:when>
+                  <c:otherwise>
+                    <button type="button"
+                      class="btn btn-outline-secondary btn-sm"
+                      onclick="fn_reservation(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
+                      예약하기
+                    </button>
+                    <button type="button"
+                      class="btn btn-outline-secondary btn-sm"
+                      onclick="fn_addCart(${rt.roomTypeSeq}, ${rt.maxGuests}, ${rt.roomCheckInTime}, ${rt.roomCheckOutTime});">
+                      장바구니
+                    </button>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+              <!-- ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ -->
+            </div>
+          </div>
         </div>
-      </c:forEach>
+      </div>
     </div>
+  </c:forEach>
+</div>
   </div>
 </section>
 <!-- 룸타입 섹션 끝 -->
@@ -468,7 +579,7 @@ function fn_review_list(page) {
       </div>
 
 		<!-- 오른쪽 정렬 -->
-      <div class="col-lg-4">
+      <div class="col-lg-3">
         <div class="property-info">
           
 
@@ -584,6 +695,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	    nav: false,
 	    controls: true,
 	    gutter: 10,
+	    autoHeight: true,
 	    controlsText: [
 	      // 왼쪽 버튼: <img> 태그로 교체
 	      '<img src="${pageContext.request.contextPath}/resources/images/prev.png" alt="이전">',
@@ -762,7 +874,25 @@ function fn_list(curPage)
 
 }
 
-
+document.addEventListener('DOMContentLoaded', function(){
+	  // room‑type 슬라이더 전부 초기화
+	  document.querySelectorAll('.my-roomtype-slider').forEach(function(container){
+	    tns({
+	      container: container,
+	      items: 1,               // 한 슬라이드에 보여줄 개수
+	      slideBy: 'page',
+	      gutter: 10,
+	      autoplay: false,
+	      nav: false,
+	      controls: true,
+	      autoHeight: true,
+	      controlsText: [
+	        '<img src="${pageContext.request.contextPath}/resources/images/prev.png" alt="이전">',
+	        '<img src="${pageContext.request.contextPath}/resources/images/next.png" alt="다음">'
+	      ]
+	    });
+	  });
+	});
 	
 </script>
 
@@ -786,6 +916,7 @@ function fn_list(curPage)
   <input type="hidden" name="numGuests" id="numGuests" value="" />
   <input type="hidden" name="checkInTime" id="checkInTime" value="" />
   <input type="hidden" name="checkOutTime" id="checkOutTime" value="" />
+  <input type="hidden" name="roomCatSeq" id="roomCatSeq" value="${roomCatSeq}" />
 </form>
 
 <form name="roomQnaForm" id="roomQnaForm">

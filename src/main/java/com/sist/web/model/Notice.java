@@ -38,6 +38,7 @@ public class Notice {
 	public void setAdminId(String adminId) {
 		this.adminId = adminId;
 	}
+    // 새로 추가된 adminName getter/setter
     public String getAdminName() {
         return adminName;
     }
@@ -68,5 +69,7 @@ public class Notice {
 	public void setReplies(List<NoticeReply> replies) {
 		this.replies = replies;
 	}
+    
+    // Getters and Setters
     
 }

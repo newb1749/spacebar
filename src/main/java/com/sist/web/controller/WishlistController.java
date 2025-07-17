@@ -96,6 +96,9 @@ public class WishlistController {
 			ajaxResponse.setResponse(500, "로그인 후 이용하세요.");
 		}
 		
+		logger.debug("sesstionUserId : " + sessionUserId);
+		logger.debug("ajaxResponse : " + ajaxResponse);
+		
 		return ajaxResponse;
 	}
 	
@@ -186,6 +189,9 @@ public class WishlistController {
 		{
 			ajaxResponse.setResponse(500, "로그인 후 이용하세요.");
 		}
+		
+		logger.debug("sesstionUserId : " + sessionUserId);
+		logger.debug("ajaxResponse : " + ajaxResponse);
 
 		return ajaxResponse;
 	}

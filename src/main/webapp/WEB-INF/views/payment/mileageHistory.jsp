@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -61,8 +62,7 @@
       margin-left: 10px;
     }
   </style>
-
-  <script>
+    <script>
     // 로그인 여부 체크
     $(document).ready(function() {
       var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
@@ -84,7 +84,7 @@
     <div class="alert alert-success">
       <p>
         <strong>
-          보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" />원
+          보유 마일리지: <fmt:formatNumber value="${remainingMileage}" groupingUsed="true" /> 원
         </strong>
       </p>
     </div>
@@ -143,4 +143,3 @@
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
