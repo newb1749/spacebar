@@ -29,10 +29,26 @@ public interface RoomTypeDao {
     /**
      * roomTypeSeq로 객실 타입 정보 조회
      */
-    RoomType selectRoomTypeBySeq(int roomTypeSeq);
-
-    List<RoomType> selectRoomTypesByRoomSeq(Room room);
+    public RoomType selectRoomTypeBySeq(int roomTypeSeq);
     
-
+    /**
+     * ROOM에 속한 ROOM_TYPE 조회
+     * @param room 객체
+     * @return ROOM에 속한 ROOM_TYPE 리스트
+     */
+    public List<RoomType> selectRoomTypesByRoomSeq(Room room);
     
+    /**
+     * RoomType 업데이트
+     * @param roomType
+     * @return
+     */
+    public int updateRoomType(RoomType roomType);
+    
+    /**
+     * roomType 삭제
+     * @param roomSeq
+     * @return
+     */
+    public int deleteRoomTypeByRoomSeq(int roomSeq);
 }

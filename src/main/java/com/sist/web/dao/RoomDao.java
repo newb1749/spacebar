@@ -55,6 +55,14 @@ public interface RoomDao {
   	
   	//마이페이지용 호스트의 숙소 리스트 조회
   	public List<Room> selectHostRoomList(String hostId);
+  	
+  	
+
+    /**
+     * 숙소 정보 수정
+     */
+    public int updateRoom(Room room);
+
 
 }
 

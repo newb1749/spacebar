@@ -2,6 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.RoomImageDao">
 	
+	 <resultMap id="roomImageResultMap" type="com.sist.web.model.RoomImage">
+        <id property="roomImgSeq" column="ROOM_IMG_SEQ"/>
+        <result property="roomSeq" column="ROOM_SEQ"/>
+        <result property="roomImgOrigName" column="ROOM_IMG_ORIG_NAME"/>
+        <result property="roomImgName" column="ROOM_IMG_NAME"/>
+        <result property="imgType" column="IMG_TYPE"/>
+        <result property="roomImgExt" column="ROOM_IMG_EXT"/>
+        <result property="imgSize" column="IMG_SIZE"/>
+        <result property="sortOrder" column="SORT_ORDER"/>
+        <result property="regDt" column="REG_DT"/>
+    </resultMap>
+    
 	
 	<select id="getRoomImageSeq" resultType="short">
         SELECT SEQ_ROOM_IMAGE_SEQ.NEXTVAL FROM DUAL
@@ -36,5 +48,20 @@
 	    WHERE ROOM_SEQ = #{roomSeq}
 	</delete>
 	
+	<select id="getRoomImagesByRoomSeq" parameterType="int" resultMap="roomImageResultMap">
+        SELECT 
+            ROOM_IMG_SEQ, 
+            ROOM_SEQ, 
+            ROOM_IMG_ORIG_NAME, 
+            ROOM_IMG_NAME, 
+            IMG_TYPE, 
+            ROOM_IMG_EXT, 
+            IMG_SIZE, 
+            SORT_ORDER, 
+            TO_CHAR(REG_DT, 'YYYY-MM-DD') AS REG_DT
+        FROM ROOM_IMAGE
+        WHERE ROOM_SEQ = #{roomSeq}
+        ORDER BY SORT_ORDER ASC
+    </select>
 
 </mapper>

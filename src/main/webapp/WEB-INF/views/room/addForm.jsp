@@ -353,8 +353,32 @@
             <div class="col-12 mb-3"><label class="form-label">객실 이름</label><input type="text" class="form-control" name="roomTypeTitle" required></div>
             <div class="col-md-6 mb-3"><label class="form-label">평일 가격</label><input type="number" class="form-control" name="weekdayAmt" required></div>
             <div class="col-md-6 mb-3"><label class="form-label">주말 가격</label><input type="number" class="form-control" name="weekendAmt" required></div>
-            <div class="col-md-6 mb-3"><label class="form-label">체크인 날짜</label><input type="text" class="form-control" name="roomCheckInDt" value="20250701"></div>
-            <div class="col-md-6 mb-3"><label class="form-label">체크아웃 날짜</label><input type="text" class="form-control" name="roomCheckOutDt" value="20251231"></div>
+	    
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크인 날짜</label>
+			    <input type="text" class="form-control"
+			           name="roomCheckInDt"
+			           value="20250701"
+			           pattern="\d{8}"
+			           maxlength="8"
+			           inputmode="numeric"
+			           placeholder="예: 20250701"
+			           required>
+			</div>
+			
+			<div class="col-md-6 mb-3">
+			    <label class="form-label">체크아웃 날짜</label>
+			    <input type="text" class="form-control"
+			           name="roomCheckOutDt"
+			           value="20251231"
+			           pattern="\d{8}"
+			           maxlength="8"
+			           inputmode="numeric"
+			           placeholder="예: 20251231"
+			           required>
+			</div>
+
+
             <div class="col-md-6 mb-3">
 			    <label class="form-label">체크인 시간</label>
 			    <select class="form-select" name="roomCheckInTime">
@@ -416,8 +440,8 @@
             <div class="col-md-6 mb-3"><label class="form-label">최대 인원</label><input type="number" class="form-control" name="maxGuests" required></div>
             <div class="col-12 mb-3"><label class="form-label">객실 설명</label><textarea class="form-control" name="roomTypeDesc" rows="3"></textarea></div>
             <hr class="my-3"/>
-            <div class="col-12 mb-3"><label class="form-label">객실 대표 이미지</label><input class="form-control" type="file" name="roomTypeMainImage_INDEX" accept="image/*"></div>
-            <div class="col-12 mb-3"><label class="form-label">객실 상세 이미지</label><input class="form-control" type="file" name="roomTypeDetailImages_INDEX" multiple accept="image/*"></div>
+            <!--  <div class="col-12 mb-3"><label class="form-label">객실 대표 이미지</label><input class="form-control" type="file" name="roomTypeMainImage_INDEX" accept="image/*"></div> -->
+            <div class="col-12 mb-3"><label class="form-label">객실 이미지</label><input class="form-control" type="file" name="roomTypeDetailImages_INDEX" multiple accept="image/*"></div>
         </div>
     </div>
 </div>

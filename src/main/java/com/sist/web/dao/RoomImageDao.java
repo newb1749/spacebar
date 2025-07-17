@@ -1,7 +1,12 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.sist.web.model.RoomImage;
 
+@Repository
 public interface RoomImageDao {
 	
 	
@@ -9,7 +14,7 @@ public interface RoomImageDao {
      * ROOM_IMAGE 테이블에서 사용할 새로운 시퀀스 값을 조회
      * @return short 새로 발행된 시퀀스 번호
      */
-    //public short getRoomImageSeq();
+    public short getRoomImageSeq();
 
     
     /**
@@ -32,4 +37,10 @@ public interface RoomImageDao {
      * @return
      */
     public int deleteImagesByRoomSeq(int roomSeq);
+    
+    
+    /**
+     * 특정 숙소(Room)에 연결된 이미지 전체 조회
+     */
+    public List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);
 }

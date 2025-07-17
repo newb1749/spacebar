@@ -522,5 +522,26 @@
 	   AND A.ROOM_SEQ = B.ROOM_SEQ
 	   AND B.IMG_TYPE = 'main'
 	</select>
-  
+
+    <update id="updateRoom" parameterType="com.sist.web.model.Room">
+        UPDATE ROOM
+        SET 
+            ROOM_CAT_SEQ = #{roomCatSeq},
+            ROOM_ADDR = #{roomAddr},
+            LATITUDE = #{latitude},
+            LONGITUDE = #{longitude},
+            REGION = #{region},
+            AUTO_CONFIRM_YN = #{autoConfirmYn},
+            ROOM_TITLE = #{roomTitle},
+            ROOM_DESC = #{roomDesc},
+            CANCEL_POLICY = #{cancelPolicy},
+            MIN_TIMES = #{minTimes},
+            MAX_TIMES = #{maxTimes},
+            AVERAGE_RATING = #{averageRating},
+            REVIEW_COUNT = #{reviewCount}
+        WHERE ROOM_SEQ = #{roomSeq}
+    </update>
+
+    
+    
 </mapper>
