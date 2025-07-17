@@ -129,6 +129,8 @@ $(function(){
     updateSummary();
   });
   updateSummary();
+  
+  
 });
 //==========================장바구니 끝==========================//
 </script>
@@ -320,12 +322,12 @@ $(function(){
 			                </div>               
 			            </div>
 			            
-			            <div class="mb-3 row info-item">
-			                <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
-			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="userAddr" value="${user.userAddr}">
-			                </div> 
-			            </div>
+						<div class="mb-3 row info-item">
+						    <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
+						    <div class="col-sm-9">
+						        <input type="text" readonly class="form-control-plaintext info-value" id="userAddr" value="${user.userAddr}" style="width: 500px;">
+						        </div>
+						</div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="email" class="col-sm-3 col-form-label info-label">이메일 :</label>
@@ -348,8 +350,9 @@ $(function(){
 			                </div>
 			            </div>
 			            
-			            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4"> <button type="submit" id="btnUpdate" class="btn btn-primary btn-lg">수정하기</button>
-			            </div>
+			            
+			            	<button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
+			            
 			        </form>
 			    </div>
 			</div>
@@ -521,6 +524,9 @@ $(function(){
                         </tbody>
                     </table>
                 </div>
+                <div class="mt-3 text-end">
+			      <a href="/payment/chargeMileage" class="btn btn-outline-primary">마일리지 충전하기</a>
+			    </div>
             </div>
 
 			<%-- 내가 쓴 게시글 --%>
@@ -683,9 +689,9 @@ $(function(){
 			      <span>결제 예상 금액
 			        <strong class="total-amt" id="summaryAmt">0</strong>원
 			      </span>
-			      <button type="submit" id="btnCheckout" class="btn-buy" disabled>
-			        구매하기
-			      </button>
+			        <button type="submit" id="btnCheckout" class="btn-buy" disabled>
+			          구매하기
+			        </button>
 			    </div>
 			  </form>
 			  </div>
@@ -737,15 +743,17 @@ $(function(){
     
     $(document).ready(function(){
         $("#btnUpdate").on("click",function(){
-        	location.href = "/user/updateForm_mj";	
+        	location.href = "/user/updateForm";	
         });
         
         $("#btnDelete").on("click",function(){
-        	location.href = "/user/deleteForm_mj";	
+        	location.href = "/user/deleteForm";	
         });
+        
     });
 
     
 </script>
+
 </body>
 </html>       

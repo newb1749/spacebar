@@ -53,7 +53,7 @@ public class RoomQnaController
     private String AUTH_SESSION_NAME;
 
     //Q&A 등록 화면
-    @RequestMapping(value="/room/qnaForm_mj", method=RequestMethod.GET)
+    @RequestMapping(value="/room/qnaForm", method=RequestMethod.GET)
     public String qnaForm(Model model, HttpServletRequest request, HttpServletResponse response)
     {
     	int roomSeq = HttpUtil.get(request, "roomSeq", 0);

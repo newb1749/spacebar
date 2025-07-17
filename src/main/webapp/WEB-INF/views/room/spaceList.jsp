@@ -503,7 +503,11 @@ function toggleWish(roomSeq, btn) {
 	            showConfirmButton: false
 	          });
 	        }
-	      } else {
+	      }
+	      else if(res.code === 500) {
+	  	        Swal.fire("로그인 후 이용하세요", res.message, "warning");
+	  	      }
+	      else {
 	        Swal.fire("오류", res.message, "error");
 	      }
 	    })
