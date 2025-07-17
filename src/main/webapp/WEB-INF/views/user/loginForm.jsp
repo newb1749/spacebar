@@ -83,7 +83,7 @@ $(document).ready(function(){
 	});
 	
 	$("#btnReg").on("click",function(){
-		location.href = "/user/loginForm";
+		location.href = "/user/regForm";
 	});
 });
 
@@ -177,32 +177,9 @@ function fn_loginCheck()
 		<button type="button" id="btnLogin" class="btn btn-lg btn-primary btn-block">로그인</button>
     	<button type="button" id="btnReg" class="btn btn-lg btn-primary btn-block">회원가입</button>
 		<div class="links mt-3">
-            <a href="/user/findIdForm_mj">아이디 찾기</a>
-            <a href="/user/findPwdForm_mj">비밀번호 찾기</a>
-        </div>
-        
-        <!-- SNS 간편 로그인 영역 -->
-		<div style="text-align:center; ">
-		    <hr style="margin: 20px 0;"/>
-		    <p style="margin-bottom: 20px;">SNS 계정으로 로그인하기</p>
-		    <div style="display: flex; justify-content: center; gap: 20px;">
-		    
-		        <!-- Google 로그인 -->
-		        <a href="/oauth2/authorization/google">
-		            <img src="/resources/images/google_logo.png" alt="Google 로그인" width="40" height="40">
-		        </a>
-		        
-		        <!-- Kakao 로그인 -->
-				<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e7923eecf39c8793da02cf9d82120ae7&redirect_uri=http%3A%2F%2Fspacebar.sist.co.kr%3A8088%2Fuser%2FloginForm%2Fkakao">
-				    <img src="/resources/upload/userprofile/kakao.png" alt="Kakao 로그인" width="40" height="40">
-				</a>
-		        
-		        <!-- Naver 로그인 -->
-		        <a href="/oauth2/authorization/naver">
-		            <img src="/resources/upload/userprofile/naver.png" alt="Naver 로그인" width="40" height="40">
-		        </a>
-		    </div>
-		</div>
+            <a href="/user/findIdForm">아이디 찾기</a>
+            <a href="/user/findPwdForm">비밀번호 찾기</a>
+        </div>      
 	</form>
 </div>
 <%@ include file="/WEB-INF/views/include/footer.jsp"%>

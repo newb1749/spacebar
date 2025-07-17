@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Response;
@@ -22,11 +27,14 @@ import com.sist.web.util.SessionUtil;
 @RestController
 public class ReviewCommentController {
 	
+	private static Logger logger = LoggerFactory.getLogger(RoomController.class);
+	
 	@Autowired
 	private ReviewCommentService reviewCommentService;
 	
     @Value("#{env['auth.session.name']}")	
     private String AUTH_SESSION_NAME;
+
     
     
     /**
@@ -36,10 +44,21 @@ public class ReviewCommentController {
      */
     @GetMapping("/review/comment/list")
     public ResponseEntity<Response<List<ReviewComment>>> list(@RequestParam("reviewSeq") int reviewSeq)
-    {
+    {	
+    	logger.debug("리뷰 댓글 컨트롤러 진입 - reviewSeq: {}", reviewSeq);
+    	
     	List<ReviewComment> list = reviewCommentService.list(reviewSeq);
+    	logger.debug("조회된 댓글 수: {}", list.size());
+        try {
+            String json = new ObjectMapper().writeValueAsString(list);
+            logger.debug("댓글 JSON 응답: {}", json);
+        } catch (Exception e) {
+            logger.error("JSON 변환 실패", e);
+        }
+    	
     	return ResponseEntity.ok(new Response<>(0, "success", list));
     }
+
     
     
     /**

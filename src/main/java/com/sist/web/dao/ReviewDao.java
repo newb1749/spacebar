@@ -3,11 +3,13 @@ package com.sist.web.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Review;
 import com.sist.web.model.ReviewImage;
 
+@Repository("reviewDao")
 public interface ReviewDao {
 	
 	
@@ -89,4 +91,10 @@ public interface ReviewDao {
     
     //메인페이지 모든 리뷰 조회용
     public List<Review> allReviewList();
+    
+    // 특정 숙소의 리뷰 총 개수 조회 (페이징용)
+    public int getReviewCountByRoom(int roomSeq);
+    
+    //  특정 숙소의 리뷰 목록 조회 (페이징 적용)
+    public List<Review> getReviewsByRoomWithPaging(Review review);
 }

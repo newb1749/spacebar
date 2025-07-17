@@ -9,7 +9,6 @@ public class NoticeReply {
     private String replyContent;
     private Date regDt;
     
-    // Getters and Setters
 	public int getReplySeq() {
 		return replySeq;
 	}

@@ -27,4 +27,8 @@ public interface ReservationDao
     Reservation selectReservationById(int rsvSeq);
 
     String selectHostIdByRoomSeq(int roomSeq);
+    
+    // 예약 번호로 roomSeq 값 구하기(리뷰에 쓰임)	
+    int selectRoomSeqByRsvSeq(@Param("rsvSeq") int rsvSeq);
+    
 }
