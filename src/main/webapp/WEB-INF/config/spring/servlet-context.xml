@@ -96,7 +96,8 @@
             			<value>/board/list</value>
             			<value>/room/roomDetail</value>
             			<value>/room/qnaList</value>
-            			
+            			<value>/wishlist/add</value>
+            			<value>/wishlist/remove</value>
             			
             		</list>
             	</constructor-arg>
