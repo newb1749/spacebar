@@ -325,7 +325,7 @@ body {
 
 /* 컨테이너 flex 정렬 유지 */
 .property-slider-wrap .controls {
-  display: flex;
+  display: flex;    
   justify-content: space-between;
   margin-top: -8px;
   padding: 0 10px;
@@ -392,10 +392,10 @@ body {
 
 /* 슬라이드 이미지는 배경처럼 꽉 채우기 */
 .hero-overlay .hero-slider .slide img {
-  width: 100%;
+ width: 100%;
   height: 100%;
-  object-fit: cover;             /* 꽉 채우되 잘린 부분은 잘림 */
-  object-position: 50% 50%;      /* 수평 50%, 수직 50% = 정확히 중앙 크롭 */
+  object-fit: contain; /* 변경: 이미지 전체가 보이도록 비율 유지 */
+  object-position: center; /* 변경: 이미지를 가운데로 정렬 */
   filter: blur(3px) brightness(70%);
   
 }
@@ -463,11 +463,12 @@ body {
     
     <div class="hero-overlay">
   <div class="hero-slider">
-    <c:forEach var="space" items="${roomList}">
+    <c:forEach var="idx" begin="1" end="5">
       <div class="slide">
-        <img src="${pageContext.request.contextPath}/resources/upload/index/${space.roomImgName}"
-        	 onerror="this.src='${pageContext.request.contextPath}/resources/upload/index/default-room.png'"
-             alt="${space.roomTitle}"/>
+        <img 
+          src="${pageContext.request.contextPath}/resources/upload/index/${idx}.jpg"
+          alt="Placeholder ${idx}"
+          onerror="this.src='${pageContext.request.contextPath}/resources/upload/index/default-room.jpg'" />
       </div>
     </c:forEach>
   </div>

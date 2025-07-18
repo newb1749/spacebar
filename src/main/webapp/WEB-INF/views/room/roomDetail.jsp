@@ -444,19 +444,33 @@ function fn_review_list(page) {
         <div class="row g-0 align-items-stretch">
           <!-- 이미지 영역 -->
           <div class="col-md-6 h-100">
-            <div class="property-slider-wrap h-100">
-              <div class="my-roomtype-slider h-100">
-                <c:forEach var="img" items="${rt.roomTypeImageList}">
-                  <div class="slide-item">
-                    <img src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
-                      class="img-fluid w-100"
-                      style="object-fit: cover; min-height: 0;"
-                      alt="${img.imgType}" />
-                  </div>
-                </c:forEach>
-              </div>
-            </div>
-          </div>
+			  <div class="property-slider-wrap h-100">
+			    <div class="my-roomtype-slider h-100">
+			      <c:forEach var="img" items="${rt.roomTypeImageList}" varStatus="st">
+			        <div class="slide-item">
+			          <c:choose>
+			           
+			            <c:when test="${st.first}">
+			              <img
+			                src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${img.roomTypeImgName}"
+			                class="img-fluid w-100"
+			                style="object-fit: cover;"
+			                alt="첫번째 커스텀 이미지" />
+			            </c:when>
+			          
+			            <c:otherwise>
+			              <img
+			                src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
+			                class="img-fluid w-100"
+			                style="object-fit: cover;"
+			                alt="${img.imgType}" />
+			            </c:otherwise>
+			          </c:choose>
+			        </div>
+			      </c:forEach>
+			    </div>
+			  </div>
+			</div>
           <!-- 텍스트 영역 -->
           <div class="col-md-6 d-flex align-items-stretch h-100">
             <div class="card-body">
