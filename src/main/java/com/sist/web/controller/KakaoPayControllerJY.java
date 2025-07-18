@@ -12,8 +12,9 @@ import com.sist.web.service.KakaoPayServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.util.SessionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,6 +24,7 @@ import javax.servlet.http.*;
 import java.beans.PropertyEditorSupport;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,8 @@ import java.util.UUID;
 @RequestMapping("/payment")
 public class KakaoPayControllerJY 
 {
+    private static final Logger logger = LoggerFactory.getLogger(KakaoPayControllerJY.class);
+
     @Autowired
     private KakaoPayServiceJY kakaoService;
 
@@ -44,11 +48,9 @@ public class KakaoPayControllerJY
     @Autowired
     private MileageHistoryDao mileageHistoryDao;
 
-    @Value("${kakaopay.tid.session.name}")
-    private String TID_SESSION;
-
-    @Value("${kakaopay.orderid.session.name}")
-    private String ORDER_SESSION;
+    // 프로퍼티 대신 직접 상수 선언
+    private static final String TID_SESSION = "KAKAO_PAY_TID";
+    private static final String ORDER_SESSION = "KAKAO_PAY_ORDER_ID";
 
     @InitBinder
     public void initBinder(WebDataBinder binder) 
@@ -121,8 +123,17 @@ public class KakaoPayControllerJY
             String userId = (String) req.getSession().getAttribute("SESSION_USER_ID");
             int amount = (int) req.getSession().getAttribute("chargeAmount");
 
+            logger.debug("=== 결제 승인 성공 여부 체크 ===");
+            logger.debug("tid: {}", tid);
+            logger.debug("orderId: {}", orderId);
+            logger.debug("userId: {}", userId);
+            logger.debug("amount: {}", amount);
+
             KakaoPayApproveRequest approveReq = new KakaoPayApproveRequest(tid, orderId, userId, pgToken);
             KakaoPayApproveResponse approveRes = kakaoService.approve(approveReq);
+
+            logger.debug("approveRes: {}", approveRes);
+            logger.debug("approveRes.amount: {}", approveRes != null ? approveRes.getAmount() : null);
 
             if (approveRes != null && approveRes.getAmount() != null) {
                 int result = userService.chargeMileage(userId, amount);  // int 반환 가정
@@ -152,10 +163,6 @@ public class KakaoPayControllerJY
         return "/payment/chargeMileage";
     }
 
-    /**
-     * 마일리지 충전 페이지(GET)
-     * URL: /payment/chargeMileage
-     */
     @GetMapping("/chargeMileage")
     public String showChargeMileagePage(Model model, HttpSession session) {
         String userId = (String) session.getAttribute("SESSION_USER_ID");
@@ -167,10 +174,6 @@ public class KakaoPayControllerJY
         return "/payment/chargeMileage";  // JSP 경로
     }
 
-    /**
-     * 마일리지 충전 + 예약 결제 동시 처리(POST)
-     * URL: /payment/chargeMileage
-     */
     @PostMapping("/chargeMileage")
     public String chargeMileageAndPay(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
@@ -183,24 +186,22 @@ public class KakaoPayControllerJY
         }
 
         try {
-            // 날짜 포맷 변환 및 세팅
-            String checkIn = request.getParameter("rsvCheckInDt");
+        	String checkIn = request.getParameter("rsvCheckInDt");
             String checkOut = request.getParameter("rsvCheckOutDt");
             String checkInTime = request.getParameter("rsvCheckInTime");
             String checkOutTime = request.getParameter("rsvCheckOutTime");
 
-            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter dbFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate checkInDate = parseFlexibleDate(checkIn);
+            LocalDate checkOutDate = parseFlexibleDate(checkOut);
 
-            LocalDate checkInDate = LocalDate.parse(checkIn, inputFormat);
-            LocalDate checkOutDate = LocalDate.parse(checkOut, inputFormat);
+            DateTimeFormatter dbFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
 
             reservation.setRsvCheckInDt(checkInDate.format(dbFormat));
             reservation.setRsvCheckOutDt(checkOutDate.format(dbFormat));
 
             reservation.setRsvCheckInTime(convertTimeToHHmm(checkInTime));
             reservation.setRsvCheckOutTime(convertTimeToHHmm(checkOutTime));
-
+            
             int userMileage = userService.getCurrentMileage(guestId);
             int finalAmt = reservation.getFinalAmt();
 
@@ -220,7 +221,7 @@ public class KakaoPayControllerJY
             reservation.setRsvPaymentStat("PAID");
             reservationService.insertReservation(reservation);
 
-            return "redirect:/reservation/detail?seq=" + reservation.getRsvSeq();
+            return "redirect:/reservation/detailJY?seq=" + reservation.getRsvSeq();
 
         } catch (Exception e) {
             model.addAttribute("error", "예약 처리 중 오류가 발생했습니다: " + e.getMessage());
@@ -228,6 +229,25 @@ public class KakaoPayControllerJY
         }
     }
 
+    private LocalDate parseFlexibleDate(String dateStr) {
+        List<DateTimeFormatter> formatters = Arrays.asList(
+            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("yyyyMMdd")
+        );
+
+        String trimmedDate = dateStr.trim();
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(trimmedDate, formatter);
+            } catch (Exception e) {
+                logger.debug("날짜 파싱 실패: {} with formatter {}", trimmedDate, formatter);
+            }
+        }
+
+        throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + dateStr);
+    }
+    
     private String convertTimeToHHmm(String timeStr) {
         if (timeStr == null || timeStr.isEmpty()) {
             return null;
@@ -253,7 +273,7 @@ public class KakaoPayControllerJY
         }
 
         List<MileageHistory> historyList = mileageHistoryDao.selectMileageHistoryByUserId(userId);
-        int remainingMileage = getUserMileage(userId);  // 잔여 마일리지 조회
+        int remainingMileage = getUserMileage(userId);
 
         model.addAttribute("code", code);
         model.addAttribute("msg", msg);

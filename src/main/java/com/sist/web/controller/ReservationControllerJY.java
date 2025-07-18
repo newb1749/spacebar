@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -155,7 +156,10 @@ public class ReservationControllerJY {
         }
 
         if (reservation == null) {
-            return "redirect:/payment/paymentConfirm";
+            // rsvSeq가 없으면 오류 페이지 또는 예약 목록으로 리다이렉트
+            return "redirect:/reservation/list";
+            // 또는 
+            // return "redirect:/payment/paymentConfirm?error=예약 정보가 없습니다.";
         }
 
         model.addAttribute("reservation", reservation);
@@ -222,14 +226,30 @@ public class ReservationControllerJY {
         }
 
         try {
-            insertReservation(reservation);
+            // 예약 저장
+            reservationService.insertReservation(reservation);
+
+            // 로그 추가: 예약번호 확인
+            logger.info("예약 저장 후 rsvSeq: {}", reservation.getRsvSeq());
+
+            if (reservation.getRsvSeq() == null || reservation.getRsvSeq() <= 0) {
+                redirectAttrs.addFlashAttribute("error", "예약 번호가 유효하지 않습니다.");
+                return "redirect:/reservation/detailJY";
+            }
+
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
-            return "redirect:/reservation/detailJY?rsvSeq=" + reservation.getRsvSeq();
+            return "redirect:/reservation/detailJY";
         }
 
         session.removeAttribute("pendingReservation");
-        return "redirect:/reservation/confirm?rsvSeq=" + reservation.getRsvSeq();
+        
+        int seq = reservation.getRsvSeq() != null ? reservation.getRsvSeq() : -1;
+        return "redirect:/payment/paymentConfirm?rsvSeq=" + seq;
+
+
+        // 결제 완료 페이지로 rsvSeq 전달
+        //return "redirect:/payment/paymentConfirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
     // == chargeMileage 경로 확실히 /reservation/chargeMileage 로 수정 ==
@@ -352,17 +372,29 @@ public class ReservationControllerJY {
         return timeStr.replace(":", "");
     }
 
-    @GetMapping("/reservation/confirm")
+    @GetMapping("/payment/paymentConfirm")
     public String confirmReservation(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                      @RequestParam(value = "error", required = false) String error,
                                      Model model) {
+        logger.info("=== paymentConfirm 호출 ===");
+        logger.info("파라미터 rsvSeq = {}", rsvSeq);
+        logger.info("파라미터 error = {}", error);
+
         if (error != null) {
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", error);
+            logger.warn("error 파라미터 존재: {}", error);
             return "/payment/paymentConfirm";
         }
 
-        if (rsvSeq == null || rsvSeq <= 0) {
+        if (rsvSeq == null) {
+            logger.error("rsvSeq가 null임");
+            model.addAttribute("status", "ERROR");
+            model.addAttribute("error", "잘못된 예약 번호입니다.");
+            return "/payment/paymentConfirm";
+        }
+        if (rsvSeq <= 0) {
+            logger.error("rsvSeq가 0 이하임: {}", rsvSeq);
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", "잘못된 예약 번호입니다.");
             return "/payment/paymentConfirm";
@@ -370,10 +402,14 @@ public class ReservationControllerJY {
 
         Reservation reservation = reservationDao.selectReservationById(rsvSeq);
         if (reservation == null) {
+            logger.error("예약 번호 {}에 해당하는 예약을 찾지 못함", rsvSeq);
             model.addAttribute("status", "ERROR");
             model.addAttribute("error", "예약 정보를 찾을 수 없습니다.");
             return "/payment/paymentConfirm";
         }
+
+        logger.info("예약 정보 조회 성공: rsvSeq={}, guestId={}, hostId={}, totalAmt={}", 
+                     reservation.getRsvSeq(), reservation.getGuestId(), reservation.getHostId(), reservation.getTotalAmt());
 
         model.addAttribute("reservation", reservation);
         model.addAttribute("status", "OK");
@@ -391,26 +427,23 @@ public class ReservationControllerJY {
         return "/payment/mileageHistory";
     }
     
+    // === 유연한 날짜 파싱 메서드 ===
     private LocalDate parseFlexibleDate(String dateStr) {
-        if (dateStr == null || dateStr.trim().isEmpty()) {
-            throw new IllegalArgumentException("날짜 문자열이 비어 있습니다.");
-        }
+        List<DateTimeFormatter> formatters = Arrays.asList(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("yyyyMMdd")
+        );
 
         String trimmedDate = dateStr.trim();
-
-        DateTimeFormatter[] formatters = new DateTimeFormatter[] {
-            DateTimeFormatter.ofPattern("yyyyMMdd"),
-            DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        };
 
         for (DateTimeFormatter formatter : formatters) {
             try {
                 return LocalDate.parse(trimmedDate, formatter);
-            } catch (Exception ignored) {
-                // 다음 포맷 시도
+            } catch (Exception e) {
+                logger.debug("날짜 파싱 실패: {} with formatter {}", trimmedDate, formatter);
             }
         }
 
-        throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + trimmedDate);
+        throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + dateStr);
     }
 }

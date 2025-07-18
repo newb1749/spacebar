@@ -133,7 +133,7 @@ function confirmPayment() {
 
 	  if (mileage < finalAmt) {
 	    if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
-	      location.href = "${pageContext.request.contextPath}/payment/chargeMileage";
+	      location.href = "${pageContext.request.contextPath}/reservation/chargeMileage";
 	    }
 	  } else {
 	    document.getElementById("paymentForm").submit();
