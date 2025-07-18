@@ -16,7 +16,7 @@
 	}
 	.card {
 	  max-width: 500px;
-	  margin: 120px auto 80px auto; /* 위쪽 여백 넉넉하게 */
+	  margin: 120px auto 80px auto;
 	  box-shadow: 0 0 12px rgba(0,0,0,0.1);
 	  border-radius: 8px;
 	}
@@ -62,7 +62,7 @@
   <script>
     // 로그인 여부 체크
     $(document).ready(function() {
-      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
+      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("SESSION_USER_ID") : "" %>';
       if (!sessionUserId) {
         alert("로그인이 필요합니다.");
         window.location.href = '${pageContext.request.contextPath}/index.jsp';
@@ -87,7 +87,7 @@
 
       <div class="mb-3">
         <label for="amount" class="form-label">충전 금액</label>
-        <input type="number" id="amount" name="amount" class="form-control" min="1000" step="1000" required />
+        <input type="number" id="amount" name="chargeAmount" class="form-control" min="1000" step="1000" required />
       </div>
       <button id="chargeBtn" class="btn btn-primary">카카오페이로 충전하기</button>
     </div>
