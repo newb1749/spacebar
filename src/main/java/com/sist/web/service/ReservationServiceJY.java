@@ -132,5 +132,13 @@ public class ReservationServiceJY
             System.out.println("[cancelReservation] 환불 금액 없음, 마일리지 환불 처리 안함");
         }
     }
-
+    
+    /**
+     * 예약 번호로 roomSeq 값 구하기(리뷰에 쓰임)	
+     * @param rsvSeq 에약번호(리뷰 확인용)
+     * @return 예약번호(리뷰)에 해당하는 roomSeq 값 
+     */
+    public int getRoomSeqByRsvSeq(int rsvSeq) {
+    	return reservationDao.selectRoomSeqByRsvSeq(rsvSeq);
+    }
 }

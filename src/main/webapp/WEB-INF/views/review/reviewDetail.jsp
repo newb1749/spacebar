@@ -36,7 +36,7 @@
     <div id="comment-list"></div>
 
     <form id="comment-form">
-        <textarea id="comment-content" placeholder="호스트에게 댓글을 남겨주세요..." required></textarea>
+        <textarea id="comment-content" placeholder="게스트에게 댓글을 남겨주세요..." required></textarea>
         <button type="submit">작성</button>
     </form>
 </div>
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', loadComments);
         <h3>댓글</h3>
         <div id="comment-list"></div>
         <form id="comment-form">
-            <textarea id="comment-content" placeholder="호스트에게 댓글을 남겨주세요..." required></textarea>
+            <textarea id="comment-content" placeholder="게스트에게 댓글을 남겨주세요..." required></textarea>
             <button type="submit">작성</button>
         </form>
     </div>

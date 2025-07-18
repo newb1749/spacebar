@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.sist.web.model.Facility;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
+import com.sist.web.model.RoomTypeImage;
 
 public interface RoomDao {
 	
@@ -29,13 +30,13 @@ public interface RoomDao {
 
     
     
-    public Room getRoomDetail(int roomSeq);  // 세미콜론으로 끝남
-
+    public Room getRoomDetail(int roomSeq); 
+    // roomSeq로 룸 
     public List<RoomImage> getRoomImgDetail(int roomSeq);
     
-    List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  // 세미콜론으로 끝나야 함
+    public List<RoomImage> getRoomImagesByRoomSeq(int roomSeq);  
     
-    String selectHostIdByRoomSeq(int roomSeq);
+    public String selectHostIdByRoomSeq(int roomSeq);
     
     //룸 리스트 총 개수
   	public long roomListCount(Room room);
@@ -55,6 +56,17 @@ public interface RoomDao {
   	
   	//마이페이지용 호스트의 숙소 리스트 조회
   	public List<Room> selectHostRoomList(String hostId);
+  	
+  	//룸 타입 이미지 리스트
+  	public List<RoomTypeImage> getRoomTypeImgDetail(int roomTypeSeq);
+  	
+  	
+
+    /**
+     * 숙소 정보 수정
+     */
+    public int updateRoom(Room room);
+
 
 }
 

@@ -66,4 +66,10 @@ public class ReviewCommentService {
         
         return reviewCommentDao.deleteReviewComment(params);
     }
+    
+    public List<ReviewComment> getCommentsByReview(int reviewSeq) {
+        return reviewCommentDao.selectCommentsByReview(reviewSeq);
+    }
+    
+    
 }

@@ -281,4 +281,37 @@ public class ReviewService {
     {
     	return reviewDao.allReviewList();
     }
+    
+    public List<ReviewImage> selectReviewImages(int reviewSeq){
+    	return reviewImageDao.selectReviewImages(reviewSeq);
+    }
+    
+    /**
+     * 특정 숙소의 리뷰 총 개수 조회 (페이징용)
+     * @param roomSeq 숙소 번호
+     * @return int 리뷰 총 개수
+     */
+    public int getReviewCountByRoom(int roomSeq) {
+        try {
+            return reviewDao.getReviewCountByRoom(roomSeq);
+        } catch (Exception e) {
+            logger.error("[ReviewService] getReviewCountByRoom 중 오류", e);
+            return 0;
+        }
+    }
+
+    /**
+     * 특정 숙소의 리뷰 목록 조회 (페이징 적용)
+     * @param review roomSeq, startRow, endRow가 담긴 객체
+     * @return List<Review> 페이징 처리된 리뷰 목록
+     */
+    public List<Review> getReviewsByRoomWithPaging(Review review) {
+        try {
+            return reviewDao.getReviewsByRoomWithPaging(review);
+        } catch (Exception e) {
+            logger.error("[ReviewService] getReviewsByRoomWithPaging 중 오류", e);
+            return null;
+        }
+    }
+    
 }

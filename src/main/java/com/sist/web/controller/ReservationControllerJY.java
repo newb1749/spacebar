@@ -59,6 +59,9 @@ public class ReservationControllerJY {
                                    @RequestParam("checkIn") String checkIn,
                                    @RequestParam("checkOut") String checkOut,
                                    @RequestParam(value = "numGuests", defaultValue = "1") int numGuests,
+                                   @RequestParam("checkInTime") String checkInTime,
+                                   @RequestParam("checkOutTime") String checkOutTime,
+                                   @RequestParam("roomCatSeq") Integer roomCatSeq,
                                    Model model, HttpServletRequest request) {
         String sessionUserId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (sessionUserId == null || sessionUserId.isEmpty()) {
@@ -73,6 +76,9 @@ public class ReservationControllerJY {
         model.addAttribute("checkIn", checkIn);
         model.addAttribute("checkOut", checkOut);
         model.addAttribute("numGuests", numGuests);
+        model.addAttribute("checkInTime", checkInTime);
+        model.addAttribute("checkOutTime", checkOutTime);
+        model.addAttribute("roomCatSeq", roomCatSeq);
         return "/reservation/step1JY";
     }
 
@@ -407,5 +413,4 @@ public class ReservationControllerJY {
 
         throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + trimmedDate);
     }
-
 }

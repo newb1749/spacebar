@@ -19,4 +19,5 @@ public interface ReviewCommentDao {
     
     // 목록 조회 쿼리의 id는 selectCommentsByReview 이므로 맞춰줍니다.
     public List<ReviewComment> selectCommentsByReview(int reviewSeq);
+    
 }

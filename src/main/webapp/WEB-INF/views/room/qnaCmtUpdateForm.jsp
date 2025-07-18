@@ -44,7 +44,12 @@ $(document).ready(function(){
 				if(res.code == 0)
 				{
 					alert("Q&A가 수정되었습니다.");
-					location.href = "/room/roomDetail_mj?roomSeq=" + $("input[name=roomSeq]").val();
+					//location.href = "/room/roomDetail?roomSeq=" + $("input[name=roomSeq]").val();
+					if (window.parent && window.parent.document) {
+						const roomSeq = $("input[name=roomSeq]").val();
+						const iframe = window.parent.document.getElementById("qnaIframe");
+						iframe.src = "/room/qnaList?roomSeq=" + roomSeq;
+					}
 				}
 				else if(res.code == 400)
 				{
@@ -72,7 +77,7 @@ $(document).ready(function(){
   <title>답변 수정하기</title>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+
 
 <div class="container mt-5">
   <h2 class="mb-4">답변 수정하기</h2>
@@ -110,6 +115,6 @@ $(document).ready(function(){
 </div>
 
 
-<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+
 </body>
 </html>

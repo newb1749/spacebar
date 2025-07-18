@@ -307,7 +307,7 @@ $(document).ready(function(){
     } else {
       console.warn("선택된 날짜 없음");
     }
-    
+    document.roomForm.action = "/room/spaceList";
     document.roomForm.submit();
   });
   
@@ -503,7 +503,11 @@ function toggleWish(roomSeq, btn) {
 	            showConfirmButton: false
 	          });
 	        }
-	      } else {
+	      }
+	      else if(res.code === 500) {
+	  	        Swal.fire("로그인 후 이용하세요", res.message, "warning");
+	  	      }
+	      else {
 	        Swal.fire("오류", res.message, "error");
 	      }
 	    })

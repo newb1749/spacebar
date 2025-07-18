@@ -50,9 +50,9 @@ public class NoticeController {
     }
 
     @PostMapping("/reply")
-    public String reply(@ModelAttribute NoticeReply replyDTO, HttpSession session) {
-        replyDTO.setUserId((String) session.getAttribute("sessionUserId"));
-        noticeService.writeReply(replyDTO);
-        return "redirect:/notice/detail?noticeSeq=" + replyDTO.getNoticeSeq();
+    public String reply(@ModelAttribute NoticeReply reply, HttpSession session) {
+        reply.setUserId((String) session.getAttribute("sessionUserId"));
+        noticeService.writeReply(reply);
+        return "redirect:/notice/detail?noticeSeq=" + reply.getNoticeSeq();
     }
 }
