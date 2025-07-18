@@ -123,7 +123,6 @@ function fn_loginCheck()
 			if(res.code == 0)
 			{
 				alert("로그인되었습니다.");
-				location.href = "/index";
 			}
 			else if(res.code == -1)
 			{
