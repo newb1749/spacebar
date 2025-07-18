@@ -1,7 +1,13 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
+
+<%
+   // GNB 번호 (사용자관리)
+   request.setAttribute("_gnbNo", 2);
+%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -59,6 +65,7 @@
         <th>번호</th>
         <th>제목</th>
         <th>작성자</th>
+        <th>글상태</th>
         <th>등록일</th>
       </tr>
     </thead>
@@ -68,7 +75,8 @@
           <td>${n.noticeSeq}</td>
           <td><a href="/notice/detail?noticeSeq=${n.noticeSeq}">${n.noticeTitle}</a></td>
           <td>${n.adminId}</td>
-          <td><fmt:formatDate value="${n.regDt}" pattern="yyyy-MM-dd" /></td>
+          <td><fmt:formatDate value="${n.regDt}" pattern="yyyy-MM-dd HH:mm" /></td>
+          <td><fmt:formatDate value="${n.updateDt}" pattern="yyyy-MM-dd HH:mm" /></td>
         </tr>
       </c:forEach>
       <c:if test="${empty noticeList}">
@@ -77,14 +85,11 @@
     </tbody>
   </table>
 
-  <c:if test="${sessionScope.sessionRole eq 'ADMIN'}">
-    <a href="/notice/write" class="btn btn-primary">공지 등록</a>
-  </c:if>
 </div>
 
-<%@ include file="/WEB-INF/views/include/footer.jsp" %>
+<%-- <%@ include file="/WEB-INF/views/include/footer.jsp" %> --%>
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/resources/js/aos.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/custom.js"></script>
+
 </body>
 </html>
