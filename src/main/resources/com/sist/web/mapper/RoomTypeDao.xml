@@ -65,7 +65,7 @@
 	        TO_DATE(ROOM_CHECK_OUT_DT, 'YYYYMMDD') &gt;= TO_DATE(#{roomCheckOutDt}, 'YYYYMMDD')
 	</select>
 	
-	    <select id="selectRoomTypeBySeq" parameterType="int" resultMap="roomTypeResultMap">
+	<select id="selectRoomTypeBySeq" parameterType="int" resultMap="roomTypeResultMap">
       SELECT 
           ROOM_TYPE_SEQ,
           ROOM_SEQ,
@@ -86,7 +86,7 @@
       WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
     </select>
     
-        <select id="selectRoomTypesByRoomSeq" parameterType="com.sist.web.model.Room" resultMap="roomTypeResultMap">
+    <select id="selectRoomTypesByRoomSeq" parameterType="com.sist.web.model.Room" resultMap="roomTypeResultMap">
         SELECT
 		    A.ROOM_TYPE_SEQ ROOM_TYPE_SEQ,
 		    A.ROOM_SEQ ROOM_SEQ,
@@ -116,5 +116,29 @@
 		    ROOM_TYPE A
 		WHERE ROOM_SEQ = #{roomSeq}
     </select>
+    
+    <update id="updateRoomType" parameterType="com.sist.web.model.RoomType">
+        UPDATE ROOM_TYPE SET
+            ROOM_TYPE_TITLE = #{roomTypeTitle},
+            ROOM_TYPE_DESC = #{roomTypeDesc},
+            WEEKDAY_AMT = #{weekdayAmt},
+            WEEKEND_AMT = #{weekendAmt},
+            ROOM_CHECK_IN_DT = #{roomCheckInDt},
+            ROOM_CHECK_OUT_DT = #{roomCheckOutDt},
+            ROOM_CHECK_IN_TIME = #{roomCheckInTime},
+            ROOM_CHECK_OUT_TIME = #{roomCheckOutTime},
+            MAX_GUESTS = #{maxGuests},
+            MIN_DAY = #{minDay},
+            MAX_DAY = #{maxDay},
+            UPDATE_DT = SYSDATE
+        WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+    </update>
+    
+    <delete id="deleteRoomTypeByRoomSeq" parameterType="int">
+        DELETE FROM ROOM_TYPE
+        WHERE ROOM_SEQ = #{roomSeq}
+    </delete>
+    
+    
 	
 </mapper>

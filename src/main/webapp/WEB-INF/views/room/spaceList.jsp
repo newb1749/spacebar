@@ -307,7 +307,7 @@ $(document).ready(function(){
     } else {
       console.warn("선택된 날짜 없음");
     }
-    
+    document.roomForm.action = "/room/spaceList";
     document.roomForm.submit();
   });
   
