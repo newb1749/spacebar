@@ -71,11 +71,12 @@
 		      JOIN ROOM_TYPE B
 		        ON A.ROOM_SEQ = B.ROOM_SEQ
 		        AND A.ROOM_CAT_SEQ BETWEEN 8 AND 14
+		        ORDER BY ROOM_SEQ DESC
 		        
 		    ) tmp
 		    WHERE rn = 1
 		      AND ROWNUM <![CDATA[<=]]>  9
-		    ORDER BY ROOM_SEQ		
+		    		
 	  </select>
 	  
 	  <!-- 메인페이지용 최근 등록 공간 조회 -->
@@ -107,11 +108,12 @@
 		      JOIN ROOM_TYPE B
 		        ON A.ROOM_SEQ = B.ROOM_SEQ
 		        AND A.ROOM_CAT_SEQ BETWEEN 1 AND 7
+		        ORDER BY ROOM_SEQ DESC
 		        
 		    ) tmp
 		    WHERE rn = 1
 		      AND ROWNUM <![CDATA[<=]]>  9
-		    ORDER BY ROOM_SEQ		
+		    		
 	  </select>
 
    <resultMap id="facilityResultMap" type="com.sist.web.model.Facility">
