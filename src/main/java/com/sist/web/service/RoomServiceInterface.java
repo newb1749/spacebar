@@ -19,4 +19,15 @@ public interface RoomServiceInterface {
      */	
 	public int insertRoomTransaction(Room room, List<RoomType> roomTypeList);
 	
+	// ROOM
+	public void saveRoomImageFile(RoomImage roomImage, int roomSeq);
+	
+	public void saveRoomImageFile(RoomImage image, int roomSeq, short newImgSeq);
+	
+	// ROOM_TYPE 
+	public void saveRoomTypeImageFile(RoomTypeImage roomTypeImage, int roomTypeSeq);
+	
+	public void saveRoomTypeImageFile(RoomTypeImage image, int roomTypeSeq, short newImgSeq);
+
+	
 }

@@ -3,6 +3,8 @@ package com.sist.web.service;
 import java.io.File;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,14 @@ public class RoomServiceImpl implements RoomServiceInterface {
 	private static Logger logger = LoggerFactory.getLogger(RoomServiceImpl.class);
 	
     @Value("#{env['upload.save.dir']}")
-	private String UPLOAD_SAVE_DIR;
+	private String uploadSaveDirNonStatic;
+    
+    private static String UPLOAD_SAVE_DIR;
+    
+    @PostConstruct
+    public void init() {
+        UPLOAD_SAVE_DIR = this.uploadSaveDirNonStatic;
+    }
     
 	@Autowired
 	private RoomDao roomDao;
@@ -153,7 +162,8 @@ public class RoomServiceImpl implements RoomServiceInterface {
     /**
      * RoomImage 파일을 저장하고 모델에 관련 정보를 채우는 헬퍼 메소드
      */
-	    private void saveRoomImageFile(RoomImage roomImage, int roomSeq)
+    	@Override
+    	public void saveRoomImageFile(RoomImage roomImage, int roomSeq)
 	    {	
 	    	try
 	    	{	
@@ -205,13 +215,62 @@ public class RoomServiceImpl implements RoomServiceInterface {
 	    	logger.debug(">> After setRoomImgSeq, roomImage.getRoomImgSeq(): {}", roomImage.getRoomImgSeq());
 
 	    }
-    
-    
+    	
+    	
+	    public void saveRoomImageFile(RoomImage roomImage, int roomSeq, short roomImgSeq)
+	    {
+	        logger.debug(">>> [saveRoomImageFile] 매개변수로 받은 roomSeq: {}", roomSeq);
+	        logger.debug(">>> [saveRoomImageFile] roomImage 초기 상태: {}", roomImage);
+	        logger.debug(">>> 파일 이름: {}", roomImage.getFile().getOriginalFilename());
+
+	        try
+	        {
+	            if (roomSeq == 0) {
+	                logger.warn(">>> roomSeq가 0입니다. 파일명을 만들 수 없습니다. 이미지 저장 중단.");
+	                return;
+	            }
+
+	            if (roomImage == null || roomImage.getFile() == null || roomImage.getFile().isEmpty()) {
+	                logger.debug(">> 파일 없음: roomImage 또는 file 이 null/empty");
+	                return;
+	            }
+
+	            MultipartFile file = roomImage.getFile();
+	            String imgType = roomImage.getImgType();
+	            String roomImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
+	            String saveDir = UPLOAD_SAVE_DIR + File.separator + "room" + File.separator + imgType;
+	            FileUtil.createDirectory(saveDir);
+
+	            // 파일명 설정(main, detail 구분)
+	            String fileName = (imgType.equals("main")) ?
+	                    roomSeq + "." + roomImgExt :
+	                    roomSeq + "_" + roomImgSeq + "." + roomImgExt;
+
+	            File saveFile = new File(saveDir + File.separator + fileName);
+	            file.transferTo(saveFile);
+
+	            // 정보 저장
+	            roomImage.setRoomSeq(roomSeq);
+	            roomImage.setRoomImgSeq(roomImgSeq);
+	            roomImage.setRoomImgName(fileName);
+	            roomImage.setRoomImgOrigName(file.getOriginalFilename());
+	            roomImage.setRoomImgExt(roomImgExt);
+	            roomImage.setImgSize((int) file.getSize());
+
+	            logger.debug(">> After setRoomSeq, roomImage.getRoomSeq(): {}", roomImage.getRoomSeq());
+	            logger.debug(">> After setRoomImgSeq, roomImage.getRoomImgSeq(): {}", roomImage.getRoomImgSeq());
+
+	        } catch (Exception e) {
+	            logger.error("[RoomServiceImpl] saveRoomImageFile Exception : ", e);
+	        }
+	    }
+
     
     /**
      * RoomTypeImage 파일을 저장하고 모델에 관련 정보를 채우는 헬퍼 메소드
      */
-    private void saveRoomTypeImageFile(RoomTypeImage roomTypeImage, int roomTypeSeq) 
+    @Override
+    public void saveRoomTypeImageFile(RoomTypeImage roomTypeImage, int roomTypeSeq) 
     {
     	try
     	{	
@@ -257,4 +316,48 @@ public class RoomServiceImpl implements RoomServiceInterface {
     		logger.error("[RoomServiceImpl] saveRoomTypeImageFile Exception : ", e);
     	}
     }
+    
+    
+    public void saveRoomTypeImageFile(RoomTypeImage image, int roomTypeSeq, short newImgSeq) {
+        logger.debug(">>> [saveRoomTypeImageFile] roomTypeSeq: {}", roomTypeSeq);
+        logger.debug(">>> [saveRoomTypeImageFile] newImgSeq: {}", newImgSeq);
+
+        if (roomTypeSeq == 0) {
+            logger.warn(">>> roomTypeSeq가 0입니다. 저장 중단.");
+            return;
+        }
+
+        if (image == null || image.getFile() == null || image.getFile().isEmpty()) {
+            logger.debug(">>> 파일이 없음. 저장 중단.");
+            return;
+        }
+
+        try {
+            MultipartFile file = image.getFile();
+            String imgType = image.getImgType(); // 보통 "detail"
+            String roomTypeImgExt = FileUtil.getFileExtension(file.getOriginalFilename());
+            String saveDir = UPLOAD_SAVE_DIR + File.separator + "roomType" + File.separator + imgType;
+            FileUtil.createDirectory(saveDir);
+
+            // 파일명 생성: 예) 55_1.jpg
+            String fileName = roomTypeSeq + "_" + newImgSeq + "." + roomTypeImgExt;
+            File saveFile = new File(saveDir + File.separator + fileName);
+            file.transferTo(saveFile);
+
+            // 객체에 정보 주입
+            image.setRoomTypeSeq(roomTypeSeq);
+            image.setRoomTypeImgSeq(newImgSeq);
+            image.setRoomTypeImgName(fileName);
+            image.setRoomTypeImgOrigName(file.getOriginalFilename());
+            image.setRoomTypeImgExt(roomTypeImgExt);
+            image.setImgSize((int) file.getSize());
+
+            logger.debug(">>> 저장 완료 준비된 image: {}", image);
+
+        } catch (Exception e) {
+            logger.error("[RoomServiceImpl] saveRoomTypeImageFile Exception : ", e);
+        }
+    }
+
+    
 }

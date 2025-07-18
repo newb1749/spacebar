@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
+import com.sist.web.model.RoomTypeImage;
 
 @Service("roomImgService")
 public class RoomImgService 
@@ -30,9 +31,26 @@ public class RoomImgService
 		}
 		catch(Exception e)
 		{
-			logger.error("[RoomService]getRoomImgDetail Exception", e);
+			logger.error("[RoomImgService]getRoomImgDetail Exception", e);
 		}
 		
 		return room;
+	}
+	
+	//룹타입에 대한 전체 이미지 정보
+	public List<RoomTypeImage> getRoomTypeImgDetail(int roomTypeSeq)
+	{
+		List<RoomTypeImage> imgs = null;
+		
+		try
+		{
+			imgs = roomDao.getRoomTypeImgDetail(roomTypeSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomImgService]getRoomTypeImgDetail Exception", e);
+		}
+		
+		return imgs;
 	}
 }

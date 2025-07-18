@@ -41,6 +41,20 @@
 		<result column="REG_DT" property="regDt" />
   </resultMap>
   
+  <resultMap id="roomTypeImgResultMap" type="com.sist.web.model.RoomTypeImage">
+		<id column="ROOM_TYPE_SEQ" property="roomTypeSeq" />
+		<id column="ROOM_TYPE_IMG_SEQ" property="roomTypeImgSeq" />
+		<result column="ROOM_TYPE_IMG_ORIG_NAME" property="roomTypeImgOrigName" />
+		<result column="ROOM_TYPE_IMG_NAME" property="roomTypeImgName" />
+		<result column="IMG_TYPE" property="imgType" />
+		<result column="ROOM_TYPE_IMG_EXT" property="roomTypeImgExt" />
+		<result column="IMG_SIZE" property="imgSize" />
+		<result column="SORT_ORDER" property="sortOrder" />
+		<result column="REG_DT" property="regDt" />
+  </resultMap>  
+  
+  
+  
 
   <!-- 메인페이지용 최근 등록 숙소 조회 -->
 	  <select id="newRoomList" resultMap="roomResultMap">
@@ -483,7 +497,7 @@
 		       FAC_ICON_EXT FAC_ICON_EXT
 		  FROM FACILITY A, ROOM_FACILITY B
 		 WHERE A.FAC_SEQ = B.FAC_SEQ
-		   AND ROOM_SEQ = 150
+		   AND ROOM_SEQ = #{roomSeq}
 	</select>
   	<!-- 성혁 끝 -->
   	
@@ -524,5 +538,23 @@
 	   AND A.ROOM_SEQ = B.ROOM_SEQ
 	   AND B.IMG_TYPE = 'main'
 	</select>
+	
+	<select id="getRoomTypeImgDetail" parameterType="int" resultMap="roomTypeImgResultMap">
+	SELECT
+	    ROOM_TYPE_SEQ,
+	    ROOM_TYPE_IMG_SEQ,
+	    ROOM_TYPE_IMG_ORIG_NAME,
+	    ROOM_TYPE_IMG_NAME,
+	    IMG_TYPE,
+	    ROOM_TYPE_IMG_EXT,
+	    IMG_SIZE,
+	    SORT_ORDER,
+	    REG_DT
+	FROM
+	    ROOM_TYPE_IMAGE
+	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	</select>
+	
+	
   
 </mapper>

@@ -29,7 +29,7 @@ import com.sist.web.model.User;
 import com.sist.web.service.RoomQnaCommentService;
 import com.sist.web.service.RoomQnaService;
 import com.sist.web.service.RoomService;
-import com.sist.web.service.UserService_mj;
+import com.sist.web.service.UserService;
 import com.sist.web.util.HttpUtil;
 
 @Controller("roomQnaController")
@@ -47,7 +47,7 @@ public class RoomQnaController
     private RoomQnaCommentService roomQnaCommentService;
     
     @Autowired
-    private UserService_mj userService;
+    private UserService userService;
     
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
