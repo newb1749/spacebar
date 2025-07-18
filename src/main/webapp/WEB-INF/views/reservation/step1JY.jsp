@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -45,11 +45,27 @@
 
           <div class="mb-3">
             <label class="form-label">체크인 시간</label>
-            <input type="time" name="rsvCheckInTime" class="form-control" required />
+            <c:choose>
+            	<c:when test="${roomCatSeq >= 1 && roomCatSeq <= 7}">
+            		<input type="time" name="rsvCheckInTime" class="form-control" required />
+            	</c:when>
+            	<c:when test="${roomCatSeq >= 8 && roomCatSeq <= 14}">
+            		: ${fn:substring(checkInTime, 0, 2)}:${fn:substring(checkInTime, 2, 4)}
+            	</c:when>
+            </c:choose>
+            
           </div>
           <div class="mb-3">
             <label class="form-label">체크아웃 시간</label>
-            <input type="time" name="rsvCheckOutTime" class="form-control" required />
+            <c:choose>
+            	<c:when test="${roomCatSeq >= 1 && roomCatSeq <= 7}">
+            		<input type="time" name="rsvCheckOutTime" class="form-control" required />
+            	</c:when>
+            	<c:when test="${roomCatSeq >= 8 && roomCatSeq <= 14}">
+            		: ${fn:substring(checkOutTime, 0, 2)}:${fn:substring(checkOutTime, 2, 4)}
+            	</c:when>
+            </c:choose>
+            
           </div>
           <div class="mb-3">
             <label class="form-label">요청사항</label>

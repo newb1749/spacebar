@@ -260,7 +260,7 @@ public class RoomController {
 	            logger.error("[RoomController] addProc Exception", e);
 	        }
 
-        return "redirect:/";
+        return "redirect:/host/main";
     }
 	 
 	/////////////////////////////////////////////////숙소 리스트 페이지/////////////////////////////////////////
@@ -682,6 +682,12 @@ public class RoomController {
 				model.addAttribute("roomCatSeq",room.getRoomCatSeq());
 				
 				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
+				for(RoomType rt : roomTypes)
+				{
+					List<RoomTypeImage> imgs = roomImgService.getRoomTypeImgDetail(rt.getRoomTypeSeq());
+					rt.setRoomTypeImageList(imgs);
+				}
+				
 				model.addAttribute("roomTypes",roomTypes);
 				
 				// 리뷰

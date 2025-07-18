@@ -15,7 +15,8 @@ build/
 *.class
 *.jar                                     
 /src/main/webapp/WEB-INF/classes/            
-
+/classes/
+classes/
 
 # ❗ 중복 폴더 방지 (팀원이 잘못 커밋한 것 차단)
 spacebar/
@@ -24,7 +25,7 @@ project/
 # Eclipse 설정
 .classpath
 .project
-.settings/
+.settings/  
 
 
 
