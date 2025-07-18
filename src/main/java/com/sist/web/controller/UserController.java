@@ -148,7 +148,17 @@ public class UserController
 						logger.debug("userId : " + userId);
 						logger.debug("sessionUserId : " + sessionUserId);
 						logger.debug("userPwd : " + userPwd);
-						ajaxRes.setResponse(0, "success");
+
+						if(StringUtil.equals(user.getUserType(), "H"))
+						{
+	                        ajaxRes.setResponse(0, "success");
+	                        ajaxRes.setData("/host/main"); 
+						}
+						else
+						{
+							ajaxRes.setResponse(0, "success");
+							ajaxRes.setData("/");
+						}
 					}
 					else
 					{
