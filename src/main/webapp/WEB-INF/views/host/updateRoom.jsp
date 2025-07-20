@@ -150,68 +150,69 @@
 				        </div>
 				    </div>
 				</div>
-	
-				<!-- 편의 시설 -->
-				<div class="card mb-4">
-					<div class="facility-grid">
-					    <c:set var="checkedList" value="${room.facilityNos}" />
-					    
-					    <c:set var="facilities">
-					        <c:out value="
-					            1|fa-solid fa-wifi|와이파이,
-					            2|fa-solid fa-snowflake|냉장고,
-					            3|fa-kitchen-set|전자레인지,
-					            4|fa-solid fa-faucet|정수기,
-					            5|fa-solid fa-temperature-half|에어컨/난방,
-					            6|fa-solid fa-wind|드라이기,
-					            7|fa-solid fa-shirt|다리미,
-					            8|fa-rectangle-vertical|거울,
-					            9|fa-solid fa-bed|침구,
-					            10|fa-solid fa-soap|욕실용품,
-					            11|fa-shirt|옷걸이/행거,
-					            12|fa-solid fa-tv|TV (OTT),
-					            13|fa-solid fa-jug-detergent|세탁기/건조기,
-					            14|fa-solid fa-utensils|취사도구,
-					            15|fa-solid fa-fire-burner|바베큐 시설,
-					            16|fa-solid fa-person-swimming|수영장,
-					            17|fa-solid fa-volume-xmark|방음 시설,
-					            18|fa-solid fa-microphone|마이크/오디오,
-					            19|fa-solid fa-speaker|앰프/스피커,
-					            20|fa-solid fa-lightbulb|조명 장비,
-					            21|fa-solid fa-camera|삼각대/촬영 장비,
-					            22|fa-brands fa-bluetooth-b|블루투스 스피커,
-					            23|fa-solid fa-drum|악기류,
-					            24|fa-solid fa-video|빔프로젝터,
-					            25|fa-solid fa-display|TV 모니터,
-					            26|fa-solid fa-chalkboard|화이트보드,
-					            27|fa-solid fa-print|프린터/복합기,
-					            28|fa-solid fa-chair|의자/책상,
-					            29|fa-solid fa-mug-hot|커피머신,
-					            30|fa-solid fa-shower|화장실/샤워실,
-					            31|fa-solid fa-sink|취사장/개수대,
-					            32|fa-solid fa-plug|전기 공급,
-					            33|fa-solid fa-campground|텐트/타프,
-					            34|fa-solid fa-fire|캠프파이어,
-					            35|fa-solid fa-table-picnic|야외 테이블/의자,
-					            36|fa-solid fa-bug-slash|벌레퇴치용품
-					        "/>
-					    </c:set>
-					
-					    <c:forTokens var="fac" items="${facilities}" delims=",">
-					        <c:set var="facInfo" value="${fn:split(fac, '|')}" />
-					        <c:set var="id" value="${facInfo[0]}" />
-					        <c:set var="icon" value="${facInfo[1]}" />
-					        <c:set var="name" value="${facInfo[2]}" />
-					        <c:set var="checked" value="${checkedList != null && checkedList.contains(id)}" />
-					
-					        <div class="facility-box ${checked ? 'active' : ''}" data-value="${id}">
-					            <input type="checkbox" name="facilitySeqs" value="${id}" ${checked ? 'checked' : ''}>
-					            <i class="${icon}"></i>
-					            <span>${name}</span>
-					        </div>
-					    </c:forTokens>
-					</div>
-				</div>			
+<!-- 편의 시설 -->
+<div class="card mb-4">
+  <div class="facility-grid">
+    <c:forTokens var="fac" items="
+      1|fa-solid fa-wifi|와이파이,
+      2|fa-solid fa-snowflake|냉장고,
+      3|fa-kitchen-set|전자레인지,
+      4|fa-solid fa-faucet|정수기,
+      5|fa-solid fa-temperature-half|에어컨/난방,
+      6|fa-solid fa-wind|드라이기,
+      7|fa-solid fa-shirt|다리미,
+      8|fa-rectangle-vertical|거울,
+      9|fa-solid fa-bed|침구,
+      10|fa-solid fa-soap|욕실용품,
+      11|fa-shirt|옷걸이/행거,
+      12|fa-solid fa-tv|TV (OTT),
+      13|fa-solid fa-jug-detergent|세탁기/건조기,
+      14|fa-solid fa-utensils|취사도구,
+      15|fa-solid fa-fire-burner|바베큐 시설,
+      16|fa-solid fa-person-swimming|수영장,
+      17|fa-solid fa-volume-xmark|방음 시설,
+      18|fa-solid fa-microphone|마이크/오디오,
+      19|fa-solid fa-speaker|앰프/스피커,
+      20|fa-solid fa-lightbulb|조명 장비,
+      21|fa-solid fa-camera|삼각대/촬영 장비,
+      22|fa-brands fa-bluetooth-b|블루투스 스피커,
+      23|fa-solid fa-drum|악기류,
+      24|fa-solid fa-video|빔프로젝터,
+      25|fa-solid fa-display|TV 모니터,
+      26|fa-solid fa-chalkboard|화이트보드,
+      27|fa-solid fa-print|프린터/복합기,
+      28|fa-solid fa-chair|의자/책상,
+      29|fa-solid fa-mug-hot|커피머신,
+      30|fa-solid fa-shower|화장실/샤워실,
+      31|fa-solid fa-sink|취사장/개수대,
+      32|fa-solid fa-plug|전기 공급,
+      33|fa-solid fa-campground|텐트/타프,
+      34|fa-solid fa-fire|캠프파이어,
+      35|fa-solid fa-table-picnic|야외 테이블/의자,
+      36|fa-solid fa-bug-slash|벌레퇴치용품
+    " delims=",">
+      <c:set var="facInfo" value="${fn:split(fac, '|')}" />
+      <c:set var="id" value="${fn:trim(facInfo[0])}" />
+      <c:set var="idInt" value="${id + 0}" />
+      <c:set var="icon" value="${facInfo[1]}" />
+      <c:set var="name" value="${facInfo[2]}" />
+
+<c:set var="isChecked" value="false"/>
+<c:forEach var="check" items="${checkedList}">
+    <c:if test="${check == idInt}">
+        <c:set var="isChecked" value="true"/>
+    </c:if>
+</c:forEach>
+<div class="facility-box ${isChecked ? 'active' : ''}" data-value="${id}">
+    <i class="${icon}"></i>
+    <span>${name}</span>
+    <input type="checkbox" name="facilitySeqs" value="${id}" ${isChecked ? 'checked' : ''} style="display:none;" />
+</div>
+    </c:forTokens>
+  </div>
+</div>
+
+		
 							
                 <%-- ... 위치 및 운영 정책, 편의시설 등 다른 섹션도 위와 같은 방식으로 value="${room.fieldName}" 이나 JSTL을 사용해 기존 데이터를 표시해줍니다. --%>
                 <%-- ... 시간 관계상 모든 필드를 채우진 않았지만, 기본 정보 섹션을 참고하여 동일하게 적용하면 됩니다. --%>
@@ -319,30 +320,51 @@
 					            </div>
 					        </div>
 					        
+							<!-- 기존 이미지 표시 -->
+							<!-- 객실 타입 이미지 -->
 							<div class="mb-3">
-							    <label class="form-label">현재 객실 이미지</label>
+							    <label class="form-label">현재 객실 메인 이미지</label>
 							    <div class="image-preview-container">
 							        <c:forEach var="img" items="${roomType.roomTypeImageList}">
-							            <div class="image-preview-item">
-							                <c:choose>
-											    <c:when test="${img.imgType eq 'main'}">
-											        <img src="/resources/upload/roomtype/main/${img.roomTypeImgName}" alt="main">
-											    </c:when>
-											    <c:when test="${img.imgType eq 'detail'}">
-											        <img src="/resources/upload/roomtype/detail/${img.roomTypeImgName}" alt="detail">
-											    </c:when>
-											    <c:otherwise>
-											        <div>⚠ 이미지 타입 없음 (파일명: ${img.roomTypeImgName})</div>
-											    </c:otherwise>
-											</c:choose>
-							            </div>
-										<div class="mb-3">
-										    <label class="form-label">새 객실 이미지</label>
-										    <input type="file" class="form-control" name="roomTypeDetailImages_${status.index}" multiple accept="image/*">
-										</div>																            
+							            <c:if test="${img.imgType eq 'main'}">
+							                <div class="image-preview-item">
+							                    <img src="/resources/upload/roomtype/main/${img.roomTypeImgName}" alt="main">
+							                </div>
+							            </c:if>
 							        </c:forEach>
 							    </div>
 							</div>
+							
+							<div class="mb-3">
+							    <label class="form-label">현재 객실 상세 이미지</label>
+							    <div class="image-preview-container">
+							        <c:forEach var="img" items="${roomType.roomTypeImageList}">
+							            <c:if test="${img.imgType eq 'detail'}">
+							                <div class="image-preview-item">
+							                    <img src="/resources/upload/roomtype/detail/${img.roomTypeImgName}" alt="detail">
+							                </div>
+							            </c:if>
+							        </c:forEach>
+							    </div>
+							</div>
+							<!-- 안내 문구 -->
+							<div class="mb-3">
+							    <p class="text-primary fw-bold">
+							        <i class="fa-solid fa-circle-info"></i>
+							        새로운 이미지를 등록하면 기존 이미지는 모두 교체됩니다.
+							    </p>
+							</div>
+							
+							<!-- 새 이미지 등록 영역 -->
+							<div class="mb-3">
+							    <label class="form-label">새 대표 이미지</label>
+							    <input type="file" class="form-control" name="roomTypeMainImage_${status.index}" accept="image/*">
+							</div>
+							<div class="mb-3">
+							    <label class="form-label">새 상세 이미지</label>
+							    <input type="file" class="form-control" name="roomTypeDetailImages_${status.index}" multiple accept="image/*">
+							</div>
+
 
 
 					        				        
@@ -453,12 +475,6 @@ $(document).ready(function() {
         }
     });
 
-    // 편의시설 선택 이벤트 (addForm과 동일)
-    $(".facility-grid").on("click", ".facility-box", function() {
-        const $checkbox = $(this).find('input[type="checkbox"]');
-        $checkbox.prop('checked', !$checkbox.prop('checked'));
-        $(this).toggleClass("active", $checkbox.prop('checked'));
-    });
 
     // 이미지 미리보기 관련 함수 및 이벤트 (addForm과 동일)
     // ... (previewImagesDynamic 함수 및 관련 이벤트 핸들러는 그대로 사용)
@@ -530,19 +546,7 @@ $(document).ready(function() {
 }); 
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const boxes = document.querySelectorAll('.facility-box');
 
-        boxes.forEach(function (box) {
-            box.addEventListener('click', function () {
-                const checkbox = box.querySelector('input[type="checkbox"]');
-                checkbox.checked = !checkbox.checked;
-                box.classList.toggle('active', checkbox.checked);
-            });
-        });
-    });
-</script>
 
 </body>
 </html>

@@ -440,7 +440,7 @@
             <div class="col-md-6 mb-3"><label class="form-label">최대 인원</label><input type="number" class="form-control" name="maxGuests" required></div>
             <div class="col-12 mb-3"><label class="form-label">객실 설명</label><textarea class="form-control" name="roomTypeDesc" rows="3"></textarea></div>
             <hr class="my-3"/>
-            <!--  <div class="col-12 mb-3"><label class="form-label">객실 대표 이미지</label><input class="form-control" type="file" name="roomTypeMainImage_INDEX" accept="image/*"></div> -->
+            <div class="col-12 mb-3"><label class="form-label">객실 대표 이미지</label><input class="form-control" type="file" name="roomTypeMainImage_INDEX" accept="image/*"></div>
             <div class="col-12 mb-3"><label class="form-label">객실 이미지</label><input class="form-control" type="file" name="roomTypeDetailImages_INDEX" multiple accept="image/*"></div>
         </div>
     </div>

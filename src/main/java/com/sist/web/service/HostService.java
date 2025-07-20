@@ -61,6 +61,7 @@ public class HostService {
     	return hostDao.selectRoomListByHostId(hostId);
     }
     
+    
     /**
      * 숙소 수정 로직
      * RoomServiceImpl에 있는 saveRoomImageFile,saveRoomTypeImageFile 메서드 사용
@@ -128,12 +129,13 @@ public class HostService {
             	}
 
             }
+            logger.debug(">> [HostService] updateRoomTransaction 재삽입할 편의시설 목록: {}", room.getFacilityNos());
 
             // 3. 편의시설 재설정
             facilityDao.deleteFacilitiesByRoomSeq(room.getRoomSeq());	// 삭제
             if (room.getFacilityNos() != null) {
                 for (int facNo : room.getFacilityNos()) {
-                    count += roomDao.insertRoomFacility(room.getRoomSeq(), facNo);
+                    count += facilityDao.insertRoomFacility(room.getRoomSeq(), facNo);
                 }
             }
 
@@ -144,6 +146,17 @@ public class HostService {
 
         return count;
     }
+    
+    
+    public int softDeleteRoom(int roomSeq) {
+        return hostDao.softDeleteRoom(roomSeq);
+    }
 
+    public int stopSellingRoom(int roomSeq) {
+        return hostDao.stopSellingRoom(roomSeq);
+    }
+    
+    
+    
     
 }
