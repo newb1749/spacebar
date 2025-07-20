@@ -10,7 +10,7 @@ public class Reservation implements Serializable{
 	private static final long serialVersionUID = 7452262163386829254L;
 	
 	
-		private int rsvSeq;
+		private Integer rsvSeq;
 	    private String guestId;
 	    private String hostId;
 	    private String rsvCheckInDt;
@@ -76,10 +76,10 @@ public class Reservation implements Serializable{
 	    }
 	    
 	    
-		public int getRsvSeq() {
+		public Integer getRsvSeq() {
 			return rsvSeq;
 		}
-		public void setRsvSeq(int rsvSeq) {
+		public void setRsvSeq(Integer rsvSeq) {
 			this.rsvSeq = rsvSeq;
 		}
 		public String getGuestId() {

@@ -3,6 +3,14 @@
 <!-- src/main/resources/mapper/NoticeMapper.xml -->
 <mapper namespace="com.sist.web.dao.NoticeDao">
 
+	<resultMap id="NoticeReplyMap" type="com.sist.web.model.NoticeReply">
+	  <id     column="REPLY_SEQ"     property="replySeq"/>
+	  <result column="NOTICE_SEQ"    property="noticeSeq"/>
+	  <result column="USER_ID"       property="userId"/>
+	  <result column="REPLY_CONTENT" property="replyContent"/>
+	  <result column="REG_DT"        property="regDt"/>
+	</resultMap>
+
     <!-- 공지사항 목록 -->
 	<select id="selectNoticeList" resultType="com.sist.web.model.Notice">
 	    SELECT 
@@ -22,15 +30,19 @@
 
     <!-- 공지사항 상세 -->
     <select id="selectNoticeDetail" resultType="com.sist.web.model.Notice" parameterType="int">
-        SELECT * FROM NOTICE WHERE NOTICE_SEQ = #{noticeSeq}
-    </select>
+	    SELECT 
+	        NOTICE_SEQ AS noticeSeq,
+	        NOTICE_TITLE AS noticeTitle,
+	        NOTICE_CONTENT AS noticeContent,
+	        ADMIN_ID AS adminId,
+	        NOTICE_STAT AS noticeStat,
+	        REG_DT AS regDt,
+	        UPDATE_DT AS updateDt
+	    FROM NOTICE
+	    WHERE NOTICE_SEQ = #{noticeSeq}
+	</select>
 
-    <!-- 공지사항 등록 -->
-    <insert id="insertNotice" parameterType="com.sist.web.model.Notice">
 
-        INSERT INTO NOTICE (NOTICE_SEQ, NOTICE_TITLE, NOTICE_CONTENT, ADMIN_ID)
-        VALUES (NOTICE_SEQ.NEXTVAL, #{noticeTitle}, #{noticeContent}, #{adminId})
-    </insert>
 
     <!-- 댓글 등록 -->
     <insert id="insertReply" parameterType="com.sist.web.model.NoticeReply">
@@ -39,8 +51,28 @@
     </insert>
 
     <!-- 댓글 목록 -->
-    <select id="selectRepliesByNotice" resultType="com.sist.web.model.NoticeReply" parameterType="int">
-        SELECT * FROM NOTICE_REPLY WHERE NOTICE_SEQ = #{noticeSeq} ORDER BY REPLY_SEQ
-    </select>
+    <select id="selectRepliesByNotice"
+        resultMap="NoticeReplyMap"
+        parameterType="int">
+	  SELECT * 
+	    FROM NOTICE_REPLY 
+	   WHERE NOTICE_SEQ = #{noticeSeq}
+	   ORDER BY REPLY_SEQ
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply" parameterType="map">
+    UPDATE NOTICE_REPLY
+       SET REPLY_CONTENT = #{replyContent}
+     WHERE REPLY_SEQ    = #{replySeq}
+       AND USER_ID      = #{userId}
+  </update>
+  
+  <!-- 댓글 삭제 -->
+  <delete id="deleteReply" parameterType="map">
+    DELETE FROM NOTICE_REPLY
+    WHERE REPLY_SEQ = #{replySeq}
+      AND USER_ID   = #{userId}
+  </delete>
 
 </mapper>
