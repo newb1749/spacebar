@@ -22,7 +22,7 @@
 					    <th>숙소명</th>
 					    <th>주소</th>
 					    <th>등록일</th>
-					    <th>평점</th>
+						<th style="width: 80px; text-align: center;">평점</th>
 					    <th style="width: 15%;">관리</th>
 					  </tr>
                 </thead>
@@ -50,13 +50,6 @@
 							      ${room.roomTitle}
 							    </a>
 							  </td>
-							<td>
-							  <a href="/room/roomDetail?roomSeq=${room.roomSeq}" target="_blank"
-							     style="color: #3B5B6D; font-weight: bold; text-decoration: none;">
-							    ${room.roomTitle}
-							  </a>
-							</td>
-
                             <td>${room.roomAddr}</td>
 					        <td>
 					            <%-- 1. DB에서 온 String을 Date 객체로 변환하여 "parsedDate" 변수에 저장 --%>
@@ -66,7 +59,7 @@
 					            <%-- 2. 변환된 Date 객체를 원하는 형식(yyyy-MM-dd)으로 출력 --%>
 					            <fmt:formatDate value="${parsedDate}" pattern="yyyy-MM-dd" />
 					        </td>
-                            <td>${room.averageRating}</td>
+							<td style="width: 80px; text-align: center;">${room.averageRating}</td>
                             <%-- 수정, 판매중지(재개), 삭제 버튼 추가 --%>
 							<td>
 							  <div style="display: flex; flex-direction: column; gap: 6px;">

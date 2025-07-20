@@ -157,6 +157,9 @@ public class HostService {
     }
     
     
-    
+	// 판매 중지 해제
+	public int resumeSellingRoom(int roomSeq) {
+		return hostDao.resumeSellingRoom(roomSeq);
+	}
     
 }

@@ -287,10 +287,11 @@ public class HostController {
 
 	@PostMapping("/host/room/stopSelling")
 	@ResponseBody
-	public String stopSelling(@RequestParam("roomSeq") int roomSeq) {
-	    int result = hostService.stopSellingRoom(roomSeq);
-	    return (result > 0) ? "success" : "fail";
+	public String stopSelling(@RequestParam int roomSeq) {
+	    hostService.stopSellingRoom(roomSeq);
+	    return "success";
 	}
+
 	
 	@PostMapping("/host/room/resumeSelling")
 	@ResponseBody
