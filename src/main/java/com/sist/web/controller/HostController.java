@@ -15,9 +15,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -75,10 +77,10 @@ public class HostController {
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 		
-		// 본인 숙소 조회
-		List<Room> roomList = hostService.selectRoomListByHostId(sessionUserId);
-		model.addAttribute("roomList", roomList);
-		return "/host/fragment/roomList";
+	    List<Room> roomList = hostService.selectRoomListByHostId(sessionUserId);
+	    
+	    model.addAttribute("roomList", roomList);
+	    return "/host/fragment/roomList";
 	}
 	
 	/**
@@ -112,13 +114,24 @@ public class HostController {
 	    // 3. 편의시설 (List<Facility>)
 
 	    // 4. 체크된 시설 번호만 String 리스트로 추출
-	    List<Integer> facilityNos = facilityDao.selectFacilitiesByRoomSeq(roomSeq);
-	    List<String> checkedList = facilityNos.stream()
-	        .map(String::valueOf)
-	        .collect(Collectors.toList());
+	    List<Facility> facilityList = facilityDao.selectFacilitiesByRoomSeq(roomSeq);
+	    List<Integer> checkedList = facilityList.stream()
+	            .map(Facility::getFacSeq) // f -> f.getFacSeq() 와 동일
+	            .collect(Collectors.toList());
+
+	   
+
+	    logger.debug(">> [HostController] updateRoom 재삽입할 편의시설 목록: {}", room.getFacilityNos());
+
+	    System.out.println("roomSeq = " + roomSeq);
+	    System.out.println("facilityList = " + facilityList);
+	    System.out.println("checkedList = " + checkedList);
+	    
+	        
+	    model.addAttribute("facilityList", facilityList);
 	    model.addAttribute("checkedList", checkedList);
 
-
+	    
 	    // 5. 객실 타입 목록
 	    List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(roomSeq);
 	    model.addAttribute("roomTypes", roomTypes);
@@ -159,6 +172,7 @@ public class HostController {
 	    
 	    // 편의시설
 	    String[] facilityNosStr =  request.getParameterValues("facilitySeqs");
+	    logger.debug(">>> request.getParameterValues(facilitySeqs): {}", Arrays.toString(facilityNosStr));
 	    if (!StringUtil.isEmpty(facilityNosStr) && facilityNosStr.length > 0) {
 	        List<Integer> facilityNos = Arrays.stream(facilityNosStr)
 	            .filter(StringUtils::hasText)
@@ -215,10 +229,22 @@ public class HostController {
 	        roomType.setMinDay(HttpUtil.get(request, "minDay_" + index, (short) 0));
 	        roomType.setMaxDay(HttpUtil.get(request, "maxDay_" + index, (short) 0));
 
-	        // 기존 ROOM_TYPE_IMAGE 삭제 예정
+	       
 	        List<RoomTypeImage> roomTypeImageList = new ArrayList<>();
+	        
+	        
+	        // [👈 추가해야 할 메인 이미지 처리]
+	        MultipartFile mainImage2 = request.getFile("roomTypeMainImage_" + index);
+	        if (mainImage2 != null && !mainImage2.isEmpty()) {
+	            RoomTypeImage image = new RoomTypeImage();
+	            image.setFile(mainImage2);
+	            image.setImgType("main");
+	            image.setSortOrder((short) 1); // main 이미지니까 우선순위 1
+	            roomTypeImageList.add(image);
+	        }
+	        
 	        List<MultipartFile> detailImgs = request.getFiles("roomTypeDetailImages_" + index);
-	        short detailOrder = 1;
+	        short detailOrder = 2;
 	        for (MultipartFile file : detailImgs) {
 	            if (file != null && !file.isEmpty()) {
 	                RoomTypeImage image = new RoomTypeImage();
@@ -251,9 +277,28 @@ public class HostController {
 	    return "redirect:/host/main";
 	}
 	
+	
+	@PostMapping("/host/room/delete")
+	@ResponseBody
+	public String deleteRoom(@RequestParam("roomSeq") int roomSeq) {
+	    int result = hostService.softDeleteRoom(roomSeq);
+	    return (result > 0) ? "success" : "fail";
+	}
 
+	@PostMapping("/host/room/stopSelling")
+	@ResponseBody
+	public String stopSelling(@RequestParam("roomSeq") int roomSeq) {
+	    int result = hostService.stopSellingRoom(roomSeq);
+	    return (result > 0) ? "success" : "fail";
+	}
 	
-	
+	@PostMapping("/host/room/resumeSelling")
+	@ResponseBody
+	public String resumeSelling(@RequestParam("roomSeq") int roomSeq) {
+	    int result = hostService.resumeSellingRoom(roomSeq);
+	    return (result > 0) ? "success" : "fail";
+	}
+
 	
 	
 	

@@ -20,6 +20,9 @@
 	    <result property="reviewCount" column="REVIEW_COUNT"/>
 	    <result property="minTimes" column="MIN_TIMES"/>
 	    <result property="maxTimes" column="MAX_TIMES"/>
+	    <result property="delYn" column="DEL_YN"/>
+	    <result property="saleYn" column="SALE_YN"/>
+	    <result property="mainImageName" column="MAIN_IMAGE_NAME"/>
 	</resultMap>
 	<!-- USER -->
 	<resultMap id="userResultMap" type="com.sist.web.model.User">
@@ -43,14 +46,58 @@
 	</resultMap>
 	
 	
-	<select id="selectRoomListByHostId" parameterType="string" resultMap="roomResultMap">
-		SELECT 
-            ROOM_SEQ, ROOM_CAT_SEQ, HOST_ID, ROOM_ADDR, LATITUDE, LONGITUDE, REGION,
-            REG_DT, UPDATE_DT, AUTO_CONFIRM_YN, ROOM_TITLE, ROOM_DESC, CANCEL_POLICY,
-            AVERAGE_RATING, REVIEW_COUNT, MIN_TIMES, MAX_TIMES
-        FROM ROOM
-        WHERE HOST_ID = #{hostId}
-        ORDER BY REG_DT DESC
+	<select id="selectRoomListByHostId" resultMap="roomResultMap" parameterType="string">
+	    SELECT
+	        R.ROOM_SEQ,
+	        R.ROOM_CAT_SEQ,
+	        R.HOST_ID,
+	        R.ROOM_ADDR,
+	        R.LATITUDE,
+	        R.LONGITUDE,
+	        R.REGION,
+	        R.REG_DT,
+	        R.UPDATE_DT,
+	        R.AUTO_CONFIRM_YN,
+	        R.ROOM_TITLE,
+	        R.ROOM_DESC,
+	        R.CANCEL_POLICY,
+	        R.AVERAGE_RATING,
+	        R.REVIEW_COUNT,
+	        R.MIN_TIMES,
+	        R.MAX_TIMES,
+	        R.DEL_YN,
+	        R.SALE_YN,
+	        RI.ROOM_IMG_NAME AS MAIN_IMAGE_NAME
+	    FROM ROOM R
+	    LEFT JOIN ROOM_IMAGE RI
+	        ON R.ROOM_SEQ = RI.ROOM_SEQ
+	       AND RI.IMG_TYPE = 'main'
+	       AND RI.SORT_ORDER = 1
+	    WHERE R.HOST_ID = #{hostId}
+	      AND R.DEL_YN = 'N'
+	    ORDER BY R.ROOM_SEQ DESC
 	</select>
+
+
+	
+	<update id="softDeleteRoom" parameterType="int">
+	    UPDATE ROOM
+	    SET DEL_YN = 'Y',
+	        SALE_YN = 'N'
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</update>
+	
+	<update id="stopSellingRoom" parameterType="int">
+	    UPDATE ROOM
+	    SET SALE_YN = 'N'
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</update>
+	
+	<update id="resumeSellingRoom" parameterType="int">
+	    UPDATE ROOM
+	    SET SALE_YN = 'Y'
+	    WHERE ROOM_SEQ = #{roomSeq}
+	</update>
+	
 	
 </mapper>
