@@ -199,7 +199,7 @@ public class ReservationControllerJY {
         }
 
         model.addAttribute("reservations", reservations);
-        return "/reservation/reservationHistoryJY";
+        return "redirect:/reservation/reservationHistoryJY";
     }
 
     @PostMapping("/payment/mileagePay")
@@ -446,4 +446,34 @@ public class ReservationControllerJY {
 
         throw new IllegalArgumentException("지원하지 않는 날짜 형식입니다: " + dateStr);
     }
+    @GetMapping("/reservation/reservationHistoryJY")
+    public String reservationHistoryJY(HttpSession session, Model model) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+        List<Reservation> reservations = reservationService.getReservationsByGuestId(userId);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+
+        for (Reservation r : reservations) {
+            try {
+                if (r.getRsvCheckInDt() != null) {
+                    Date checkInDate = sdf.parse(r.getRsvCheckInDt());
+                    r.setRsvCheckInDateObj(checkInDate);
+                }
+                if (r.getRsvCheckOutDt() != null) {
+                    Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
+                    r.setRsvCheckOutDateObj(checkOutDate);
+                }
+            } catch (Exception e) {
+                // 필요 시 로깅
+            }
+        }
+
+        model.addAttribute("reservations", reservations);
+        return "/reservation/reservationHistoryJY";
+    }
+
+
 }
