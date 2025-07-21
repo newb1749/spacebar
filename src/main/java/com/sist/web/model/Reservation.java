@@ -32,6 +32,8 @@ public class Reservation implements Serializable{
 	    private int roomTypeSeq;
 	    private Date rsvCheckInDateObj;
 	    private Date rsvCheckOutDateObj;
+	    
+	    private String roomTypeTitle;
 
 	    // getter, setter 추가
 	    public Date getRsvCheckInDateObj() { return rsvCheckInDateObj; }
@@ -64,9 +66,19 @@ public class Reservation implements Serializable{
 		    updateDt = null;
 		    roomTypeSeq = 0;
 		    
+		    roomTypeTitle = "";
 	    }
 	    
-	    // 추가: setUserId → 내부적으로 guestId에 매핑
+	    
+	    
+	    
+		public String getRoomTypeTitle() {
+			return roomTypeTitle;
+		}
+		public void setRoomTypeTitle(String roomTypeTitle) {
+			this.roomTypeTitle = roomTypeTitle;
+		}
+		// 추가: setUserId → 내부적으로 guestId에 매핑
 	    public void setUserId(String userId) {
 	        this.guestId = userId;
 	    }

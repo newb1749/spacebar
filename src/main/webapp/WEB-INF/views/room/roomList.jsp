@@ -12,6 +12,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
+
+
 <title>숙소 리스트</title>
 <style>
 body {
