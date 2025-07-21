@@ -122,7 +122,17 @@ function fn_loginCheck()
 		{
 			if(res.code == 0)
 			{
-				alert("로그인되었습니다.");
+				
+                if (res.data) 
+                {
+                	alert("로그인되었습니다.");
+                    window.location.href = res.data;  
+                } 
+                else 
+                {
+                	alert("로그인되었습니다.");
+                    window.location.href = '/'; // 기본 페이지
+                }
 			}
 			else if(res.code == -1)
 			{

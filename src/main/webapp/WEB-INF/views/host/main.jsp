@@ -51,37 +51,100 @@
             <!-- 판매 내역 -->
             <div class="content-area hidden" id="sales-area">
                 <div class="detail-content">
-                    <h3>판매 내역</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>예약번호</th>
-                                <th>숙소명</th>
-                                <th>결제일시</th>
-                                <th>결제금액</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1001</td>
-                                <td>강릉오션뷰펜션</td>
-                                <td>2025-07-14 11:23</td>
-                                <td>200,000원</td>
-                                <td>완료</td>
-                            </tr>
-                            <tr>
-                                <td>1000</td>
-                                <td>서울강남모던하우스</td>
-                                <td>2025-07-12 20:51</td>
-                                <td>350,000원</td>
-                                <td>취소</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="no-data">더 많은 판매내역은 추후 API 연동</div>
-                </div>
-            </div>
+			        <h3>등록된 숙소/공간 상세 정보</h3>
+			        <c:choose>
+			            <c:when test="${!empty hostRoomList}"> 
+			            <c:forEach var="room" items="${hostRoomList}">
+							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
+							  <div class="row g-3 align-items-center">
+						    	 <div class="col-md-6">
+							      <div class="cart-img">
+							        <img src="/resources/upload/room/main/${room.roomImgName}"
+							             alt="숙소 이미지"
+							             style="width: 190%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+							      </div>
+							     </div>
+							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+							    <p class="mb-3 fs-5"><strong>숙소명:</strong> ${room.roomTitle}</p>
+						        <div class="d-flex flex-row justify-content-center gap-3">
+						          <button type="button" class="btn btn-primary btn"
+						                  onclick="location.href='/host/updateRoom?roomSeq=${room.roomSeq}'">수정하기</button>
+						          <button type="button" class="btn btn-danger btn"
+						                  onclick="hostDeleteRoom('${room.roomSeq}')">삭제하기</button>
+						        </div>  
+							   </div>
+							  </div>
+							</div>
+			                </c:forEach>
+			            </c:when>
+			            <c:otherwise>
+			                <div class="alert alert-info text-center">등록된 숙소/공간 정보가 없습니다.</div>
+			                <div class="d-flex justify-content-center mt-3">
+			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
+			                </div>
+			            </c:otherwise>
+			        </c:choose>
+			        
+			        			        <h3 class="mt-5">숙소/공간 예약 내역</h3>
+			        <div class="sub-message">호스트님 숙소와 관련된 모든 예약 및 결제 내역입니다.</div>
+			        <c:if test="${empty reservations}">
+			            <div class="alert alert-info text-center">예약 내역이 없습니다.</div>
+			        </c:if>
+			        <c:if test="${not empty reservations}">
+			            <table class="table table-hover">
+			                <thead>
+			                    <tr>
+			                        <th>예약번호</th>
+			                        <th>숙소명</th> <th>객실유형</th>
+			                        <th>체크인</th>
+			                        <th>체크아웃</th>
+			                        <th>상태</th>
+			                        <th>결제상태</th>
+			                        <th>총금액</th>
+			                        <th>관리</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                    <c:forEach var="r" items="${reservations}">
+			                        <tr>
+			                            <td>${r.rsvSeq}</td>
+			                            <td></td> <td>${r.roomTypeSeq}</td>
+			                            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
+			                            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+			                            <td>
+			                                <c:choose>
+			                                    <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
+			                                    <c:when test="${r.rsvStat eq 'CANCELED'}">예약취소</c:when>
+			                                    <c:when test="${r.rsvStat eq 'PENDING'}">결제대기</c:when>
+			                                    <c:otherwise>-</c:otherwise>
+			                                </c:choose>
+			                            </td>
+			                            <td>
+			                                <c:choose>
+			                                    <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+			                                    <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+			                                    <c:when test="${r.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
+			                                    <c:otherwise>-</c:otherwise>
+			                                </c:choose>
+			                            </td>
+			                            <td class="amount">
+			                                <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
+			                            </td>
+			                            <td>
+			                                <c:if test="${r.rsvStat eq 'CONFIRMED'}">
+			                                    <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('이 예약을 정말 취소(환불)하시겠습니까?')">
+			                                        <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+			                                        <button type="submit" class="btn btn-sm btn-danger">환불</button>
+			                                    </form>
+			                                </c:if>
+			                            </td>
+			                        </tr>
+			                    </c:forEach>
+			                </tbody>
+			            </table>
+			        </c:if>
+			    </div>
+			</div>
 
             <!-- 객실/공간 관리 -->
             <div class="content-area hidden" id="rooms-area">
