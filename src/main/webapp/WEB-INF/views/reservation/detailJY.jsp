@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -62,20 +63,55 @@
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    // 로그인 여부 체크
     $(document).ready(function() {
       var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("SESSION_USER_ID") : "" %>';
       if (!sessionUserId) {
         alert("로그인이 필요합니다.");
         window.location.href = '${pageContext.request.contextPath}/index.jsp';
       }
+
+      $("input[name='coupon']").on("change", function () {
+        const finalAmt = Number("${reservation.finalAmt}");
+        const selected = $("input[name='coupon']:checked");
+        let discount = Number(selected.data("discount")) || 0;
+        const discountType = selected.data("type");
+        let discountedAmt = finalAmt;
+
+        if (discountType === 'rate') {
+          discountedAmt = finalAmt - Math.floor(finalAmt * discount / 100);
+        } else {
+          discountedAmt = finalAmt - discount;
+        }
+
+        if (discountedAmt < 0) discountedAmt = 0;
+
+        $("#discountedAmt").text(discountedAmt.toLocaleString() + "원");
+        $("#appliedCouponSeq").val(selected.val());
+        $("#finalAmt").val(discountedAmt);
+      });
     });
+
+    function confirmPayment() {
+      const finalAmt = Number($("#finalAmt").val()) || 0;
+      const mileage = Number("${userMileage}") || 0;
+
+      if (mileage < finalAmt) {
+        if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
+          location.href = "${pageContext.request.contextPath}/reservation/chargeMileage";
+        }
+      } else {
+        document.getElementById("paymentForm").submit();
+      }
+    }
   </script>
 </head>
 <body>
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-
+<!-- 디버그용 쿠폰 개수 출력 -->
+<div style="max-width:700px; margin: 20px auto; text-align:center; color:#888;">
+  쿠폰 개수: ${fn:length(couponList)}
+</div>
 <div class="container">
   <h3>예약 내용 확인</h3>
 
@@ -102,7 +138,7 @@
     </tr>
     <tr>
       <th>총 결제 금액</th>
-      <td><strong><fmt:formatNumber value="${reservation.finalAmt}" type="currency" /></strong></td>
+      <td><strong><span id="discountedAmt"><fmt:formatNumber value="${reservation.finalAmt}" type="currency" /></span></strong></td>
     </tr>
     <tr>
       <th>보유 마일리지</th>
@@ -110,6 +146,23 @@
     </tr>
   </table>
 
+  <div class="coupon-box">
+	  <label for="couponSelect">쿠폰 선택</label>
+	  <select name="couponSeq" id="couponSelect">
+	    <c:choose>
+	      <c:when test="${not empty couponList}">
+	        <c:forEach var="coupon" items="${couponList}">
+	          <option value="${coupon.userCpnSeq}">
+	            ${coupon.cpnName} - ${coupon.cpnDesc}
+	          </option>
+	        </c:forEach>
+	      </c:when>
+	      <c:otherwise>
+	        <option disabled selected>사용 가능한 쿠폰이 없습니다.</option>
+	      </c:otherwise>
+	    </c:choose>
+	  </select>
+	</div>
   <form id="paymentForm" action="${pageContext.request.contextPath}/payment/chargeMileage" method="post">
     <input type="hidden" name="roomTypeSeq" value="${reservation.roomTypeSeq}" />
     <input type="hidden" name="rsvCheckInDt" value="${reservation.rsvCheckInDt}" />
@@ -118,7 +171,8 @@
     <input type="hidden" name="rsvCheckOutTime" value="${reservation.rsvCheckOutTime}" />
     <input type="hidden" name="numGuests" value="${reservation.numGuests}" />
     <input type="hidden" name="guestMsg" value="${reservation.guestMsg}" />
-    <input type="hidden" name="finalAmt" value="${reservation.finalAmt}" />
+    <input type="hidden" id="finalAmt" name="finalAmt" value="${reservation.finalAmt}" />
+    <input type="hidden" id="appliedCouponSeq" name="couponSeq" value="" />
 
     <button type="button" class="btn btn-primary" onclick="confirmPayment()">결제하기</button>
   </form>
@@ -126,19 +180,5 @@
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
-<script>
-function confirmPayment() {
-	  const finalAmt = Number("${reservation.finalAmt}") || 0;
-	  const mileage = Number("${userMileage}") || 0;
-
-	  if (mileage < finalAmt) {
-	    if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
-	      location.href = "${pageContext.request.contextPath}/reservation/chargeMileage";
-	    }
-	  } else {
-	    document.getElementById("paymentForm").submit();
-	  }
-	}
-</script>
 </body>
 </html>

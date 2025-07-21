@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Coupon;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
 
@@ -13,9 +14,12 @@ public class ReservationServiceJY
 {
     @Autowired
     private ReservationDao reservationDao;
-    
+
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private CouponServiceJY couponService;
     
     @Autowired
     private RoomTypeService roomTypeService;
@@ -141,4 +145,30 @@ public class ReservationServiceJY
     public int getRoomSeqByRsvSeq(int rsvSeq) {
     	return reservationDao.selectRoomSeqByRsvSeq(rsvSeq);
     }
+    
+    /**
+     * 예약 정보에 따라 최종 결제 금액을 계산하는 메서드 예시
+     * 할인, 쿠폰, 세금 등을 적용하는 로직을 작성
+     */
+    public int calculateFinalAmount(Reservation reservation) {
+        int baseAmount = reservation.getTotalAmt();
+        int discountAmount = 0;
+
+        Integer couponSeq = reservation.getCouponSeq();
+        if (couponSeq != null) {
+            Coupon coupon = couponService.getCouponBySeq(couponSeq);
+            if (coupon != null) {
+                if (coupon.getDiscountRate() != 0) {  // 할인율이 0이 아닌 경우
+                    discountAmount = (int) Math.round(baseAmount * coupon.getDiscountRate() / 100.0);
+                } else if (coupon.getDiscountAmt() != 0) {  // 할인금액이 0이 아닌 경우
+                    discountAmount = coupon.getDiscountAmt();
+                }
+            }
+        }
+
+        int finalAmount = baseAmount - discountAmount;
+        return finalAmount < 0 ? 0 : finalAmount;
+    }
+
+
 }

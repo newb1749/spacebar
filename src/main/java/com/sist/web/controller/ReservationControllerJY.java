@@ -2,10 +2,13 @@ package com.sist.web.controller;
 
 import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Coupon;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
+import com.sist.web.service.CouponServiceJY;
 import com.sist.web.service.MileageHistoryService;
+import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomTypeService;
@@ -27,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ReservationControllerJY {
@@ -54,7 +58,13 @@ public class ReservationControllerJY {
 
     @Autowired
     private MileageHistoryService mileageHistoryService;
+    
+    @Autowired
+    private MileageServiceJY mileageService;
 
+    @Autowired
+    private CouponServiceJY couponService;
+    
     @GetMapping("/reservation/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
@@ -112,6 +122,7 @@ public class ReservationControllerJY {
     @PostMapping("/reservation/detailJY")
     public String reservationDetailJY(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
+                                      HttpSession session,
                                       Model model) {
         String guestId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (guestId == null || guestId.isEmpty()) {
@@ -131,6 +142,20 @@ public class ReservationControllerJY {
         reservation.setTotalAmt(totalAmt);
         reservation.setFinalAmt(totalAmt);
 
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        // 쿠폰 및 마일리지 정보 조회
+        logger.debug("88888888888888888888888888888888");
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        
+        logger.debug("999999999999999999999999999999999999");
+        
+        model.addAttribute("reservation", reservation);
+        
+        if(couponList != null)
+        {
+            model.addAttribute("couponList", couponList);
+        }
+
         long userMileage = getUserMileage(guestId);
         model.addAttribute("userMileage", userMileage);
         model.addAttribute("reservation", reservation);
@@ -142,7 +167,9 @@ public class ReservationControllerJY {
     public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                     HttpSession session,
                                     Model model) {
+    	logger.debug("88888888888888888888888888888");
         Reservation reservation = null;
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
 
         if (rsvSeq != null && rsvSeq > 0) {
             reservation = reservationDao.selectReservationById(rsvSeq);
@@ -162,7 +189,17 @@ public class ReservationControllerJY {
             // return "redirect:/payment/paymentConfirm?error=예약 정보가 없습니다.";
         }
 
+        // 쿠폰 및 마일리지 정보 조회
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        
+        logger.debug("999999999999999999999999999999999999");
+        
         model.addAttribute("reservation", reservation);
+        
+        if(couponList != null)
+        {
+            model.addAttribute("couponList", couponList);
+        }
 
         String guestId = (String) session.getAttribute("SESSION_USER_ID");
         if (guestId != null) {
@@ -475,5 +512,35 @@ public class ReservationControllerJY {
         return "/reservation/reservationHistoryJY";
     }
 
+    @RequestMapping("/reservation/reservationConfirm")
+    public String reservationConfirm(@RequestParam Map<String, String> params, Model model, HttpSession session) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) return "redirect:/index.jsp";
+
+        // 예약 정보 구성
+        Reservation reservation = new Reservation();
+        reservation.setRoomTypeSeq(Integer.parseInt(params.get("roomTypeSeq")));
+        reservation.setRsvCheckInDt(params.get("rsvCheckInDt"));
+        reservation.setRsvCheckOutDt(params.get("rsvCheckOutDt"));
+        reservation.setRsvCheckInTime(params.get("rsvCheckInTime"));
+        reservation.setRsvCheckOutTime(params.get("rsvCheckOutTime"));
+        reservation.setNumGuests(Integer.parseInt(params.get("numGuests")));
+        reservation.setGuestMsg(params.get("guestMsg"));
+
+        // 금액 계산 로직 필요시 작성
+        int finalAmt = reservationService.calculateFinalAmount(reservation);
+        reservation.setFinalAmt(finalAmt);
+
+        // 쿠폰 및 마일리지 정보 조회
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        int userMileage = mileageService.getUserMileage(userId);
+
+        model.addAttribute("reservation", reservation);
+        model.addAttribute("couponList", couponList);
+        model.addAttribute("userMileage", userMileage);
+        model.addAttribute("now", new java.util.Date());
+
+        return "reservation/reservationConfirm"; // jsp 경로
+    }
 
 }
