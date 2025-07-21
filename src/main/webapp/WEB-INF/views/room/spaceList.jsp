@@ -371,6 +371,7 @@ $(document).ready(function(){
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
     document.roomForm.personCount.value = $("#_personCount").val();
+    document.roomForm.action = "/room/spaceList"
     document.roomForm.submit();
   });
   
