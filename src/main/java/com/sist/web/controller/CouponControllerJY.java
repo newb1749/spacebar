@@ -33,8 +33,8 @@ public class CouponControllerJY
     @Autowired
     private CouponServiceJY couponService;
 
-    @Value("#{env['auth.cookie.name']}") // ⬅️ 추가
-    private String AUTH_COOKIE_NAME;     // ⬅️ 추가
+    @Value("#{env['auth.cookie.name']}") 
+    private String AUTH_COOKIE_NAME;     
     
     @Value("#{env['auth.session.name']}")
     private String AUTH_SESSION_NAME;
