@@ -43,7 +43,7 @@
           <input type="hidden" name="rsvCheckOutDt" value="${checkOut}" />
           <input type="hidden" name="numGuests" value="${numGuests}" />
 
-          <div class="mb-3">
+          <%-- <div class="mb-3">
             <label class="form-label">체크인 시간</label>
             <c:choose>
             	<c:when test="${roomCatSeq >= 1 && roomCatSeq <= 7}">
@@ -64,13 +64,31 @@
             	<c:when test="${roomCatSeq >= 8 && roomCatSeq <= 14}">
             		: ${fn:substring(checkOutTime, 0, 2)}:${fn:substring(checkOutTime, 2, 4)}
             	</c:when>
-            </c:choose>
+            </c:choose> --%>
             
+          	<!-- 체크인 시간 표시 -->
+			<div class="mb-3">
+			  <label class="form-label">체크인 시간</label>
+			  : ${fn:substring(checkInTime, 0, 2)}:${fn:substring(checkInTime, 2, 4)}
+			</div>
+			
+			<!-- 체크아웃 시간 표시 -->
+			<div class="mb-3">
+			  <label class="form-label">체크아웃 시간</label>
+			  : ${fn:substring(checkOutTime, 0, 2)}:${fn:substring(checkOutTime, 2, 4)}
+			</div>
+			          
           </div>
           <div class="mb-3">
-            <label class="form-label">요청사항</label>
-            <textarea name="guestMsg" class="form-control" rows="3" placeholder="요청사항을 입력하세요."></textarea>
-          </div>
+		  <label class="form-label" style="padding-left: 8px; padding-right: 8px;">요청사항</label>
+		  <textarea 
+		    name="guestMsg" 
+		    class="form-control" 
+		    rows="3" 
+		    placeholder="요청사항을 입력하세요."
+		    style="padding-left: 12px; padding-right: 12px; margin-left: 4px; margin-right: 4px;">
+		  </textarea>
+		</div>
           <button type="submit" class="btn btn-primary w-100">예약 내용 확인</button>
         </form>
       </div>

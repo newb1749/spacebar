@@ -95,8 +95,18 @@
           <tr>
             <td>${r.rsvSeq}</td>
             <td>${r.roomTypeSeq}</td>
-            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
-            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+            <td>
+			  <fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/>
+			  <c:if test="${not empty r.rsvCheckInTime}">
+			    &nbsp;${r.rsvCheckInTime}
+			  </c:if>
+			</td>
+			<td>
+			  <fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/>
+			  <c:if test="${not empty r.rsvCheckOutTime}">
+			    &nbsp;${r.rsvCheckOutTime}
+			  </c:if>
+			</td>
             <td>
               <c:choose>
                 <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
