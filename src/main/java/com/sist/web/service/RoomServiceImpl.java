@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.common.util.FileUtil;
 import com.sist.common.util.StringUtil;
+import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.dao.RoomImageDao;
 import com.sist.web.dao.RoomTypeDao;
@@ -52,6 +53,9 @@ public class RoomServiceImpl implements RoomServiceInterface {
 	@Autowired
 	private RoomTypeImageDao roomTypeImageDao;
 	
+	@Autowired
+	private FacilityDao facilityDao;
+	
 	
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -81,7 +85,7 @@ public class RoomServiceImpl implements RoomServiceInterface {
 	            	{
 	            		logger.debug("Inserting Room-Facility Map: roomSeq={}, facSeq={}", newRoomSeq, facNo);
 	            		// ROOM_FACILITY : (roomSeq, facSeq) 복합키
-	            		count += roomDao.insertRoomFacility(newRoomSeq, facNo);
+	            		count += facilityDao.insertRoomFacility(newRoomSeq, facNo);
 	            	}
 	            }
 	            

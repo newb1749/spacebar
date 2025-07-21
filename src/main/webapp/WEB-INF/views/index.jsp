@@ -325,7 +325,7 @@ body {
 
 /* 컨테이너 flex 정렬 유지 */
 .property-slider-wrap .controls {
-  display: flex;
+  display: flex;    
   justify-content: space-between;
   margin-top: -8px;
   padding: 0 10px;
