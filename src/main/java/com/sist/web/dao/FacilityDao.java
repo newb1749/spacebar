@@ -2,6 +2,10 @@ package com.sist.web.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
+import com.sist.web.model.Facility;
+
 public interface FacilityDao {
 	
 	
@@ -10,7 +14,7 @@ public interface FacilityDao {
      * @param roomSeq
      * @return
      */
-	public List<Integer> selectFacilitiesByRoomSeq(int roomSeq);
+	public List<Facility> selectFacilitiesByRoomSeq(int roomSeq);
 
     
     // 숙소별 편의시설 전체 삭제
@@ -18,6 +22,7 @@ public interface FacilityDao {
 
     // 숙소별 편의시설 추가
     // 이건 UserDao에 있음!!!!!!!!
-    // public int insertRoomFacility(int roomSeq, int facSeq);
+    public int insertRoomFacility(@Param("roomSeq") int roomSeq, @Param("facSeq") int facSeq);
+    
     
 }	

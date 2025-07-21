@@ -30,8 +30,8 @@ public class Room implements Serializable{
 	private short maxTimes;					// 최대 이용시간
 	private double averageRating;			// 숙소 평균 평점 (2,1)
 	private int reviewCount;				// 숙소 전체 리뷰수
-	
-
+	private String delYn;					// 삭제 여부
+	private String saleYn;					// 판매 여부
 	
     // ▼▼▼ DB 테이블에 없지만 추가한 필드 ▼▼▼
 	private List<RoomImage> RoomImageList; // 리스트로 RoomImage
@@ -85,6 +85,8 @@ public class Room implements Serializable{
 		maxTimes = 0;
 		averageRating = 0;
 		reviewCount = 0;
+		delYn = "N";
+		saleYn = "Y";
 		
 		searchValue = "";
 		startRow = 0;
@@ -111,6 +113,28 @@ public class Room implements Serializable{
 
 	
 	
+	
+	
+
+
+	public String getDelYn() {
+		return delYn;
+	}
+
+	public void setDelYn(String delYn) {
+		this.delYn = delYn;
+	}
+
+	public String getSaleYn() {
+		return saleYn;
+	}
+
+	public void setSaleYn(String saleYn) {
+		this.saleYn = saleYn;
+	}
+
+
+
 	public String getMainImageName() {
 		return mainImageName;
 	}

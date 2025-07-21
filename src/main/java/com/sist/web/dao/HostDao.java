@@ -11,5 +11,11 @@ public interface HostDao {
 	 * @param hostId
 	 * @return 숙소(ROOM) 리스트
 	 */
-	List<Room> selectRoomListByHostId(String hostId);
+	public List<Room> selectRoomListByHostId(String hostId);
+	// 소프트 삭제
+	public int softDeleteRoom(int roomSeq);
+	// 판매 중지
+	public int stopSellingRoom(int roomSeq); 
+	// 판매 중지 해제
+	public int resumeSellingRoom(int roomSeq);
 }
