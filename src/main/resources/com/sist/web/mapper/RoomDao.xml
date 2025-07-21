@@ -85,11 +85,12 @@
 		      JOIN ROOM_TYPE B
 		        ON A.ROOM_SEQ = B.ROOM_SEQ
 		        AND A.ROOM_CAT_SEQ BETWEEN 8 AND 14
+		        ORDER BY ROOM_SEQ DESC
 		        
 		    ) tmp
 		    WHERE rn = 1
 		      AND ROWNUM <![CDATA[<=]]>  9
-		    ORDER BY ROOM_SEQ		
+		    		
 	  </select>
 	  
 	  <!-- 메인페이지용 최근 등록 공간 조회 -->
@@ -121,11 +122,12 @@
 		      JOIN ROOM_TYPE B
 		        ON A.ROOM_SEQ = B.ROOM_SEQ
 		        AND A.ROOM_CAT_SEQ BETWEEN 1 AND 7
+		        ORDER BY ROOM_SEQ DESC
 		        
 		    ) tmp
 		    WHERE rn = 1
 		      AND ROWNUM <![CDATA[<=]]>  9
-		    ORDER BY ROOM_SEQ		
+		    		
 	  </select>
 
    <resultMap id="facilityResultMap" type="com.sist.web.model.Facility">
@@ -499,17 +501,6 @@
 	</select>
   	<!-- 성혁 끝 -->
   	
-  <insert id="insertRoomFacility">
-    INSERT INTO ROOM_FACILITY (
-        ROOM_SEQ, 
-        FAC_SEQ
-    ) VALUES (
-        #{roomSeq}, 
-        #{facSeq}
-    )
-  </insert>
-  	<!-- 성혁 끝 -->	
-  	
 	<!-- 민정 시작 -->
 	<!-- 마이페이지용 호스트의 숙소 리스트 조회 -->
 	<select id="selectHostRoomList" parameterType="com.sist.web.model.Room" resultMap="roomResultMap">
@@ -553,6 +544,23 @@
 	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
 	</select>
 	
-	
+    <update id="updateRoom" parameterType="com.sist.web.model.Room">
+        UPDATE ROOM
+        SET 
+            ROOM_CAT_SEQ = #{roomCatSeq},
+            ROOM_ADDR = #{roomAddr},
+            LATITUDE = #{latitude},
+            LONGITUDE = #{longitude},
+            REGION = #{region},
+            AUTO_CONFIRM_YN = #{autoConfirmYn},
+            ROOM_TITLE = #{roomTitle},
+            ROOM_DESC = #{roomDesc},
+            CANCEL_POLICY = #{cancelPolicy},
+            MIN_TIMES = #{minTimes},
+            MAX_TIMES = #{maxTimes},
+            AVERAGE_RATING = #{averageRating},
+            REVIEW_COUNT = #{reviewCount}
+        WHERE ROOM_SEQ = #{roomSeq}
+    </update>	
   
 </mapper>

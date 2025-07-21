@@ -233,6 +233,26 @@
 .room-types .row.g-0.align-items-stretch {
   align-items: stretch !important;
 }
+
+.my-slider .slide-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 260px; ← 이 줄도 아예 지우거나 주석! */
+  /* 높이 제한 없으면 슬라이더 영역도 이미지 크기에 따라 자동 늘어남 */
+}
+
+.my-slider .slide-item img {
+  width: auto;           /* 가로 원본 */
+  height: auto;          /* 세로 원본 */
+  max-width: none;       /* 제한 없음 */
+  max-height: none;      /* 제한 없음 */
+  object-fit: none;      /* 원본 비율/크기 유지 */
+  display: block;
+  margin: 0 auto;
+}
+
+
   </style>
 <script>
 // 리뷰 비동기로
@@ -416,6 +436,8 @@ function fn_review_list(page) {
 		    </c:forEach>
 		  </div>
 		</div>
+		
+		<div style="height:60px"></div>
 			<section class="room-description section-block section-bg-light">
 			  <div class="container">
 			    <!-- 제목 -->
@@ -444,19 +466,35 @@ function fn_review_list(page) {
         <div class="row g-0 align-items-stretch">
           <!-- 이미지 영역 -->
           <div class="col-md-6 h-100">
-            <div class="property-slider-wrap h-100">
-              <div class="my-roomtype-slider h-100">
-                <c:forEach var="img" items="${rt.roomTypeImageList}">
-                  <div class="slide-item">
-                    <img src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
-                      class="img-fluid w-100"
-                      style="object-fit: cover; min-height: 0;"
-                      alt="${img.imgType}" />
-                  </div>
-                </c:forEach>
-              </div>
-            </div>
-          </div>
+
+			  <div class="property-slider-wrap h-100">
+			    <div class="my-roomtype-slider h-100">
+			      <c:forEach var="img" items="${rt.roomTypeImageList}" varStatus="st">
+			        <div class="slide-item">
+			          <c:choose>
+			           
+			            <c:when test="${st.first}">
+			              <img
+			                src="${pageContext.request.contextPath}/resources/upload/roomtype/main/${img.roomTypeImgName}"
+			                class="img-fluid w-100"
+			                style="object-fit: cover;"
+			                alt="첫번째 커스텀 이미지" />
+			            </c:when>
+			          
+			            <c:otherwise>
+			              <img
+			                src="${pageContext.request.contextPath}/resources/upload/roomtype/detail/${img.roomTypeImgName}"
+			                class="img-fluid w-100"
+			                style="object-fit: cover;"
+			                alt="${img.imgType}" />
+			            </c:otherwise>
+			          </c:choose>
+			        </div>
+			      </c:forEach>
+			    </div>
+			  </div>
+			</div>
+
           <!-- 텍스트 영역 -->
           <div class="col-md-6 d-flex align-items-stretch h-100">
             <div class="card-body">
@@ -499,6 +537,7 @@ function fn_review_list(page) {
         </div>
       </div>
     </div>
+    <div style="height:20px"></div>
   </c:forEach>
 </div>
   </div>
@@ -882,7 +921,8 @@ document.addEventListener('DOMContentLoaded', function(){
 	      items: 1,               // 한 슬라이드에 보여줄 개수
 	      slideBy: 'page',
 	      gutter: 10,
-	      autoplay: false,
+	      autoplay: true,
+	      autoplayButtonOutput: false,
 	      nav: false,
 	      controls: true,
 	      autoHeight: true,
