@@ -234,7 +234,7 @@
           <strong class="total-amt" id="summaryAmt">0</strong>원
         </span>
         <button type="submit" id="btnCheckout" class="btn-buy" disabled>
-          구매하기
+          예약하기
         </button>
       </div>
     </form>
