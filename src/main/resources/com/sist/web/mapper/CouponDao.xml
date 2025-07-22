@@ -5,6 +5,7 @@
 
 <mapper namespace="com.sist.web.dao.CouponDao">
 
+  <!-- COUPON 테이블 결과 매핑 -->
   <resultMap id="couponResultMap" type="com.sist.web.model.Coupon">
     <result property="cpnSeq" column="CPN_SEQ"/>
     <result property="cpnName" column="CPN_NAME"/>
@@ -21,79 +22,155 @@
     <result property="updateDt" column="UPDATE_DT"/>
   </resultMap>
   
-  <resultMap type="com.sist.web.model.Coupon" id="mycouponResultMap">
+  <!-- 사용자 쿠폰과 쿠폰 정보를 함께 매핑 -->
+  <resultMap id="mycouponResultMap" type="com.sist.web.model.Coupon">
     <result property="userCpnSeq" column="USER_CPN_SEQ"/>
     <result property="userId" column="USER_ID"/>
     <result property="cpnSeq" column="CPN_SEQ"/>
     <result property="cpnName" column="CPN_NAME"/>
     <result property="cpnDesc" column="CPN_DESC"/>
+    <result property="discountRate" column="DISCOUNT_RATE"/>
+    <result property="discountAmt" column="DISCOUNT_AMT"/>
+    <result property="minOrderAmt" column="MIN_ORDER_AMT"/>
+    <result property="cpnType" column="CPN_TYPE"/>
+    <result property="cpnStat" column="CPN_STAT"/>
+    <result property="issueStartDt" column="ISSUE_START_DT"/>
+    <result property="issueEndDt" column="ISSUE_END_DT"/>
     <result property="issueDt" column="ISSUE_DT"/>
     <result property="usageDt" column="USAGE_DT"/>
     <result property="userCpnIsUsed" column="USER_CPN_IS_USED"/>
     <result property="userCpnCnt" column="USER_CPN_CNT"/>
   </resultMap>
 
+  <!-- 전체 쿠폰 목록 조회 -->
   <select id="selectAllCoupons" resultMap="couponResultMap">
-    SELECT NVL(CPN_SEQ, 0) CPN_SEQ,
-           NVL(CPN_NAME, '') CPN_NAME,
-           NVL(CPN_DESC, '') CPN_DESC,
-           NVL(DISCOUNT_RATE, 0) DISCOUNT_RATE,
-           NVL(DISCOUNT_AMT, 0) DISCOUNT_AMT,
-           NVL(MIN_ORDER_AMT, 0) MIN_ORDER_AMT,
-           NVL(TO_CHAR(ISSUE_START_DT, 'YYYY-MM-DD'), '') ISSUE_START_DT,
-           NVL(TO_CHAR(ISSUE_END_DT, 'YYYY-MM-DD'), '') ISSUE_END_DT,
-           NVL(CPN_TYPE, '') CPN_TYPE,
-           NVL(CPN_STAT, '') CPN_STAT,
-           NVL(TOTAL_CPN_CNT, 0) TOTAL_CPN_CNT,
-           NVL(TO_CHAR(REG_DT, 'YYYY-MM-DD'), '') REG_DT,
-           NVL(TO_CHAR(UPDATE_DT, 'YYYY-MM-DD'), '') UPDATE_DT
-      FROM COUPON
-     ORDER BY CPN_SEQ DESC
+    SELECT 
+      NVL(CPN_SEQ, 0) CPN_SEQ,
+      NVL(CPN_NAME, '') CPN_NAME,
+      NVL(CPN_DESC, '') CPN_DESC,
+      NVL(DISCOUNT_RATE, 0) DISCOUNT_RATE,
+      NVL(DISCOUNT_AMT, 0) DISCOUNT_AMT,
+      NVL(MIN_ORDER_AMT, 0) MIN_ORDER_AMT,
+      ISSUE_START_DT,
+      ISSUE_END_DT,
+      NVL(CPN_TYPE, '') CPN_TYPE,
+      NVL(CPN_STAT, '') CPN_STAT,
+      NVL(TOTAL_CPN_CNT, 0) TOTAL_CPN_CNT,
+      REG_DT,
+      UPDATE_DT
+    FROM COUPON
+    ORDER BY CPN_SEQ DESC
   </select>
 
-  <!-- 유저가 쿠폰 이미 발급했는지 확인 -->
-	<select id="countUserCoupon" parameterType="map" resultType="int">
-		SELECT COUNT(*) FROM USER_COUPON
-		 WHERE USER_ID = #{userId}
-		   AND CPN_SEQ = #{cpnSeq}
-    	   AND NVL(USER_CPN_IS_USED, 'N') = 'N'  <!-- 미사용 쿠폰만 카운트 -->
-	</select>
+  <!-- 유저가 특정 쿠폰을 이미 발급받았는지 확인 (미사용만) -->
+  <select id="countUserCoupon" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM USER_COUPON
+    WHERE USER_ID = #{userId}
+      AND CPN_SEQ = #{cpnSeq}
+      AND NVL(USER_CPN_IS_USED, 'N') = 'N'
+  </select>
 
-	<!-- 쿠폰 발급 -->
-	<insert id="insertUserCoupon" parameterType="map">
-	  INSERT INTO USER_COUPON (
-		USER_CPN_SEQ,
-	    USER_ID,
-	    CPN_SEQ,
-	    ISSUE_DT,
-	    USER_CPN_IS_USED,
-	    USER_CPN_CNT
-	  )
-	  VALUES (
-	    SEQ_USER_COUPON_SEQ.NEXTVAL,
-	    #{userId},
-	    #{cpnSeq},
-	    SYSDATE,
-	    'N',
-	    1
-	  )
-	</insert>
-	
-	<!-- 마이페이지용(쿠폰 조회) -->
-	<select id="couponListByUser" parameterType="string" resultMap="mycouponResultMap">
-		SELECT A.USER_CPN_SEQ,
-		       A.USER_ID,
-		       A.CPN_SEQ,
-		       NVL(B.CPN_NAME,'') CPN_NAME,
-		       NVL(B.CPN_DESC,'') CPN_DESC,
-		       NVL(TO_CHAR(A.ISSUE_DT,'YYYY.MM.DD'),'') ISSUE_DT,
-		       NVL(TO_CHAR(A.USAGE_DT,'YYYY.MM.DD'),'') USAGE_DT,
-		       NVL(A.USER_CPN_IS_USED,'N') USER_CPN_IS_USED,
-		       NVL(A.USER_CPN_CNT,0) USER_CPN_CNT
-		  FROM USER_COUPON A, COUPON B
-		 WHERE A.CPN_SEQ = B.CPN_SEQ
-		   AND A.USER_ID = #{value}
-	</select>
+  <!-- 쿠폰 발급 -->
+  <insert id="insertUserCoupon" parameterType="map">
+    INSERT INTO USER_COUPON (
+      USER_CPN_SEQ,
+      USER_ID,
+      CPN_SEQ,
+      ISSUE_DT,
+      USER_CPN_IS_USED,
+      USER_CPN_CNT
+    )
+    VALUES (
+      SEQ_USER_COUPON_SEQ.NEXTVAL,
+      #{userId},
+      #{cpnSeq},
+      SYSDATE,
+      'N',
+      1
+    )
+  </insert>
 
-	
+  <!-- 마이페이지용 사용자 쿠폰 조회 -->
+  <select id="couponListByUser" parameterType="string" resultMap="mycouponResultMap">
+    SELECT 
+      A.USER_CPN_SEQ,
+      A.USER_ID,
+      A.CPN_SEQ,
+      NVL(B.CPN_NAME,'') CPN_NAME,
+      NVL(B.CPN_DESC,'') CPN_DESC,
+      NVL(B.DISCOUNT_RATE, 0) DISCOUNT_RATE,
+      NVL(B.DISCOUNT_AMT, 0) DISCOUNT_AMT,
+      B.MIN_ORDER_AMT,
+      B.CPN_TYPE,
+      B.CPN_STAT,
+      B.ISSUE_START_DT,
+      B.ISSUE_END_DT,
+      NVL(TO_CHAR(A.ISSUE_DT,'YYYY-MM-DD'),'') ISSUE_DT,
+      NVL(TO_CHAR(A.USAGE_DT,'YYYY-MM-DD'),'') USAGE_DT,
+      NVL(A.USER_CPN_IS_USED,'N') USER_CPN_IS_USED,
+      NVL(A.USER_CPN_CNT,0) USER_CPN_CNT
+    FROM USER_COUPON A
+    JOIN COUPON B ON A.CPN_SEQ = B.CPN_SEQ
+    WHERE A.USER_ID = #{value}
+    ORDER BY A.ISSUE_DT DESC
+  </select>
+
+  <!-- 사용자별 유효 쿠폰 조회 (미사용, 유효기간 내 활성 쿠폰) -->
+  <select id="selectValidCouponsByUserId" parameterType="string" resultMap="mycouponResultMap">
+    SELECT 
+      A.USER_CPN_SEQ,
+      A.USER_ID,
+      A.CPN_SEQ,
+      NVL(B.CPN_NAME, '') CPN_NAME,
+      NVL(B.CPN_DESC, '') CPN_DESC,
+      NVL(B.DISCOUNT_RATE, 0) DISCOUNT_RATE,
+      NVL(B.DISCOUNT_AMT, 0) DISCOUNT_AMT,
+      B.MIN_ORDER_AMT,
+      B.CPN_TYPE,
+      B.CPN_STAT,
+      B.ISSUE_START_DT,
+      B.ISSUE_END_DT,
+      NVL(TO_CHAR(A.ISSUE_DT,'YYYY-MM-DD'), '') ISSUE_DT,
+      NVL(TO_CHAR(A.USAGE_DT,'YYYY-MM-DD'), '') USAGE_DT,
+      NVL(A.USER_CPN_IS_USED, 'N') USER_CPN_IS_USED,
+      NVL(A.USER_CPN_CNT, 0) USER_CPN_CNT
+    FROM USER_COUPON A
+    INNER JOIN COUPON B ON A.CPN_SEQ = B.CPN_SEQ
+    WHERE A.USER_ID = #{value}
+      AND NVL(A.USER_CPN_IS_USED, 'N') = 'N'     
+      AND B.CPN_STAT = 'Y'
+      AND A.USER_CPN_IS_USED = 'N'
+      AND TO_CHAR(B.ISSUE_END_DT, 'YYYY-MM-DD') >= TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+    ORDER BY B.CPN_SEQ DESC
+  </select>
+
+  <!-- 쿠폰 상세 조회 -->
+  <select id="selectCouponBySeq" parameterType="int" resultMap="couponResultMap">
+    SELECT 
+      CPN_SEQ,
+      CPN_NAME,
+      CPN_DESC,
+      DISCOUNT_RATE,
+      DISCOUNT_AMT,
+      MIN_ORDER_AMT,
+      ISSUE_START_DT,
+      ISSUE_END_DT,
+      CPN_TYPE,
+      CPN_STAT,
+      TOTAL_CPN_CNT,
+      REG_DT,
+      UPDATE_DT
+    FROM COUPON 
+    WHERE CPN_SEQ = #{cpnSeq}
+  </select>
+
+	<update id="markCouponAsUsed">
+	    UPDATE USER_COUPON
+	    SET USER_CPN_IS_USED = 'Y',
+	        USAGE_DT = SYSDATE
+	    WHERE USER_ID = #{userId}
+	      AND CPN_SEQ = #{cpnSeq}
+	      AND USER_CPN_IS_USED = 'N'
+	</update>
+
 </mapper>

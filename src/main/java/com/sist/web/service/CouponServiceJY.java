@@ -1,9 +1,7 @@
 package com.sist.web.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,5 +94,25 @@ public class CouponServiceJY
     	
     	return list;
     }
+    public List<Coupon> getAvailableCouponsForUser(String userId) 
+    {
+        Date now = new Date();
+        return couponDao.selectValidCouponsByUserId(userId);
+    }
+
+    public Coupon getCouponBySeq(Integer couponSeq) {
+        if (couponSeq == null) return null;
+        return couponDao.selectCouponBySeq(couponSeq);
+    }
     
+    public void markCouponAsUsed(String userId, int cpnSeq) {
+        logger.debug("markCouponAsUsed called with userId={}, cpnSeq={}", userId, cpnSeq);
+        int updatedRows = couponDao.markCouponAsUsed(userId, cpnSeq);
+        if (updatedRows == 0) {
+            logger.warn("쿠폰 사용 처리 실패: userId={}, cpnSeq={}", userId, cpnSeq);
+        } else {
+            logger.debug("쿠폰 사용 완료 처리 성공: userId={}, cpnSeq={}", userId, cpnSeq);
+        }
+    }
+
 }

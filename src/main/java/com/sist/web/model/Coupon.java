@@ -9,8 +9,8 @@ public class Coupon implements Serializable
     private int cpnSeq;
     private String cpnName;
     private String cpnDesc;
-    private double discountRate;
-    private int discountAmt;
+    private Double discountRate;
+    private Integer discountAmt;
     private int minOrderAmt;
     private String issueStartDt; // Date → String 변경
     private String issueEndDt;   // Date → String 변경
@@ -33,7 +33,7 @@ public class Coupon implements Serializable
         this.cpnSeq = 0;
         this.cpnName = "";
         this.cpnDesc = "";
-        this.discountRate = 0;	// 할인율
+        this.discountRate = 0.0;	// 할인율
         this.discountAmt = 0;		// 할인금액
         this.minOrderAmt = 0;
         this.issueStartDt = "";
