@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"       %>
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<c:forEach var="room" items="${list}">
+  <c:forEach var="room" items="${list}">
     <div class="room-list-item">
       <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail" onclick="fn_roomDetail(${room.roomSeq});">
       <div class="room-details">

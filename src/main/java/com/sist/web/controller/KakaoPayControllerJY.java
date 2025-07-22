@@ -8,6 +8,7 @@ import com.sist.web.model.KakaoPayReadyResponse;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
+import com.sist.web.service.CouponServiceJY;
 import com.sist.web.service.KakaoPayServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.UserService_mj;
@@ -44,6 +45,9 @@ public class KakaoPayControllerJY
 
     @Autowired
     private ReservationServiceJY reservationService;
+
+    @Autowired
+    private CouponServiceJY couponService;
 
     @Autowired
     private MileageHistoryDao mileageHistoryDao;
@@ -186,11 +190,13 @@ public class KakaoPayControllerJY
         }
 
         try {
-        	String checkIn = request.getParameter("rsvCheckInDt");
+            // 날짜 및 시간 파라미터 수신
+            String checkIn = request.getParameter("rsvCheckInDt");
             String checkOut = request.getParameter("rsvCheckOutDt");
             String checkInTime = request.getParameter("rsvCheckInTime");
             String checkOutTime = request.getParameter("rsvCheckOutTime");
 
+            // 날짜 파싱 처리
             LocalDate checkInDate = parseFlexibleDate(checkIn);
             LocalDate checkOutDate = parseFlexibleDate(checkOut);
 
@@ -199,9 +205,11 @@ public class KakaoPayControllerJY
             reservation.setRsvCheckInDt(checkInDate.format(dbFormat));
             reservation.setRsvCheckOutDt(checkOutDate.format(dbFormat));
 
+            // 시간 포맷 처리
             reservation.setRsvCheckInTime(convertTimeToHHmm(checkInTime));
             reservation.setRsvCheckOutTime(convertTimeToHHmm(checkOutTime));
-            
+
+            // 마일리지 조회
             int userMileage = userService.getCurrentMileage(guestId);
             int finalAmt = reservation.getFinalAmt();
 
@@ -210,17 +218,29 @@ public class KakaoPayControllerJY
                 return "redirect:/payment/chargeMileage";
             }
 
+            // 마일리지 차감
             boolean deducted = userService.deductMileage(guestId, finalAmt);
             if (!deducted) {
                 model.addAttribute("error", "마일리지 차감에 실패했습니다.");
                 return "redirect:/payment/chargeMileage";
             }
 
+            // 쿠폰 사용 완료 처리
+            Integer usedCouponSeq = reservation.getCouponSeq(); // 쿠폰 번호가 있다면 사용 처리
+            logger.debug("=======================================");
+            logger.debug("getCouponSeq : " + reservation.getCouponSeq());
+            logger.debug("=======================================");
+            if (usedCouponSeq != null && usedCouponSeq > 0) {
+                couponService.markCouponAsUsed(guestId, usedCouponSeq);  // void 반환형
+            }
+
+            // 예약 상태 설정 및 저장
             reservation.setGuestId(guestId);
             reservation.setRsvStat("CONFIRMED");
             reservation.setRsvPaymentStat("PAID");
             reservationService.insertReservation(reservation);
 
+            // 상세 페이지로 리디렉트
             return "redirect:/reservation/detailJY?seq=" + reservation.getRsvSeq();
 
         } catch (Exception e) {

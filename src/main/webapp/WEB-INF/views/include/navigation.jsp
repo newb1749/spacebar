@@ -24,7 +24,7 @@
 		  <li><a href="/room/spaceList">공간대여목록</a></li>
           <li><a href="/board/list">게시판</a></li>
 
-          
+          <li><a href="/coupon/listJY">쿠폰리스트</a></li>
           <li><a href="/payment/chargeMileage">카카오페이</a></li>
           <c:if test="<%= isLoggedIn %>">
             <li><a href="/user/myPage">마이페이지</a></li>

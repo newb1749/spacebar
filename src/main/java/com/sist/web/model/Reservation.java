@@ -32,14 +32,42 @@ public class Reservation implements Serializable{
 	    private int roomTypeSeq;
 	    private Date rsvCheckInDateObj;
 	    private Date rsvCheckOutDateObj;
+	    private String roomTypeTitle;
+	    private Integer couponSeq; // 쿠폰 ID 저장용 필드
+	    private Coupon coupon;
 
+	    public Coupon getCoupon() {
+	        return coupon;
+	    }
+	    public void setCoupon(Coupon coupon) {
+	        this.coupon = coupon;
+	    }
+	    public Integer getCouponSeq() {
+	        return couponSeq;
+	    }
+
+	    public void setCouponSeq(Integer couponSeq) {
+	        this.couponSeq = couponSeq;
+	    }
+	    
 	    // getter, setter 추가
-	    public Date getRsvCheckInDateObj() { return rsvCheckInDateObj; }
-	    public void setRsvCheckInDateObj(Date rsvCheckInDateObj) { this.rsvCheckInDateObj = rsvCheckInDateObj; }
+	    public Date getRsvCheckInDateObj() 
+	    { 
+	    	return rsvCheckInDateObj; 
+	    }
+	    public void setRsvCheckInDateObj(Date rsvCheckInDateObj) 
+	    { 
+	    	this.rsvCheckInDateObj = rsvCheckInDateObj; 
+	    }
 
-	    public Date getRsvCheckOutDateObj() { return rsvCheckOutDateObj; }
-	    public void setRsvCheckOutDateObj(Date rsvCheckOutDateObj) { this.rsvCheckOutDateObj = rsvCheckOutDateObj; }
-
+	    public Date getRsvCheckOutDateObj() 
+	    { 
+	    	return rsvCheckOutDateObj; 
+	    }
+	    public void setRsvCheckOutDateObj(Date rsvCheckOutDateObj) 
+	    { 
+	    	this.rsvCheckOutDateObj = rsvCheckOutDateObj;
+	    }
 	    
 	    public Reservation()
 	    {
@@ -64,9 +92,19 @@ public class Reservation implements Serializable{
 		    updateDt = null;
 		    roomTypeSeq = 0;
 		    
+		    roomTypeTitle = "";
 	    }
 	    
-	    // 추가: setUserId → 내부적으로 guestId에 매핑
+	    
+	    
+	    
+		public String getRoomTypeTitle() {
+			return roomTypeTitle;
+		}
+		public void setRoomTypeTitle(String roomTypeTitle) {
+			this.roomTypeTitle = roomTypeTitle;
+		}
+		// 추가: setUserId → 내부적으로 guestId에 매핑
 	    public void setUserId(String userId) {
 	        this.guestId = userId;
 	    }
