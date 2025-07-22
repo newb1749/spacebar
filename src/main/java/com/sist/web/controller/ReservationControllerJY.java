@@ -112,6 +112,7 @@ public class ReservationControllerJY {
                 }
             }
             reservation.setHostId(hostId.trim());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             throw new IllegalArgumentException("HOST_ID가 여전히 null입니다.");
@@ -133,6 +134,7 @@ public class ReservationControllerJY {
         RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType != null) {
             reservation.setHostId(roomType.getHostId());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
 
         int totalAmt = calculateTotalAmount(reservation.getRoomTypeSeq(),

@@ -693,46 +693,42 @@ body {
         <div class="row">
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
             <div class="box-feature">
-              <span class="flaticon-house"></span>
-              <h3 class="mb-3">자유게시판</h3>
+              <span class="flaticon-house" ></span>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/board/list" class="learn-more">자유게시판</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                공간을 빌리는 사람도, </br> 빌려주는 사람도</br> 경험과 팁을 나누는 </br> 우리만의 자유게시판입니다.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/board/list" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
             <div class="box-feature">
               <span class="flaticon-building"></span>
-              <h3 class="mb-3">QnA게시판</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/qna/list" class="learn-more">qna게시판</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                spacebar만의 </br> 공간·숙소 대여가 궁금하다면 </br> 여기서 묻고, </br>답변 받아보세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/qna/list" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
             <div class="box-feature">
               <span class="flaticon-house-3"></span>
-              <h3 class="mb-3">공지사항</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/notice/noticeList" class="learn-more">공지사항</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                Spacebar  </br> 공식 소식과  </br> 꼭 알아야 할 안내를  </br> 한 곳에서 확인하세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/notice/noticeList" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
             <div class="box-feature">
               <span class="flaticon-house-1"></span>
-              <h3 class="mb-3">House for Sale</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/board/faq" class="learn-more">자주묻는질문</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                한 번에 해결하는  </br>  기본 궁금증!  </br>  예약·결제·환불·쿠폰까지 </br>  FAQ에서 빠르게 확인하세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/board/faq" class="learn-more">방문하기</a></p>
             </div>
           </div>
         </div>
