@@ -23,7 +23,7 @@ public interface CouponDao
     //List<Coupon> selectValidCouponsByUserId(@Param("now") Date now, @Param("userId") String userId);
     List<Coupon> selectValidCouponsByUserId(String userId);
     
-    Coupon selectCouponBySeq(@Param("couponSeq") Integer couponSeq);
+    Coupon selectCouponBySeq(@Param("cpnSeq") Integer couponSeq);
 
     int markCouponAsUsed(@Param("userId") String userId, @Param("cpnSeq") int cpnSeq);
 }

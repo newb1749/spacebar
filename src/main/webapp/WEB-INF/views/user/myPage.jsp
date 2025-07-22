@@ -625,7 +625,7 @@ $(function(){
 			<div  class=cart-container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
-			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
+			  <form action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>
 			    <label>
 			      <input type="checkbox" id="selectAll"/> 전체선택
 			    </label><br/><br/>
