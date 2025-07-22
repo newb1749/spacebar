@@ -98,10 +98,10 @@ public class RoomController {
 	private ReviewService reviewService;
 
 	
-	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
+	private static final int LIST_COUNT = 9; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
-	private static final int QNA_LIST_COUNT = 2; 	// Qna 한 페이지의 게시물 수
-	private static final int QNA_PAGE_COUNT = 2;	// Qna 페이징 수
+	private static final int QNA_LIST_COUNT = 3; 	// Qna 한 페이지의 게시물 수
+	private static final int QNA_PAGE_COUNT = 3;	// Qna 페이징 수
 	
     /**
      * 숙소 등록 폼 페이지로 이동
@@ -629,12 +629,12 @@ public class RoomController {
         String userType = null;
         if (sessionUserId != null) 
         {
-            User userId = userService.userSelect(sessionUserId);
+            User user = userService.userSelect(sessionUserId);
             
-            if (userId != null) 
+            if (user != null) 
             {
-                userType = userId.getUserType(); 
-                model.addAttribute("user", userId);
+                userType = user.getUserType(); 
+                model.addAttribute("user", user);
                 model.addAttribute("sessionUserId", sessionUserId);
             }
         }
@@ -659,23 +659,8 @@ public class RoomController {
 					room.setStartDate(startDate);
 					room.setEndDate(endDate);
 					room.setRoomImageList(roomImg);
-					RoomImage mainImages = null;
-					List<RoomImage> detailImages = new ArrayList<>();
-					
-					for(RoomImage img : roomImg)
-					{
-						if("main".equals(img.getImgType()))
-						{
-							mainImages = img;
-						}
-						else
-						{
-							detailImages.add(img);
-						}
-					}
-					
-					model.addAttribute("mainImages",mainImages);
-					model.addAttribute("detailImages",detailImages);
+
+					model.addAttribute("roomImg",roomImg);
 				}
 				
 				model.addAttribute("room",room);

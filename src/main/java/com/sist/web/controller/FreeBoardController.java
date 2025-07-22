@@ -558,5 +558,14 @@ public class FreeBoardController {
 
 	    return ajaxResponse;
 	}
+	
+	//게시판 리스트
+	@RequestMapping(value="/board/faq")
+	public String faq(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{	
+		model.addAttribute("boardType", "faq");
+		
+		return "/board/faq";
+	}
 
 }

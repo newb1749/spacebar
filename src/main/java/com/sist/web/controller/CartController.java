@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 // import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -168,6 +170,57 @@ public class CartController {
             ajax.setResponse(500, "삭제 실패");
         }
         return ajax;
+    }
+    
+    @PostMapping("/cart/confirm")
+    public String cartConfirm(
+            @RequestParam("cartSeqs") List<Integer> cartSeqs,
+            HttpSession session,
+            Model model,
+            RedirectAttributes rt) {
+
+        String userId = (String) session.getAttribute(AUTH_SESSION_NAME);
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+
+        // Cart → Reservation 변환 리스트
+        List<Cart> carts = cartService.getCartsBySeqs(cartSeqs, userId);
+        if (carts.size() != cartSeqs.size()) {
+            rt.addFlashAttribute("error", "유효하지 않은 장바구니 항목이 있습니다.");
+            return "redirect:/cart/list";
+        }
+
+        List<Reservation> reservations = new ArrayList<>();
+        for (Cart c : carts) {
+            Reservation r = new Reservation();
+            
+            r.setGuestId(userId);
+            r.setRoomTypeSeq(c.getRoomTypeSeq());
+            r.setRsvCheckInDt(c.getCartCheckInDt());
+            r.setRsvCheckOutDt(c.getCartCheckOutDt());
+            r.setRsvCheckInTime(c.getCartCheckInTime());
+            r.setRsvCheckOutTime(c.getCartCheckOutTime());
+            r.setNumGuests(c.getCartGuestsNum());
+            r.setTotalAmt(c.getCartTotalAmt());
+            r.setFinalAmt(c.getCartTotalAmt());
+            r.setRsvStat("CONFIRMED");
+            r.setRsvPaymentStat("PAID");
+            r.setRoomTypeTitle(c.getRoomTypeTitle());
+
+            reservations.add(r);
+        }
+
+        int totalAmt    = reservations.stream().mapToInt(Reservation::getFinalAmt).sum();
+        int userMileage = mileageService.getUserMileage(userId);
+
+        model.addAttribute("reservations", reservations);
+        model.addAttribute("totalAmt", totalAmt);
+        model.addAttribute("userMileage", userMileage);
+        model.addAttribute("cartSeqs", cartSeqs);
+
+        // 새로 만들 Confirm 뷰 경로
+        return "/cart/confirmCart";
     }
     
     //장바구니 통해 결제

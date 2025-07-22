@@ -1,4 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+
+    <link rel="stylesheet" href="/resources/fonts/icomoon/style.css" />
+    <link rel="stylesheet" href="/resources/fonts/flaticon/font/flaticon.css" />
+    
+    
 <div class="site-footer">
     <div class="container">
         <div class="row">

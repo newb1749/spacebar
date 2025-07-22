@@ -84,24 +84,6 @@
   height: 32px !important;
 }
 
-.sticky-tabs {
-  position: relative;     /* 처음엔 문서 흐름에 따라 위치 */
-  top: auto;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  z-index: 200;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: box-shadow .2s;
-}
-
-.sticky-tabs.fixed {
-  position: fixed;        /* fixed 클래스가 붙으면 고정 */
-  top: 0px;              /* 네비게이션바 높이만큼 아래로 */
-  width: 100%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
 /* 탭 리스트 */
 .tabs-list {
   display: flex;
@@ -127,11 +109,6 @@
 .tabs-list li a:hover {
   color: #007bff;
   border-color: #007bff;
-}
-
-#mainContent {
-  /* 헤더(56px) + 탭바 높이(48px) */
-  padding-top: calc(0px + 48px);
 }
 
 /* 1) 이미지·텍스트 칸의 h-100 해제 대상에 col‑md‑6 추가 */
@@ -405,9 +382,20 @@ $(document).ready(function(){
 	console.log("✅ 리뷰 호출 시작");
 	loadReviewList(1); // 첫 페이지 로딩
 	
-	$("#btnRoomList, #btnSpaceList").on("click", function(){
+	$("#btnRoomList").on("click", function(){
 	  // 예: 룸 리스트로
 	  const url = "${pageContext.request.contextPath}/room/roomList"
+	            + "?regionList=" + encodeURIComponent($("#regionList").val())
+	            + "&startDate="   + encodeURIComponent($("#checkIn").val())
+	            + "&endDate="     + encodeURIComponent($("#checkOut").val())
+	            + "&personCount="+ encodeURIComponent($("#_personCount").val())
+	            + /*…필요한 파라미터 모두 붙여서…*/"";
+	  window.location.href = url;
+	});
+	
+	$("#btnSpaceList").on("click", function(){
+	  // 예: 룸 리스트로
+	  const url = "${pageContext.request.contextPath}/room/spaceList"
 	            + "?regionList=" + encodeURIComponent($("#regionList").val())
 	            + "&startDate="   + encodeURIComponent($("#checkIn").val())
 	            + "&endDate="     + encodeURIComponent($("#checkOut").val())
@@ -463,26 +451,6 @@ function fn_review_list(page) {
 <div class="loader"></div>
 <div id="overlayer"></div>
 
-
-<c:choose>
-  <c:when test="${mainImages.imgType eq 'main'}">
-    <c:set var="bgImage"
-           value="${pageContext.request.contextPath}/resources/upload/room/main/${mainImages.roomImgName}" />
-  </c:when>
-  <c:otherwise>
-    <c:set var="bgImage"
-           value="${pageContext.request.contextPath}/resources/images/file.png" />
-  </c:otherwise>
-</c:choose>
-
-<!-- 한 번만 열고, bgImage 변수 사용 -->
-<div class="hero page-inner"
-     style="background-image: url('${bgImage}');">
-  <div class="container text-center mt-5">
-    <h1 class="heading" data-aos="fade-up">${room.roomTitle}</h1>
-  </div>
-</div>
-
 <!-- fixed 탭바 -->
 <div class="sticky-tabs" id="tabBar">
   <ul class="tabs-list">
@@ -493,18 +461,32 @@ function fn_review_list(page) {
   </ul>
 </div>
 
+
+
 <div id="mainContent" class="section">
   <div class="container">
     <div class="row justify-content-between align-items-start">
     <!-- 왼쪽 정렬 -->
       <div class="col-lg-9">
-        <div class="property-slider-wrap">
+		<div class="property-slider-wrap">
 		  <!-- Tiny Slider 구조 -->
 		  <div class="my-slider">
-		    <c:forEach var="roomImg" items="${detailImages}">
+		    <c:forEach var="roomImg" items="${roomImg}" varStatus="st">
 		      <div class="slide-item">
-		        <img src="${pageContext.request.contextPath}/resources/upload/room/detail/${roomImg.roomImgName}"
-		             class="img-fluid" alt="${roomImg.imgType}" />
+		        <c:choose>
+		          <c:when test="${st.first}">
+		            <img
+		              src="${pageContext.request.contextPath}/resources/upload/room/main/${roomImg.roomImgName}"
+		              class="img-fluid"
+		              alt="첫번째 룸 이미지" />
+		          </c:when>
+		          <c:otherwise>
+		            <img
+		              src="${pageContext.request.contextPath}/resources/upload/room/detail/${roomImg.roomImgName}"
+		              class="img-fluid"
+		              alt="${roomImg.imgType}" />
+		          </c:otherwise>
+		        </c:choose>
 		      </div>
 		    </c:forEach>
 		  </div>
@@ -524,6 +506,9 @@ function fn_review_list(page) {
 			    <p class="text-black-50">${room.roomDesc}</p>
 			  </div>
 			</section>
+			
+			
+
           
           <!-- 룸타입 섹션 시작 -->
 <section id="typeSection" class="room-types section-block">
@@ -767,19 +752,18 @@ function fn_review_list(page) {
 <script src="${pageContext.request.contextPath}/resources/js/custom.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-  const tabBar = document.getElementById("tabBar");
-  // 탭바가 문서에서 차지하는 원래 Y 위치
-  const stickyPoint = tabBar.getBoundingClientRect().top + window.scrollY - 56;
+  document.addEventListener('DOMContentLoaded', function(){
+    const tabBar = document.querySelector('.sticky-tabs');
+    const startOffset = tabBar.getBoundingClientRect().top + window.pageYOffset;
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > stickyPoint) {
-      tabBar.classList.add("fixed");
-    } else {
-      tabBar.classList.remove("fixed");
-    }
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset >= startOffset) {
+        tabBar.classList.add('is–fixed');
+      } else {
+        tabBar.classList.remove('is–fixed');
+      }
+    });
   });
-});
 </script>
 
 <script>
