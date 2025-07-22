@@ -14,6 +14,9 @@ public interface UserDao
 	//회원 조회
 	public User userSelect(String userId);
 	
+	//판매자 조회
+	public User hostSelect(int roomSeq);
+	
 	//닉네임 관련
 	public User nickNameSelect(String nickName);
 	
