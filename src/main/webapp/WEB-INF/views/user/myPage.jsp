@@ -134,6 +134,14 @@ $(function(){
 });
 //==========================장바구니 끝==========================//
 </script>
+<style>
+.site-nav .container {
+  max-width: none !important;   /* 부트스트랩 max-width 제거 */
+  width:68% !important;        /* 화면 너비의 80% */
+  margin: 0 auto !important;    /* 가운데 정렬 */
+  padding: 0 !important;
+}
+</style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -622,7 +630,7 @@ $(function(){
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
 			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=container>
+			<div  class=cart-container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>

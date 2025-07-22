@@ -40,7 +40,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   	<style>
-  	
+  	.site-nav .container {
+  max-width: none !important;   /* 부트스트랩 max-width 제거 */
+  width:68% !important;        /* 화면 너비의 80% */
+  margin: 0 auto !important;    /* 가운데 정렬 */
+  padding: 0 !important;
+}
   	
   /* pulsate effect for heart */
 @keyframes pulse {
