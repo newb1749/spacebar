@@ -134,7 +134,7 @@ h3 {
   <table class="table table-bordered">
     <tr>
       <th>객실 타입</th>
-      <td>${reservation.roomTypeSeq}</td>
+      <td>${reservation.roomTypeTitle}</td>
     </tr>
     <tr>
       <th>체크인</th>
