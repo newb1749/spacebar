@@ -21,7 +21,7 @@
 
 <style>
   body {
-    padding-top: 100px;
+    padding-top: 20px;
   }
 
   .clickable {
