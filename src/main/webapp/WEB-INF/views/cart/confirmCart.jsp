@@ -32,13 +32,9 @@
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-<div style="max-width:700px;margin:20px auto;text-align:center;color:#888;">
-  쿠폰 개수: ${fn:length(couponList)}
-</div>
-
 <div class="container">
   <form id="paymentForm" action="${pageContext.request.contextPath}/cart/checkout" method="post">
-    <h3>예약 내용 확인</h3>
+    <h3>예약 내용 확인</h3> 
 
     <table class="table table-bordered" id="orderTable">
       <tr>
