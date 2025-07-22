@@ -136,23 +136,53 @@ public class UserController
 			{
 				if(StringUtil.equals(userPwd, user.getUserPwd()))
 				{
-					if(StringUtil.equals(user.getUserStat(), "Y"))
+					//호스트일때
+					if(StringUtil.equals(user.getUserType(), "H"))
+					{
+						//승인 받았을때
+						if(StringUtil.equals(user.getApprovStat(), "Y"))
+						{
+							request.getSession().setAttribute("SESSION_USER_ID", userId);
+							
+							String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	
+							// "loginUser" 라는 이름으로 사용자 객체 전체를 세션에 추가로 저장
+							request.getSession().setAttribute("loginUser", user);
+							
+							logger.debug("userId : " + userId);
+							logger.debug("sessionUserId : " + sessionUserId);
+							logger.debug("userPwd : " + userPwd);
+
+		                    ajaxRes.setResponse(0, "success");
+		                    ajaxRes.setData("/host/main"); 
+						}
+						//미승인일때
+						else
+						{
+							ajaxRes.setResponse(-98, "host not approved");
+						}
+					}
+					//게스트일때
+					else
 					{
 						request.getSession().setAttribute("SESSION_USER_ID", userId);
-						
-						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-
-						// "loginUser" 라는 이름으로 사용자 객체 전체를 세션에 추가로 저장
 						request.getSession().setAttribute("loginUser", user);
 						
+						String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 						logger.debug("userId : " + userId);
 						logger.debug("sessionUserId : " + sessionUserId);
 						logger.debug("userPwd : " + userPwd);
-						ajaxRes.setResponse(0, "success");
-					}
-					else
-					{
-						ajaxRes.setResponse(-99, "status error");
+						
+						if(StringUtil.equals(user.getUserStat(), "Y"))
+						{
+							ajaxRes.setResponse(0, "success");
+							ajaxRes.setData("/");
+						}
+						else
+						{
+							ajaxRes.setResponse(-99, "status error");
+						}
+
 					}
 				}
 				else
@@ -629,18 +659,19 @@ public class UserController
 		model.addAttribute("user", user);
 		
 		//호스트일때 숙소/공간 정보관리
-		if(user != null && StringUtil.equals(user.getUserType(), "H"))
-		{
-		    List<Room> hostRoomList = roomServiceSh.selectHostRoomList(sessionUserId);
-		    model.addAttribute("hostRoomList", hostRoomList);
-		}
+//		if(user != null && StringUtil.equals(user.getUserType(), "H"))
+//		{
+//		    List<Room> hostRoomList = roomServiceSh.selectHostRoomList(sessionUserId);
+//		    model.addAttribute("hostRoomList", hostRoomList);
+//		}
 		
 		//쿠폰 정보
-		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);
-		//boolean isIssued = couponService.isAlreadyIssued(sessionUserId, cpnSeq);
-		
+		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);		
 		model.addAttribute("couponList", couponList);
-		//model.addAttribute("isIssued", isIssued);
+
+		int couponCount = couponService.couponCountByUser(sessionUserId);
+		model.addAttribute("couponCount", couponCount);
+		
 
 		//예약 정보
         List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
@@ -701,8 +732,8 @@ public class UserController
 		return "/user/myPage";
 	}
 	
-	// 기존 myPageForm 메서드 아래에 추가
-	@RequestMapping(value = "/user/myPage/checkout", method = RequestMethod.POST)
+	// 마이페이지 - 장바구니에서 구매하기 눌렀을때
+	@RequestMapping(value = "/user/myPage/checkout", method = {RequestMethod.GET, RequestMethod.POST})
 	public String checkout(
 	    HttpServletRequest request,
 	    RedirectAttributes rt

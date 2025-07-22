@@ -115,4 +115,20 @@ public class CouponServiceJY
         }
     }
 
+    //마이페이지용(쿠폰 총 갯수)
+    public int couponCountByUser(String userId)
+    {
+    	int count = 0;
+    	
+        try 
+        {
+        	count = couponDao.couponCountByUser(userId);
+        } 
+        catch(Exception e) 
+        {
+            logger.error("[CouponServiceJY] couponCountByUser Exception", e);
+        }
+    	
+    	return count;
+    }
 }

@@ -66,8 +66,13 @@ public interface RoomDao {
      * 숙소 정보 수정
      */
     public int updateRoom(Room room);
-
-
+    
+    /**
+     * 판매자가 등록한 숙소 목록 조회
+     * @param hostId
+     * @return
+     */
+    public List<Room> selectRoomsByHostId(String hostId);
 }
 
 

@@ -23,6 +23,7 @@ public class User implements Serializable
 	private String	userStat;	//사용자 상태 (y: 활성, n: 비활성)
 	private int	mile;			//마일리지
 	private String	updateDt;	//마지막 업데이트 일시
+	private String hostComment; //호스트 소개글
 	
 	public User()
 	{
@@ -43,8 +44,22 @@ public class User implements Serializable
 		userStat = "Y";	
 		mile = 0;	
 		updateDt = "";	
-		
+		hostComment = "";
 	}
+
+	
+	
+	public String getHostComment() {
+		return hostComment;
+	}
+
+
+
+	public void setHostComment(String hostComment) {
+		this.hostComment = hostComment;
+	}
+
+
 
 	public String getUserId() {
 		return userId;

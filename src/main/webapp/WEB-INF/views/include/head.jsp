@@ -10,9 +10,10 @@
 <!-- CSS -->
 <%-- <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/fonts/icomoon/style.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/fonts/flaticon/font/flaticon.css" /> --%>
+<link rel="stylesheet" href="/resources/css/style.css" type="text/css">
 <link rel="stylesheet" href="/resources/css/tiny-slider.css" />
 <link rel="stylesheet" href="/resources/css/aos.css" />
-<link rel="stylesheet" href="/resources/css/style.css" type="text/css">
+<link rel="stylesheet" href="/resources/css/navi.css" />
 
 <!-- JS -->
 <script src="/resources/js/jquery-3.5.1.min.js"></script>

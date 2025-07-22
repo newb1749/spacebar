@@ -26,6 +26,7 @@
       <result column="WEEKEND_AMT" property="weekEndAmt" />
       <result column="WEEKDAY_AMT" property="weekdayAmt" />
       <result column="ROOM_IMG_NAME" property="roomImgName" />
+      <result column="SALE_YN" property="saleYn" />
       
   </resultMap>
   
@@ -254,9 +255,11 @@
 						           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
 						           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
 						           NVL(MIN_TIMES, 0) MIN_TIMES,
-						           NVL(MAX_TIMES, 0) MAX_TIMES
+						           NVL(MAX_TIMES, 0) MAX_TIMES,
+						           NVL(SALE_YN,'') SALE_YN
 						      FROM ROOM A, ROOM_CATEGORY B
 				         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+				         	   AND SALE_YN = 'Y'
 				         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
 				         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 					                                FROM ROOM_TYPE
@@ -357,7 +360,8 @@
 		       AVERAGE_RATING,
 		       REVIEW_COUNT,
 		       MIN_TIMES,
-		       MAX_TIMES, 	 
+		       MAX_TIMES,
+		       SALE_YN, 	 
 		       (SELECT ROOM_IMG_NAME 
 		          FROM ROOM_IMAGE
 		         WHERE ROOM_SEQ = OUTER.ROOM_SEQ
@@ -404,9 +408,11 @@
 			           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
 			           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
 			           NVL(MIN_TIMES, 0) MIN_TIMES,
-			           NVL(MAX_TIMES, 0) MAX_TIMES
+			           NVL(MAX_TIMES, 0) MAX_TIMES,
+			           NVL(SALE_YN,'') SALE_YN
 			      FROM ROOM A, ROOM_CATEGORY B
 	         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+	         	   AND SALE_YN = 'Y'
 	         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
 	         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 		                                FROM ROOM_TYPE
@@ -562,5 +568,19 @@
             REVIEW_COUNT = #{reviewCount}
         WHERE ROOM_SEQ = #{roomSeq}
     </update>	
-  
+
+    <select id="selectRoomsByHostId" parameterType="string" resultMap="roomResultMap">
+        SELECT
+            ROOM_SEQ,
+            ROOM_TITLE,
+            HOST_ID
+        FROM
+            ROOM
+        WHERE
+            HOST_ID = #{hostId}
+        ORDER BY
+            ROOM_SEQ DESC
+    </select>
+    
+     
 </mapper>

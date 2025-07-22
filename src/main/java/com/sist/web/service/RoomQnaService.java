@@ -13,7 +13,7 @@ import com.sist.web.dao.RoomQnaCommentDao;
 import com.sist.web.dao.RoomQnaDao;
 import com.sist.web.model.RoomQna;
 
-@Service("roomQnaService_mj")
+@Service("roomQnaService")
 public class RoomQnaService 
 {		
 	private static Logger logger = LoggerFactory.getLogger(RoomQnaService.class);

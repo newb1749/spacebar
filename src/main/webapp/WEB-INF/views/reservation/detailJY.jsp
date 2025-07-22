@@ -1,65 +1,79 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>예약 내용 확인</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
   <style>
-    body {
-      padding-top: 100px;
-      background-color: #f8f9fa;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-    h3 {
-      margin-top: 120px;
-      color: #343a40;
-      font-weight: 700;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .table {
-      background-color: #fff;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      max-width: 700px;
-      margin: 0 auto 40px;
-    }
-    .table th, .table td {
-      vertical-align: middle !important;
-      text-align: center;
-      font-size: 1rem;
-      color: #495057;
-    }
-    .table th {
-      background-color: #343a40;
-      color: white;
-      font-weight: 600;
-    }
-    .btn-primary {
-      background-color: #fe7743;
-      border: none;
-      font-weight: 700;
-      font-size: 1.1rem;
-      transition: background-color 0.3s ease;
-      width: 100%;
-      max-width: 700px;
-      display: block;
-      margin: 0 auto;
-      padding: 12px;
-    }
-    .btn-primary:hover {
-      background-color: #e96328;
-    }
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-    }
+.site-nav .container {
+  max-width: none !important;   /* 부트스트랩 max-width 제거 */
+  width:68% !important;        /* 화면 너비의 80% */
+  margin: 0 auto !important;    /* 가운데 정렬 */
+  padding: 0 !important;
+}
+
+/* ─── 기존 CSS ─── */
+body {
+  padding-top: 100px;
+  background-color: #f8f9fa;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+h3 {
+  margin-top: 120px;
+  color: #343a40;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.table {
+  background-color: #fff;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+.table th, .table td {
+  vertical-align: middle !important;
+  text-align: center;
+  font-size: 1rem;
+  color: #495057;
+}
+.table th {
+  background-color: #343a40;
+  color: white;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #fe7743;
+  border: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  max-width: 700px;
+  display: block;
+  margin: 0 auto;
+  padding: 12px;
+}
+.btn-primary:hover {
+  background-color: #e96328;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+}
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>

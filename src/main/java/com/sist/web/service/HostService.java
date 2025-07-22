@@ -1,7 +1,9 @@
 package com.sist.web.service;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.common.util.FileUtil;
 import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.HostDao;
+import com.sist.web.dao.ReviewDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.dao.RoomImageDao;
 import com.sist.web.dao.RoomTypeDao;
 import com.sist.web.dao.RoomTypeImageDao;
+import com.sist.web.model.Review;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
@@ -49,7 +53,9 @@ public class HostService {
 	@Autowired
 	private RoomServiceInterface roomService; 
 		
-	
+    @Autowired
+    private ReviewDao reviewDao;
+    
 	
     /**
      * 판매자 본인이 등록한 숙소 리스트 조회
@@ -155,11 +161,93 @@ public class HostService {
     public int stopSellingRoom(int roomSeq) {
         return hostDao.stopSellingRoom(roomSeq);
     }
-    
-    
+        
 	// 판매 중지 해제
 	public int resumeSellingRoom(int roomSeq) {
 		return hostDao.resumeSellingRoom(roomSeq);
 	}
     
+	// 판매자가 등록한 방 목록 조회
+    public List<Room> getRoomsByHost(String hostId) {
+        return roomDao.selectRoomsByHostId(hostId);
+    }
+    
+    // 호스트가 등록한 모든 숙소(ROOM)에 작성된 리뷰 전체
+    public List<Review> getAllReviewsByHost(String hostId) {
+        List<Review> list = reviewDao.selectAllReviewsByHost(hostId);
+        System.out.println("📋 hostId = " + hostId + ", 리뷰 개수 = " + list.size());
+        return list;
+    }
+    
+    /**
+     * 판매자의 총 평균 평점 조회(누적, 연간, 월간, 주간)
+     * @param hostId 판매자
+     * @param period 누적, 연간, 월간, 주간
+     * @return 총 평균 평점
+     */
+    public double getAvgRatingByHostWithPeriod(String hostId, String period, String periodDetail) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("hostId", hostId);
+        map.put("period", period);
+        map.put("periodDetail", periodDetail != null ? periodDetail : "");
+
+        logger.debug("[HostService] getAvgRatingByHostWithPeriod hostId: {}", hostId);
+        logger.debug("[HostService] getAvgRatingByHostWithPeriod period: {}", period);
+        logger.debug("[HostService] getAvgRatingByHostWithPeriod periodDetail: {}", periodDetail);
+
+        Double result = reviewDao.selectAvgRatingByHostWithPeriod(map);
+        return result != null ? result : 0.0;
+    }
+
+    
+    	
+    /**
+     * 총 판매 건수 (결제 완료 건수)
+     * @param hostId
+     * @param period
+     * @return
+     */
+    public int getTotalSalesCount(String hostId, String period) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("hostId", hostId);
+        map.put("period", period);
+        return hostDao.selectTotalSalesCountByPeriod(map);
+    }
+    
+    /**
+     * 총 정산 금액 (FINAL_AMT 기준)
+     * @param hostId
+     * @param period
+     * @return
+     */
+    public int getTotalSalesAmount(String hostId, String period) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("hostId", hostId);
+        map.put("period", period);
+        return hostDao.selectTotalSalesAmountByPeriod(map);
+    }
+    
+    /**
+     * 
+     * @param hostId
+     * @param period
+     * @param periodDetail
+     * @return
+     */
+    public Map<String, Object> getStatsByPeriod(String hostId, String period, String periodDetail) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("hostId", hostId);
+        param.put("period", period);
+        param.put("periodDetail", periodDetail != null ? periodDetail : "");
+
+        logger.debug("[Service - getStatsByPeriod] 파라미터: {}", param);
+
+        Map<String, Object> result = hostDao.getStatsByPeriod(param);
+        logger.debug("[Service - getStatsByPeriod] 결과: {}", result);
+
+        return result;
+    }
+
+
+
 }
