@@ -139,6 +139,7 @@
     WHERE A.USER_ID = #{value}
       AND NVL(A.USER_CPN_IS_USED, 'N') = 'N'     
       AND B.CPN_STAT = 'Y'
+      AND A.USER_CPN_IS_USED = 'N'
       AND TO_CHAR(B.ISSUE_END_DT, 'YYYY-MM-DD') >= TO_CHAR(SYSDATE, 'YYYY-MM-DD')
     ORDER BY B.CPN_SEQ DESC
   </select>
@@ -162,5 +163,14 @@
     FROM COUPON 
     WHERE CPN_SEQ = #{cpnSeq}
   </select>
+
+	<update id="markCouponAsUsed">
+	    UPDATE USER_COUPON
+	    SET USER_CPN_IS_USED = 'Y',
+	        USAGE_DT = SYSDATE
+	    WHERE USER_ID = #{userId}
+	      AND CPN_SEQ = #{cpnSeq}
+	      AND USER_CPN_IS_USED = 'N'
+	</update>
 
 </mapper>

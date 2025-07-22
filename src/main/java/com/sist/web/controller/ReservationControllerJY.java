@@ -64,7 +64,7 @@ public class ReservationControllerJY {
 
     @Autowired
     private CouponServiceJY couponService;
-    
+        
     @GetMapping("/reservation/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
@@ -243,12 +243,15 @@ public class ReservationControllerJY {
     public String processMileagePaymentWithReservation(@ModelAttribute Reservation reservation,
                                                        HttpSession session,
                                                        RedirectAttributes redirectAttrs) {
+        logger.info("processMileagePaymentWithReservation 진입");
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         if (userId == null || userId.isEmpty()) {
             redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
         reservation.setGuestId(userId);
+        
+        logger.info("couponSeq = {}", reservation.getCouponSeq());
 
         long userMileage = getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
@@ -263,10 +266,14 @@ public class ReservationControllerJY {
         }
 
         try {
-            // 예약 저장
             reservationService.insertReservation(reservation);
 
-            // 로그 추가: 예약번호 확인
+            if (reservation.getCouponSeq() != null) {
+                logger.info("쿠폰 사용 완료 처리 시작: userId={}, cpnSeq={}", userId, reservation.getCouponSeq());
+                couponService.markCouponAsUsed(userId, reservation.getCouponSeq());
+                logger.info("쿠폰 사용 완료 처리 종료");
+            }
+
             logger.info("예약 저장 후 rsvSeq: {}", reservation.getRsvSeq());
 
             if (reservation.getRsvSeq() == null || reservation.getRsvSeq() <= 0) {
@@ -280,13 +287,9 @@ public class ReservationControllerJY {
         }
 
         session.removeAttribute("pendingReservation");
-        
+
         int seq = reservation.getRsvSeq() != null ? reservation.getRsvSeq() : -1;
         return "redirect:/payment/paymentConfirm?rsvSeq=" + seq;
-
-
-        // 결제 완료 페이지로 rsvSeq 전달
-        //return "redirect:/payment/paymentConfirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
     // == chargeMileage 경로 확실히 /reservation/chargeMileage 로 수정 ==
@@ -345,9 +348,8 @@ public class ReservationControllerJY {
             fullReservation.setCancelDt(new Date());
             fullReservation.setRefundAmt(fullReservation.getFinalAmt());
 
+            // 예약 취소 처리 및 마일리지 환불(내부에서 한번만 호출됨)
             reservationService.cancelReservation(fullReservation);
-
-            mileageHistoryService.refundMileage(userId, fullReservation.getRefundAmt());
 
             redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
         } catch (Exception e) {
@@ -357,7 +359,7 @@ public class ReservationControllerJY {
 
         return "redirect:/payment/mileageHistory";
     }
-
+    
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
         if (roomType == null) {
@@ -541,6 +543,24 @@ public class ReservationControllerJY {
         model.addAttribute("now", new java.util.Date());
 
         return "reservation/reservationConfirm"; // jsp 경로
+    }
+
+    @PostMapping("/reservation/pay")
+    public String pay(@ModelAttribute Reservation reservation, Model model) {
+        int totalAmount = reservation.getTotalAmt();
+        int finalAmount = totalAmount;
+
+        Integer couponSeq = reservation.getCouponSeq();
+        if (couponSeq != null) 
+        {
+            Coupon coupon = couponService.getCouponBySeq(couponSeq); // 쿠폰 정보 조회
+            finalAmount = reservationService.calculateFinalAmount(reservation); // 할인 반영
+        }
+
+        model.addAttribute("reservation", reservation);
+        model.addAttribute("finalAmount", finalAmount);
+
+        return "reservation/paymentConfirm"; // 결제 확인 페이지로 이동
     }
 
 }

@@ -70,17 +70,19 @@
         window.location.href = '${pageContext.request.contextPath}/index.jsp';
       }
 
-      $("input[name='coupon']").on("change", function () {
-        const finalAmt = Number("${reservation.finalAmt}");
-        const selected = $("input[name='coupon']:checked");
-        let discount = Number(selected.data("discount")) || 0;
-        const discountType = selected.data("type");
-        let discountedAmt = finalAmt;
+      const originalFinalAmt = Number("${reservation.finalAmt}");
 
-        if (discountType === 'rate') {
-          discountedAmt = finalAmt - Math.floor(finalAmt * discount / 100);
-        } else {
-          discountedAmt = finalAmt - discount;
+      // 쿠폰 선택 시 금액 차감
+      $("#couponSelect").on("change", function () {
+        const selected = $(this).find("option:selected");
+        const discount = Number(selected.data("discount")) || 0;
+        const type = selected.data("type");
+        let discountedAmt = originalFinalAmt;
+
+        if (type === 'rate') {
+          discountedAmt = originalFinalAmt - Math.floor(originalFinalAmt * discount / 100);
+        } else if (type === 'amount') {
+          discountedAmt = originalFinalAmt - discount;
         }
 
         if (discountedAmt < 0) discountedAmt = 0;
@@ -108,7 +110,7 @@
 <body>
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-<!-- 디버그용 쿠폰 개수 출력 -->
+
 <div style="max-width:700px; margin: 20px auto; text-align:center; color:#888;">
   쿠폰 개수: ${fn:length(couponList)}
 </div>
@@ -146,23 +148,30 @@
     </tr>
   </table>
 
-  <div class="coupon-box">
-	  <label for="couponSelect">쿠폰 선택</label>
-	  <select name="couponSeq" id="couponSelect">
-	    <c:choose>
-	      <c:when test="${not empty couponList}">
-	        <c:forEach var="coupon" items="${couponList}">
-	          <option value="${coupon.userCpnSeq}">
-	            ${coupon.cpnName} - ${coupon.cpnDesc}
-	          </option>
-	        </c:forEach>
-	      </c:when>
-	      <c:otherwise>
-	        <option disabled selected>사용 가능한 쿠폰이 없습니다.</option>
-	      </c:otherwise>
-	    </c:choose>
-	  </select>
-	</div>
+  <div class="coupon-box mb-3 text-center">
+    <label for="couponSelect" class="mb-1 fw-bold">쿠폰 선택</label>
+    <select name="couponSeq" id="couponSelect" class="form-select w-100">
+      <c:choose>
+        <c:when test="${not empty couponList}">
+          <option value="" data-discount="0" data-type="none">-- 쿠폰 선택 안함 --</option>
+          <c:forEach var="coupon" items="${couponList}">
+            <c:set var="discountType" value="${coupon.discountRate > 0 ? 'rate' : 'amount'}" />
+            <c:set var="discountValue" value="${coupon.discountRate > 0 ? coupon.discountRate : coupon.discountAmt}" />
+            <option 
+              value="${coupon.cpnSeq}" 
+              data-discount="${discountValue}" 
+              data-type="${discountType}">
+              ${coupon.cpnName} - ${coupon.cpnDesc}
+            </option>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <option disabled selected>사용 가능한 쿠폰이 없습니다.</option>
+        </c:otherwise>
+      </c:choose>
+    </select>
+  </div>
+
   <form id="paymentForm" action="${pageContext.request.contextPath}/payment/chargeMileage" method="post">
     <input type="hidden" name="roomTypeSeq" value="${reservation.roomTypeSeq}" />
     <input type="hidden" name="rsvCheckInDt" value="${reservation.rsvCheckInDt}" />

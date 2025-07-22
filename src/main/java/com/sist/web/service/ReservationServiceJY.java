@@ -1,5 +1,8 @@
 package com.sist.web.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -151,24 +154,87 @@ public class ReservationServiceJY
      * 할인, 쿠폰, 세금 등을 적용하는 로직을 작성
      */
     public int calculateFinalAmount(Reservation reservation) {
+        System.out.println("11111111111 [calculateFinalAmount Start] 1111111111111");
         int baseAmount = reservation.getTotalAmt();
         int discountAmount = 0;
 
         Integer couponSeq = reservation.getCouponSeq();
         if (couponSeq != null) {
             Coupon coupon = couponService.getCouponBySeq(couponSeq);
+            
+            System.out.println("222222222222 [calculateFinalAmount couponService.getCouponBySeq 실행] 222222222222");
             if (coupon != null) {
-                if (coupon.getDiscountRate() != 0) {  // 할인율이 0이 아닌 경우
-                    discountAmount = (int) Math.round(baseAmount * coupon.getDiscountRate() / 100.0);
-                } else if (coupon.getDiscountAmt() != 0) {  // 할인금액이 0이 아닌 경우
-                    discountAmount = coupon.getDiscountAmt();
+            	reservation.setCouponSeq(couponSeq);
+                boolean isValidStatus = "Y".equals(coupon.getCpnStat());
+                boolean isValidAmount = baseAmount >= (coupon.getMinOrderAmt() != 0 ? coupon.getMinOrderAmt() : 0);
+
+                Date startDate = null;
+                Date endDate = null;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");  // 날짜 포맷에 맞게 변경 필요
+                
+                try {
+                    if (coupon.getIssueStartDt() != null && !coupon.getIssueStartDt().isEmpty()) {
+                        startDate = sdf.parse(coupon.getIssueStartDt());
+                    }
+                    if (coupon.getIssueEndDt() != null && !coupon.getIssueEndDt().isEmpty()) {
+                        endDate = sdf.parse(coupon.getIssueEndDt());
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();  // 또는 로그 기록
+                    // 날짜 파싱 실패 시 유효기간 체크를 false로 처리할 수도 있음
+                }
+
+                boolean isValidDate = isWithinDateRange(startDate, endDate);
+ 
+                if (isValidStatus && isValidAmount && isValidDate) {
+                    if (coupon.getDiscountRate() != 0 && coupon.getDiscountRate() > 0) {
+                        discountAmount = (int) Math.round(baseAmount * coupon.getDiscountRate() / 100.0);
+                    } else if (coupon.getDiscountAmt() != 0 && coupon.getDiscountAmt() > 0) {
+                        discountAmount = coupon.getDiscountAmt();
+                    }
                 }
             }
         }
 
         int finalAmount = baseAmount - discountAmount;
-        return finalAmount < 0 ? 0 : finalAmount;
+        return Math.max(finalAmount, 0);
     }
 
+    private boolean isWithinDateRange(Date start, Date end) {
+        Date now = new Date();
+        if (start != null && now.before(start)) return false;
+        if (end != null && now.after(end)) return false;
+        return true;
+    }
+    
+    // 결제 완료 시 쿠폰 사용 처리 메서드 예시
+    @Transactional
+    public void completeReservationPayment(Reservation reservation) throws Exception {
+        // 1) 예약 정보 DB에 저장 (또는 기존 예약 업데이트)
+        reservationDao.insertReservation(reservation);
+        
+        // 2) 결제 상태를 '결제완료' 등으로 변경
+        reservationDao.updatePaymentStatus(reservation.getRsvSeq(), "PAID"); // 예: PAID 상태
+        
+        // 3) 쿠폰 사용 처리 (쿠폰 번호 및 사용자 아이디가 존재하는 경우만)
+        if (reservation.getCouponSeq() != null && reservation.getGuestId() != null && !reservation.getGuestId().trim().isEmpty()) {
+            couponService.markCouponAsUsed(reservation.getGuestId(), reservation.getCouponSeq());
+        }
+    }
+
+    // 기존 insertReservation 메서드에 결제 및 쿠폰 사용까지 포함하는 방식도 가능
+    @Transactional
+    public void insertReservationWithPayment(Reservation reservation) throws Exception {
+        System.out.println("insertReservationWithPayment 호출됨");
+        insertReservation(reservation);  // 기존 예약 등록 메서드 재사용
+        
+        updatePaymentStatus(reservation.getRsvSeq(), "PAID");
+        
+        if (reservation.getCouponSeq() != null && reservation.getGuestId() != null && !reservation.getGuestId().trim().isEmpty()) {
+            System.out.println("쿠폰 사용 처리 시작");
+            couponService.markCouponAsUsed(reservation.getGuestId(), reservation.getCouponSeq());
+            System.out.println("쿠폰 사용 처리 완료");
+        }
+    }
 
 }

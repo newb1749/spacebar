@@ -24,4 +24,6 @@ public interface CouponDao
     List<Coupon> selectValidCouponsByUserId(String userId);
     
     Coupon selectCouponBySeq(@Param("couponSeq") Integer couponSeq);
+
+    int markCouponAsUsed(@Param("userId") String userId, @Param("cpnSeq") int cpnSeq);
 }
