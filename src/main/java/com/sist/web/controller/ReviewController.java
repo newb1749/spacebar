@@ -155,7 +155,7 @@ public class ReviewController {
         } 
         else 
         {
-            return "redirect:/user/myPage_mj";
+            return "redirect:/user/myPage";
         }
     }
     
