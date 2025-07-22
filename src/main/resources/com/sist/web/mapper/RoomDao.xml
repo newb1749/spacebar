@@ -562,5 +562,19 @@
             REVIEW_COUNT = #{reviewCount}
         WHERE ROOM_SEQ = #{roomSeq}
     </update>	
-  
+
+    <select id="selectRoomsByHostId" parameterType="string" resultMap="roomResultMap">
+        SELECT
+            ROOM_SEQ,
+            ROOM_TITLE,
+            HOST_ID
+        FROM
+            ROOM
+        WHERE
+            HOST_ID = #{hostId}
+        ORDER BY
+            ROOM_SEQ DESC
+    </select>
+    
+     
 </mapper>
