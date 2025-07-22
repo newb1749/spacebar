@@ -666,6 +666,21 @@ public class RoomController {
 				model.addAttribute("room",room);
 				model.addAttribute("roomCatSeq",room.getRoomCatSeq());
 				
+				if(StringUtil.isEmpty(startDate) && StringUtil.isEmpty(endDate))
+				{
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+					Calendar cal = Calendar.getInstance();
+					
+					startDate = sdf.format(cal.getTime()); // 오늘 날짜
+					
+					//숙소일때 endDate + 1
+					if(room.getRoomCatSeq() >= 8 && room.getRoomCatSeq() <= 14)
+					{
+						cal.add(Calendar.DATE, 1); // 내일 날짜
+					}
+					endDate = sdf.format(cal.getTime());
+				}
+				
 				List<RoomType> roomTypes = roomTypeService.getRoomTypesByRoomSeq(room);
 				for(RoomType rt : roomTypes)
 				{
@@ -673,6 +688,9 @@ public class RoomController {
 					rt.setRoomTypeImageList(imgs);
 				}
 				
+				User host = userService.hostSelect(roomSeq);
+				
+				model.addAttribute("host",host);
 				model.addAttribute("roomTypes",roomTypes);
 				
 				// 리뷰
