@@ -1,5 +1,6 @@
 package com.sist.web.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,23 +34,17 @@ public class CouponControllerJY
     @Autowired
     private CouponServiceJY couponService;
 
-    @Value("#{env['auth.cookie.name']}") // ⬅️ 추가
-    private String AUTH_COOKIE_NAME;     // ⬅️ 추가
-    
-    @Value("#{env['auth.session.name']}")
-    private String AUTH_SESSION_NAME;
+    @Value("#{env['auth.cookie.name']}") 
+    private String AUTH_COOKIE_NAME;     
 
     @GetMapping("/listJY")
-    public String couponList(Model model)  
-    {
-        try 
-        {
+    public String couponList(Model model) {
+        try {
             List<Coupon> couponList = couponService.getAllCoupons();
             model.addAttribute("couponList", couponList);
-        } 
-        catch(Exception e) 
-        {
+        } catch (Exception e) {
             logger.error("[CouponControllerJY] couponList Exception", e);
+            model.addAttribute("couponList", new ArrayList<>());
         }
         return "/coupon/listJY";
     }
@@ -60,37 +55,30 @@ public class CouponControllerJY
                                                            HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
 
-        // ⬇️ 수정된 부분
-        String userId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+        String userId = (String) request.getSession().getAttribute("SESSION_USER_ID");
 
-        if (userId == null || userId.isEmpty()) 
-        {
+        if (userId == null || userId.isEmpty()) {
             result.put("success", false);
             result.put("message", "로그인이 필요합니다.");
             return ResponseEntity.ok(result);
         }
 
-        try 
-        {
+        try {
             boolean alreadyIssued = couponService.isAlreadyIssued(userId, cpnSeq);
-            if (alreadyIssued) 
-            {
+            if (alreadyIssued) {
                 result.put("success", false);
                 result.put("message", "이미 발급된 쿠폰입니다.");
-            }
-            else 
-            {
+            } else {
                 couponService.issueCouponToUser(userId, cpnSeq);
                 result.put("success", true);
                 result.put("message", "쿠폰이 발급되었습니다.");
             }
-        } 
-        catch (Exception e) 
-        {
+        } catch (Exception e) {
             logger.error("[CouponControllerJY] issueCoupon Exception", e);
             result.put("success", false);
             result.put("message", "쿠폰 발급 중 오류가 발생했습니다.");
         }
         return ResponseEntity.ok(result);
     }
+
 }

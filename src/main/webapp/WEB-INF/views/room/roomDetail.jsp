@@ -228,8 +228,79 @@
   object-fit: cover;      /* 원본 비율/크기 유지 */
   display: block;
   margin: 0 auto;
+  border-radius: 18px;
+}
+.heading {
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 3.2rem;
+  font-weight: normal;
+  color: #222;
+  -webkit-text-stroke: 1.2px #222;
+  text-shadow: 2px 2px 8px #19e86a; /* ← 밝은 녹색 그림자 */
 }
 
+.btn-slim {
+  padding: 0.38em 1.3em;
+  border-radius: 22px !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid #15b360 !important;     /* 진초록 */
+  background: #fff;
+  color: #15b360 !important;                /* 진초록 글씨 */
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 12px #1db95422;
+  transition: 
+    background 0.16s,
+    color 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+
+.btn-slim:hover, .btn-slim:focus {
+  background: #15b360;
+  color: #fff !important;
+  border-color: #15b360 !important;
+  box-shadow: 0 4px 18px #1db95444;
+}
+
+.btn-slim-black {
+  border-color: #222 !important;
+  color: #222 !important;
+  background: #fff;
+}
+
+.btn-slim-black:hover, .btn-slim-black:focus {
+  background: #222;
+  color: #fff !important;
+  border-color: #19e86a !important;
+}
+
+.property-info ul.list-unstyled {
+  font-size: 1.23rem;              /* 전체 글자 크기 업 */
+  font-weight: 500;                /* 약간 두껍게 */
+  color: #202e23;                  /* 더 선명한 검정 */
+  letter-spacing: 0.02em;
+  line-height: 1.8;
+  margin-top: 1.6rem;
+  margin-bottom: 1.6rem;
+  padding: 0 4px;
+  background: #f6fdf7;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px #17ae5e12;
+  border: 1.5px solid #d1f6dc;
+}
+.property-info ul.list-unstyled li {
+  margin-bottom: 0.15em;
+  padding: 0.12em 0.2em;
+  font-size: 1.18em;                /* 한 번 더 업 */
+}
+
+.property-info ul.list-unstyled strong {
+  color: #13a656;                   /* 초록 포인트 */
+  font-weight: 700;
+  margin-right: 4px;
+  letter-spacing: 0.03em;
+}
 
   </style>
 <script>
