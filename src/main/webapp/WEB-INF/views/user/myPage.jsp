@@ -142,9 +142,7 @@ $(function(){
         <div class="sidebar">
             <h2>마이페이지</h2>
             <c:if test="${user.userType == 'H'}">
-	            <div class="menu-item">
-	            	<a href="/host/main"> 내 숙소 / 공간 관리</a>
-	            </div>
+	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
             </c:if>
 	            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
 	            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
@@ -166,7 +164,7 @@ $(function(){
                 <div class="stat-card">
                     <div class="stat-number">
                         <c:choose>
-                            <c:when test="${not empty couponList}">
+                            <c:when test="${not empty couponCount}">
                                 <fmt:formatNumber value="${couponCount}" pattern="#,###"/>개
                             </c:when>
                             <c:otherwise>
@@ -214,7 +212,7 @@ $(function(){
 							    <p class="mb-3 fs-5"><strong>숙소명:</strong> ${room.roomTitle}</p>
 						        <div class="d-flex flex-row justify-content-center gap-3">
 						          <button type="button" class="btn btn-primary btn"
-						                  onclick="location.href='/host/updateRoom?roomSeq=${room.roomSeq}'">수정하기</button>
+						                  onclick="location.href='/room/hostUpdateForm?roomSeq=${room.roomSeq}'">수정하기</button>
 						          <button type="button" class="btn btn-danger btn"
 						                  onclick="hostDeleteRoom('${room.roomSeq}')">삭제하기</button>
 						        </div>  
@@ -423,7 +421,7 @@ $(function(){
 			    </div>
 			</div>
 
-			<%-- 예약 내역 --%>
+			<%-- 예약 내역 --%><!-- ------------------체크인/아웃 수정필요------------------ -->
             <div id="reservation-content" class="content-area hidden">
                 <div class="welcome-message">예약 내역</div>
                 <div class="sub-message">회원님이 예약 내역 목록입니다.</div>
@@ -624,7 +622,7 @@ $(function(){
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
 			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=cart-container>
+			<div  class=container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>

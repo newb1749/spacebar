@@ -173,22 +173,6 @@
 	      AND USER_CPN_IS_USED = 'N'
 	</update>
 	
-	<!-- 마이페이지용(쿠폰 리스트) -->
-	<select id="couponListByUser" parameterType="string" resultMap="mycouponResultMap">
-		SELECT A.USER_CPN_SEQ,
-		       A.USER_ID,
-		       A.CPN_SEQ,
-		       NVL(B.CPN_NAME,'') CPN_NAME,
-		       NVL(B.CPN_DESC,'') CPN_DESC,
-		       NVL(TO_CHAR(A.ISSUE_DT,'YYYY.MM.DD'),'') ISSUE_DT,
-		       NVL(TO_CHAR(A.USAGE_DT,'YYYY.MM.DD'),'') USAGE_DT,
-		       NVL(A.USER_CPN_IS_USED,'N') USER_CPN_IS_USED,
-		       NVL(A.USER_CPN_CNT,0) USER_CPN_CNT
-		  FROM USER_COUPON A, COUPON B
-		 WHERE A.CPN_SEQ = B.CPN_SEQ
-		   AND A.USER_ID = #{value}
-	</select>
-	
 	<!-- 마이페이지용(쿠폰 총 갯수) -->
 	<select id="couponCountByUser" parameterType="string" resultType="int">
 		SELECT COUNT(USER_CPN_SEQ) CNT
