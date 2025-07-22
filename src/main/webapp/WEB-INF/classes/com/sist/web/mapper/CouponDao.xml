@@ -172,5 +172,13 @@
 	      AND CPN_SEQ = #{cpnSeq}
 	      AND USER_CPN_IS_USED = 'N'
 	</update>
+	
+	<!-- 마이페이지용(쿠폰 총 갯수) -->
+	<select id="couponCountByUser" parameterType="string" resultType="int">
+		SELECT COUNT(USER_CPN_SEQ) CNT
+		  FROM USER_COUPON
+		 WHERE USER_ID = #{value}
+	</select>
+
 
 </mapper>

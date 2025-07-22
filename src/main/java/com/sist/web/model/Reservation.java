@@ -36,6 +36,8 @@ public class Reservation implements Serializable{
 	    private Integer couponSeq; // 쿠폰 ID 저장용 필드
 	    private Coupon coupon;
 
+	    private String roomTypeImgName;
+
 	    public Coupon getCoupon() {
 	        return coupon;
 	    }
@@ -93,17 +95,23 @@ public class Reservation implements Serializable{
 		    roomTypeSeq = 0;
 		    
 		    roomTypeTitle = "";
+		    roomTypeImgName = "";
 	    }
-	    
-	    
-	    
-	    
+
 		public String getRoomTypeTitle() {
 			return roomTypeTitle;
 		}
 		public void setRoomTypeTitle(String roomTypeTitle) {
 			this.roomTypeTitle = roomTypeTitle;
 		}
+
+		public String getRoomTypeImgName() {
+			return roomTypeImgName;
+		}
+		public void setRoomTypeImgName(String roomTypeImgName) {
+			this.roomTypeImgName = roomTypeImgName;
+		}
+
 		// 추가: setUserId → 내부적으로 guestId에 매핑
 	    public void setUserId(String userId) {
 	        this.guestId = userId;
@@ -112,8 +120,7 @@ public class Reservation implements Serializable{
 	    public String getUserId() {
 	        return this.guestId;
 	    }
-	    
-	    
+
 		public Integer getRsvSeq() {
 			return rsvSeq;
 		}

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import com.sist.web.dao.RoomQnaCommentDao;
 import com.sist.web.model.RoomQnaComment;
 
-@Service("roomQnaCommentService_mj")
+@Service("roomQnaCommentService")
 public class RoomQnaCommentService 
 {
-	private static Logger logger = LoggerFactory.getLogger(RoomService.class);
+	private static Logger logger = LoggerFactory.getLogger(RoomQnaCommentService.class);
     
 	@Autowired
 	private RoomQnaCommentDao roomQnaCommentDao;

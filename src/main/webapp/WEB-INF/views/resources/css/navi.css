@@ -1,0 +1,66 @@
+@charset "UTF-8";
+
+/* 부모 메뉴를 기준으로 포지셔닝 */
+.site-navigation,
+.site-menu li {
+  position: relative;
+}
+
+/* 서브메뉴 숨기기 */
+.site-menu .has-submenu .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;      /* 부모 메뉴 바로 아래 */
+  left: 0;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 5px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+/* 호버 시 보이기 */
+.site-menu .has-submenu:hover > .submenu {
+  display: block;
+}
+
+/* 서브메뉴 항목 스타일 */
+.site-menu .has-submenu .submenu li {
+  width: 100%;
+}
+
+.site-menu .has-submenu .submenu li a {
+  display: block;
+  padding: 8px 15px;
+  color: #333;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.site-menu .has-submenu .submenu li a:hover {
+  background-color: #f5f5f5;
+  color: #007bff;
+}
+
+/* 1) 부모 li에 기준점 설정 */
+.js-clone-nav li.has-submenu {   
+  position: relative;  
+}
+
+/* 2) 기존 서브메뉴 코드(예시) */
+.js-clone-nav li.has-submenu .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;    /* 부모 메뉴 바로 아래 */
+  left: 0;      /* 부모 메뉴 왼쪽에 딱 붙음 */
+  /* 나머지 스타일은 그대로 */
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+.js-clone-nav li.has-submenu:hover > .submenu {
+  display: block;
+}

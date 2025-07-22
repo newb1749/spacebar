@@ -285,5 +285,66 @@
 		    RNUM BETWEEN #{startRow} AND #{endRow}
 
 	</select>
+	
+	<select id="selectAllReviewsByHost" parameterType="string" resultMap="reviewResultMap">
+	    SELECT
+	        A.REVIEW_SEQ,
+	        A.RSV_SEQ,
+	        A.USER_ID,
+	        A.REVIEW_TITLE,
+	        A.REVIEW_CONTENT,
+	        A.RATING,
+	        A.REVIEW_STAT,
+	        TO_CHAR(A.REG_DT, 'YYYY.MM.DD HH24:MI:SS') AS REG_DT,
+	        TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS UPDATE_DT,
+	        B.PROF_IMG_EXT,
+	        B.NICKNAME      AS USER_NICKNAME,
+	        C.ROOM_TYPE_SEQ,
+	        D.ROOM_ADDR,
+	        D.ROOM_TITLE,
+	        D.ROOM_SEQ,
+	        E.ROOM_TYPE_TITLE,
+	        (
+	            SELECT F.REVIEW_IMG_NAME
+	            FROM REVIEW_IMAGE F
+	            WHERE F.REVIEW_SEQ = A.REVIEW_SEQ
+	            AND ROWNUM = 1
+	        ) AS REVIEW_IMG_NAME
+	    FROM REVIEW A
+	    JOIN SB_USER    B ON A.USER_ID = B.USER_ID
+	    JOIN RESERVATION C ON A.RSV_SEQ = C.RSV_SEQ
+	    JOIN ROOM_TYPE   E ON C.ROOM_TYPE_SEQ = E.ROOM_TYPE_SEQ
+	    JOIN ROOM        D ON E.ROOM_SEQ = D.ROOM_SEQ
+	    WHERE A.REVIEW_STAT = 'Y'
+	      AND D.HOST_ID = #{hostId}
+	    ORDER BY A.REG_DT DESC
+	</select>
+	
+	<!-- host/main에서 쓰임 기간 선택해서 평균평점 조회 -->
+	<select id="selectAvgRatingByHostWithPeriod" resultType="double" parameterType="map">
+	  SELECT ROUND(AVG(R.RATING), 1)
+	  FROM REVIEW R
+	  JOIN RESERVATION RS ON R.RSV_SEQ = RS.RSV_SEQ
+	  JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
+	  JOIN ROOM RM ON RT.ROOM_SEQ = RM.ROOM_SEQ
+	  WHERE R.REVIEW_STAT = 'Y'
+	    AND RM.HOST_ID = #{hostId}
+	  <choose>
+	    <when test="period == 'week'">
+	      AND R.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail}, 1, 10), 'YYYY-MM-DD')
+	                      AND TO_DATE(SUBSTR(#{periodDetail}, 12, 10), 'YYYY-MM-DD')
+	    </when>
+	    <when test="period == 'month'">
+	      AND TO_CHAR(R.REG_DT, 'YYYY-MM') = #{periodDetail}
+	    </when>
+	    <when test="period == 'year'">
+	      AND TO_CHAR(R.REG_DT, 'YYYY') = #{periodDetail}
+	    </when>
+	  </choose>
+	</select>
 
+
+	
+	
+	
 </mapper>

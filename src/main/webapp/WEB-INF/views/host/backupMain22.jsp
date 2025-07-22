@@ -54,99 +54,38 @@
 
             <!-- 판매 내역 -->
             <div class="content-area hidden" id="sales-area">
-                <div class="detail-content">	
-                	<h3>숙소/공간 판매 내역</h3>
-			        <c:choose>
-			            <c:when test="${!empty reservations}"> 
-			            <c:forEach var="res" items="${reservations}" >
-							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
-							  <div class="row g-3 align-items-center">
-						    	 <div class="col-md-6">
-							      <div class="cart-img">
-							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"
-							             style="width: 100%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
-							      </div>
-							     </div>
-							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start" style="height: 100%;">
-									<table class="table table-bordered table-sm" style="font-size: 0.95rem;">
-									  <tbody>
-									    <tr>
-									      <th>예약번호</th>
-									      <td>${res.rsvSeq}</td>
-									    </tr>
-									    <tr>
-									      <th>객실명</th>
-									      <td>${res.roomTypeTitle}</td>
-									    </tr>
-									    <c:choose>
-									      <c:when test="${not empty res.rsvCheckInDt and not empty res.rsvCheckOutDt}">
-									        <tr>
-									          <th style="width: 100px; height: 40px;">체크인</th>
-									          <td>${res.rsvCheckInDt}</td>
-									        </tr>
-									        <tr>
-									          <th>체크아웃</th>
-									          <td>${res.rsvCheckOutDt}</td>
-									        </tr>
-									      </c:when>
-									      <c:otherwise>
-									        <tr>
-									          <th>체크인</th>
-									          <td>${res.rsvCheckInTime}</td>
-									        </tr>
-									        <tr>
-									          <th>체크아웃</th>
-									          <td>${res.rsvCheckOutTime}</td>
-									        </tr>
-									      </c:otherwise>
-									    </c:choose>
-									    <tr>
-									      <th>예약자</th>
-									      <td>${res.guestId}</td>
-									    </tr>
-									    <tr>
-									      <th>결제상태</th>
-									      <td>
-									        <c:choose>
-									          <c:when test="${res.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
-									          <c:when test="${res.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
-									          <c:when test="${res.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
-									          <c:otherwise>-</c:otherwise>
-									        </c:choose>
-									      </td>
-									    </tr>
-									    <tr>
-									      <th>상태</th>
-									      <td>
-									        <c:choose>
-									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
-									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>
-									          <c:when test="${res.rsvStat eq 'PENDING'}">결제대기</c:when>
-									          <c:otherwise>-</c:otherwise>
-									        </c:choose>
-									      </td>
-									    </tr>
-									    <tr>
-									      <th>금액</th>
-									      <td><fmt:formatNumber value="${res.finalAmt}" pattern="#,###" />원</td>
-									    </tr>
-									  </tbody>
-									</table>
-
-							   </div>
-							  </div>
-							</div>
-			                </c:forEach>
-			            </c:when>
-			            <c:otherwise>
-			                <div class="alert alert-info text-center">등록된 숙소/공간 정보가 없습니다.</div>
-			                <div class="d-flex justify-content-center mt-3">
-			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
-			                </div>
-			            </c:otherwise>
-			        </c:choose>                      
-			    </div>
-			</div>
+                <div class="detail-content">
+                    <h3>판매 내역</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>예약번호</th>
+                                <th>숙소명</th>
+                                <th>결제일시</th>
+                                <th>결제금액</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1001</td>
+                                <td>강릉오션뷰펜션</td>
+                                <td>2025-07-14 11:23</td>
+                                <td>200,000원</td>
+                                <td>완료</td>
+                            </tr>
+                            <tr>
+                                <td>1000</td>
+                                <td>서울강남모던하우스</td>
+                                <td>2025-07-12 20:51</td>
+                                <td>350,000원</td>
+                                <td>취소</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="no-data">더 많은 판매내역은 추후 API 연동</div>
+                </div>
+            </div>
 
             <!-- 숙소/공간 관리 -->
             <div class="content-area hidden" id="rooms-area">
@@ -181,32 +120,16 @@
     </div>
     
     
-<script>
+    <script>
     	// [추가] rooms 콘텐츠가 로딩되었는지 확인하는 변수
-window.onload = function () {
-  const lastTab = localStorage.getItem("lastHostTab") || "dashboard";
-  showContent(lastTab);
-
-  if (lastTab === "dashboard") {
-    console.log("📊 대시보드 진입 - 초기 세팅 시작");
-
-    // 1. 달력 초기화
-    initWeekCalendar();
-
-    // ✅ 바로 아래가 문제였던 부분 (start, end 가져오는 부분)
-    const start = document.getElementById("weekCalendar_start")?.value;
-    const end = document.getElementById("weekCalendar_end")?.value;
-
-    if (start && end) {
-      const weekDetail = `${start}~${end}`;
-      console.log("📦 초기 주간 periodDetail:", weekDetail);
-      loadStats("week", weekDetail); // ✅ 이렇게 정확히 넘겨야 함
-    } else {
-      console.warn("❌ 주간 날짜가 비어있습니다.");
-    }
-  }
-};
-
+		window.onload = function () {
+		    const lastTab = localStorage.getItem("lastHostTab") || "dashboard";
+		    showContent(lastTab);
+		    
+		    if (lastTab === "dashboard") {
+		        loadStats("total"); // ← 이거 추가!
+		    }
+		};
 
     	let isRoomsContentLoaded = false;
     
@@ -251,41 +174,28 @@ window.onload = function () {
         
 		let isReviewManageContentLoaded = false;
 
-		function loadStats(period, inputPeriodDetail = "") {
-			  console.log("📥 loadStats 호출됨, period:", period);
+		function loadReviewManageContent(forceReload = false) {
+		    if (isReviewManageContentLoaded && !forceReload) return;
 
-			  let start = $("#weekCalendar_start").val();
-			  let end = $("#weekCalendar_end").val();
+		    const contentArea = document.getElementById('reviews-area');
+		    contentArea.innerHTML = '<div class="loading">로딩 중...</div>';
 
-			  // 값이 없으면 자동으로 계산
-			  if (!start || !end) {
-			    const today = new Date();
-			    const range = getWeekRangeFromDate(today);
-			    start = range.start;
-			    end = range.end;
+		    fetch('/host/fragment/reviewManage')
+		        .then(res => res.text())
+		        .then(html => {
+		            contentArea.innerHTML = html;
+		            isReviewManageContentLoaded = true;
 
-			    $("#weekCalendar_start").val(start);
-			    $("#weekCalendar_end").val(end);
-			  }
-
-			  let finalPeriodDetail = inputPeriodDetail;
-
-			  if (period === "week") {
-			    finalPeriodDetail = start + "~" + end; // ✅ 핵심 수정
-			    console.log("✅ 선택된 주간 날짜:", finalPeriodDetail);
-			  }
-
-			  // 월, 연도는 수동 입력 받도록 분기
-			  if (period === "month" || period === "year") {
-			    const manualInputDiv = document.getElementById("manualPeriodInput");
-			    if (manualInputDiv) manualInputDiv.style.display = "flex";
-			    return; // 수동입력 대기
-			  }
-
-			  requestStats(period, finalPeriodDetail); // ✅ 제대로 넘김
-			}
-
-
+		            // reviewManage.js의 JS 기능 적용 (필터링 등)
+		            const script = document.createElement("script");
+		            script.src = "/resources/js/host/reviewManage.js?v=1";
+		            document.body.appendChild(script);
+		        })
+		        .catch(err => {
+		            console.error("리뷰 관리 로딩 실패:", err);
+		            contentArea.innerHTML = '<div class="no-data">리뷰 콘텐츠를 불러오는 데 실패했습니다.</div>';
+		        });
+		}
 
 
   
@@ -309,13 +219,13 @@ window.onload = function () {
 		*/
 		
 			let currentPeriod = 'total'; // 전역 변수로 저장
-			/* 0722 11:26
+	
 			function loadStats(period) {
 			  currentPeriod = period;
 	
 			  // 날짜 수동 입력창 초기화
 			  const manualDiv = document.getElementById('manualPeriodInput');
-			  if (!manualDiv) return;`
+			  if (!manualDiv) return;
 	
 			  if (period === 'month' || period === 'year') {
 			    manualDiv.style.display = 'block'; // 수동입력 UI 보이기
@@ -334,35 +244,6 @@ window.onload = function () {
 			    requestStats(period, periodDetail);
 			  }
 			}
-			*/
-			function loadStats(period, inputPeriodDetail = "") {
-				  console.log("📥 loadStats 호출됨, period:", period);
-
-				  let finalPeriodDetail = inputPeriodDetail;
-
-				  // ✅ 주간이면 무조건 input값을 사용한다 (내부 재계산 안함)
-				  if (period === 'week') {
-				    console.log("✅ 선택된 주간 날짜:", finalPeriodDetail);
-				  }
-
-				  // 월, 연도는 수동 입력 받도록
-				  if (period === 'month' || period === 'year') {
-				    const manualInputDiv = document.getElementById('manualPeriodInput');
-				    if (manualInputDiv) manualInputDiv.style.display = 'flex';
-				    return; // 수동입력 대기
-				  }
-
-				  requestStats(period, finalPeriodDetail); // 제대로 넘김
-				}
-
-
-
-
-
-
-
-
-			
 	
 			// 수동 입력 버튼 클릭 시 호출
 			function onSubmitManualInput() {
@@ -389,29 +270,21 @@ window.onload = function () {
 
 
 				
-			// 수동 입력 이후 호출되는 함수
+				// 수동 입력 이후 호출되는 함수
 			function requestStats(period, detail = '') {
-			  // 월간 수동 입력 처리
+			  // 월간인 경우: YYYY-MM 형식 조합
 			  if (period === 'month') {
 			    const year = document.getElementById('yearInput').value;
 			    const month = document.getElementById('monthInput').value;
-			    if (!year || !month) {
-			      alert("연도와 월을 모두 입력하세요.");
-			      return;
-			    }
 			    const paddedMonth = ('0' + month).slice(-2);
 			    detail = `${year}-${paddedMonth}`;
-			  }
-			  // 연간 수동 입력 처리
+			  } 
+			  // 연간인 경우: YYYY만 사용
 			  else if (period === 'year') {
-			    const year = document.getElementById('yearInput').value;
-			    if (!year) {
-			      alert("연도를 입력하세요.");
-			      return;
-			    }
-			    detail = year;
+			    detail = document.getElementById('yearInput').value;
 			  }
 			
+			  // ✅ 단일 요청으로 전체 통계 처리
 			  $.get('/host/statistics', {
 			    period: period,
 			    periodDetail: detail
@@ -424,7 +297,6 @@ window.onload = function () {
 			    console.error("통계 요청 실패:", err);
 			  });
 			}
-
 
 
        			

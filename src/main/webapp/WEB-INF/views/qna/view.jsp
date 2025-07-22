@@ -184,7 +184,16 @@
 	      관리자 답변
 	    </div>
 	    <div style="background:#fdfdfe; border:1px solid #dee2e6; border-radius:4px; padding:0.75rem;">
-	      <c:out value="${qnaComment.qnaCmtContent}" escapeXml="false"/>
+	      <c:choose>
+		    <c:when test="${qnaComment.qnaCmtStat eq 'N'}">
+		      <span class="deleted-title">삭제된 게시물입니다.</span>
+		    </c:when>
+		    <c:otherwise>
+		      <a href="javascript:void(0)" onclick="fn_view(${qna.qnaSeq})">            
+		          <c:out value="${qnaComment.qnaCmtContent}" /> 
+		      </a>
+		    </c:otherwise>
+		  </c:choose>
 	    </div>
 	  </div>
 	</c:if>

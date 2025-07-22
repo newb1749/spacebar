@@ -1,11 +1,23 @@
 package com.sist.web.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import java.util.HashMap;
+
+import java.util.Date;
+
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+
+import javax.servlet.http.HttpSession;
+
+import javax.servlet.http.HttpServletResponse;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +37,26 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.dao.FacilityDao;
+import com.sist.web.dao.ReviewDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Facility;
+
+import com.sist.web.model.Review;
+
+import com.sist.web.model.Reservation;
+
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.model.User;
 import com.sist.web.service.HostService;
+import com.sist.web.service.ReservationServiceJY;
+import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.RoomTypeService;
+import com.sist.web.service.UserService;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
 
@@ -63,15 +86,64 @@ public class HostController {
     @Autowired
     private RoomTypeService roomTypeService;
     
+    @Autowired
+
+    private ReviewDao reviewDao;
+    
+
+    private UserService userService;
+    
+    @Autowired
+    private RoomServiceSh roomServiceSh;
+    
+    @Autowired
+    private ReservationServiceJY reservationService;
+    
+    @Autowired
+    private RoomImgService roomImgService;
+
+    
 	/**
 	 * 호스트 메인 페이지로 이동
 	 * @return
 	 */
-	@RequestMapping(value="/host/main", method = RequestMethod.GET)
-	public String main() {
-		return "/host/main";
+	@RequestMapping(value="/host/main", method=RequestMethod.GET)
+	public String hostPage(Model model, HttpServletRequest request, HttpServletResponse response) 
+	{
+	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    
+	    // 예약정보 조회
+	    List<Reservation> reservations = reservationService.reservationsListByHostId(sessionUserId);
+	    
+	    for (Reservation rsv : reservations) 
+	    {
+	        int roomTypeSeq = rsv.getRoomTypeSeq();
+	        
+	        //숙소 제목
+	        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+	        if (roomType != null) 
+	        {
+	            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
+
+	        }
+	        
+	        // 이미지
+	        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
+	        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
+	        {
+	            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
+	            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
+	        }
+	    }
+	    model.addAttribute("reservations", reservations);
+	    return "/host/main";
 	}
+
 	
+	// **************************************************************************************
+	// *********************************** 숙소/공간 관리 ***************************************
+	// **************************************************************************************
+
 	@RequestMapping(value="/host/fragment/roomList", method=RequestMethod.GET)
 	public String roomList(Model model, HttpServletRequest request)
 	{
@@ -300,10 +372,146 @@ public class HostController {
 	    return (result > 0) ? "success" : "fail";
 	}
 
+
+	// **************************************************************************************
+	// ************************************* 리뷰 관리 *****************************************
+	// **************************************************************************************
+	/**
+	 * 호스트ㅎ 리뷰 관리 페이지
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/host/fragment/reviewManage")
+	public String reviewManage(HttpServletRequest request, Model model) {
+	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+	    if (StringUtil.isEmpty(hostId)) return "redirect:/";
+
+	    List<Room> roomList = hostService.getRoomsByHost(hostId);
+	    List<Review> reviewList = hostService.getAllReviewsByHost(hostId);
+
+	    model.addAttribute("roomList", roomList);
+	    model.addAttribute("reviewList", reviewList);
+
+	    return "/host/fragment/reviewManage";
+	}
+
 	
 	
 	
+	/** 호스트가 등록한 모든 숙소(ROOM)에 작성된 리뷰 전체
+	 * AJAX 컨트롤러 (리뷰 목록 가져오기)
+	 * @param roomSeq
+	 * @param request
+	 * @param model
+	 * @return
+
+	@RequestMapping("/host/fragment/reviewTable")
+	public String ajaxReviews(@RequestParam(required = false) Integer roomSeq,
+	                          HttpServletRequest request, Model model) {
+	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+	    if (StringUtil.isEmpty(hostId)) return "redirect:/";
+
+	    List<Review> reviewList;
+
+	    if (roomSeq == null || roomSeq == 0) {
+	        reviewList = hostService.getAllReviewsByHost(hostId);
+	    } else {
+	        reviewList = reviewDao.selectReviewsByRoom(roomSeq);
+	    }
+
+	    model.addAttribute("reviewList", reviewList);
+	    return "/host/fragment/reviewTable";
+	}
+	*/
 	
+	/**
+	 * 판매자의 총 평균 평점 조회(누적, 연간, 월간, 주간)
+	 * @param period
+	 * @param session
+	 * @return 
+	 */
+	@RequestMapping("/host/stat/avgRating")
+	@ResponseBody
+	public double getAvgRating(@RequestParam String period,
+	                           @RequestParam(required = false) String periodDetail,
+	                           HttpServletRequest request) {
+	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+
+	    logger.debug("[HostController] getAvgRating hostId: {}", hostId);
+	    logger.debug("[HostController] getAvgRating period: {}", period);
+	    logger.debug("[HostController] getAvgRating periodDetail: {}", periodDetail);
+
+	    // Java 8 기준 null 또는 빈 문자열 처리
+	    String safePeriodDetail = (periodDetail != null && !periodDetail.trim().isEmpty()) 
+	                                ? periodDetail 
+	                                : "";
+
+	    return hostService.getAvgRatingByHostWithPeriod(hostId, period, safePeriodDetail);
+	}
+
+
+
+	/**
+	 * 기간(누적, 연간, 월간, 주간) 별로 총 판매 건수, 총 판매 금액, 평균 리뷰 평점 조회 d
+	 * @param period
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/host/statistics")
+	@ResponseBody
+	public Map<String, Object> getStatsByPeriod(@RequestParam String period, 
+			@RequestParam(required = false) String periodDetail, 
+			HttpServletRequest request) {
+		String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+	    if (hostId == null) {
+	    	Map<String, Object> result = new HashMap<>();
+	    	result.put("totalSales", 0);
+	    	result.put("totalAmount", 0);
+	    	result.put("avgRating", 0.0);
+	    }	    
+
+	    logger.debug("📊 [host/statistics 요청]");
+	    logger.debug(" - hostId       : {}", hostId);
+	    logger.debug(" - period        : {}", period);
+	    logger.debug(" - periodDetail  : {}", periodDetail);
+	    
+	    Map<String, Object> result = new HashMap<>();
+	    result.put("totalSales", hostService.getTotalSalesCount(hostId, period));
+	    result.put("totalAmount", hostService.getTotalSalesAmount(hostId, period));
+	    result.put("avgRating", hostService.getAvgRatingByHostWithPeriod(hostId, period, periodDetail));
+	    
+	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
+	    logger.debug("[호스트 통계 응답] result={}", result);
+
+	    return result;
+	}
+	
+	/**
+	 * 날짜(연간, 월간, 주간)로 3개 검색
+	 * @param period
+	 * @param periodDetail
+	 * @param request
+	 * @return
+	 */
+	/*
+	@GetMapping("/host/statistics")
+	@ResponseBody
+	public Map<String, Object> getStatsByPeriod(@RequestParam String period,
+	                                            @RequestParam(required = false) String periodDetail,
+	                                            HttpServletRequest request) {
+
+	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
+	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
+
+	    Map<String, Object> result = hostService.getStatsByPeriod(hostId, period, periodDetail);
+	    logger.debug("[호스트 통계 응답] result={}", result);
+
+	    return result;
+	}
+	*/
+
+
 	
 	
 	

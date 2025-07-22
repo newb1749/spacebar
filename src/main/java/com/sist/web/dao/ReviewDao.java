@@ -1,6 +1,7 @@
 package com.sist.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -89,7 +90,7 @@ public interface ReviewDao {
      */
     public String selectRoomTitle(int roomSeq);
     
-    //메인페이지 모든 리뷰 조회용
+    // 메인페이지 모든 리뷰 조회용
     public List<Review> allReviewList();
     
     // 특정 숙소의 리뷰 총 개수 조회 (페이징용)
@@ -97,4 +98,11 @@ public interface ReviewDao {
     
     //  특정 숙소의 리뷰 목록 조회 (페이징 적용)
     public List<Review> getReviewsByRoomWithPaging(Review review);
+    
+    // 	호스트가 등록한 모든 숙소(ROOM)에 작성된 리뷰 전체
+    public List<Review> selectAllReviewsByHost(String hostId);
+    
+    // 리뷰 평균 평점 조회 (누적, 연간, 월간, 주간)
+    public Double selectAvgRatingByHostWithPeriod(Map<String, Object> paramMap);
+
 }
