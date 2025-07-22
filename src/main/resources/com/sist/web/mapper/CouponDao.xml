@@ -79,7 +79,7 @@
 	  )
 	</insert>
 	
-	<!-- 마이페이지용(쿠폰 조회) -->
+	<!-- 마이페이지용(쿠폰 리스트) -->
 	<select id="couponListByUser" parameterType="string" resultMap="mycouponResultMap">
 		SELECT A.USER_CPN_SEQ,
 		       A.USER_ID,
@@ -93,6 +93,13 @@
 		  FROM USER_COUPON A, COUPON B
 		 WHERE A.CPN_SEQ = B.CPN_SEQ
 		   AND A.USER_ID = #{value}
+	</select>
+	
+	<!-- 마이페이지용(쿠폰 총 갯수) -->
+	<select id="couponCountByUser" parameterType="string" resultType="int">
+		SELECT COUNT(USER_CPN_SEQ) CNT
+		  FROM USER_COUPON
+		 WHERE USER_ID = #{value}
 	</select>
 
 	

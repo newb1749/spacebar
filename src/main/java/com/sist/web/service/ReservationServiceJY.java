@@ -1,6 +1,9 @@
 package com.sist.web.service;
 
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,7 @@ import com.sist.web.model.RoomType;
 @Service
 public class ReservationServiceJY 
 {
+	private Logger logger = LoggerFactory.getLogger(ReservationServiceJY.class);
     @Autowired
     private ReservationDao reservationDao;
     
@@ -141,4 +145,22 @@ public class ReservationServiceJY
     public int getRoomSeqByRsvSeq(int rsvSeq) {
     	return reservationDao.selectRoomSeqByRsvSeq(rsvSeq);
     }
+    
+    //호스트 ID로 예약 리스트 조회(호스트페이지 - 판매 내역에 사용)
+    public List<Reservation> reservationsListByHostId(String hostId)
+    {
+    	List<Reservation> list = null;
+    	
+    	try
+    	{
+    		list = reservationDao.reservationsListByHostId(hostId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[reservationService]reservationsListByHostId Exception", e);
+    	}
+    	
+    	return list;
+    }
+    
 }

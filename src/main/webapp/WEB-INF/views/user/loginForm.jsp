@@ -139,6 +139,11 @@ function fn_loginCheck()
 				alert("비밀번호가 올바르지 않습니다.");
 				$("#userPwd").focus();
 			}
+			else if(res.code == -98)
+			{
+				alert("관리자 미승인 사용자입니다. 관리자에게 문의하세요");
+				location.href = "/";
+			}
 			else if(res.code == -99)
 			{
 				alert("정지된 사용자입니다. 관리자에게 문의하세요");

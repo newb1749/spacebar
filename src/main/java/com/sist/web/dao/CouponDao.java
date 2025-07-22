@@ -18,4 +18,6 @@ public interface CouponDao
     //마이페이지용 (쿠폰 조회)
     List<Coupon> couponListByUser(String userId);
 
+    //마이페이지용(쿠폰 총 갯수)
+    int couponCountByUser(String userId);
 }

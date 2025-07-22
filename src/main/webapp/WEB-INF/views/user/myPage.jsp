@@ -166,7 +166,7 @@ $(function(){
                 <div class="stat-card">
                     <div class="stat-number">
                         <c:choose>
-                            <c:when test="${not empty couponCount}">
+                            <c:when test="${not empty couponList}">
                                 <fmt:formatNumber value="${couponCount}" pattern="#,###"/>개
                             </c:when>
                             <c:otherwise>
@@ -423,7 +423,7 @@ $(function(){
 			    </div>
 			</div>
 
-			<%-- 예약 내역 --%><!-- ------------------체크인/아웃 수정필요------------------ -->
+			<%-- 예약 내역 --%>
             <div id="reservation-content" class="content-area hidden">
                 <div class="welcome-message">예약 내역</div>
                 <div class="sub-message">회원님이 예약 내역 목록입니다.</div>
