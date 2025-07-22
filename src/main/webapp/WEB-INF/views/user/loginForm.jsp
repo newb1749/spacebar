@@ -122,12 +122,27 @@ function fn_loginCheck()
 		{
 			if(res.code == 0)
 			{
-				alert("로그인되었습니다.");
+				
+                if (res.data) 
+                {
+                	alert("로그인되었습니다.");
+                    window.location.href = res.data;  
+                } 
+                else 
+                {
+                	alert("로그인되었습니다.");
+                    window.location.href = '/'; // 기본 페이지
+                }
 			}
 			else if(res.code == -1)
 			{
 				alert("비밀번호가 올바르지 않습니다.");
 				$("#userPwd").focus();
+			}
+			else if(res.code == -98)
+			{
+				alert("관리자 미승인 사용자입니다. 관리자에게 문의하세요");
+				location.href = "/";
 			}
 			else if(res.code == -99)
 			{

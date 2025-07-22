@@ -26,4 +26,8 @@ public interface CouponDao
     Coupon selectCouponBySeq(@Param("couponSeq") Integer couponSeq);
 
     int markCouponAsUsed(@Param("userId") String userId, @Param("cpnSeq") int cpnSeq);
+
+    //마이페이지용(쿠폰 총 갯수)
+    int couponCountByUser(String userId);
+
 }

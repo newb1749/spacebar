@@ -50,38 +50,99 @@
 
             <!-- 판매 내역 -->
             <div class="content-area hidden" id="sales-area">
-                <div class="detail-content">
-                    <h3>판매 내역</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>예약번호</th>
-                                <th>숙소명</th>
-                                <th>결제일시</th>
-                                <th>결제금액</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1001</td>
-                                <td>강릉오션뷰펜션</td>
-                                <td>2025-07-14 11:23</td>
-                                <td>200,000원</td>
-                                <td>완료</td>
-                            </tr>
-                            <tr>
-                                <td>1000</td>
-                                <td>서울강남모던하우스</td>
-                                <td>2025-07-12 20:51</td>
-                                <td>350,000원</td>
-                                <td>취소</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="no-data">더 많은 판매내역은 추후 API 연동</div>
-                </div>
-            </div>
+                <div class="detail-content">	
+                	<h3>숙소/공간 판매 내역</h3>
+			        <c:choose>
+			            <c:when test="${!empty reservations}"> 
+			            <c:forEach var="res" items="${reservations}" >
+							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
+							  <div class="row g-3 align-items-center">
+						    	 <div class="col-md-6">
+							      <div class="cart-img">
+							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"
+							             style="width: 100%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+							      </div>
+							     </div>
+							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start" style="height: 100%;">
+									<table class="table table-bordered table-sm" style="font-size: 0.95rem;">
+									  <tbody>
+									    <tr>
+									      <th>예약번호</th>
+									      <td>${res.rsvSeq}</td>
+									    </tr>
+									    <tr>
+									      <th>객실명</th>
+									      <td>${res.roomTypeTitle}</td>
+									    </tr>
+									    <c:choose>
+									      <c:when test="${not empty res.rsvCheckInDt and not empty res.rsvCheckOutDt}">
+									        <tr>
+									          <th style="width: 100px; height: 40px;">체크인</th>
+									          <td>${res.rsvCheckInDt}</td>
+									        </tr>
+									        <tr>
+									          <th>체크아웃</th>
+									          <td>${res.rsvCheckOutDt}</td>
+									        </tr>
+									      </c:when>
+									      <c:otherwise>
+									        <tr>
+									          <th>체크인</th>
+									          <td>${res.rsvCheckInTime}</td>
+									        </tr>
+									        <tr>
+									          <th>체크아웃</th>
+									          <td>${res.rsvCheckOutTime}</td>
+									        </tr>
+									      </c:otherwise>
+									    </c:choose>
+									    <tr>
+									      <th>예약자</th>
+									      <td>${res.guestId}</td>
+									    </tr>
+									    <tr>
+									      <th>결제상태</th>
+									      <td>
+									        <c:choose>
+									          <c:when test="${res.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+									          <c:when test="${res.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+									          <c:when test="${res.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
+									          <c:otherwise>-</c:otherwise>
+									        </c:choose>
+									      </td>
+									    </tr>
+									    <tr>
+									      <th>상태</th>
+									      <td>
+									        <c:choose>
+									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
+									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>
+									          <c:when test="${res.rsvStat eq 'PENDING'}">결제대기</c:when>
+									          <c:otherwise>-</c:otherwise>
+									        </c:choose>
+									      </td>
+									    </tr>
+									    <tr>
+									      <th>금액</th>
+									      <td><fmt:formatNumber value="${res.finalAmt}" pattern="#,###" />원</td>
+									    </tr>
+									  </tbody>
+									</table>
+
+							   </div>
+							  </div>
+							</div>
+			                </c:forEach>
+			            </c:when>
+			            <c:otherwise>
+			                <div class="alert alert-info text-center">등록된 숙소/공간 정보가 없습니다.</div>
+			                <div class="d-flex justify-content-center mt-3">
+			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
+			                </div>
+			            </c:otherwise>
+			        </c:choose>                      
+			    </div>
+			</div>
 
             <!-- 객실/공간 관리 -->
             <div class="content-area hidden" id="rooms-area">

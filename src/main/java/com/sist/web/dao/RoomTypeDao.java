@@ -51,4 +51,5 @@ public interface RoomTypeDao {
      * @return
      */
     public int deleteRoomTypeByRoomSeq(int roomSeq);
+    
 }

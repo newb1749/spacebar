@@ -72,7 +72,7 @@
 </head>
 <body>
 
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
 <div class="container mt-5">
   <div class="card">
