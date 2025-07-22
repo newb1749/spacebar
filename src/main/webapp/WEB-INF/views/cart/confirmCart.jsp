@@ -14,7 +14,7 @@
     .table th{background:#343a40;color:#fff;font-weight:600;}
     .btn-primary{background:#fe7743;border:none;font-weight:700;font-size:1.1rem;transition:.3s;width:100%;max-width:900px;margin:0 auto;padding:12px;display:block;}
     .btn-primary:hover{background:#e96328;}
-    .container{max-width:900px;width:90%;margin:0 auto;}
+    .container{max-width:1500px;width:90%;margin:0 auto;}
     .row-coupon{width:100%;font-size:.9rem;}
     .origin-price{display:none;text-decoration:line-through;color:#bbb;font-size:.85rem;}
   </style>
@@ -38,7 +38,7 @@
 
     <table class="table table-bordered" id="orderTable">
       <tr>
-        <th style="width:120px">쿠폰</th>
+        <th style="width:300px">쿠폰</th>
         <th>객실 타입</th>
         <th>체크인</th>
         <th>체크아웃</th>

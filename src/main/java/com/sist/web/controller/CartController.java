@@ -242,10 +242,10 @@ public class CartController {
     //장바구니 결제
     @RequestMapping(value = "/cart/checkout", method = RequestMethod.POST)
     public String checkout(
-            @RequestParam("cartSeqs")      List<Integer> cartSeqs,
-            @RequestParam("itemFinalAmt")  List<Integer> clientItemFinalAmts, // JS 값(검증용)
-            @RequestParam("useCouponYn")   List<String>  useCouponYns,
-            @RequestParam("itemCouponSeq") List<String>  itemCouponSeqStrs,   // "" 가능
+            @RequestParam("cartSeqs")                 List<Integer> cartSeqs,
+            @RequestParam("itemFinalAmt")             List<Integer> clientItemFinalAmts,
+            @RequestParam(value="useCouponYn",   required=false) List<String>  useCouponYnsParam,
+            @RequestParam(value="itemCouponSeq", required=false) List<String>  itemCouponSeqStrsParam,
             HttpServletRequest request,
             RedirectAttributes rt
     ) {
@@ -255,16 +255,25 @@ public class CartController {
             return "redirect:/user/login";
         }
 
-        // ---------- 파라미터 정합성 ----------
         int size = cartSeqs.size();
-        if (clientItemFinalAmts.size() != size ||
-            useCouponYns.size()        != size ||
-            itemCouponSeqStrs.size()   != size) {
-            rt.addFlashAttribute("error", "요청 데이터가 손상되었습니다.");
-            return "redirect:/cart/list";
+
+        // -------- 파라미터 기본값 보정 --------
+        List<String> useCouponYns   = new ArrayList<>();
+        List<String> itemCouponSeqs = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            // useCouponYn
+            String yn = (useCouponYnsParam != null && useCouponYnsParam.size() > i)
+                    ? useCouponYnsParam.get(i) : "N";
+            useCouponYns.add(yn);
+
+            // itemCouponSeq
+            String seqStr = (itemCouponSeqStrsParam != null && itemCouponSeqStrsParam.size() > i)
+                    ? itemCouponSeqStrsParam.get(i) : "";
+            itemCouponSeqs.add(seqStr);
         }
 
-        // ---------- 장바구니 조회 ----------
+        // -------- 장바구니 조회 --------
         List<Cart> carts = cartService.getCartsBySeqs(cartSeqs, userId);
         if (carts.size() != size) {
             rt.addFlashAttribute("error", "유효하지 않은 장바구니 항목이 있습니다.");
@@ -273,74 +282,71 @@ public class CartController {
         Map<Integer, Cart> cartMap = new HashMap<>();
         for (Cart c : carts) cartMap.put(c.getCartSeq(), c);
 
-        // ---------- 쿠폰/금액 서버 계산 ----------
         int totalFinalAmt = 0;
         Set<Integer> usedCouponSeqSet = new HashSet<>();
         List<Integer> finalAmtList = new ArrayList<>(size);
 
-        Date now = new Date(); // 날짜 검증용
         for (int i = 0; i < size; i++) {
-            int cartSeq = cartSeqs.get(i);
-            Cart cart   = cartMap.get(cartSeq);
-
+            Cart cart = cartMap.get(cartSeqs.get(i));
             int originAmt = cart.getCartTotalAmt();
             int finalAmt  = originAmt;
 
-            String useYn  = useCouponYns.get(i);
-            String cpnStr = itemCouponSeqStrs.get(i);
+            // ---- 쿠폰 처리 ----
+            String seqStr = itemCouponSeqs.get(i);
             Integer couponSeq = null;
-            if (cpnStr != null && !cpnStr.trim().isEmpty()) {
-                try { couponSeq = Integer.valueOf(cpnStr.trim()); } catch (NumberFormatException ignore) {}
+            if (seqStr != null && !seqStr.trim().isEmpty()) {
+                try { couponSeq = Integer.valueOf(seqStr.trim()); } catch (Exception ignore) {}
             }
 
-            if ("Y".equalsIgnoreCase(useYn) && couponSeq != null && couponSeq > 0) {
-                // 1) 중복 사용 방지
+            if (couponSeq != null && couponSeq > 0) {
+                // 같은 쿠폰 중복 사용 방지
                 if (usedCouponSeqSet.contains(couponSeq)) {
                     rt.addFlashAttribute("error", "같은 쿠폰은 두 번 사용할 수 없습니다.");
                     return "redirect:/cart/confirm";
                 }
 
-                // 2) 유저가 미사용으로 보유 중인지
+                // 보유/미사용 여부
                 if (!couponService.isAlreadyIssued(userId, couponSeq)) {
                     rt.addFlashAttribute("error", "사용할 수 없는 쿠폰이 포함되어 있습니다.");
                     return "redirect:/cart/confirm";
                 }
 
-                // 3) 쿠폰 상세 조회
+                // 쿠폰 상세
                 Coupon coupon = couponService.getCouponBySeq(couponSeq);
                 if (coupon == null || !"Y".equals(coupon.getCpnStat())) {
                     rt.addFlashAttribute("error", "비활성화된 쿠폰입니다.");
                     return "redirect:/cart/confirm";
                 }
-                DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 쿼리에서 TO_CHAR로 yyyy-MM-dd 형식이라 가정
-                LocalDate today = LocalDate.now();
-                
-                // 4) 기간/최소주문금액 체크 (필요 시)
-                Object rawEnd = coupon.getIssueEndDt();   // String or Date
-                LocalDate endDate = null;
 
+                // 기간 체크
+                LocalDate endDate = null;
+                Object rawEnd = coupon.getIssueEndDt(); // String or Date
                 if (rawEnd instanceof Date) {
                     endDate = ((Date)rawEnd).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 } else if (rawEnd != null) {
-                    String str = rawEnd.toString();
-                    if (str.length() >= 10) {
-                        endDate = LocalDate.parse(str.substring(0,10), DateTimeFormatter.ISO_LOCAL_DATE);
+                    String s = rawEnd.toString();
+                    if (s.length() >= 10) {
+                        endDate = LocalDate.parse(s.substring(0,10), DateTimeFormatter.ISO_LOCAL_DATE);
                     }
                 }
-
                 if (endDate != null && endDate.isBefore(LocalDate.now())) {
                     rt.addFlashAttribute("error", "기간이 지난 쿠폰입니다.");
                     return "redirect:/cart/confirm";
                 }
 
-                // 5) 할인 계산
+                // 최소주문금액 체크(필요시)
+                if (coupon.getMinOrderAmt() > 0 && originAmt < coupon.getMinOrderAmt()) {
+                    rt.addFlashAttribute("error", "최소 주문금액에 미달한 쿠폰이 있습니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 할인
                 if (coupon.getDiscountRate() > 0) {
                     finalAmt = originAmt - (int)Math.floor(originAmt * coupon.getDiscountRate() / 100.0);
                 } else {
                     finalAmt = Math.max(0, originAmt - coupon.getDiscountAmt());
                 }
 
-                // 6) 쿠폰 사용 처리
                 couponService.markCouponAsUsed(userId, couponSeq);
                 usedCouponSeqSet.add(couponSeq);
             }
@@ -349,7 +355,7 @@ public class CartController {
             finalAmtList.add(finalAmt);
         }
 
-        // ---------- 마일리지 체크 & 차감 ----------
+        // -------- 마일리지 --------
         int userMileage = mileageService.getUserMileage(userId);
         if (userMileage < totalFinalAmt) {
             rt.addFlashAttribute("error", "마일리지가 부족합니다.");
@@ -360,7 +366,7 @@ public class CartController {
             return "redirect:/cart/list";
         }
 
-        // 이력 등록
+        // 이력
         int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, totalFinalAmt);
         if (updatedRows > 0) {
             MileageHistory history = new MileageHistory();
@@ -371,7 +377,7 @@ public class CartController {
             mileageHistoryDao.insertMileageHistory(history);
         }
 
-        // ---------- 예약 저장 ----------
+        // -------- 예약 저장 --------
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         for (int i = 0; i < size; i++) {
             Cart c = cartMap.get(cartSeqs.get(i));
@@ -385,8 +391,8 @@ public class CartController {
             r.setRsvCheckInTime(c.getCartCheckInTime());
             r.setRsvCheckOutTime(c.getCartCheckOutTime());
             r.setNumGuests(c.getCartGuestsNum());
-            r.setTotalAmt(c.getCartTotalAmt()); // 원금
-            r.setFinalAmt(finalAmt);            // 최종 금액
+            r.setTotalAmt(c.getCartTotalAmt());
+            r.setFinalAmt(finalAmt);
             r.setRsvStat("CONFIRMED");
             r.setRsvPaymentStat("PAID");
 
@@ -413,12 +419,12 @@ public class CartController {
             }
         }
 
-        // ---------- 장바구니 삭제 ----------
         cartService.deleteCarts(cartSeqs, userId);
 
         rt.addFlashAttribute("msg", "예약이 완료되었습니다.");
         return "redirect:/reservation/list";
     }
+
 
 
 }
