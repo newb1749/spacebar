@@ -84,24 +84,6 @@
   height: 32px !important;
 }
 
-.sticky-tabs {
-  position: relative;     /* 처음엔 문서 흐름에 따라 위치 */
-  top: auto;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  z-index: 200;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: box-shadow .2s;
-}
-
-.sticky-tabs.fixed {
-  position: fixed;        /* fixed 클래스가 붙으면 고정 */
-  top: 0px;              /* 네비게이션바 높이만큼 아래로 */
-  width: 100%;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
 /* 탭 리스트 */
 .tabs-list {
   display: flex;
@@ -127,11 +109,6 @@
 .tabs-list li a:hover {
   color: #007bff;
   border-color: #007bff;
-}
-
-#mainContent {
-  /* 헤더(56px) + 탭바 높이(48px) */
-  padding-top: calc(0px + 48px);
 }
 
 /* 1) 이미지·텍스트 칸의 h-100 해제 대상에 col‑md‑6 추가 */
@@ -181,6 +158,7 @@
   max-height: 260px;           /* 세로 최대치(필요 없으면 삭제) */
   object-fit: cover !important;
   display: block;
+  border-radius: 18px !important;
 }
 
 .extra-small {
@@ -243,15 +221,86 @@
 }
 
 .my-slider .slide-item img {
-  width: auto;           /* 가로 원본 */
-  height: auto;          /* 세로 원본 */
+  width: 100%;           /* 가로 원본 */
+  height: 600px;          /* 세로 원본 */
   max-width: none;       /* 제한 없음 */
   max-height: none;      /* 제한 없음 */
-  object-fit: none;      /* 원본 비율/크기 유지 */
+  object-fit: cover;      /* 원본 비율/크기 유지 */
   display: block;
   margin: 0 auto;
+  border-radius: 18px;
+}
+.heading {
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 3.2rem;
+  font-weight: normal;
+  color: #222;
+  -webkit-text-stroke: 1.2px #222;
+  text-shadow: 2px 2px 8px #19e86a; /* ← 밝은 녹색 그림자 */
 }
 
+.btn-slim {
+  padding: 0.38em 1.3em;
+  border-radius: 22px !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: 2px solid #15b360 !important;     /* 진초록 */
+  background: #fff;
+  color: #15b360 !important;                /* 진초록 글씨 */
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 12px #1db95422;
+  transition: 
+    background 0.16s,
+    color 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+
+.btn-slim:hover, .btn-slim:focus {
+  background: #15b360;
+  color: #fff !important;
+  border-color: #15b360 !important;
+  box-shadow: 0 4px 18px #1db95444;
+}
+
+.btn-slim-black {
+  border-color: #222 !important;
+  color: #222 !important;
+  background: #fff;
+}
+
+.btn-slim-black:hover, .btn-slim-black:focus {
+  background: #222;
+  color: #fff !important;
+  border-color: #19e86a !important;
+}
+
+.property-info ul.list-unstyled {
+  font-size: 1.23rem;              /* 전체 글자 크기 업 */
+  font-weight: 500;                /* 약간 두껍게 */
+  color: #202e23;                  /* 더 선명한 검정 */
+  letter-spacing: 0.02em;
+  line-height: 1.8;
+  margin-top: 1.6rem;
+  margin-bottom: 1.6rem;
+  padding: 0 4px;
+  background: #f6fdf7;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px #17ae5e12;
+  border: 1.5px solid #d1f6dc;
+}
+.property-info ul.list-unstyled li {
+  margin-bottom: 0.15em;
+  padding: 0.12em 0.2em;
+  font-size: 1.18em;                /* 한 번 더 업 */
+}
+
+.property-info ul.list-unstyled strong {
+  color: #13a656;                   /* 초록 포인트 */
+  font-weight: 700;
+  margin-right: 4px;
+  letter-spacing: 0.03em;
+}
 
   </style>
 <script>
@@ -333,9 +382,20 @@ $(document).ready(function(){
 	console.log("✅ 리뷰 호출 시작");
 	loadReviewList(1); // 첫 페이지 로딩
 	
-	$("#btnRoomList, #btnSpaceList").on("click", function(){
+	$("#btnRoomList").on("click", function(){
 	  // 예: 룸 리스트로
 	  const url = "${pageContext.request.contextPath}/room/roomList"
+	            + "?regionList=" + encodeURIComponent($("#regionList").val())
+	            + "&startDate="   + encodeURIComponent($("#checkIn").val())
+	            + "&endDate="     + encodeURIComponent($("#checkOut").val())
+	            + "&personCount="+ encodeURIComponent($("#_personCount").val())
+	            + /*…필요한 파라미터 모두 붙여서…*/"";
+	  window.location.href = url;
+	});
+	
+	$("#btnSpaceList").on("click", function(){
+	  // 예: 룸 리스트로
+	  const url = "${pageContext.request.contextPath}/room/spaceList"
 	            + "?regionList=" + encodeURIComponent($("#regionList").val())
 	            + "&startDate="   + encodeURIComponent($("#checkIn").val())
 	            + "&endDate="     + encodeURIComponent($("#checkOut").val())
@@ -382,6 +442,7 @@ function fn_review_list(page) {
 
 
 </script>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -389,26 +450,6 @@ function fn_review_list(page) {
 <div class="site-mobile-menu"><div class="site-mobile-menu-body"></div></div>
 <div class="loader"></div>
 <div id="overlayer"></div>
-
-
-<c:choose>
-  <c:when test="${mainImages.imgType eq 'main'}">
-    <c:set var="bgImage"
-           value="${pageContext.request.contextPath}/resources/upload/room/main/${mainImages.roomImgName}" />
-  </c:when>
-  <c:otherwise>
-    <c:set var="bgImage"
-           value="${pageContext.request.contextPath}/resources/images/file.png" />
-  </c:otherwise>
-</c:choose>
-
-<!-- 한 번만 열고, bgImage 변수 사용 -->
-<div class="hero page-inner"
-     style="background-image: url('${bgImage}');">
-  <div class="container text-center mt-5">
-    <h1 class="heading" data-aos="fade-up">${room.roomTitle}</h1>
-  </div>
-</div>
 
 <!-- fixed 탭바 -->
 <div class="sticky-tabs" id="tabBar">
@@ -420,18 +461,32 @@ function fn_review_list(page) {
   </ul>
 </div>
 
+
+
 <div id="mainContent" class="section">
   <div class="container">
     <div class="row justify-content-between align-items-start">
     <!-- 왼쪽 정렬 -->
       <div class="col-lg-9">
-        <div class="property-slider-wrap">
+		<div class="property-slider-wrap">
 		  <!-- Tiny Slider 구조 -->
 		  <div class="my-slider">
-		    <c:forEach var="roomImg" items="${detailImages}">
+		    <c:forEach var="roomImg" items="${roomImg}" varStatus="st">
 		      <div class="slide-item">
-		        <img src="${pageContext.request.contextPath}/resources/upload/room/detail/${roomImg.roomImgName}"
-		             class="img-fluid" alt="${roomImg.imgType}" />
+		        <c:choose>
+		          <c:when test="${st.first}">
+		            <img
+		              src="${pageContext.request.contextPath}/resources/upload/room/main/${roomImg.roomImgName}"
+		              class="img-fluid"
+		              alt="첫번째 룸 이미지" />
+		          </c:when>
+		          <c:otherwise>
+		            <img
+		              src="${pageContext.request.contextPath}/resources/upload/room/detail/${roomImg.roomImgName}"
+		              class="img-fluid"
+		              alt="${roomImg.imgType}" />
+		          </c:otherwise>
+		        </c:choose>
 		      </div>
 		    </c:forEach>
 		  </div>
@@ -451,6 +506,9 @@ function fn_review_list(page) {
 			    <p class="text-black-50">${room.roomDesc}</p>
 			  </div>
 			</section>
+			
+			
+
           
           <!-- 룸타입 섹션 시작 -->
 <section id="typeSection" class="room-types section-block">
@@ -504,12 +562,22 @@ function fn_review_list(page) {
               <c:if test="${not empty rt.roomTypeDesc}">
                 <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
               </c:if>
+              <div style="border-bottom:1px solid #eee; margin: 16px 0;"></div>
               <p class="mb-3 price-line">
                 <strong>가격:</strong>
                 <fmt:formatNumber value="${rt.weekdayAmt}" pattern="#,###"/>원
                 &nbsp;/&nbsp;
                 <fmt:formatNumber value="${rt.weekendAmt}" pattern="#,###"/>원
                 <br><strong>정원:</strong> ${rt.maxGuests}명
+                <br><strong>체크인:</strong>
+                ${fn:substring(startDate, 4, 6)}월 ${fn:substring(startDate, 6, 8)}일
+                ${fn:substring(rt.roomCheckInTime, 0, 2)}:${fn:substring(rt.roomCheckInTime, 2, 4)}
+                &nbsp;/&nbsp;
+                <strong>체크아웃:</strong>
+					<c:if test="${roomCatSeq >= 8 && roomCatSeq <= 14}">
+                ${fn:substring(endDate, 4, 6)}월 ${fn:substring(endDate, 6, 8)}일
+                	</c:if>
+                ${fn:substring(rt.roomCheckOutTime, 0, 2)}:${fn:substring(rt.roomCheckOutTime, 2, 4)}
               </p>
               <!-- ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ -->
               <div class="roomtype-btns">
@@ -651,24 +719,23 @@ function fn_review_list(page) {
             <li><strong>평점:</strong> ${room.averageRating} / 리뷰 수: ${room.reviewCount}</li>
           </ul>
 
-          <%-- 예약하기 버튼 --%>
-          <button id="reserveBtn" class="btn btn-primary mt-3">예약하기</button>
-		
-		<%-- roomCatSeq 값에 따라 추가 버튼 노출 --%>
-			<div class="mt-2 d-flex">
-			  <c:choose>
-			    <c:when test="${room.roomCatSeq >= 1 && room.roomCatSeq <= 7}">
-			      <button id="btnSpaceList" type="button" class="btn btn-secondary btn-sm px-3">
-			        공간 리스트로 돌아가기
-			      </button>
-			    </c:when>
-			    <c:when test="${room.roomCatSeq >= 8 && room.roomCatSeq <= 14}">
-			      <button id="btnRoomList" type="button" class="btn btn-secondary btn-sm px-3">
-			        룸 리스트로 돌아가기
-			      </button>
-			    </c:when>
-			  </c:choose>
-			</div>
+          <!-- 예약 버튼 (초록 아웃라인, 감성) -->
+<button id="reserveBtn" class="btn-slim mt-3" type="button">예약하러 가기</button>
+
+<div class="mt-2 d-flex gap-2">
+  <c:choose>
+    <c:when test="${room.roomCatSeq >= 1 && room.roomCatSeq <= 7}">
+      <button id="btnSpaceList" type="button" class="btn-slim btn-slim-black btn-sm px-3">
+        공간 리스트로 돌아가기
+      </button>
+    </c:when>
+    <c:when test="${room.roomCatSeq >= 8 && room.roomCatSeq <= 14}">
+      <button id="btnRoomList" type="button" class="btn-slim btn-slim-black btn-sm px-3">
+        룸 리스트로 돌아가기
+      </button>
+    </c:when>
+  </c:choose>
+</div>
 
         </div>
       </div>
@@ -685,19 +752,18 @@ function fn_review_list(page) {
 <script src="${pageContext.request.contextPath}/resources/js/custom.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
-  const tabBar = document.getElementById("tabBar");
-  // 탭바가 문서에서 차지하는 원래 Y 위치
-  const stickyPoint = tabBar.getBoundingClientRect().top + window.scrollY - 56;
+  document.addEventListener('DOMContentLoaded', function(){
+    const tabBar = document.querySelector('.sticky-tabs');
+    const startOffset = tabBar.getBoundingClientRect().top + window.pageYOffset;
 
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > stickyPoint) {
-      tabBar.classList.add("fixed");
-    } else {
-      tabBar.classList.remove("fixed");
-    }
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset >= startOffset) {
+        tabBar.classList.add('is–fixed');
+      } else {
+        tabBar.classList.remove('is–fixed');
+      }
+    });
   });
-});
 </script>
 
 <script>

@@ -82,14 +82,8 @@ function fn_list(curPage)
     </li>
     <li class="nav-item">
       <a class="nav-link ${boardType=='faq' ? 'active' : ''}"
-         href="${pageContext.request.contextPath}/faq/list">
+         href="${pageContext.request.contextPath}/board/faq">
         자주 묻는 질문
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link ${boardType=='voice' ? 'active' : ''}"
-         href="${pageContext.request.contextPath}/voice/list">
-        고객의 소리
       </a>
     </li>
   </ul>

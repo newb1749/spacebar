@@ -1,5 +1,6 @@
 package com.sist.web.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -18,4 +19,11 @@ public interface CouponDao
     //마이페이지용 (쿠폰 조회)
     List<Coupon> couponListByUser(String userId);
 
+    // 로그인한 사용자의 현재 날짜 기준 유효 쿠폰 조회
+    //List<Coupon> selectValidCouponsByUserId(@Param("now") Date now, @Param("userId") String userId);
+    List<Coupon> selectValidCouponsByUserId(String userId);
+    
+    Coupon selectCouponBySeq(@Param("couponSeq") Integer couponSeq);
+
+    int markCouponAsUsed(@Param("userId") String userId, @Param("cpnSeq") int cpnSeq);
 }
