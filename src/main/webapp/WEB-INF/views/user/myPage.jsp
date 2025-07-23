@@ -438,7 +438,7 @@ $(function(){
 					      <thead>
 					        <tr>
 					          <th>예약번호</th>
-					          <th>객실유형</th>
+					          <th>객실명</th>
 					          <th>체크인</th>
 					          <th>체크아웃</th>
 					          <th>상태</th>
@@ -450,7 +450,7 @@ $(function(){
 					        <c:forEach var="r" items="${reservations}">
 					          <tr>
 					            <td>${r.rsvSeq}</td>
-					            <td>${r.roomTypeSeq}</td>
+					            <td>${r.roomTypeTitle}</td>
 					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td>

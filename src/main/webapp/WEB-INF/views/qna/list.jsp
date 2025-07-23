@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
@@ -173,7 +174,7 @@ function fn_list(curPage)
     	    <c:when test="${qna.qnaStat eq 'N'}">
          		질문 삭제
          	</c:when>
-         	공<c:when test="${qna.qnaCmtSeq > 0}">
+         	<c:when test="${qna.qnaCmtSeq > 0}">
          		답변완료
          	</c:when>
          	<c:otherwise>
@@ -230,5 +231,3 @@ function fn_list(curPage)
 
 
 </html>
-
-
