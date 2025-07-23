@@ -479,9 +479,8 @@ public class HostController {
 	}
 
 
-
 	/**
-	 * 기간(누적, 연간, 월간, 주간) 별로 총 판매 건수, 총 판매 금액, 평균 리뷰 평점 조회 d
+	 * 기간(누적, 연간, 월간, 주간) 별로 총 판매 건수, 총 판매 금액, 평균 리뷰 평점 조회 
 	 * @param period
 	 * @param session
 	 * @return
@@ -499,14 +498,14 @@ public class HostController {
 	    	result.put("avgRating", 0.0);
 	    }	    
 
-	    logger.debug("📊 [host/statistics 요청]");
+	    logger.debug("[host/statistics 요청]");
 	    logger.debug(" - hostId       : {}", hostId);
 	    logger.debug(" - period        : {}", period);
 	    logger.debug(" - periodDetail  : {}", periodDetail);
 	    
 	    Map<String, Object> result = new HashMap<>();
-	    result.put("totalSales", hostService.getTotalSalesCount(hostId, period));
-	    result.put("totalAmount", hostService.getTotalSalesAmount(hostId, period));
+	    result.put("totalSales", hostService.getTotalSalesCount(hostId, period, periodDetail));
+	    result.put("totalAmount", hostService.getTotalSalesAmount(hostId, period, periodDetail));
 	    result.put("avgRating", hostService.getAvgRatingByHostWithPeriod(hostId, period, periodDetail));
 	    
 	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
@@ -515,33 +514,29 @@ public class HostController {
 	    return result;
 	}
 	
+	
 	/**
-	 * 날짜(연간, 월간, 주간)로 3개 검색
-	 * @param period
-	 * @param periodDetail
+	 * 정해진 단위(월간, 주간)로 선택한 기간 동안 총 판매 건수, 총 판매 금액, 평균 리뷰 점수를 그래프로 보여주기
+	 * @param startDate
+	 * @param endDate
+	 * @param groupBy
 	 * @param request
 	 * @return
 	 */
-	/*
-	@GetMapping("/host/statistics")
+	@GetMapping("/host/statisticsChart")
 	@ResponseBody
-	public Map<String, Object> getStatsByPeriod(@RequestParam String period,
-	                                            @RequestParam(required = false) String periodDetail,
-	                                            HttpServletRequest request) {
-
+	public List<Map<String, Object>> getStatisticsChart(
+	    @RequestParam String startDate,
+	    @RequestParam String endDate,
+	    @RequestParam String groupBy,
+	    HttpServletRequest request
+	) 
+	{
 	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
-	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
-
-	    Map<String, Object> result = hostService.getStatsByPeriod(hostId, period, periodDetail);
-	    logger.debug("[호스트 통계 응답] result={}", result);
-
-	    return result;
+	    return hostService.getStatsForChart(hostId, startDate, endDate, groupBy);
 	}
-	*/
 
 
-	
-	
 	
 	
 	
