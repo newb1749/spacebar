@@ -145,7 +145,13 @@ $(function(){
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-
+<!-- flashAttribute "message" 가 있으면, alert 또는 인라인 박스로 보여주기 -->
+<c:if test="${not empty message}">
+  <!-- 간단한 팝업 alert -->
+  <script>
+    alert('${message}');
+  </script>
+  </c:if>
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
@@ -471,7 +477,13 @@ $(function(){
 					            </td>
 					            <td>
 					              <c:choose>
-					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
+					                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
+					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+					                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+					                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+					                </form>
+					                </c:when>
 					                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
 					                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
 					                <c:otherwise>-</c:otherwise>
@@ -725,6 +737,7 @@ $(function(){
             <%-- 새로운 HTML 코드에 있던 "회원 달력" 등 더미 콘텐츠들은 기존 JSP에 매핑되는 내용이 없으므로, 필요하면 추가 데이터를 백엔드에서 받아와서 구현해야 합니다. 여기서는 기존 JSP에 있던 마이페이지 메뉴와 매칭되는 부분만 반영했습니다. --%>
         </div>
     </div>
+
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 <script>

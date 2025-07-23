@@ -60,7 +60,7 @@ public interface RoomDao {
   	//룸 타입 이미지 리스트
   	public List<RoomTypeImage> getRoomTypeImgDetail(int roomTypeSeq);
   	
-  	
+  	public RoomTypeImage getRoomTypeImgMain(int roomTypeSeq);
 
     /**
      * 숙소 정보 수정
