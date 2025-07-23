@@ -1,14 +1,23 @@
 package com.sist.web.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import java.util.HashMap;
+
+import java.util.Date;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpSession;
+
+import javax.servlet.http.HttpServletResponse;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +40,23 @@ import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.ReviewDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Facility;
+
 import com.sist.web.model.Review;
+
+import com.sist.web.model.Reservation;
+
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.RoomTypeImage;
+import com.sist.web.model.User;
 import com.sist.web.service.HostService;
+import com.sist.web.service.ReservationServiceJY;
+import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
+import com.sist.web.service.RoomServiceSh;
 import com.sist.web.service.RoomTypeService;
+import com.sist.web.service.UserService;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
 
@@ -69,23 +87,63 @@ public class HostController {
     private RoomTypeService roomTypeService;
     
     @Autowired
+
     private ReviewDao reviewDao;
     
+
+    private UserService userService;
+    
+    @Autowired
+    private RoomServiceSh roomServiceSh;
+    
+    @Autowired
+    private ReservationServiceJY reservationService;
+    
+    @Autowired
+    private RoomImgService roomImgService;
+
     
 	/**
 	 * 호스트 메인 페이지로 이동
 	 * @return
 	 */
-	@RequestMapping(value="/host/main", method = RequestMethod.GET)
-	public String main() {
-		return "/host/main";
+	@RequestMapping(value="/host/main", method=RequestMethod.GET)
+	public String hostPage(Model model, HttpServletRequest request, HttpServletResponse response) 
+	{
+	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    
+	    // 예약정보 조회
+	    List<Reservation> reservations = reservationService.reservationsListByHostId(sessionUserId);
+	    
+	    for (Reservation rsv : reservations) 
+	    {
+	        int roomTypeSeq = rsv.getRoomTypeSeq();
+	        
+	        //숙소 제목
+	        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+	        if (roomType != null) 
+	        {
+	            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
+
+	        }
+	        
+	        // 이미지
+	        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
+	        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
+	        {
+	            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
+	            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
+	        }
+	    }
+	    model.addAttribute("reservations", reservations);
+	    return "/host/main";
 	}
+
 	
 	// **************************************************************************************
 	// *********************************** 숙소/공간 관리 ***************************************
 	// **************************************************************************************
-	
-	
+
 	@RequestMapping(value="/host/fragment/roomList", method=RequestMethod.GET)
 	public String roomList(Model model, HttpServletRequest request)
 	{
@@ -314,7 +372,7 @@ public class HostController {
 	    return (result > 0) ? "success" : "fail";
 	}
 
-	
+
 	// **************************************************************************************
 	// ************************************* 리뷰 관리 *****************************************
 	// **************************************************************************************
@@ -450,9 +508,7 @@ public class HostController {
 	    return hostService.getStatsForChart(hostId, startDate, endDate, groupBy);
 	}
 
-	
-	
-	
+
 	
 	
 	

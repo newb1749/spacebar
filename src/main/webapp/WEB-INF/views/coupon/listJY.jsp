@@ -1,9 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <meta charset="UTF-8" />
   <title>전체 쿠폰 목록</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,7 +21,7 @@
 
 <style>
   body {
-    padding-top: 100px;
+    padding-top: 20px;
   }
 
   .clickable {
@@ -44,7 +45,7 @@
 </head>
 <body>
 
-<jsp:include page="/WEB-INF/views/include/navigation.jsp" />
+<%@ include file="/WEB-INF/views/include/navigation.jsp"%>
 
 <div class="container" style="padding-top: 100px; padding-bottom: 100px;">
   <h2 class="text-center mb-4">전체 쿠폰 목록</h2>

@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <meta charset="UTF-8">
 <title>리뷰 작성</title>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
@@ -19,6 +21,11 @@
 </c:if>
 
 <style>
+.content-wrapper {
+        max-width: 600px;       /* 원하시는 최대 너비 */
+        margin: 100px auto 0;    /* 위쪽 여백 40px, 좌우 자동(가운데), 아래 0 */
+        padding: 0 20px;        /* 좌우 내부 여백 */
+    }
     body {
         font-family: Arial, sans-serif;
         padding: 20px;
@@ -75,11 +82,22 @@
     .rating > label:hover svg {
         fill: #f7b731; /* 채워진 별 색상 */
     }
+    
+    .main-image {
+      display: block;            /* 블록 레벨로 배치 */
+      width: 100%;               /* 가로 100% */
+      max-width: 500px;          /* 최대 너비 500px */
+      height: auto;              /* 비율 유지 */
+      margin-bottom: 20px;       /* 아래 여백 */
+      border-radius: 4px;        /* 둥근 모서리 */
+      object-fit: cover;         /* 잘라내기 없이 꽉 채우기 */
+    }
 
 </style>
 </head>
 <body>
-
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<div class="content-wrapper">
     <h1>리뷰 작성 📝</h1>
     
         <!-- 성공/오류 메시지 표시 -->
@@ -96,6 +114,12 @@
         <input type="hidden" name="rsvSeq" value="${rsvSeq}" />
 
 		<!-- ────────── ⭐ 별점 영역 ────────── -->
+		<p>
+        <strong>대표 이미지:</strong><br/>
+        <!-- 컨트롤러에서 전달된 메인 이미지 URL을 ${mainImageUrl} 변수로 받았다고 가정 -->
+        <img src="/resources/upload/roomtype/main/${roomTypeImgName}" alt="메인 이미지" class="main-image"/>
+      </p>
+		
         <p>
             <strong>평점:</strong>
             <fieldset class="rating">
@@ -147,6 +171,6 @@
         <button type="button" onclick="history.back();">취소</button>
         
     </form>
-
+</div>
 </body>
 </html>

@@ -29,14 +29,16 @@
       margin-bottom: 12px;
     }
     .cart-card {
-      position: relative;         /* 체크박스 절대 위치를 위해 */
-      padding-left: 32px;         /* 체크박스 공간 확보 */
+     position: relative;      /* 이 한 줄만 추가해 주시면 됩니다! */
       display: flex;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  align-items: stretch;    /* 자식 요소 높이를 카드 높이에 맞춤 */
+  height: 130px;           /* 원하시는 고정 높이로 조정하세요 */
+  padding-left: 32px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     /* 체크박스 */
@@ -47,31 +49,49 @@
       transform: translateY(-50%);
       margin: 0;
       padding: 0;
+      z-index: 1; /* 혹시 가려지면 z-index도 높여주세요 */
     }
 
     /* 나머지 카드 내부 스타일 그대로 */
     .cart-img {
-      width: 200px;
-      flex-shrink: 0;
+       width: 200px;
+  flex-shrink: 0;
+  height: 100%;  
     }
     .cart-img img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+  height: 100%;
+  object-fit: cover;
     }
     .cart-info {
-      flex: 1;
-      padding: 8px 12px;
-      position: relative;
+      flex: 1;                       
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;       /* 위→아래 쌓기 */
+  justify-content: space-between; /* 상단 제목과 하단 버튼/가격 간격 유지 */
+  position: relative;
     }
-    .room-title { font-size: 1.1rem; font-weight:700; color:#222; }
+    .room-title { 
+    
+ font-size: 1.1rem;
+  font-weight: 700;
+  color: #222;
+  white-space: nowrap;          /* 한 줄 고정 */
+  overflow: hidden;
+  text-overflow: ellipsis;      /* 넘치면 … */
+    
+    }
     .cart-location { font-size:0.75rem; color:#777; }
     .divider { border-bottom:1px solid #eee; margin:4px 0; }
     .type-title { font-size:0.95rem; font-weight:600; color:#444; }
     .cart-meta { font-size:0.8rem; color:#555; margin-bottom:4px; }
-    .cart-price { font-size:0.95rem; font-weight:bold; color:#007B5E; }
+    .cart-price { font-size: 0.95rem;
+  font-weight: bold;
+  color: #007B5E; }
     .cancel-rule { font-size:0.7rem; color:#888; }
-    .cart-actions { position:absolute; top:8px; right:8px; }
+    .cart-actions {   position: absolute;
+  bottom: 8px;  /* 카드를 꽉 채워도 항상 하단에 */
+  right: 8px; }
     .btn-delete { font-size:0.75rem; color:#999; text-decoration:none; }
     .btn-delete:hover { color:#e74c3c; }
 
@@ -143,7 +163,7 @@
 
   <div class="cart-container">
     <h2>장바구니</h2>
-    <form action="${pageContext.request.contextPath}/cart/checkout" method="post">
+    <form action="${pageContext.request.contextPath}/cart/confirm" method="post">
       <label>
         <input type="checkbox" id="selectAll"/> 전체선택
       </label>
@@ -199,7 +219,7 @@
             <div class="cart-price">
               <fmt:formatNumber value="${cart.cartTotalAmt}" type="number"/>원
             </div>
-            <div class="cancel-rule">(${cart.cancelPolicy})</div>
+            <!-- <div class="cancel-rule">(${cart.cancelPolicy})</div>   -->
             <div class="cart-actions">
               <a href="javascript:;" class="btn-delete"
                  onclick="deleteCart(${cart.cartSeq})">&times; 삭제</a>
@@ -214,7 +234,7 @@
           <strong class="total-amt" id="summaryAmt">0</strong>원
         </span>
         <button type="submit" id="btnCheckout" class="btn-buy" disabled>
-          구매하기
+          예약하기
         </button>
       </div>
     </form>

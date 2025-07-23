@@ -30,43 +30,35 @@
   };
   preloader();
 
-  // ✅ 오타 수정: tinySdlier → tinySlider
+  // tinySlider 함수 정의 시작
   var tinySlider = function () {
-    var heroSlider = document.querySelectorAll('.hero-slide');
-    var spaceSlider = document.querySelectorAll('.space-slider');
-    var roomSlider = document.querySelectorAll('.room-slider');
-    var imgPropertySlider = document.querySelectorAll('.img-property-slide');
-    var testimonialSlider = document.querySelectorAll('.testimonial-slider');
-    
-    const slider = tns({
-      container: '.hero-slider',
-  items: 1,
-  slideBy: 'page',
-  autoplay: true,
-  autoplayTimeout: 7000,   // ← 5초
-  speed: 600,
-  controls: false,
-  nav:     false,
-  loop:    true,
-  autoplayButtonOutput: false
-  });
+    // 슬라이더 컨테이너 요소들을 올바르게 선택
+    var heroSliderContainer = document.querySelector('.hero-slider');
+    var spaceSliderContainer = document.querySelector('.space-slider');
+    var roomSliderContainer = document.querySelector('.room-slider');
+    var imgPropertySliderContainer = document.querySelector('.img-property-slide'); // 이 클래스가 HTML에 있는지 다시 확인해주세요
+    var testimonialSliderContainer = document.querySelector('.testimonial-slider');
 
-    if (heroSlider.length > 0) {
+    // Hero Slider 초기화
+    if (heroSliderContainer) {
       tns({
-        container: '.hero-slide',
-        mode: 'carousel',
-        speed: 700,
+        container: heroSliderContainer,
+        items: 1,
+        slideBy: 'page',
         autoplay: true,
+        autoplayTimeout: 7000, // 7초
+        speed: 600,
         controls: false,
         nav: false,
-        autoplayButtonOutput: false,
-        controlsContainer: '#hero-nav',
+        loop: true,
+        autoplayButtonOutput: false
       });
     }
 
-    if (imgPropertySlider.length > 0) {
+    // imgPropertySlider 초기화 (이 슬라이더가 실제로 사용되는지 HTML에서 확인 필요)
+    if (imgPropertySliderContainer) {
       tns({
-        container: '.img-property-slide',
+        container: imgPropertySliderContainer,
         mode: 'carousel',
         speed: 700,
         items: 1,
@@ -78,9 +70,10 @@
       });
     }
 
-	 if (roomSlider.length > 0) {
+    // Room Slider 초기화
+    if (roomSliderContainer) {
       tns({
-        container: '.room-slider',
+        container: roomSliderContainer,
         mode: 'carousel',
         speed: 700,
         gutter: 30,
@@ -94,11 +87,12 @@
           900: { items: 3 }
         }
       });
-      }
-      
-      if (spaceSlider.length > 0) {
+    }
+
+    // Space Slider 초기화
+    if (spaceSliderContainer) {
       tns({
-        container: '.space-slider',
+        container: spaceSliderContainer,
         mode: 'carousel',
         speed: 700,
         gutter: 30,
@@ -112,11 +106,12 @@
           900: { items: 3 }
         }
       });
-     }
+    }
 
-    if (testimonialSlider.length > 0) {
+    // Testimonial Slider 초기화
+    if (testimonialSliderContainer) {
       tns({
-        container: '.testimonial-slider',
+        container: testimonialSliderContainer,
         mode: 'carousel',
         speed: 700,
         items: 3,
@@ -131,13 +126,9 @@
         }
       });
     }
-  }
+  } // tinySlider 함수 정의 끝
 
-  // ✅ 함수명도 맞게 실행
+  // tinySlider 함수 호출
   tinySlider();
 
-
-
 })();
-
-

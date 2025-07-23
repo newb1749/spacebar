@@ -26,6 +26,7 @@
       <result column="WEEKEND_AMT" property="weekEndAmt" />
       <result column="WEEKDAY_AMT" property="weekdayAmt" />
       <result column="ROOM_IMG_NAME" property="roomImgName" />
+      <result column="SALE_YN" property="saleYn" />
       
   </resultMap>
   
@@ -254,9 +255,11 @@
 						           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
 						           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
 						           NVL(MIN_TIMES, 0) MIN_TIMES,
-						           NVL(MAX_TIMES, 0) MAX_TIMES
+						           NVL(MAX_TIMES, 0) MAX_TIMES,
+						           NVL(SALE_YN,'') SALE_YN
 						      FROM ROOM A, ROOM_CATEGORY B
 				         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+				         	   AND SALE_YN = 'Y'
 				         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
 				         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 					                                FROM ROOM_TYPE
@@ -357,7 +360,8 @@
 		       AVERAGE_RATING,
 		       REVIEW_COUNT,
 		       MIN_TIMES,
-		       MAX_TIMES, 	 
+		       MAX_TIMES,
+		       SALE_YN, 	 
 		       (SELECT ROOM_IMG_NAME 
 		          FROM ROOM_IMAGE
 		         WHERE ROOM_SEQ = OUTER.ROOM_SEQ
@@ -404,9 +408,11 @@
 			           NVL(AVERAGE_RATING, 0) AVERAGE_RATING,
 			           NVL(REVIEW_COUNT, 0) REVIEW_COUNT,
 			           NVL(MIN_TIMES, 0) MIN_TIMES,
-			           NVL(MAX_TIMES, 0) MAX_TIMES
+			           NVL(MAX_TIMES, 0) MAX_TIMES,
+			           NVL(SALE_YN,'') SALE_YN
 			      FROM ROOM A, ROOM_CATEGORY B
 	         	 WHERE A.ROOM_CAT_SEQ = B.ROOM_CAT_SEQ
+	         	   AND SALE_YN = 'Y'
 	         	   AND A.ROOM_CAT_SEQ IN(8,9,10,11,12,13,14) 
 	         	   AND A.ROOM_SEQ IN (SELECT ROOM_SEQ
 		                                FROM ROOM_TYPE
@@ -542,6 +548,23 @@
 	FROM
 	    ROOM_TYPE_IMAGE
 	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	</select>
+	
+	<select id="getRoomTypeImgMain" parameterType="int" resultMap="roomTypeImgResultMap">
+	SELECT
+	    ROOM_TYPE_SEQ,
+	    ROOM_TYPE_IMG_SEQ,
+	    ROOM_TYPE_IMG_ORIG_NAME,
+	    ROOM_TYPE_IMG_NAME,
+	    IMG_TYPE,
+	    ROOM_TYPE_IMG_EXT,
+	    IMG_SIZE,
+	    SORT_ORDER,
+	    REG_DT
+	FROM
+	    ROOM_TYPE_IMAGE
+	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	   AND IMG_TYPE = 'main'
 	</select>
 	
     <update id="updateRoom" parameterType="com.sist.web.model.Room">

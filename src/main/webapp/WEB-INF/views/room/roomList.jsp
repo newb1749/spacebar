@@ -10,12 +10,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
 <title>숙소 리스트</title>
 <style>
 body {
-  padding-top: 100px;
+  padding-top: 20px;
 }
 
 
@@ -345,6 +343,7 @@ $(document).ready(function(){
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
     document.roomForm.personCount.value = $("#_personCount").val();
+    document.roomForm.action = "/room/roomList"
     document.roomForm.submit();
   });
 });
@@ -481,7 +480,6 @@ function fn_roomDetail(roomSeq)
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-
 <div class="container mt-5" style="margin-top: 100px;">
   <h2 class="fw-bold mb-4">숙소 목록</h2>
 

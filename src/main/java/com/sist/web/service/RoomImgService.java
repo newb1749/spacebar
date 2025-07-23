@@ -53,4 +53,21 @@ public class RoomImgService
 		
 		return imgs;
 	}
+	
+	//룹타입에 대한 전체 이미지 정보
+	public RoomTypeImage getRoomTypeImgMain(int roomTypeSeq)
+	{
+		RoomTypeImage imgs = null;
+		
+		try
+		{
+			imgs = roomDao.getRoomTypeImgMain(roomTypeSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RoomImgService]getRoomTypeImgDetail Exception", e);
+		}
+		
+		return imgs;
+	}
 }

@@ -134,15 +134,31 @@ $(function(){
 });
 //==========================장바구니 끝==========================//
 </script>
+<style>
+.site-nav .container {
+  max-width: none !important;   /* 부트스트랩 max-width 제거 */
+  width:68% !important;        /* 화면 너비의 80% */
+  margin: 0 auto !important;    /* 가운데 정렬 */
+  padding: 0 !important;
+}
+</style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-
+<!-- flashAttribute "message" 가 있으면, alert 또는 인라인 박스로 보여주기 -->
+<c:if test="${not empty message}">
+  <!-- 간단한 팝업 alert -->
+  <script>
+    alert('${message}');
+  </script>
+  </c:if>
     <div class="container">
         <div class="sidebar">
             <h2>마이페이지</h2>
             <c:if test="${user.userType == 'H'}">
-	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
+	            <div class="menu-item" >
+	            	<a href="/host/main" style="color: #666666"> 내 숙소 / 공간 관리</a>
+	            </div>
             </c:if>
 	            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
 	            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
@@ -189,170 +205,73 @@ $(function(){
 			</div>
 
 
-            <%-- 각 섹션별 콘텐츠 --%>
-            <!-- 호스트일때 숙소/공간 정보 관리 -->
-			<div id="roomHost-content" class="content-area hidden">
-			    <div class="welcome-message">숙소/공간 정보 관리</div>
-			    <div class="sub-message">호스트님이 등록하신 숙소/공간의 상세 정보를 확인하고 수정/삭제할 수 있습니다.</div>
-			    <div class="detail-content">
-			        <h3>등록된 숙소/공간 상세 정보</h3>
-			        <c:choose>
-			            <c:when test="${!empty hostRoomList}"> 
-			            <c:forEach var="room" items="${hostRoomList}">
-							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
-							  <div class="row g-3 align-items-center">
-						    	 <div class="col-md-6">
-							      <div class="cart-img">
-							        <img src="/resources/upload/room/main/${room.roomImgName}"
-							             alt="숙소 이미지"
-							             style="width: 190%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
-							      </div>
-							     </div>
-							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
-							    <p class="mb-3 fs-5"><strong>숙소명:</strong> ${room.roomTitle}</p>
-						        <div class="d-flex flex-row justify-content-center gap-3">
-						          <button type="button" class="btn btn-primary btn"
-						                  onclick="location.href='/room/hostUpdateForm?roomSeq=${room.roomSeq}'">수정하기</button>
-						          <button type="button" class="btn btn-danger btn"
-						                  onclick="hostDeleteRoom('${room.roomSeq}')">삭제하기</button>
-						        </div>  
-							   </div>
-							  </div>
-							</div>
-			                </c:forEach>
-			            </c:when>
-			            <c:otherwise>
-			                <div class="alert alert-info text-center">등록된 숙소/공간 정보가 없습니다.</div>
-			                <div class="d-flex justify-content-center mt-3">
-			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
-			                </div>
-			            </c:otherwise>
-			        </c:choose>
-			
-			        <h3 class="mt-5">숙소/공간 예약 내역</h3>
-			        <div class="sub-message">호스트님 숙소와 관련된 모든 예약 및 결제 내역입니다.</div>
-			        <c:if test="${empty reservations}">
-			            <div class="alert alert-info text-center">예약 내역이 없습니다.</div>
-			        </c:if>
-			        <c:if test="${not empty reservations}">
-			            <table class="table table-hover">
-			                <thead>
-			                    <tr>
-			                        <th>예약번호</th>
-			                        <th>숙소명</th> <th>객실유형</th>
-			                        <th>체크인</th>
-			                        <th>체크아웃</th>
-			                        <th>상태</th>
-			                        <th>결제상태</th>
-			                        <th>총금액</th>
-			                        <th>관리</th>
-			                    </tr>
-			                </thead>
-			                <tbody>
-			                    <c:forEach var="r" items="${reservations}">
-			                        <tr>
-			                            <td>${r.rsvSeq}</td>
-			                            <td></td> <td>${r.roomTypeSeq}</td>
-			                            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
-			                            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
-			                            <td>
-			                                <c:choose>
-			                                    <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
-			                                    <c:when test="${r.rsvStat eq 'CANCELED'}">예약취소</c:when>
-			                                    <c:when test="${r.rsvStat eq 'PENDING'}">결제대기</c:when>
-			                                    <c:otherwise>-</c:otherwise>
-			                                </c:choose>
-			                            </td>
-			                            <td>
-			                                <c:choose>
-			                                    <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
-			                                    <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
-			                                    <c:when test="${r.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
-			                                    <c:otherwise>-</c:otherwise>
-			                                </c:choose>
-			                            </td>
-			                            <td class="amount">
-			                                <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
-			                            </td>
-			                            <td>
-			                                <c:if test="${r.rsvStat eq 'CONFIRMED'}">
-			                                    <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('이 예약을 정말 취소(환불)하시겠습니까?')">
-			                                        <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-			                                        <button type="submit" class="btn btn-sm btn-danger">환불</button>
-			                                    </form>
-			                                </c:if>
-			                            </td>
-			                        </tr>
-			                    </c:forEach>
-			                </tbody>
-			            </table>
-			        </c:if>
-			    </div>
-			</div>
-            
+            <%-- 각 섹션별 콘텐츠 --%>      
             <%-- 회원정보 수정 --%>
 			<div id="editInfo-content" class="content-area hidden">
 			    <div class="welcome-message">회원정보 수정</div>
 			    <div class="sub-message">회원정보를 확인하고 수정하실 수 있습니다.</div>
 			    
-			    <div class="detail-content p-4"> <h3 class="mb-4">회원정보</h3> <form id="userUpdateForm"> <div class="mb-3 row info-item"> <label for="userId" class="col-sm-3 col-form-label info-label">아이디 :</label>
+			    <div class="detail-content p-4"> 
+			    <h3 class="mb-4">회원정보</h3> 
+			    <form id="userUpdateForm"> 
+			    		<div class="mb-3 row info-item"> 
+			    			<label for="userId" class="col-sm-3 col-form-label info-label">아이디 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="userId" value="${user.userId}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.userId}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="userName" class="col-sm-3 col-form-label info-label">이름 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="userName" value="${user.userName}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.userName}</p>
 			                </div>
 			            </div>
 			 
 			            <div class="mb-3 row info-item">
 			                <label for="nickName" class="col-sm-3 col-form-label info-label">닉네임 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="nickName" value="${user.nickName}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.nickName}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="phone" class="col-sm-3 col-form-label info-label">연락처 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="phone" value="${user.phone}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.phone}</p>
 			                </div>               
 			            </div>
 			            
 						<div class="mb-3 row info-item">
 						    <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
 						    <div class="col-sm-9">
-						        <input type="text" readonly class="form-control-plaintext info-value" id="userAddr" value="${user.userAddr}" style="width: 500px;">
-						        </div>
+						        <p class="form-control-plaintext mb-0" style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #0d0000;">
+    								${user.userAddr}
+								</p>
+						    </div>
 						</div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="email" class="col-sm-3 col-form-label info-label">이메일 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="email" value="${user.email}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.email}</p>
 			                </div> 
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="joinDt" class="col-sm-3 col-form-label info-label">가입일 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="joinDt" value="${user.joinDt}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.joinDt}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="grade" class="col-sm-3 col-form-label info-label">등급 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="grade" value="${user.grade}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.grade}</p>
 			                </div>
 			            </div>
-			            
-			            
-			            	<button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
-			            
+			            <button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
 			        </form>
 			    </div>
 			</div>
@@ -421,7 +340,7 @@ $(function(){
 			    </div>
 			</div>
 
-			<%-- 예약 내역 --%><!-- ------------------체크인/아웃 수정필요------------------ -->
+			<%-- 예약 내역 --%>
             <div id="reservation-content" class="content-area hidden">
                 <div class="welcome-message">예약 내역</div>
                 <div class="sub-message">회원님이 예약 내역 목록입니다.</div>
@@ -436,7 +355,7 @@ $(function(){
 					      <thead>
 					        <tr>
 					          <th>예약번호</th>
-					          <th>객실유형</th>
+					          <th>객실명</th>
 					          <th>체크인</th>
 					          <th>체크아웃</th>
 					          <th>상태</th>
@@ -448,7 +367,7 @@ $(function(){
 					        <c:forEach var="r" items="${reservations}">
 					          <tr>
 					            <td>${r.rsvSeq}</td>
-					            <td>${r.roomTypeSeq}</td>
+					            <td>${r.roomTypeTitle}</td>
 					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td>
@@ -461,7 +380,13 @@ $(function(){
 					            </td>
 					            <td>
 					              <c:choose>
-					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
+					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
+					                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
+					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+					                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+					                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+					                </form>
+					                </c:when>
 					                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
 					                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
 					                <c:otherwise>-</c:otherwise>
@@ -621,11 +546,11 @@ $(function(){
 			<%-- 장바구니 --%>
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
-			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=cart-container>
+			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
+			<div  class=container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
-			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
+			  <form name="cart" id="cart" action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>
 			    <label>
 			      <input type="checkbox" id="selectAll"/> 전체선택
 			    </label><br/><br/>
@@ -715,6 +640,7 @@ $(function(){
             <%-- 새로운 HTML 코드에 있던 "회원 달력" 등 더미 콘텐츠들은 기존 JSP에 매핑되는 내용이 없으므로, 필요하면 추가 데이터를 백엔드에서 받아와서 구현해야 합니다. 여기서는 기존 JSP에 있던 마이페이지 메뉴와 매칭되는 부분만 반영했습니다. --%>
         </div>
     </div>
+
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 <script>

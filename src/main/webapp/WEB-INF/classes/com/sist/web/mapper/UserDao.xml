@@ -20,11 +20,34 @@
 		<result column="USER_STAT" property="userStat" />
 		<result column="MILE" property="mile" />
 		<result column="UPDATE_DT" property="updateDt" />
+		<result column="HOST_COMMENT" property="hostComment" />
 	</resultMap>
 
 	<!-- 회원조회 -->
   	<select id="userSelect" parameterType="String" resultMap="userResultMap">
   		SELECT USER_ID,
+		       NVL(USER_PWD,'') USER_PWD,
+		       NVL(USER_NAME, '') USER_NAME,
+		       NVL(EMAIL,'') EMAIL,
+		       NVL(PHONE,'') PHONE,
+		       NVL(USER_ADDR,'') USER_ADDR,
+		       NVL(TO_CHAR(JOIN_DT,'YYYY.MM.DD'),'') JOIN_DT,
+		       NVL(NICKNAME,'') NICKNAME,
+		       NVL(GRADE,'') GRADE,
+		       NVL(PROF_IMG_EXT,'') PROF_IMG_EXT,
+		       NVL(GENDER,'') GENDER,
+		       NVL(TO_CHAR(BIRTH_DT,'YYYY.MM.DD'),'') BIRTH_DT,
+		       NVL(USER_TYPE,'G') USER_TYPE,
+		       NVL(APPROV_STAT,'Y') APPROV_STAT,
+		       NVL(USER_STAT,'Y') USER_STAT,
+		       NVL(MILE,0) MILE,
+		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD'),'') UPDATE_DT
+		  FROM SB_USER
+		 WHERE USER_ID = #{value}
+  	</select>
+  	
+  	<select id="hostSelect" resultMap="userResultMap">
+  		SELECT A.USER_ID USER_ID,
 		       NVL(USER_PWD,'') USER_PWD,
 		       NVL(USER_NAME, '') USER_NAME,
 		       NVL(EMAIL,'') EMAIL,
@@ -40,9 +63,11 @@
 		       NVL(APPROV_STAT,'Y') APPROV_STAT,
 		       NVL(USER_STAT,'Y') USER_STAT,
 		       NVL(MILE,0) MILE,
-		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
-		  FROM SB_USER
-		 WHERE USER_ID = #{value}
+		       NVL(TO_CHAR(A.UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT,
+		       NVL(HOST_COMMENT,'') HOST_COMMENT
+		  FROM SB_USER A, ROOM B
+		 WHERE A.USER_ID = B.HOST_ID
+		   AND ROOM_SEQ = #{value}
   	</select>
   	
   	<!-- 닉네임 중복 관련 -->

@@ -2,10 +2,13 @@ package com.sist.web.controller;
 
 import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
+import com.sist.web.model.Coupon;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.RoomType;
+import com.sist.web.service.CouponServiceJY;
 import com.sist.web.service.MileageHistoryService;
+import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.RoomTypeService;
@@ -27,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ReservationControllerJY {
@@ -54,7 +58,13 @@ public class ReservationControllerJY {
 
     @Autowired
     private MileageHistoryService mileageHistoryService;
+    
+    @Autowired
+    private MileageServiceJY mileageService;
 
+    @Autowired
+    private CouponServiceJY couponService;
+        
     @GetMapping("/reservation/step1JY")
     public String reservationStep1(@RequestParam("roomTypeSeq") Integer roomTypeSeq,
                                    @RequestParam("checkIn") String checkIn,
@@ -102,6 +112,7 @@ public class ReservationControllerJY {
                 }
             }
             reservation.setHostId(hostId.trim());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             throw new IllegalArgumentException("HOST_ID가 여전히 null입니다.");
@@ -112,6 +123,7 @@ public class ReservationControllerJY {
     @PostMapping("/reservation/detailJY")
     public String reservationDetailJY(@ModelAttribute Reservation reservation,
                                       HttpServletRequest request,
+                                      HttpSession session,
                                       Model model) {
         String guestId = (String) request.getSession().getAttribute("SESSION_USER_ID");
         if (guestId == null || guestId.isEmpty()) {
@@ -122,6 +134,7 @@ public class ReservationControllerJY {
         RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType != null) {
             reservation.setHostId(roomType.getHostId());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
 
         int totalAmt = calculateTotalAmount(reservation.getRoomTypeSeq(),
@@ -130,6 +143,20 @@ public class ReservationControllerJY {
 
         reservation.setTotalAmt(totalAmt);
         reservation.setFinalAmt(totalAmt);
+
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        // 쿠폰 및 마일리지 정보 조회
+        logger.debug("88888888888888888888888888888888");
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        
+        logger.debug("999999999999999999999999999999999999");
+        
+        model.addAttribute("reservation", reservation);
+        
+        if(couponList != null)
+        {
+            model.addAttribute("couponList", couponList);
+        }
 
         long userMileage = getUserMileage(guestId);
         model.addAttribute("userMileage", userMileage);
@@ -142,8 +169,14 @@ public class ReservationControllerJY {
     public String reservationDetail(@RequestParam(value = "rsvSeq", required = false) Integer rsvSeq,
                                     HttpSession session,
                                     Model model) {
+    	logger.debug("88888888888888888888888888888");
         Reservation reservation = null;
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
 
+        logger.debug("예약시 총 금액===================");
+        logger.debug("예약시 rsvSeq : " + rsvSeq);
+        logger.debug("예약시 총 금액===================");
+        
         if (rsvSeq != null && rsvSeq > 0) {
             reservation = reservationDao.selectReservationById(rsvSeq);
         }
@@ -162,7 +195,17 @@ public class ReservationControllerJY {
             // return "redirect:/payment/paymentConfirm?error=예약 정보가 없습니다.";
         }
 
+        // 쿠폰 및 마일리지 정보 조회
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        
+        logger.debug("예약시 총 금액===================");
+        
         model.addAttribute("reservation", reservation);
+        
+        if(couponList != null)
+        {
+            model.addAttribute("couponList", couponList);
+        }
 
         String guestId = (String) session.getAttribute("SESSION_USER_ID");
         if (guestId != null) {
@@ -206,12 +249,15 @@ public class ReservationControllerJY {
     public String processMileagePaymentWithReservation(@ModelAttribute Reservation reservation,
                                                        HttpSession session,
                                                        RedirectAttributes redirectAttrs) {
+        logger.info("processMileagePaymentWithReservation 진입");
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         if (userId == null || userId.isEmpty()) {
             redirectAttrs.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/user/login";
         }
         reservation.setGuestId(userId);
+        
+        logger.info("couponSeq = {}", reservation.getCouponSeq());
 
         long userMileage = getUserMileage(userId);
         if (userMileage < reservation.getFinalAmt()) {
@@ -226,10 +272,14 @@ public class ReservationControllerJY {
         }
 
         try {
-            // 예약 저장
             reservationService.insertReservation(reservation);
 
-            // 로그 추가: 예약번호 확인
+            if (reservation.getCouponSeq() != null) {
+                logger.info("쿠폰 사용 완료 처리 시작: userId={}, cpnSeq={}", userId, reservation.getCouponSeq());
+                couponService.markCouponAsUsed(userId, reservation.getCouponSeq());
+                logger.info("쿠폰 사용 완료 처리 종료");
+            }
+
             logger.info("예약 저장 후 rsvSeq: {}", reservation.getRsvSeq());
 
             if (reservation.getRsvSeq() == null || reservation.getRsvSeq() <= 0) {
@@ -243,13 +293,9 @@ public class ReservationControllerJY {
         }
 
         session.removeAttribute("pendingReservation");
-        
+
         int seq = reservation.getRsvSeq() != null ? reservation.getRsvSeq() : -1;
         return "redirect:/payment/paymentConfirm?rsvSeq=" + seq;
-
-
-        // 결제 완료 페이지로 rsvSeq 전달
-        //return "redirect:/payment/paymentConfirm?rsvSeq=" + reservation.getRsvSeq();
     }
 
     // == chargeMileage 경로 확실히 /reservation/chargeMileage 로 수정 ==
@@ -308,9 +354,8 @@ public class ReservationControllerJY {
             fullReservation.setCancelDt(new Date());
             fullReservation.setRefundAmt(fullReservation.getFinalAmt());
 
+            // 예약 취소 처리 및 마일리지 환불(내부에서 한번만 호출됨)
             reservationService.cancelReservation(fullReservation);
-
-            mileageHistoryService.refundMileage(userId, fullReservation.getRefundAmt());
 
             redirectAttrs.addFlashAttribute("msg", "환불이 완료되었습니다.");
         } catch (Exception e) {
@@ -320,27 +365,65 @@ public class ReservationControllerJY {
 
         return "redirect:/payment/mileageHistory";
     }
-
+    
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+        
+        logger.debug("######################################");
+        logger.debug("roomTypeSeq : " + roomTypeSeq);
+        logger.debug("checkInDateStr : " + checkInDateStr);
+        logger.debug("checkOutDateStr : " + checkOutDateStr);
+        logger.debug("######################################");
         if (roomType == null) {
             throw new IllegalArgumentException("존재하지 않는 객실 유형입니다.");
         }
+        
+        logger.debug("???????????????????????????????????");
+        logger.debug("roomType.getWeekdayAmt() : " + roomType.getWeekdayAmt());
+        logger.debug("roomType.getWeekendAmt() : " + roomType.getWeekendAmt());
+        logger.debug("???????????????????????????????????");
+        
         int weekdayAmt = roomType.getWeekdayAmt();
         int weekendAmt = roomType.getWeekendAmt();
 
         LocalDate checkIn = parseFlexibleDate(checkInDateStr);
         LocalDate checkOut = parseFlexibleDate(checkOutDateStr);
+        
+        //
+        LocalDate date1 = checkIn;
+        logger.debug("111111111111111111111111111111111111");
+        logger.debug("checkIn : " + checkIn);
+        logger.debug("checkOut : " + checkOut);
+        logger.debug("date1.isBefore(checkOut) : " + date1.isBefore(checkOut));
+        logger.debug("date1.plusDays(1) : " + date1.plusDays(1));
+        logger.debug("DayOfWeek day = date.getDayOfWeek() : " + date1.getDayOfWeek());
+        logger.debug("1111111111111111111111111111111111111");
 
+        
         int totalAmount = 0;
-        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
-            DayOfWeek day = date.getDayOfWeek();
+        
+        if(checkIn.isEqual(checkOut))
+        {
+            DayOfWeek day = checkIn.getDayOfWeek();
             if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
                 totalAmount += weekendAmt;
             } else {
                 totalAmount += weekdayAmt;
             }
         }
+        else
+        {
+	        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
+	            DayOfWeek day = date.getDayOfWeek();
+	            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+	                totalAmount += weekendAmt;
+	            } else {
+	                totalAmount += weekdayAmt;
+	            }
+	        }
+    	
+        }
+        
         return totalAmount;
     }
 
@@ -429,10 +512,14 @@ public class ReservationControllerJY {
     
     // === 유연한 날짜 파싱 메서드 ===
     private LocalDate parseFlexibleDate(String dateStr) {
+//        List<DateTimeFormatter> formatters = Arrays.asList(
+//                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+//                DateTimeFormatter.ofPattern("yyyyMMdd")
+//        );
+        
         List<DateTimeFormatter> formatters = Arrays.asList(
-                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
                 DateTimeFormatter.ofPattern("yyyyMMdd")
-        );
+        );        
 
         String trimmedDate = dateStr.trim();
 
@@ -475,5 +562,53 @@ public class ReservationControllerJY {
         return "/reservation/reservationHistoryJY";
     }
 
+    @RequestMapping("/reservation/reservationConfirm")
+    public String reservationConfirm(@RequestParam Map<String, String> params, Model model, HttpSession session) {
+        String userId = (String) session.getAttribute("SESSION_USER_ID");
+        if (userId == null) return "redirect:/index.jsp";
+
+        // 예약 정보 구성
+        Reservation reservation = new Reservation();
+        reservation.setRoomTypeSeq(Integer.parseInt(params.get("roomTypeSeq")));
+        reservation.setRsvCheckInDt(params.get("rsvCheckInDt"));
+        reservation.setRsvCheckOutDt(params.get("rsvCheckOutDt"));
+        reservation.setRsvCheckInTime(params.get("rsvCheckInTime"));
+        reservation.setRsvCheckOutTime(params.get("rsvCheckOutTime"));
+        reservation.setNumGuests(Integer.parseInt(params.get("numGuests")));
+        reservation.setGuestMsg(params.get("guestMsg"));
+
+        // 금액 계산 로직 필요시 작성
+        int finalAmt = reservationService.calculateFinalAmount(reservation);
+        reservation.setFinalAmt(finalAmt);
+
+        // 쿠폰 및 마일리지 정보 조회
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        int userMileage = mileageService.getUserMileage(userId);
+
+        model.addAttribute("reservation", reservation);
+        model.addAttribute("couponList", couponList);
+        model.addAttribute("userMileage", userMileage);
+        model.addAttribute("now", new java.util.Date());
+
+        return "reservation/reservationConfirm"; // jsp 경로
+    }
+
+    @PostMapping("/reservation/pay")
+    public String pay(@ModelAttribute Reservation reservation, Model model) {
+        int totalAmount = reservation.getTotalAmt();
+        int finalAmount = totalAmount;
+
+        Integer couponSeq = reservation.getCouponSeq();
+        if (couponSeq != null) 
+        {
+            Coupon coupon = couponService.getCouponBySeq(couponSeq); // 쿠폰 정보 조회
+            finalAmount = reservationService.calculateFinalAmount(reservation); // 할인 반영
+        }
+
+        model.addAttribute("reservation", reservation);
+        model.addAttribute("finalAmount", finalAmount);
+
+        return "reservation/paymentConfirm"; // 결제 확인 페이지로 이동
+    }
 
 }

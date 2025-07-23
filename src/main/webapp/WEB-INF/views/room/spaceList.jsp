@@ -14,7 +14,7 @@
 <title>공간대여 리스트</title>
 <style>
 body {
-  padding-top: 100px;
+  padding-top: 20px;
 }
 
 .wish-heart {
@@ -371,6 +371,7 @@ $(document).ready(function(){
     document.roomForm.searchValue.value = $("#_searchValue").val();
     document.roomForm.curPage.value = "1";
     document.roomForm.personCount.value = $("#_personCount").val();
+    document.roomForm.action = "/room/spaceList"
     document.roomForm.submit();
   });
   
