@@ -45,6 +45,13 @@
 	    <result property="updateDt" column="UPDATE_DT"/>
 	</resultMap>
 	
+	<resultMap id="statResultMap" type="map">
+	  <result column="TOTALSALES" property="totalSales"/>
+	  <result column="TOTALAMOUNT" property="totalAmount"/>
+	  <result column="AVGRATING" property="avgRating"/>
+	  <result column="RSV_SEQ" property="rsvSeq"/>
+	</resultMap>
+
 	
 	<select id="selectRoomListByHostId" resultMap="roomResultMap" parameterType="string">
 	    SELECT
@@ -98,6 +105,95 @@
 	    SET SALE_YN = 'Y'
 	    WHERE ROOM_SEQ = #{roomSeq}
 	</update>
+	
+	
+	<!-- host/main.jpg 에서 쓰임. 총 판매 건수 (결제 완료 건수) -->
+	<select id="selectTotalSalesCountByPeriod" parameterType="map" resultType="int">
+	  SELECT COUNT(*)
+	  FROM RESERVATION RS
+	  JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
+	  JOIN ROOM RM ON RT.ROOM_SEQ = RM.ROOM_SEQ
+	  WHERE RS.RSV_PAYMENT_STAT = 'PAID'
+	    AND RS.RSV_STAT = 'CONFIRMED'
+	    AND RM.HOST_ID = #{hostId}
+	  <choose>
+	    <when test="periodDetail != null and periodDetail != ''">
+	      AND RS.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail}, 1, 10), 'YYYY-MM-DD')
+	                        AND TO_DATE(SUBSTR(#{periodDetail}, 12, 10), 'YYYY-MM-DD')
+	    </when>
+	    <when test="period == 'week'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'IW')
+	      AND RS.REG_DT &lt; TRUNC(SYSDATE + 7, 'IW')
+	    </when>
+	    <when test="period == 'month'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'MM')
+	      AND RS.REG_DT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)
+	    </when>
+	    <when test="period == 'year'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'YYYY')
+	      AND RS.REG_DT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'YYYY'), 12)
+	    </when>
+	  </choose>
+	</select>
+
+
+	
+	<!-- host/main.jpg 에서 쓰임. 총 정산 금액 (FINAL_AMT 기준) -->
+	<select id="selectTotalSalesAmountByPeriod" parameterType="map" resultType="int">
+	  SELECT NVL(SUM(NVL(RS.FINAL_AMT, 0)), 0)
+	  FROM RESERVATION RS
+	  JOIN ROOM_TYPE RT ON RS.ROOM_TYPE_SEQ = RT.ROOM_TYPE_SEQ
+	  JOIN ROOM RM ON RT.ROOM_SEQ = RM.ROOM_SEQ
+	  WHERE RS.RSV_PAYMENT_STAT = 'PAID'
+	    AND RS.RSV_STAT = 'CONFIRMED'
+	    AND RM.HOST_ID = #{hostId}
+	  <choose>
+	    <when test="periodDetail != null and periodDetail != ''">
+	      AND RS.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail}, 1, 10), 'YYYY-MM-DD')
+	                        AND TO_DATE(SUBSTR(#{periodDetail}, 12, 10), 'YYYY-MM-DD')
+	    </when>
+	    <when test="period == 'week'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'IW')
+	      AND RS.REG_DT &lt; TRUNC(SYSDATE + 7, 'IW')
+	    </when>
+	    <when test="period == 'month'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'MM')
+	      AND RS.REG_DT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)
+	    </when>
+	    <when test="period == 'year'">
+	      AND RS.REG_DT &gt;= TRUNC(SYSDATE, 'YYYY')
+	      AND RS.REG_DT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'YYYY'), 12)
+	    </when>
+	  </choose>
+	</select>
+
+
+	<!-- 날짜 선택용 쿼리 안씀. 3개로 나눠씀(HostDao2개, ReviewDao1개)-->
+	<select id="getStatsByPeriod" resultType="map" parameterType="map">
+	  SELECT
+	    COUNT(*) AS totalSales,
+	    NVL(SUM(RS.FINAL_AMT), 0) AS totalAmount
+	  FROM RESERVATION RS
+	  WHERE RS.RSV_STAT = 'CONFIRMED'
+	    AND RS.RSV_PAYMENT_STAT = 'PAID'
+	    AND RS.HOST_ID = #{hostId}
+	  <choose>
+	    <when test="period == 'week'">
+	      AND RS.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail}, 1, 10), 'YYYY-MM-DD')
+	                        AND TO_DATE(SUBSTR(#{periodDetail}, 12, 10), 'YYYY-MM-DD')
+	    </when>
+	    <when test="period == 'month'">
+	      AND TO_CHAR(RS.REG_DT, 'YYYY-MM') = #{periodDetail}
+	    </when>
+	    <when test="period == 'year'">
+	      AND TO_CHAR(RS.REG_DT, 'YYYY') = #{periodDetail}
+	    </when>
+	    <!-- 'total'일 경우 조건 없음 -->
+	  </choose>
+	</select>
+
+
+
 	
 	
 </mapper>

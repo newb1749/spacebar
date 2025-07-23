@@ -37,6 +37,23 @@ public class UserService
 		return user;
 	}
 	
+	//회원 조회
+	public User hostSelect(int roomSeq)
+	{
+		User host = null;
+		
+		try
+		{
+			host = userDao.hostSelect(roomSeq);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService] hostSelect Exception",e);
+		}
+		
+		return host;
+	}
+	
 	//닉네임 
 	public User nickNameSelect(String nickName)
 	{

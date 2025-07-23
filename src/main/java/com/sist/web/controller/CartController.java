@@ -4,11 +4,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -31,11 +35,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sist.web.dao.MileageHistoryDao;
 import com.sist.web.dao.ReservationDao;
 import com.sist.web.model.Cart;
+import com.sist.web.model.Coupon;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
 import com.sist.web.model.RoomType;
 import com.sist.web.service.CartService;
+import com.sist.web.service.CouponServiceJY;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.RoomTypeService;
@@ -63,6 +69,9 @@ public class CartController {
     
     @Autowired
     private MileageHistoryDao mileageHistoryDao;
+    
+    @Autowired
+    private CouponServiceJY couponService;
     
 
     @Value("#{env['auth.session.name']}")
@@ -213,6 +222,13 @@ public class CartController {
 
         int totalAmt    = reservations.stream().mapToInt(Reservation::getFinalAmt).sum();
         int userMileage = mileageService.getUserMileage(userId);
+        
+        List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
+        
+        if(couponList != null)
+        {
+            model.addAttribute("couponList", couponList);
+        }
 
         model.addAttribute("reservations", reservations);
         model.addAttribute("totalAmt", totalAmt);
@@ -223,114 +239,192 @@ public class CartController {
         return "/cart/confirmCart";
     }
     
-    //장바구니 통해 결제
-    @RequestMapping(
-            value   = "/cart/checkout",
-            method  = RequestMethod.POST
-        )
-        public String checkout(
-            @RequestParam("cartSeqs") List<Integer> cartSeqs,
+    //장바구니 결제
+    @RequestMapping(value = "/cart/checkout", method = RequestMethod.POST)
+    public String checkout(
+            @RequestParam("cartSeqs")                 List<Integer> cartSeqs,
+            @RequestParam("itemFinalAmt")             List<Integer> clientItemFinalAmts,
+            @RequestParam(value="useCouponYn",   required=false) List<String>  useCouponYnsParam,
+            @RequestParam(value="itemCouponSeq", required=false) List<String>  itemCouponSeqStrsParam,
             HttpServletRequest request,
             RedirectAttributes rt
-        ) {
-            HttpSession session = request.getSession();
-            String userId = (String) session.getAttribute(AUTH_SESSION_NAME);
-            if (userId == null) {
-                return "redirect:/user/login";
-            }
-
-            // 1) Cart 목록 조회
-            List<Cart> carts = cartService.getCartsBySeqs(cartSeqs, userId);
-            if (carts.size() != cartSeqs.size()) {
-                rt.addFlashAttribute("error", "유효하지 않은 장바구니 항목이 있습니다.");
-                return "redirect:/cart/list";
-            }
- 
-            // 2) 총 금액 합산
-            int totalAmt = 0;
-            for (int i = 0; i < carts.size(); i++) {
-                totalAmt += carts.get(i).getCartTotalAmt();
-            }
-
-            // 3) 마일리지 체크
-            int userMileage = mileageService.getUserMileage(userId);
-            if (userMileage < totalAmt) {
-                rt.addFlashAttribute("error", "마일리지가 부족합니다.");
-                return "redirect:/cart/list";
-            }
-
-            // 4) 마일리지 차감
-            if (!mileageService.deductMileage(userId, totalAmt)) {
-                rt.addFlashAttribute("error", "마일리지 결제 오류");
-                return "redirect:/cart/list";
-            }
-            
-            /* 마일리지 이력 등록해야함 */
-            int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, totalAmt);
-            if (updatedRows > 0) {
-                MileageHistory history = new MileageHistory();
-                history.setUserId(userId);
-                history.setTrxType("결제");
-                history.setTrxAmt(-totalAmt);
-                history.setBalanceAfterTrx(userMileage - totalAmt);
-                mileageHistoryDao.insertMileageHistory(history);
-            }
-            
-            SimpleDateFormat inSdf = new SimpleDateFormat("yyyyMMdd");
-            
-
-            // 5) Cart → ReservationJY 변환 & 저장
-            for (Cart c : carts) {
-                Reservation r = new Reservation();
-                r.setGuestId(userId);
-                r.setRoomTypeSeq(c.getRoomTypeSeq());
-                r.setRsvCheckInDt(c.getCartCheckInDt());
-                r.setRsvCheckOutDt(c.getCartCheckOutDt());
-                r.setRsvCheckInTime(c.getCartCheckInTime());
-                r.setRsvCheckOutTime(c.getCartCheckOutTime());
-                r.setNumGuests(c.getCartGuestsNum());
-                r.setTotalAmt(c.getCartTotalAmt());
-                r.setFinalAmt(c.getCartTotalAmt());
-                r.setRsvStat("CONFIRMED");
-                r.setRsvPaymentStat("PAID");
-
-                try {
-                    // 4) 날짜 파싱해서 Date 객체 셋팅
-                    Date inDate  = inSdf.parse(c.getCartCheckInDt());
-                    Date outDate = inSdf.parse(c.getCartCheckOutDt());
-                    r.setRsvCheckInDateObj(inDate);
-                    r.setRsvCheckOutDateObj(outDate);
-
-                    // 5) HostId 세팅
-                    RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
-                    String hostId = (rtObj != null ? rtObj.getHostId() : null);
-                    if (hostId == null || hostId.trim().isEmpty()) {
-                        hostId = reservationDao.selectHostIdByRoomSeq(rtObj.getRoomSeq());
-                    }
-                    r.setHostId(hostId);
-
-                    // 6) 예약 저장
-                    reservationService.insertReservation(r);
-
-                } catch (ParseException pe) {
-                    // 파싱 오류
-                    rt.addFlashAttribute("error",
-                        "날짜 형식 오류: " + c.getCartCheckInDt() + " / " + c.getCartCheckOutDt());
-                    return "redirect:/cart/list";
-
-                } catch (Exception e) {
-                    // DB 저장 등 기타 오류
-                    rt.addFlashAttribute("error",
-                        "예약 저장 중 오류 발생: " + e.getMessage());
-                    return "redirect:/cart/list";
-                }
-            }
-
-            // 6) 저장 성공 시 장바구니 항목 일괄 삭제
-            cartService.deleteCarts(cartSeqs, userId);
-
-            rt.addFlashAttribute("msg", "예약이 완료되었습니다.");
-            return "redirect:/reservation/list";
+    ) {
+        HttpSession session = request.getSession();
+        String userId = (String) session.getAttribute(AUTH_SESSION_NAME);
+        if (userId == null) {
+            return "redirect:/user/login";
         }
-    
+
+        int size = cartSeqs.size();
+
+        // -------- 파라미터 기본값 보정 --------
+        List<String> useCouponYns   = new ArrayList<>();
+        List<String> itemCouponSeqs = new ArrayList<>();
+
+        for (int i = 0; i < size; i++) {
+            // useCouponYn
+            String yn = (useCouponYnsParam != null && useCouponYnsParam.size() > i)
+                    ? useCouponYnsParam.get(i) : "N";
+            useCouponYns.add(yn);
+
+            // itemCouponSeq
+            String seqStr = (itemCouponSeqStrsParam != null && itemCouponSeqStrsParam.size() > i)
+                    ? itemCouponSeqStrsParam.get(i) : "";
+            itemCouponSeqs.add(seqStr);
+        }
+
+        // -------- 장바구니 조회 --------
+        List<Cart> carts = cartService.getCartsBySeqs(cartSeqs, userId);
+        if (carts.size() != size) {
+            rt.addFlashAttribute("error", "유효하지 않은 장바구니 항목이 있습니다.");
+            return "redirect:/cart/list";
+        }
+        Map<Integer, Cart> cartMap = new HashMap<>();
+        for (Cart c : carts) cartMap.put(c.getCartSeq(), c);
+
+        int totalFinalAmt = 0;
+        Set<Integer> usedCouponSeqSet = new HashSet<>();
+        List<Integer> finalAmtList = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++) {
+            Cart cart = cartMap.get(cartSeqs.get(i));
+            int originAmt = cart.getCartTotalAmt();
+            int finalAmt  = originAmt;
+
+            // ---- 쿠폰 처리 ----
+            String seqStr = itemCouponSeqs.get(i);
+            Integer couponSeq = null;
+            if (seqStr != null && !seqStr.trim().isEmpty()) {
+                try { couponSeq = Integer.valueOf(seqStr.trim()); } catch (Exception ignore) {}
+            }
+
+            if (couponSeq != null && couponSeq > 0) {
+                // 같은 쿠폰 중복 사용 방지
+                if (usedCouponSeqSet.contains(couponSeq)) {
+                    rt.addFlashAttribute("error", "같은 쿠폰은 두 번 사용할 수 없습니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 보유/미사용 여부
+                if (!couponService.isAlreadyIssued(userId, couponSeq)) {
+                    rt.addFlashAttribute("error", "사용할 수 없는 쿠폰이 포함되어 있습니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 쿠폰 상세
+                Coupon coupon = couponService.getCouponBySeq(couponSeq);
+                if (coupon == null || !"Y".equals(coupon.getCpnStat())) {
+                    rt.addFlashAttribute("error", "비활성화된 쿠폰입니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 기간 체크
+                LocalDate endDate = null;
+                Object rawEnd = coupon.getIssueEndDt(); // String or Date
+                if (rawEnd instanceof Date) {
+                    endDate = ((Date)rawEnd).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                } else if (rawEnd != null) {
+                    String s = rawEnd.toString();
+                    if (s.length() >= 10) {
+                        endDate = LocalDate.parse(s.substring(0,10), DateTimeFormatter.ISO_LOCAL_DATE);
+                    }
+                }
+                if (endDate != null && endDate.isBefore(LocalDate.now())) {
+                    rt.addFlashAttribute("error", "기간이 지난 쿠폰입니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 최소주문금액 체크(필요시)
+                if (coupon.getMinOrderAmt() > 0 && originAmt < coupon.getMinOrderAmt()) {
+                    rt.addFlashAttribute("error", "최소 주문금액에 미달한 쿠폰이 있습니다.");
+                    return "redirect:/cart/confirm";
+                }
+
+                // 할인
+                if (coupon.getDiscountRate() > 0) {
+                    finalAmt = originAmt - (int)Math.floor(originAmt * coupon.getDiscountRate() / 100.0);
+                } else {
+                    finalAmt = Math.max(0, originAmt - coupon.getDiscountAmt());
+                }
+
+                couponService.markCouponAsUsed(userId, couponSeq);
+                usedCouponSeqSet.add(couponSeq);
+            }
+
+            totalFinalAmt += finalAmt;
+            finalAmtList.add(finalAmt);
+        }
+
+        // -------- 마일리지 --------
+        int userMileage = mileageService.getUserMileage(userId);
+        if (userMileage < totalFinalAmt) {
+            rt.addFlashAttribute("error", "마일리지가 부족합니다.");
+            return "redirect:/cart/list";
+        }
+        if (!mileageService.deductMileage(userId, totalFinalAmt)) {
+            rt.addFlashAttribute("error", "마일리지 결제 오류");
+            return "redirect:/cart/list";
+        }
+
+        // 이력
+        int updatedRows = mileageHistoryDao.updateMileageDeduct(userId, totalFinalAmt);
+        if (updatedRows > 0) {
+            MileageHistory history = new MileageHistory();
+            history.setUserId(userId);
+            history.setTrxType("결제");
+            history.setTrxAmt(-totalFinalAmt);
+            history.setBalanceAfterTrx(userMileage - totalFinalAmt);
+            mileageHistoryDao.insertMileageHistory(history);
+        }
+
+        // -------- 예약 저장 --------
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        for (int i = 0; i < size; i++) {
+            Cart c = cartMap.get(cartSeqs.get(i));
+            int finalAmt = finalAmtList.get(i);
+
+            Reservation r = new Reservation();
+            r.setGuestId(userId);
+            r.setRoomTypeSeq(c.getRoomTypeSeq());
+            r.setRsvCheckInDt(c.getCartCheckInDt());
+            r.setRsvCheckOutDt(c.getCartCheckOutDt());
+            r.setRsvCheckInTime(c.getCartCheckInTime());
+            r.setRsvCheckOutTime(c.getCartCheckOutTime());
+            r.setNumGuests(c.getCartGuestsNum());
+            r.setTotalAmt(c.getCartTotalAmt());
+            r.setFinalAmt(finalAmt);
+            r.setRsvStat("CONFIRMED");
+            r.setRsvPaymentStat("PAID");
+
+            try {
+                Date inDate  = sdf.parse(c.getCartCheckInDt());
+                Date outDate = sdf.parse(c.getCartCheckOutDt());
+                r.setRsvCheckInDateObj(inDate);
+                r.setRsvCheckOutDateObj(outDate);
+
+                RoomType rtObj = roomTypeService.getRoomType(c.getRoomTypeSeq());
+                String hostId = (rtObj != null ? rtObj.getHostId() : null);
+                if (hostId == null || hostId.trim().isEmpty()) {
+                    hostId = reservationDao.selectHostIdByRoomSeq(rtObj.getRoomSeq());
+                }
+                r.setHostId(hostId);
+
+                reservationService.insertReservation(r);
+            } catch (ParseException pe) {
+                rt.addFlashAttribute("error", "날짜 형식 오류: " + c.getCartCheckInDt() + " / " + c.getCartCheckOutDt());
+                return "redirect:/cart/list";
+            } catch (Exception e) {
+                rt.addFlashAttribute("error", "예약 저장 중 오류 발생: " + e.getMessage());
+                return "redirect:/cart/list";
+            }
+        }
+
+        cartService.deleteCarts(cartSeqs, userId);
+
+        rt.addFlashAttribute("msg", "예약이 완료되었습니다.");
+        return "redirect:/reservation/list";
+    }
+
+
+
 }
