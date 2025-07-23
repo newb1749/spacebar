@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sist.common.util.FileUtil;
+import com.sist.common.util.StringUtil;
 import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.HostDao;
 import com.sist.web.dao.ReviewDao;
@@ -207,10 +208,12 @@ public class HostService {
      * @param period
      * @return
      */
-    public int getTotalSalesCount(String hostId, String period) {
+    public int getTotalSalesCount(String hostId, String period, String periodDetail) {
         Map<String, Object> map = new HashMap<>();
         map.put("hostId", hostId);
         map.put("period", period);
+        map.put("periodDetail", periodDetail != null ? periodDetail : "");
+       
         return hostDao.selectTotalSalesCountByPeriod(map);
     }
     
@@ -220,10 +223,13 @@ public class HostService {
      * @param period
      * @return
      */
-    public int getTotalSalesAmount(String hostId, String period) {
+    public int getTotalSalesAmount(String hostId, String period, String periodDetail) {
         Map<String, Object> map = new HashMap<>();
         map.put("hostId", hostId);
         map.put("period", period);
+        map.put("periodDetail", periodDetail != null ? periodDetail : "");
+
+        
         return hostDao.selectTotalSalesAmountByPeriod(map);
     }
     
@@ -247,7 +253,23 @@ public class HostService {
 
         return result;
     }
+    
+    /**
+     * 
+     * @param hostId
+     * @param startDate
+     * @param endDate
+     * @param groupBy
+     * @return
+     */
+    public List<Map<String, Object>> getStatsForChart(String hostId, String startDate, String endDate, String groupBy) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("hostId", hostId);
+        param.put("startDate", startDate);
+        param.put("endDate", endDate);
+        param.put("groupBy", groupBy);
 
-
+        return hostDao.selectStatsByGroup(param);
+    }
 
 }
