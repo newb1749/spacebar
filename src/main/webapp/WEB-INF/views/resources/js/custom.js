@@ -132,3 +132,22 @@
   tinySlider();
 
 })();
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // tiny-slider init
+    const promo = tns({
+      container: '#promoSlider',
+      items: 1,
+      slideBy: 1,
+      autoplay: true,
+      autoplayButtonOutput: false,
+      controls: false,   // 기본 화살표 안 씀
+      nav: false,        // 하단 도트 안 씀
+      speed: 400,
+      autoplayTimeout: 5000
+    });
+
+    document.querySelector('.promo-prev').addEventListener('click', () => promo.goTo('prev'));
+    document.querySelector('.promo-next').addEventListener('click', () => promo.goTo('next'));
+  });
