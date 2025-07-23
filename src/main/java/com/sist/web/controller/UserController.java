@@ -677,17 +677,34 @@ public class UserController
         List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        for (Reservation r : reservations) {
-            try {
-                if (r.getRsvCheckInDt() != null) {
+        
+        for (Reservation r : reservations) 
+        {
+        	roomTypeSeq = r.getRoomTypeSeq();
+        	
+        	RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+        	
+        	if(roomType != null)
+        	{
+        		r.setRoomTypeTitle(roomType.getRoomTypeTitle());
+        	}
+        	
+            try 
+            {
+                if (r.getRsvCheckInDt() != null) 
+                {
                     Date checkInDate = sdf.parse(r.getRsvCheckInDt());
                     r.setRsvCheckInDateObj(checkInDate);
                 }
-                if (r.getRsvCheckOutDt() != null) {
+                
+                if (r.getRsvCheckOutDt() != null) 
+                {
                     Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
                     r.setRsvCheckOutDateObj(checkOutDate);
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 // 필요시 로그 기록
             }
         }

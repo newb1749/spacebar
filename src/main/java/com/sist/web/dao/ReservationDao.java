@@ -31,6 +31,9 @@ public interface ReservationDao
     // 예약 번호로 roomSeq 값 구하기(리뷰에 쓰임)	
     int selectRoomSeqByRsvSeq(@Param("rsvSeq") int rsvSeq);
     
-    //호스트 ID로 예약 리스트 조회(호스트페이지 - 판매 내역에 사용)
-    List<Reservation> reservationsListByHostId(String hostId);
+    //호스트 ID로 조회한 판매내역 리스트
+    List<Reservation> reservationsListByHostId(Reservation reservation);
+    
+    //호스트 ID로 조회한 판매내역 총 갯수
+    int reservationsListByHostIdCount(Reservation reservation);
 }

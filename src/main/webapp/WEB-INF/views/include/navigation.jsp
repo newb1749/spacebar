@@ -81,6 +81,7 @@ body{padding-top:var(--nav-h);}
 .site-menu li.nav-icon > a::before{content:none !important;} /* 테마 기본 before 제거 */
 </style>
 
+
 <style id="nav-override">
 /* 메뉴 글씨 크기 강제 */
 nav.site-nav .site-menu > li > a,
@@ -104,6 +105,21 @@ nav.site-nav .nav-cart  i { color:#4aa3ff !important; }
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<%
+    String sessionId = (String)session.getAttribute("SESSION_USER_ID"); // 세션 키 정확히!
+    boolean isLoggedIn = (sessionId != null && !sessionId.isEmpty());
+%>
+<style>
+  .site-menu, .site-menu * {
+    font-size: 16px !important;
+  }
+/* 
+  .site-nav .logo {
+    font-size: 28px; /* Spacebar 로고 크기만 따로 */
+  } */
+</style>
+
 
 <nav class="site-nav">
   <div class="container">
@@ -151,6 +167,7 @@ nav.site-nav .nav-cart  i { color:#4aa3ff !important; }
                 <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
               </a>
             </li>
+
           </c:if>
 
           <!-- 비로그인 상태 -->

@@ -314,4 +314,36 @@ public class ReviewService {
         }
     }
     
+    
+    //리뷰 유무확인
+    public int reservationReviewUpdate(int rsvSeq)
+    {
+    	int count = 0;
+    	
+    	try
+    	{
+    		count = reviewDao.reservationReviewUpdate(rsvSeq);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[ReviewService] reservationReviewUpdate", e);
+    	}
+    	
+    	return count;
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

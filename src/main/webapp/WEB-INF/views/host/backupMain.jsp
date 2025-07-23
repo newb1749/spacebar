@@ -1,4 +1,4 @@
-<%-- /WEB-INF/views/host/main.jsp --%>
+<%-- /WEB-INF/views/host/main.jsp 나오긴함 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <!DOCTYPE html>
@@ -37,15 +37,15 @@
                 <div class="arrow"></div>
 				<div class="period-selector">
 				  <div class="btn-group">
-				    <button class="btn-period" onclick="loadStats('week')">이번 주간</button>
-				    <button class="btn-period" onclick="loadStats('month')">이번 월간</button>
-				    <button class="btn-period" onclick="loadStats('year')">이번 연간</button>
+				    <button class="btn-period" onclick="loadStats('week')">주간</button>
+				    <button class="btn-period" onclick="loadStats('month')">월간</button>
+				    <button class="btn-period" onclick="loadStats('year')">연간</button>
 				    <button class="btn-period" onclick="loadStats('total')">누적</button>
 				  </div>
 				
 				  <div class="manual-inputs" id="manualPeriodInput">
-				    <input type="number" id="monthInput" min="1" max="12" placeholder="월 (1~12)" />
-				    <input type="number" id="yearInput" min="2020" max="2025" placeholder="연도 (예: 2025)" />
+				    <input type="number" id="monthInput" min="1" max="12" value="7" />
+				    <input type="number" id="yearInput" min="2020" max="2025"  value="2025" />
 				    <button class="btn-period btn-submit" onclick="requestStats(currentPeriod)">조회</button>
 				  </div>
 				</div>
@@ -128,20 +128,18 @@ window.onload = function () {
 
   if (lastTab === "dashboard") {
     console.log("📊 대시보드 진입 - 초기 세팅 시작");
-    
-    // 1. 달력 초기화 (-> 주간 start, end 설정됨)
+
+    // 1. 달력 초기화
     initWeekCalendar();
 
-    // 2. 주간 날짜 가져오기
+    // ✅ 바로 아래가 문제였던 부분 (start, end 가져오는 부분)
     const start = document.getElementById("weekCalendar_start")?.value;
     const end = document.getElementById("weekCalendar_end")?.value;
 
     if (start && end) {
       const weekDetail = `${start}~${end}`;
       console.log("📦 초기 주간 periodDetail:", weekDetail);
-
-      // 3. 통계 요청
-      loadStats("week", weekDetail);
+      loadStats("week", weekDetail); // ✅ 이렇게 정확히 넘겨야 함
     } else {
       console.warn("❌ 주간 날짜가 비어있습니다.");
     }
@@ -191,116 +189,77 @@ window.onload = function () {
 		}
         
 		let isReviewManageContentLoaded = false;
-
-		function loadReviewManageContent(forceReload = false) {
-		    if (isReviewManageContentLoaded && !forceReload) return;
-
-		    const contentArea = document.getElementById('reviews-area');
-		    contentArea.innerHTML = '<div class="loading">로딩 중...</div>';
-
-		    fetch('/host/fragment/reviewManage')
-		        .then(res => res.text())
-		        .then(html => {
-		            contentArea.innerHTML = html;
-		            isReviewManageContentLoaded = true;
-
-		            // reviewManage.js의 JS 기능 적용 (필터링 등)
-		            const script = document.createElement("script");
-		            script.src = "/resources/js/host/reviewManage.js?v=1";
-		            document.body.appendChild(script);
-		        })
-		        .catch(err => {
-		            console.error("리뷰 관리 로딩 실패:", err);
-		            contentArea.innerHTML = '<div class="no-data">리뷰 콘텐츠를 불러오는 데 실패했습니다.</div>';
-		        });
-		}
-
-
-  
-        /*
-        function fetchAvgRating(period) {
-        	  $.ajax({
-        	    url: "/host/stat/avgRating",
-        	    method: "GET",
-        	    data: { period: period },
-        	    success: function (avgRating) {
-        	      console.log("평균 평점:", avgRating);  // ← 콘솔 확인
-        	      $("#avgReviewScore").text(avgRating.toFixed(1));
-        	    },
-        	    error: function (err) {
-        	      console.error("평균 평점 오류:", err);
-        	    }
-        	  });
-        	}
-        	// 예: 기본 호출
-        	fetchAvgRating("total");
-		*/
 		
-			let currentPeriod = 'total'; // 전역 변수로 저장
-			/* 0722 11:26
-			function loadStats(period) {
-			  currentPeriod = period;
-	
-			  // 날짜 수동 입력창 초기화
-			  const manualDiv = document.getElementById('manualPeriodInput');
-			  if (!manualDiv) return;`
-	
-			  if (period === 'month' || period === 'year') {
-			    manualDiv.style.display = 'block'; // 수동입력 UI 보이기
-			  } else {
-			    manualDiv.style.display = 'none';
-	
-			    // 주간 처리: 시작/끝 추출
-			    let periodDetail = '';
-			    if (period === 'week') {
-			      const start = document.getElementById('weekCalendar_start').value;
-			      const end = document.getElementById('weekCalendar_end').value;
-			      periodDetail = (start && end) ? `${start}~${end}` : '';
-			    }
-	
-			    // 바로 통계 요청
-			    requestStats(period, periodDetail);
-			  }
-			}
-			*/
-			function loadStats(period, periodDetail = "") {
-				  console.log("📥 loadStats 호출됨, period:", period);
+		// reviewManage 띄우는 함수
+	    function loadReviewManageContent(forceReload = false) {
+	        if (isReviewManageContentLoaded && !forceReload) return;
 
-				  let start = $("#weekCalendar_start").val();
-				  let end = $("#weekCalendar_end").val();
+	        const target = document.getElementById("review-manage-area");
+	        if (!target) {
+	            console.warn("📛 review-manage-area 요소가 없음");
+	            return;	
+	        }
 
-				  // 값이 없을 경우 자동 계산
-				  if (!start || !end) {
-				    const today = new Date();
-				    const range = getWeekRangeFromDate(today);
-				    start = range.start;
-				    end = range.end;
+	        target.innerHTML = '<div class="loading">로딩 중...</div>';
 
-				    $("#weekCalendar_start").val(start);
-				    $("#weekCalendar_end").val(end);
-				  }
+	        fetch('/host/fragment/reviewManage')
+	            .then(res => res.text())
+	            .then(html => {
+	                target.innerHTML = html;
+	                isReviewManageContentLoaded = true;
+	            })
+	            .catch(err => {
+	                console.error("리뷰 관리 콘텐츠 로딩 실패:", err);
+	                target.innerHTML = '<div class="no-data">콘텐츠를 불러오는 데 실패했습니다.</div>';
+	            });
+	    }
+	    
+	    let currentPeriod = 'total'; // 전역 변수
 
-				  let finalPeriodDetail = periodDetail || `${start}~${end}`;  // ← let으로 변경
-
-				  const manualInputDiv = document.getElementById('manualPeriodInput');
-				  if (manualInputDiv) manualInputDiv.style.display = 'none';
-
-				  if (period === 'week') {
-				    console.log("✅ 선택된 주간 날짜:", start, end);
-				    finalPeriodDetail = `${start}~${end}`;  // ← 이 값을 확실히 반영
-				  } else if (period === 'month' || period === 'year') {
-				    if (manualInputDiv) manualInputDiv.style.display = 'flex';
-				    return;
-				  }
-
-				  requestStats(period, finalPeriodDetail);
-				}
-
-
-
-
+	    
+	    
+	    function loadStats(period, inputPeriodDetail = "") {
+	      console.log("📥 loadStats 호출됨, period:", period);
 			
-	
+	      currentPeriod = period;  
+	      
+	      let finalPeriodDetail = inputPeriodDetail;
+
+	      if (period === 'week') {
+	        let start = $("#weekCalendar_start").val();
+	        let end = $("#weekCalendar_end").val();
+
+	        if (!start || !end) {
+	          const today = new Date();
+	          const range = getWeekRangeFromDate(today);
+	          start = range.start;
+	          end = range.end;
+
+	          $("#weekCalendar_start").val(start);
+	          $("#weekCalendar_end").val(end);
+	        }
+
+	        finalPeriodDetail = start && end ? start + "~" + end : "";
+
+	        console.log("✅ 선택된 주간 날짜:", finalPeriodDetail);
+
+	        // 🛑 유효하지 않은 값이면 중단
+	        if (!finalPeriodDetail || finalPeriodDetail === "~") {
+	          console.warn("❌ 주간 기간이 비어 있습니다.");
+	          return;
+	        }
+	      }
+
+	      if (period === "month" || period === "year") {
+	        const manualInputDiv = document.getElementById("manualPeriodInput");
+	        if (manualInputDiv) manualInputDiv.style.display = "flex";
+	        return; // 수동입력 대기
+	      }
+
+	      requestStats(period, finalPeriodDetail);
+	    }
+
+
 			// 수동 입력 버튼 클릭 시 호출
 			function onSubmitManualInput() {
 			  const year = document.getElementById('yearInput').value;
@@ -310,7 +269,7 @@ window.onload = function () {
 			  if (currentPeriod === 'month') {
 			    if (!year || !month) return alert("연도와 월을 모두 입력하세요.");
 			    const paddedMonth = ('0' + month).slice(-2);
-			    periodDetail = `${year}-${paddedMonth}`;
+			    periodDetail = year + "-" + paddedMonth;
 			  } else if (currentPeriod === 'year') {
 			    if (!year) return alert("연도를 입력하세요.");
 			    periodDetail = year;
@@ -328,7 +287,6 @@ window.onload = function () {
 				
 			// 수동 입력 이후 호출되는 함수
 			function requestStats(period, detail = '') {
-			  // 월간 수동 입력 처리
 			  if (period === 'month') {
 			    const year = document.getElementById('yearInput').value;
 			    const month = document.getElementById('monthInput').value;
@@ -337,10 +295,8 @@ window.onload = function () {
 			      return;
 			    }
 			    const paddedMonth = ('0' + month).slice(-2);
-			    detail = `${year}-${paddedMonth}`;
-			  }
-			  // 연간 수동 입력 처리
-			  else if (period === 'year') {
+			    detail = year + "-" + paddedMonth; // ✅ 수정: detail에 바로 할당
+			  } else if (period === 'year') {
 			    const year = document.getElementById('yearInput').value;
 			    if (!year) {
 			      alert("연도를 입력하세요.");
@@ -361,6 +317,7 @@ window.onload = function () {
 			    console.error("통계 요청 실패:", err);
 			  });
 			}
+
 
 
 
@@ -438,6 +395,20 @@ window.onload = function () {
   border-radius: 6px;
 }
 
+/* 주간, 월간, 연간 클릭한거 표시
+*/
+.btn-period.active {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+}
+
+.hidden {
+    display: none;
+}
+.content-area {
+    padding: 20px;
+}
 
 </style>
 

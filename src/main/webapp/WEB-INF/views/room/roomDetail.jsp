@@ -751,7 +751,7 @@ function fn_review_list(page) {
       />
 
       <!-- 2) 호스트 이름 -->
-      <h5 class="card-title mb-1">${host.userName}</h5>
+      <h5 class="card-title mb-1">${host.nickName}</h5>
 
       <!-- 3) 가입일 -->
       <p class="text-muted mb-2">

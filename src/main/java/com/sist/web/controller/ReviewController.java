@@ -25,9 +25,11 @@ import com.sist.web.model.Paging;
 import com.sist.web.model.Review;
 import com.sist.web.model.ReviewComment;
 import com.sist.web.model.ReviewImage;
+import com.sist.web.model.RoomTypeImage;
 import com.sist.web.service.ReservationServiceJY;
 import com.sist.web.service.ReviewCommentService;
 import com.sist.web.service.ReviewService;
+import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
@@ -49,6 +51,9 @@ public class ReviewController {
 	@Autowired
 	private ReservationServiceJY reservationService;
 	
+	@Autowired
+	private RoomImgService roomImgService;
+	
 	@Value("#{env['auth.session.name']}")
 	private String AUTH_SESSION_NAME;
 	
@@ -61,11 +66,21 @@ public class ReviewController {
 	 * @return
 	 */
     @GetMapping("/review/writeForm")
-    public String reviewWriteForm(@RequestParam("rsvSeq") int rsvSeq, Model model) 
+    public String reviewWriteForm(@RequestParam("rsvSeq") int rsvSeq,@RequestParam("roomTypeSeq") int roomTypeSeq, Model model) 
     {
         // 테스트를 위해 예약번호(rsvSeq)를 파라미터로 받아서 view로 전달
     	logger.debug("[ReviewController] reviewWriteForm 호출 - rsvSeq: {}", rsvSeq);
         model.addAttribute("rsvSeq", rsvSeq) ;
+        RoomTypeImage roomTypeMainImage = null;
+        String roomTypeImgName = "";
+        
+        if(roomTypeSeq > 0)
+        {
+        	roomTypeMainImage = roomImgService.getRoomTypeImgMain(roomTypeSeq);
+        	roomTypeImgName = roomTypeMainImage.getRoomTypeImgName();
+        	model.addAttribute("roomTypeImgName", roomTypeImgName) ;
+        }
+        
         return "/review/writeForm"; 
     }
     
@@ -84,6 +99,8 @@ public class ReviewController {
         logger.debug("[ReviewController] reviewWriteProc 시작");
         logger.debug("받은 데이터 - rsvSeq: {}, rating: {}, title: {}", review.getRsvSeq(), review.getRating(), review.getReviewTitle());
         logger.debug("파일 개수: {}", files != null ? files.size() : 0);
+        
+        int rsvSeq = HttpUtil.get(request, "rsvSeq", 0);
         
     	String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         if (userId == null || userId.isEmpty()) {
@@ -128,7 +145,6 @@ public class ReviewController {
     			 // model.addAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
     			 //return "redirect:/user/myPage_mj";
     			 redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
-    			 
     		}
     		else
     		{
@@ -155,7 +171,9 @@ public class ReviewController {
         } 
         else 
         {
-            return "redirect:/user/myPage";
+        	redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
+        	int count = reviewService.reservationReviewUpdate(rsvSeq);
+        	return "redirect:/user/myPage";
         }
     }
     

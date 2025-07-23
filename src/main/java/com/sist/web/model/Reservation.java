@@ -37,7 +37,12 @@ public class Reservation implements Serializable{
 	    private Coupon coupon;
 
 	    private String roomTypeImgName;
+	    
+	    private String reviewYn;
 
+		private long startRow;
+		private long endRow;
+	    
 	    public Coupon getCoupon() {
 	        return coupon;
 	    }
@@ -93,11 +98,34 @@ public class Reservation implements Serializable{
 		    regDt = null;
 		    updateDt = null;
 		    roomTypeSeq = 0;
+		    reviewYn = "N";
 		    
 		    roomTypeTitle = "";
 		    roomTypeImgName = "";
+			startRow = 0;
+			endRow =0;
 	    }
+	    
+	    
 
+		public long getStartRow() {
+			return startRow;
+		}
+		public void setStartRow(long startRow) {
+			this.startRow = startRow;
+		}
+		public long getEndRow() {
+			return endRow;
+		}
+		public void setEndRow(long endRow) {
+			this.endRow = endRow;
+		}
+		public String getReviewYn() {
+			return reviewYn;
+		}
+		public void setReviewYn(String reviewYn) {
+			this.reviewYn = reviewYn;
+		}
 		public String getRoomTypeTitle() {
 			return roomTypeTitle;
 		}
