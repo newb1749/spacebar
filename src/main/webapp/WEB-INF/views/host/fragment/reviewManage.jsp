@@ -1,3 +1,4 @@
+<%-- /WEB-INF/views/host/fragment/reviewManage.jsp --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -51,19 +52,5 @@
     </div>
 </div>
 
-<script>
-    // 클라이언트 필터링 (선택 사항)
-    $('#roomFilter').on('change', function () {
-        const selectedRoom = $(this).val();
-        $('#reviewTableContainer tbody tr').each(function () {
-            const roomSeq = $(this).data('room-seq') + '';
-            if (!selectedRoom || roomSeq === selectedRoom) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-    });
-</script>
 
-<script src="/resources/js/host/reviewManage.js"></script>
+
