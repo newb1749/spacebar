@@ -2,21 +2,16 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 
 
-<!-- /*
-* Template Name: Property
-* Template Author: Untree.co
-* Template URI: https://untree.co/
-* License: https://creativecommons.org/licenses/by/3.0/
-*/ -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <%@ include file="/WEB-INF/views/include/head.jsp" %>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="Untree.co" />
     <link rel="shortcut icon" href="favicon.png" />
+    
 
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap5" />
@@ -27,6 +22,9 @@
       href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
 
     <link rel="stylesheet" href="/resources/fonts/icomoon/style.css" />
     <link rel="stylesheet" href="/resources/fonts/flaticon/font/flaticon.css" />
@@ -37,10 +35,17 @@
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Bebas+Neue&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   	<style>
-  	
+  	.site-nav .container {
+    max-width: none !important; /* 부트스트랩 max-width 제거 */
+    width: 1180px;  /* 화면 너비의 80% */
+    margin: 0 auto !important;   /* 가운데 정렬 */
+    padding: 0 !important;
+  }
   	
   /* pulsate effect for heart */
 @keyframes pulse {
@@ -60,6 +65,8 @@
 .section-room .heading {
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
+  font-family: 'Plus Jakarta Sans', sans-serif; /* 제목 폰트 변경 */
+  font-weight: 700;
 }
 
 .wish-heart.clicked {
@@ -68,9 +75,9 @@
 
 /* page base */
 body {
-    padding-top: 120px;
+    padding-top: 100px;
     background-color: #f9f9f9;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Work Sans', 'Noto Sans KR', sans-serif; /* 기본 폰트 Work Sans, 한글은 Noto Sans KR */
 }
 .container {
   max-width: 1200px;
@@ -94,13 +101,12 @@ body {
   margin-bottom: 0.5rem;
   }
   
-  
 
 /* card wrapper */
 .property-item {
     position: relative;
     background-color: #fff;
-    border-radius: 0px;
+    border-radius: 8px; /* 둥글게 적용 */
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     overflow: hidden;
     transition: transform 0.2s ease;
@@ -114,6 +120,7 @@ body {
     width: 100%;
     height: 240px;
     overflow: hidden;
+    border-radius: 8px 8px 0 0; /* 상단만 둥글게 */
   }
 
 
@@ -144,6 +151,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: 'Plus Jakarta Sans', sans-serif; /* 가격 폰트 변경 */
 }
 
 /* 제목 */
@@ -155,6 +163,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: 'Plus Jakarta Sans', sans-serif; /* 제목 폰트 변경 */
 }
 .property-content .city:hover {
   color: #007acc;
@@ -182,6 +191,7 @@ body {
 .property-content .room-price strong {
    font-size: 1.05rem;
     color: #4a90e2;
+    font-family: 'Plus Jakarta Sans', sans-serif; /* 가격 폰트 변경 */
 }
 
 /* 하트 버튼 */
@@ -214,16 +224,15 @@ body {
 }
   
 
-
-	/* 7열 그리드 : gap 조정해 주세요 */
-	.category-grid {
-	  display: grid;
-	  grid-template-columns: repeat(7, 1fr);
-	  gap: 1rem;
-	  justify-items: center;
-	   margin-top: 1rem;
+  /* 7열 그리드 : gap 조정해 주세요 */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+    justify-items: center;
+      margin-top: 1rem;
   margin-bottom: 1rem;
-	}
+  }
 .category-grid .category-btn,
 .category-grid .category2-btn {
   border: none;
@@ -239,9 +248,9 @@ body {
   width: 70px;
   height: 70px;
   object-fit: contain;
-  border-radius: 50%;
-  background-color: #f2f2f2;   /* 원 안에 연한 배경색 */
-  padding: 10px;               /* 원 안 여백 */
+  border-radius: 50%; /* 완전한 원 */
+  background-color: #f2f2f2;    /* 원 안에 연한 배경색 */
+  padding: 10px;            /* 원 안 여백 */
   transition: transform .2s;
 }
 
@@ -256,12 +265,13 @@ body {
   margin-top: 6px;
   font-size: .85rem;
   color: #333;
+  font-family: 'Noto Sans KR', sans-serif; /* 카테고리 이름 폰트 */
 }
-	
+  
 .property-slider-wrap .property-item {
   display: flex;
   flex-direction: column;
-  min-height: 300px          /* 부모 컨테이너(슬라이더)가 허용하는 최대 높이로 늘리기 */
+  min-height: 300px       /* 부모 컨테이너(슬라이더)가 허용하는 최대 높이로 늘리기 */
 }
 
 .property-slider-wrap .property-item .img {
@@ -271,16 +281,16 @@ body {
 }
 
 .property-slider-wrap .property-item .property-content {
-  flex: 1;               /* 남은 공간 전부 채우기 */
+  flex: 1;            /* 남은 공간 전부 채우기 */
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* 제목·별점 영역과 하단 가격·하트 버튼을 위아래로 분리 */
 }
 
 .property-content .room-addr {
-  line-height: 1.2em;               /* 한 줄의 높이 */
-  min-height: calc(1.2em * 2);      /* 2줄 분량 만큼 항상 확보 */
-  
+  line-height: 1.2em;           /* 한 줄의 높이 */
+  min-height: calc(1.2em * 2);    /* 2줄 분량 만큼 항상 확보 */
+  font-family: 'Noto Sans KR', sans-serif; /* 주소 폰트 Noto Sans KR */
   /* mb-2 클래스가 이미 margin-bottom: .5rem 을 주고 있으니 추가 여백 필요 없을 겁니다 */
 }
 
@@ -344,25 +354,34 @@ body {
 }
 .testimonial {
   /* 아이템 너비 안에서만 줄바꿈하도록 보장 */
-  overflow-wrap: break-word;   /* IE11+, Chrome, FF */
-  word-wrap: break-word;       /* 구 IE 지원 */
-  word-break: break-word;      /* 아주 긴 단어라도 줄바꿈 */
+  overflow-wrap: break-word;    /* IE11+, Chrome, FF */
+  word-wrap: break-word;      /* 구 IE 지원 */
+  word-break: break-word;     /* 아주 긴 단어라도 줄바꿈 */
   white-space: normal !important; /* 강제 줄바꿈을 허용 */
+  border-radius: 8px; /* 둥글게 적용 */
 }
 
 .testimonial .fw-bold,
-.testimonial .text-muted {
+.testimonial .text-muted,
+.testimonial blockquote {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
   white-space: normal !important;
+  font-family: 'Noto Sans KR', sans-serif; /* 후기 본문 폰트 */
 }
 
 .testimonial-slider .item .testimonial img.img-fluid {
-  width: 100%;        /* 부모 컨테이너 폭에 딱 맞게 */
-  height: 200px;      /* 원하는 높이로 통일 */
+  width: 100%;          /* 부모 컨테이너 폭에 딱 맞게 */
+  height: 200px;        /* 원하는 높이로 통일 */
   object-fit: cover;  /* 비율 똑같이 자르기 */
+  border-radius: 8px; /* 둥글게 적용 */
 }
+
+.testimonial .mb-3 img.rounded-circle {
+  border-radius: 50%; /* 프로필 이미지는 항상 원형 */
+}
+
 
 .section.py-5,
 .section-space.py-5 {
@@ -380,23 +399,23 @@ body {
 .hero-overlay {
   max-width: 1180px;
   width: 100%;
-  height: 400px;       /* 컨테이너 높이 */
+  height: 300px;        /* 컨테이너 높이 */
   margin: 0 auto;
   overflow: hidden;    /* 잘린 영역 숨기기 */
   position: relative;
   
-   border-radius: 8px;   /* 모서리 반경: 6px (원하는 만큼 조절) */
-  overflow: hidden;     /* 둥근 모서리 밖으로 튀어나온 부분 숨김 */
+    border-radius: 8px;    /* 모서리 반경: 8px (원하는 만큼 조절) */
+  overflow: hidden;    /* 둥근 모서리 밖으로 튀어나온 부분 숨김 */
   margin-bottom: 1rem;
 }
 
 /* 슬라이드 이미지는 배경처럼 꽉 채우기 */
 .hero-overlay .hero-slider .slide img {
- width: 100%;
+  width: 100%;
   height: 100%;
-  object-fit: contain; /* 변경: 이미지 전체가 보이도록 비율 유지 */
-  object-position: center; /* 변경: 이미지를 가운데로 정렬 */
-  filter: blur(3px) brightness(70%);
+  object-fit: cover; /* 변경: 이미지가 컨테이너를 가득 채우도록 */
+  object-position: center;
+  filter: blur(2px) brightness(70%); /* 유지: 블러와 어둡게 필터 */
   
 }
 
@@ -407,18 +426,18 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
-  font-size: 3rem;
+  font-size: 4.5rem;
   color: white;
-  letter-spacing: 1rem;
+  letter-spacing: 0.8rem; /* 글자 간격 다시 조정 */
   white-space: nowrap;
   text-shadow: 0 0 8px rgba(0,0,0,0.6);
-  font-family: monospace;
+  font-family: 'Orbitron', 'Bebas Neue', 'Space Grotesk', monospace; /* 메인 타이틀 폰트 유지 */
 }
 
 #typewriter {
-  font-family: monospace;
-  font-size: 3rem;
-  letter-spacing: 1rem;
+  font-family: 'Orbitron', 'Bebas Neue', 'Space Grotesk', monospace;
+  font-size: 4.5rem;
+  letter-spacing: 0.8rem; /* 글자 간격 다시 조정 */
   color: #fff;
   text-shadow: 0 0 8px rgba(0,0,0,0.6);
   white-space: nowrap;
@@ -429,10 +448,10 @@ body {
 #typewriter::after {
   content: '_';
   position: absolute;
-  /* SPACEBAR 텍스트 끝 바로 다음에 붙도록 */
-  left: calc(100% + 0.2rem);
-  /* 세로 정렬을 텍스트 중앙에 */
+  left: calc(100% + 0.3rem);
   top: 0;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255,255,255,.6);
   animation: blink 1s step-end infinite;
 }
 
@@ -440,8 +459,44 @@ body {
   50% { opacity: 0; }
 }
 
+.hero-title,
+#typewriter{
+  font-family: 'Orbitron', 'Bebas Neue', 'Space Grotesk', sans-serif; /* 메인 타이틀 폰트 유지 */
+  font-size: 4.2rem;
+  font-weight: 700;
+  letter-spacing: 0.8rem; /* 글자 간격 다시 조정 */
+  line-height: 1;
+  /* 변경된 그라데이션 */
+  background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%); /* 흰색에서 회색으로 그라데이션 */
+  -webkit-background-clip: text;
+  color: transparent;           /* 그라디언트 텍스트 */
+  filter: drop-shadow(0 0 6px rgba(0,0,0,.35));
+  position: relative;
+  white-space: nowrap;
+}
 
-	</style>
+@media (max-width: 768px){
+  .hero-title,
+  #typewriter{
+    font-size: 2.6rem;
+    letter-spacing: .6rem;
+  }
+}
+
+/* Features section box-feature */
+.features-1 .box-feature {
+    border-radius: 8px; /* 둥글게 적용 */
+    font-family: 'Noto Sans KR', sans-serif; /* 내용 폰트 변경 */
+}
+.features-1 .box-feature h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif; /* 제목 폰트 변경 */
+    font-weight: 600;
+}
+
+
+
+
+    </style>
 
 
 
@@ -481,8 +536,8 @@ body {
       <div class="category-grid">
       <c:forEach var="cat2" items="${spaceCategoryList}">
         <button type="button"
-              class="category2-btn"
-              data-name="${cat2.roomCatName}">
+                class="category2-btn"
+                data-name="${cat2.roomCatName}">
         <img src="${pageContext.request.contextPath}/resources/upload/category/${cat2.roomCatSeq}.${cat2.roomCatIconExt}"/>
         <div class="small text-dark">${cat2.roomCatName}</div>
       </button>
@@ -493,8 +548,8 @@ body {
     <div class="category-grid">
       <c:forEach var="cat" items="${roomCategoryList}">
         <button type="button"
-              class="category-btn"
-              data-name="${cat.roomCatName}">
+                class="category-btn"
+                data-name="${cat.roomCatName}">
         <img src="${pageContext.request.contextPath}/resources/upload/category/${cat.roomCatSeq}.${cat.roomCatIconExt}"/>
         <div class="small text-dark">${cat.roomCatName}</div>
       </button>
@@ -502,8 +557,6 @@ body {
     </div>
     
 
-    
-  
     
   </div>
 </div>
@@ -534,7 +587,6 @@ body {
           <div class="property-slider space-slider">
             <c:forEach var="newSpaceList" items="${spaceList}">
               <div class="property-item">
-                <!-- 1) 클릭 가능한 썸네일 -->
                 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
                    class="img">
                   <img
@@ -545,16 +597,15 @@ body {
                   />
                 </a>
 
-                <!-- 2) 카드 하단 정보 -->
                 <div class="property-content">
                   <div>
                     <span class="d-block mb-2 text-black-50 room-addr">
                       ${newSpaceList.roomAddr}
                     </span>
                     <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newSpaceList.roomSeq}"
-					   class="city d-block mb-3 text-decoration-none text-black">
-					  ${newSpaceList.roomTitle}
-					</a>
+            class="city d-block mb-3 text-decoration-none text-black">
+            ${newSpaceList.roomTitle}
+          </a>
                     <div class="specs d-flex mb-4">
                       <span class="d-block d-flex align-items-center me-3">
                         <span class="caption">⭐ ${newSpaceList.averageRating}</span>&nbsp;
@@ -571,7 +622,6 @@ body {
                           <c:set var="isWished" value="true" />
                         </c:if>
                       </c:forEach>
-                      <!-- 3) 하트 토글 버튼 -->
                       <button class="wish-heart"
                               data-wished="${isWished}"
                               onclick="toggleWish(${newSpaceList.roomSeq}, this)">
@@ -620,27 +670,24 @@ body {
           <div class="property-slider room-slider">
             <c:forEach var="newList" items="${roomList}">
               <div class="property-item">
-                <!-- 1) 클릭 가능한 썸네일 -->
                 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
                    class="img">
                   <img
                     src="${pageContext.request.contextPath}/resources/upload/room/main/${newList.roomImgName}"
                     onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
-                    alt="${newList.roomTitle}"
                     class="img-fluid"
                   />
                 </a>
 
-                <!-- 2) 카드 하단 정보 -->
                 <div class="property-content">
                   <div>
                     <span class="d-block mb-2 text-black-50 room-addr">
                       ${newList.roomAddr}
                     </span>
                     <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${newList.roomSeq}"
-						   class="city d-block mb-3 text-decoration-none text-black">
-						  ${newList.roomTitle}
-						</a>
+            class="city d-block mb-3 text-decoration-none text-black">
+            ${newList.roomTitle}
+          </a>
                     <div class="specs d-flex mb-4">
                       <span class="d-block d-flex align-items-center me-3">
                         <span class="caption">⭐ ${newList.averageRating}</span>&nbsp;
@@ -657,7 +704,6 @@ body {
                           <c:set var="isWished" value="true" />
                         </c:if>
                       </c:forEach>
-                      <!-- 3) 하트 토글 버튼 -->
                       <button class="wish-heart"
                               data-wished="${isWished}"
                               onclick="toggleWish(${newList.roomSeq}, this)">
@@ -688,46 +734,42 @@ body {
         <div class="row">
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
             <div class="box-feature">
-              <span class="flaticon-house"></span>
-              <h3 class="mb-3">자유게시판</h3>
+              <span class="flaticon-house" ></span>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/board/list" class="learn-more">자유게시판</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                공간을 빌리는 사람도, <br> 빌려주는 사람도<br> 경험과 팁을 나누는 <br> 우리만의 자유게시판입니다.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/board/list" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
             <div class="box-feature">
               <span class="flaticon-building"></span>
-              <h3 class="mb-3">QnA게시판</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/qna/list" class="learn-more">qna게시판</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                spacebar만의 <br> 공간·숙소 대여가 궁금하다면 <br> 여기서 묻고, <br>답변 받아보세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/qna/list" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
             <div class="box-feature">
               <span class="flaticon-house-3"></span>
-              <h3 class="mb-3">공지사항</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/notice/noticeList" class="learn-more">공지사항</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                Spacebar  <br> 공식 소식과  <br> 꼭 알아야 할 안내를  <br> 한 곳에서 확인하세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/notice/noticeList" class="learn-more">방문하기</a></p>
             </div>
           </div>
           <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
             <div class="box-feature">
               <span class="flaticon-house-1"></span>
-              <h3 class="mb-3">House for Sale</h3>
+              <h3 class="mb-3"><a href="${pageContext.request.contextPath}/board/faq" class="learn-more">자주묻는질문</a></h3>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Voluptates, accusamus.
+                한 번에 해결하는  <br>  기본 궁금증!  <br>  예약·결제·환불·쿠폰까지 <br>  FAQ에서 빠르게 확인하세요.
               </p>
-              <p><a href="#" class="learn-more">Learn More</a></p>
+              <p><a href="${pageContext.request.contextPath}/board/faq" class="learn-more">방문하기</a></p>
             </div>
           </div>
         </div>
@@ -763,13 +805,13 @@ body {
                 <strong class="d-block mt-2">${rev.userNickname}</strong>
               </div>
               <div class="mb-3">
-                 <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${rev.roomSeq}">
-		          <img
-		            src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
-		            onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
-		            class="img-fluid rounded"
-		          />
-		        </a>
+                  <a href="${pageContext.request.contextPath}/room/roomDetail?roomSeq=${rev.roomSeq}">
+                  <img
+                    src="${pageContext.request.contextPath}/resources/upload/review/${rev.reviewImgName}"
+                    onerror="this.src='${pageContext.request.contextPath}/resources/upload/room/main/default-room.png'"
+                    class="img-fluid rounded"
+                  />
+                </a>
               </div>
               <blockquote class="mb-2">&ldquo;${rev.reviewContent}&rdquo;</blockquote>
               <div class="fw-bold mb-1">${rev.roomTitle} (${rev.roomTypeTitle})</div>
@@ -778,13 +820,11 @@ body {
           </div>
         </c:forEach>
       </div>
-      <!-- 네비게이션 도트가 들어갈 컨테이너 -->
       <div class="testimonial-dots text-center mt-4"></div>
     </div>
   </div>
 </div>
 
-    <!-- Preloader -->
     <div id="overlayer"></div>
     <div class="loader">
       <div class="spinner-border" role="status">
@@ -793,9 +833,9 @@ body {
     </div>
     
     <form id="searchForm" method="post">
-	  <input type="hidden" name="curPage" value="${curPage}" />
-	  <input type="hidden" name="category" id="category" value="${category}" />
-	</form>
+    <input type="hidden" name="curPage" value="${curPage}" />
+    <input type="hidden" name="category" id="category" value="${category}" />
+  </form>
 
     <script src="/resources/js/bootstrap.bundle.min.js"></script>
     <script src="/resources/js/tiny-slider.js"></script>
@@ -805,61 +845,61 @@ body {
     <script src="/resources/js/custom.js"></script>
     <script>
     function toggleWish(roomSeq, btn) {
-  	  const $btn    = $(btn);
-  	  const $icon   = $btn.find('i.fa-heart');
-  	  const wished  = $btn.data('wished');              // true면 지금은 찜된 상태
-  	  const url     = wished ? "/wishlist/remove" : "/wishlist/add";
-  	  
-  	  $.post(url, { roomSeq: roomSeq })
-  	    .done(function(res) {
-  	      if (res.code === 0) {
-  	        if (wished) {
-  	          // → 삭제(하얀 하트) & 알림
-  	          $icon
-  	            .removeClass("fas wished")
-  	            .addClass("far");
-  	          $btn.data('wished', false);
-  	          Swal.fire({
-  	            icon: "success",
-  	            title: "삭제됐습니다",
-  	            text: "찜 목록에서 제거되었습니다.",
-  	            timer: 1500,
-  	            showConfirmButton: false
-  	          });
-  	        } else {
-  	          // → 추가(빨간 하트) & 알림
-  	          $icon
-  	            .removeClass("far")
-  	            .addClass("fas wished");
-  	          $btn.data('wished', true);
-  	          Swal.fire({
-  	            icon: "success",
-  	            title: "추가되었습니다",
-  	            text: "찜 목록에 추가되었습니다.",
-  	            timer: 1500,
-  	            showConfirmButton: false
-  	          });
-  	        }
-  	      }
-  	    else if(res.code === 500) {
-  	        Swal.fire("로그인 후 이용하세요", res.message, "warning");
-  	      }
-  	      
-  	      else {
-  	        Swal.fire("오류", res.message, "error");
-  	      }
-  	    })
-  	    .fail(function() {
-  	      Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
-  	    });
-  	}
+      const $btn    = $(btn);
+      const $icon   = $btn.find('i.fa-heart');
+      const wished  = $btn.data('wished');         // true면 지금은 찜된 상태
+      const url     = wished ? "/wishlist/remove" : "/wishlist/add";
+      
+      $.post(url, { roomSeq: roomSeq })
+        .done(function(res) {
+          if (res.code === 0) {
+            if (wished) {
+              // → 삭제(하얀 하트) & 알림
+              $icon
+                .removeClass("fas wished")
+                .addClass("far");
+              $btn.data('wished', false);
+              Swal.fire({
+                icon: "success",
+                title: "삭제됐습니다",
+                text: "찜 목록에서 제거되었습니다.",
+                timer: 1500,
+                showConfirmButton: false
+              });
+            } else {
+              // → 추가(빨간 하트) & 알림
+              $icon
+                .removeClass("far")
+                .addClass("fas wished");
+              $btn.data('wished', true);
+              Swal.fire({
+                icon: "success",
+                title: "추가되었습니다",
+                text: "찜 목록에 추가되었습니다.",
+                timer: 1500,
+                showConfirmButton: false
+              });
+            }
+          }
+        else if(res.code === 500) {
+            Swal.fire("로그인 후 이용하세요", res.message, "warning");
+          }
+          
+          else {
+            Swal.fire("오류", res.message, "error");
+          }
+        })
+        .fail(function() {
+          Swal.fire("네트워크 오류", "잠시 후 다시 시도해주세요.", "error");
+        });
+    }
 
     $(".category-btn, .category2-btn").on("click", function(){
-        const name   = $(this).data("name");
+        const name    = $(this).data("name");
         // 버튼에 따라 action 바꾸기
         const target = $(this).hasClass("category2-btn")
-                        ? "${pageContext.request.contextPath}/room/spaceList"
-                        : "${pageContext.request.contextPath}/room/roomList";
+                               ? "${pageContext.request.contextPath}/room/spaceList"
+                               : "${pageContext.request.contextPath}/room/roomList";
 
         $("#searchForm")
           .attr("action", target)
@@ -869,31 +909,29 @@ body {
         $("#searchForm")[0].submit();
       });
 
-   
     
     document.addEventListener('DOMContentLoaded', () => {
-    	  const text   = 'SPACEBAR';
-    	  const el     = document.getElementById('typewriter');
-    	  const cursor = document.getElementById('cursor');
-    	  const INTERVAL = 7000;  // 5초
-    	  const TYPE_DELAY = 200; // 타이핑 속도
+        const text     = 'SPACEBAR';
+        const el       = document.getElementById('typewriter');
+        const INTERVAL = 7000;  // 5초
+        const TYPE_DELAY = 200; // 타이핑 속도
 
-    	  function runTypewriter() {
-    	    el.textContent = '';
-    	    // 1글자씩 찍기
-    	    for (let i = 0; i < text.length; i++) {
-    	      setTimeout(() => {
-    	        el.textContent += text[i];
-    	      }, TYPE_DELAY * i);
-    	    }
-    	    // 커서는 CSS 애니메이션에서 알아서 깜빡이므로 따로 처리 안 해도 됩니다
-    	  }
+        function runTypewriter() {
+          el.textContent = '';
+          // 1글자씩 찍기
+          for (let i = 0; i < text.length; i++) {
+            setTimeout(() => {
+              el.textContent += text[i];
+            }, TYPE_DELAY * i);
+          }
+          // 커서는 CSS 애니메이션에서 알아서 깜빡이므로 따로 처리 안 해도 됩니다
+        }
 
-    	  // 최초 실행
-    	  runTypewriter();
-    	  // 5초마다 다시 실행
-    	  setInterval(runTypewriter, INTERVAL);
-    	});
+        // 최초 실행
+        runTypewriter();
+        // 5초마다 다시 실행
+        setInterval(runTypewriter, INTERVAL);
+      });
     </script>
     
 

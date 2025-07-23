@@ -134,6 +134,14 @@ $(function(){
 });
 //==========================장바구니 끝==========================//
 </script>
+<style>
+.site-nav .container {
+  max-width: none !important;   /* 부트스트랩 max-width 제거 */
+  width:68% !important;        /* 화면 너비의 80% */
+  margin: 0 auto !important;    /* 가운데 정렬 */
+  padding: 0 !important;
+}
+</style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -142,7 +150,9 @@ $(function(){
         <div class="sidebar">
             <h2>마이페이지</h2>
             <c:if test="${user.userType == 'H'}">
-	            <div class="menu-item"  onclick="showContent('roomHost')">내 숙소 / 공간 관리</div>
+	            <div class="menu-item" >
+	            	<a href="/host/main" style="color: #666666"> 내 숙소 / 공간 관리</a>
+	            </div>
             </c:if>
 	            <div class="menu-item"  onclick="showContent('editInfo')">회원정보 수정</div>
 	            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
@@ -622,10 +632,10 @@ $(function(){
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
 			<div class="sub-message">회원님이 장바구니 목록입니다.</div>
-			<div  class=container>
+			<div  class=cart-container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
-			  <form action="${pageContext.request.contextPath}/cart/checkout" method="post"><br/>
+			  <form action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>
 			    <label>
 			      <input type="checkbox" id="selectAll"/> 전체선택
 			    </label><br/><br/>

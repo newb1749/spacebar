@@ -112,6 +112,7 @@ public class ReservationControllerJY {
                 }
             }
             reservation.setHostId(hostId.trim());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
         if (reservation.getHostId() == null || reservation.getHostId().trim().isEmpty()) {
             throw new IllegalArgumentException("HOST_ID가 여전히 null입니다.");
@@ -133,6 +134,7 @@ public class ReservationControllerJY {
         RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType != null) {
             reservation.setHostId(roomType.getHostId());
+            reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
         }
 
         int totalAmt = calculateTotalAmount(reservation.getRoomTypeSeq(),
@@ -171,6 +173,10 @@ public class ReservationControllerJY {
         Reservation reservation = null;
         String userId = (String) session.getAttribute("SESSION_USER_ID");
 
+        logger.debug("예약시 총 금액===================");
+        logger.debug("예약시 rsvSeq : " + rsvSeq);
+        logger.debug("예약시 총 금액===================");
+        
         if (rsvSeq != null && rsvSeq > 0) {
             reservation = reservationDao.selectReservationById(rsvSeq);
         }
@@ -192,7 +198,7 @@ public class ReservationControllerJY {
         // 쿠폰 및 마일리지 정보 조회
         List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
         
-        logger.debug("999999999999999999999999999999999999");
+        logger.debug("예약시 총 금액===================");
         
         model.addAttribute("reservation", reservation);
         
@@ -362,24 +368,62 @@ public class ReservationControllerJY {
     
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+        
+        logger.debug("######################################");
+        logger.debug("roomTypeSeq : " + roomTypeSeq);
+        logger.debug("checkInDateStr : " + checkInDateStr);
+        logger.debug("checkOutDateStr : " + checkOutDateStr);
+        logger.debug("######################################");
         if (roomType == null) {
             throw new IllegalArgumentException("존재하지 않는 객실 유형입니다.");
         }
+        
+        logger.debug("???????????????????????????????????");
+        logger.debug("roomType.getWeekdayAmt() : " + roomType.getWeekdayAmt());
+        logger.debug("roomType.getWeekendAmt() : " + roomType.getWeekendAmt());
+        logger.debug("???????????????????????????????????");
+        
         int weekdayAmt = roomType.getWeekdayAmt();
         int weekendAmt = roomType.getWeekendAmt();
 
         LocalDate checkIn = parseFlexibleDate(checkInDateStr);
         LocalDate checkOut = parseFlexibleDate(checkOutDateStr);
+        
+        //
+        LocalDate date1 = checkIn;
+        logger.debug("111111111111111111111111111111111111");
+        logger.debug("checkIn : " + checkIn);
+        logger.debug("checkOut : " + checkOut);
+        logger.debug("date1.isBefore(checkOut) : " + date1.isBefore(checkOut));
+        logger.debug("date1.plusDays(1) : " + date1.plusDays(1));
+        logger.debug("DayOfWeek day = date.getDayOfWeek() : " + date1.getDayOfWeek());
+        logger.debug("1111111111111111111111111111111111111");
 
+        
         int totalAmount = 0;
-        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
-            DayOfWeek day = date.getDayOfWeek();
+        
+        if(checkIn.isEqual(checkOut))
+        {
+            DayOfWeek day = checkIn.getDayOfWeek();
             if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
                 totalAmount += weekendAmt;
             } else {
                 totalAmount += weekdayAmt;
             }
         }
+        else
+        {
+	        for (LocalDate date = checkIn; date.isBefore(checkOut); date = date.plusDays(1)) {
+	            DayOfWeek day = date.getDayOfWeek();
+	            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY) {
+	                totalAmount += weekendAmt;
+	            } else {
+	                totalAmount += weekdayAmt;
+	            }
+	        }
+    	
+        }
+        
         return totalAmount;
     }
 
@@ -468,10 +512,14 @@ public class ReservationControllerJY {
     
     // === 유연한 날짜 파싱 메서드 ===
     private LocalDate parseFlexibleDate(String dateStr) {
+//        List<DateTimeFormatter> formatters = Arrays.asList(
+//                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+//                DateTimeFormatter.ofPattern("yyyyMMdd")
+//        );
+        
         List<DateTimeFormatter> formatters = Arrays.asList(
-                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
                 DateTimeFormatter.ofPattern("yyyyMMdd")
-        );
+        );        
 
         String trimmedDate = dateStr.trim();
 

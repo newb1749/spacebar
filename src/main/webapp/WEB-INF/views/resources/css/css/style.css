@@ -9199,129 +9199,73 @@ textarea.form-control-lg {
     color: #fff !important; }
 
 .site-nav {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  position: absolute;
+  position: fixed;      /* 스크롤 시에도 상단 고정 */
   top: 0;
-  z-index: 9;
-  width: 100%; }
-  .site-nav h1, .site-nav .h1 {
-    margin: 0;
-    padding: 0;
-    font-size: 24px; }
-  .site-nav .site-navigation .site-menu {
-    margin-bottom: 0; }
-    .site-nav .site-navigation .site-menu > li {
-      display: inline-block; }
-      .site-nav .site-navigation .site-menu > li > a {
-        font-size: 14px;
-        padding: 10px 15px;
-        display: inline-block;
-        text-decoration: none !important;
-        color: rgba(255, 255, 255, 0.5); }
-        .site-nav .site-navigation .site-menu > li > a:hover {
-          color: #fff; }
-      .site-nav .site-navigation .site-menu > li.cta-button a {
-        padding: 6px 20px;
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        color: #000;
-        border-radius: 30px; }
-        .site-nav .site-navigation .site-menu > li.cta-button a:hover {
-          color: #000;
-          background: #00204a;
-          border-color: #00204a; }
-      .site-nav .site-navigation .site-menu > li.active > a {
-        color: #fff; }
-    .site-nav .site-navigation .site-menu .has-children {
-      position: relative; }
-      .site-nav .site-navigation .site-menu .has-children > a {
-        position: relative;
-        padding-right: 20px; }
-        .site-nav .site-navigation .site-menu .has-children > a:before {
-          position: absolute;
-          content: "\e313";
-          font-size: 14px;
-          top: 50%;
-          right: 0;
-          -webkit-transform: translateY(-50%);
-          -ms-transform: translateY(-50%);
-          transform: translateY(-50%);
-          font-family: 'icomoon'; }
-      .site-nav .site-navigation .site-menu .has-children .dropdown {
-        visibility: hidden;
-        opacity: 0;
-        top: 100%;
-        z-index: 999;
-        position: absolute;
-        text-align: left;
-        -webkit-box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.1);
-        box-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.1);
-        padding: 20px 0;
-        margin-top: 20px;
-        margin-left: 0px;
-        background: #fff;
-        -webkit-transition: 0.2s 0s;
-        -o-transition: 0.2s 0s;
-        transition: 0.2s 0s; }
-        .site-nav .site-navigation .site-menu .has-children .dropdown.arrow-top {
-          position: absolute; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown.arrow-top:before {
-            display: none;
-            bottom: 100%;
-            left: 20%;
-            border: solid transparent;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown.arrow-top:before {
-            display: none;
-            border-color: rgba(136, 183, 213, 0);
-            border-bottom-color: #fff;
-            border-width: 10px;
-            margin-left: -10px; }
-        .site-nav .site-navigation .site-menu .has-children .dropdown a {
-          font-size: 14px;
-          text-transform: none;
-          letter-spacing: normal;
-          -webkit-transition: 0s all;
-          -o-transition: 0s all;
-          transition: 0s all;
-          color: #000; }
-        .site-nav .site-navigation .site-menu .has-children .dropdown .active a {
-          color: #00204a !important; }
-        .site-nav .site-navigation .site-menu .has-children .dropdown > li {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          min-width: 180px; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown > li > a {
-            padding: 5px 20px;
-            display: block; }
-            .site-nav .site-navigation .site-menu .has-children .dropdown > li > a:hover {
-              color: #00204a; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children > a:before {
-            content: "\e315";
-            right: 20px; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children > .dropdown, .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children > ul {
-            left: 100%;
-            top: 0; }
-            .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children > .dropdown li a:hover, .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children > ul li a:hover {
-              color: #00204a; }
-          .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children:hover > a, .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children:active > a, .site-nav .site-navigation .site-menu .has-children .dropdown > li.has-children:focus > a {
-            color: #00204a; }
-      .site-nav .site-navigation .site-menu .has-children:hover > a, .site-nav .site-navigation .site-menu .has-children:focus > a, .site-nav .site-navigation .site-menu .has-children:active > a {
-        color: #fff; }
-      .site-nav .site-navigation .site-menu .has-children:hover, .site-nav .site-navigation .site-menu .has-children:focus, .site-nav .site-navigation .site-menu .has-children:active {
-        cursor: pointer; }
-        .site-nav .site-navigation .site-menu .has-children:hover > .dropdown, .site-nav .site-navigation .site-menu .has-children:focus > .dropdown, .site-nav .site-navigation .site-menu .has-children:active > .dropdown {
-          -webkit-transition-delay: 0s;
-          -o-transition-delay: 0s;
-          transition-delay: 0s;
-          margin-top: 0px;
-          visibility: visible;
-          opacity: 1; }
+  left: 0;
+  width: 100%;
+  height: 60px;         /* 네비 높이 고정 */
+  line-height: 60px;    /* 텍스트 수직 중앙 정렬 */
+  background: #fff;     /* 배경색 */
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 0;           /* 상하 패딩 불필요 */
+}
+
+/* 컨테이너 안에서 좌·우 여백 및 flex 배치 */
+.site-nav .container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 로고 */
+.site-nav .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
+
+/* 메뉴 리스트 */
+.site-nav .site-menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+
+/* 메뉴 아이템 */
+.site-nav .site-menu > li {
+  margin: 0;
+}
+
+/* 메뉴 링크 */
+.site-nav .site-menu > li > a {
+  display: inline-block;
+  height: 60px;        /* .site-nav 높이와 일치 */
+  line-height: 60px;   /* 수직 중앙 정렬 */
+  padding: 0 15px;     /* 좌우 패딩 */
+  font-size: 14px;
+  color: rgba(0,0,0,0.7);
+  text-decoration: none !important;
+  transition: color .2s;
+}
+
+/* 호버 & 활성화 메뉴 */
+.site-nav .site-menu > li > a:hover,
+.site-nav .site-menu > li.active > a {
+  color: #00204a;
+}
+
+/* 모바일 햄버거 토글 (기존 클래스 그대로 유지) */
+.burger.site-menu-toggle {
+  display: inline-block;
+  cursor: pointer;
+  /* 필요시 추가 스타일 */
+}
 
 .site-mobile-menu-close {
   display: block;
