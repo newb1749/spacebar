@@ -31,7 +31,7 @@
 		       NVL(EMAIL,'') EMAIL,
 		       NVL(PHONE,'') PHONE,
 		       NVL(USER_ADDR,'') USER_ADDR,
-		       NVL(TO_CHAR(JOIN_DT,'YYYY.MM.DD HH24:MI:SS'),'') JOIN_DT,
+		       NVL(TO_CHAR(JOIN_DT,'YYYY.MM.DD'),'') JOIN_DT,
 		       NVL(NICKNAME,'') NICKNAME,
 		       NVL(GRADE,'') GRADE,
 		       NVL(PROF_IMG_EXT,'') PROF_IMG_EXT,
@@ -41,7 +41,7 @@
 		       NVL(APPROV_STAT,'Y') APPROV_STAT,
 		       NVL(USER_STAT,'Y') USER_STAT,
 		       NVL(MILE,0) MILE,
-		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD HH24:MI:SS'),'') UPDATE_DT
+		       NVL(TO_CHAR(UPDATE_DT,'YYYY.MM.DD'),'') UPDATE_DT
 		  FROM SB_USER
 		 WHERE USER_ID = #{value}
   	</select>

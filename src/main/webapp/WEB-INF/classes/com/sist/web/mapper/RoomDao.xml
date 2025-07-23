@@ -550,6 +550,23 @@
 	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
 	</select>
 	
+	<select id="getRoomTypeImgMain" parameterType="int" resultMap="roomTypeImgResultMap">
+	SELECT
+	    ROOM_TYPE_SEQ,
+	    ROOM_TYPE_IMG_SEQ,
+	    ROOM_TYPE_IMG_ORIG_NAME,
+	    ROOM_TYPE_IMG_NAME,
+	    IMG_TYPE,
+	    ROOM_TYPE_IMG_EXT,
+	    IMG_SIZE,
+	    SORT_ORDER,
+	    REG_DT
+	FROM
+	    ROOM_TYPE_IMAGE
+	 WHERE ROOM_TYPE_SEQ = #{roomTypeSeq}
+	   AND IMG_TYPE = 'main'
+	</select>
+	
     <update id="updateRoom" parameterType="com.sist.web.model.Room">
         UPDATE ROOM
         SET 

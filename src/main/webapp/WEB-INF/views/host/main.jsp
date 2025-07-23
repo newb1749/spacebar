@@ -9,6 +9,27 @@
     <link rel="stylesheet" href="/resources/css/myPage.css">
     <style>
         /* 만약 직접 테스트 중이면 위 myPage.css 대신 여기 style을 사용 */
+
+    /* 테이블 선 없애기 */
+    .table-borderless th,
+    .table-borderless td,
+    .table-borderless {
+        border: none !important;
+    }
+    /* 이미지 사이즈 조절 */
+    .img {
+       width: 350px;
+  	   flex-shrink: 0;
+       height: 100%;  
+    }
+    .img img {
+      width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	  border-radius: 12px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
     </style>
 </head>
 <body>
@@ -65,15 +86,14 @@
 			            <c:when test="${!empty reservations}"> 
 			            <c:forEach var="res" items="${reservations}" >
 							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
-							  <div class="row g-3 align-items-center">
+							  <div class="row g-3 align-items-stretch">
 						    	 <div class="col-md-6">
-							      <div class="cart-img">
-							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"
-							             style="width: 100%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+							      <div class="img">
+							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"/>
 							      </div>
 							     </div>
 							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start" style="height: 100%;">
-									<table class="table table-bordered table-sm" style="font-size: 0.95rem;">
+									<table class="table table-sm table-borderless" style="font-size: 0.95rem;">
 									  <tbody>
 									    <tr>
 									      <th>예약번호</th>
@@ -121,7 +141,7 @@
 									      </td>
 									    </tr>
 									    <tr>
-									      <th>상태</th>
+									      <th>예약상태</th>
 									      <td>
 									        <c:choose>
 									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
