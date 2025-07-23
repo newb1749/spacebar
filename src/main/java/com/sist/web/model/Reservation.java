@@ -108,6 +108,18 @@ public class Reservation implements Serializable{
 	    
 	    
 
+		public long getStartRow() {
+			return startRow;
+		}
+		public void setStartRow(long startRow) {
+			this.startRow = startRow;
+		}
+		public long getEndRow() {
+			return endRow;
+		}
+		public void setEndRow(long endRow) {
+			this.endRow = endRow;
+		}
 		public String getReviewYn() {
 			return reviewYn;
 		}
