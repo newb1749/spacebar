@@ -31,6 +31,16 @@
     }
 
     </style>
+    <script type="text/javascript">
+    function fn_list(curPage)
+    {
+    	//document.mainPaging.hibbsSeq.value = "";
+    	document.mainPaging.curPage.value = curPage;
+    	document.mainPaging.action = "/host/main";
+    	document.mainPaging.submit();
+    }
+  </script>
+
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -169,10 +179,51 @@
 			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
 			                </div>
 			            </c:otherwise>
-			        </c:choose>                      
+			        </c:choose>    			        
+					<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
+					<div class="paging text-center mt-4">
+					  <nav>
+					    <ul class="pagination justify-content-center">
+					      <c:if test="${!empty paging}">
+					        <!-- 이전 블럭 -->
+					        <c:if test="${paging.prevBlockPage gt 0}">
+					          <li class="page-item">
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블럭</a>
+					          </li>
+					        </c:if>
+					
+					        <!-- 페이지 번호 -->
+					        <c:forEach var="i" begin="${paging.startPage}" end="${paging.endPage}">
+					          <c:choose>
+					            <c:when test="${i ne curPage}">
+					              <li class="page-item">
+					                <a class="page-link" href="javascript:void(0)" onclick="fn_list(${i})">${i}</a>
+					              </li>
+					            </c:when>
+					            <c:otherwise>
+					              <li class="page-item active">
+					                <a class="page-link" href="javascript:void(0)" style="cursor:default;">${i}</a>
+					              </li>
+					            </c:otherwise>
+					          </c:choose>
+					        </c:forEach>
+					
+					        <!-- 다음 블럭 -->
+					        <c:if test="${paging.nextBlockPage gt 0}">
+					          <li class="page-item">
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">다음블럭</a>
+					          </li>
+					        </c:if>
+					      </c:if>
+					    </ul>
+					  </nav>
+					</div>
+					<!-- 📌 QnA 리스트 아래 페이징 영역 끝 -->                  
 			    </div>
 			</div>
-
+          <form name="mainPaging" id="mainPaging">
+          	<input type="hidden" name="curPage" value="${curPage}" />
+          </form>
             <!-- 숙소/공간 관리 -->
             <div class="content-area hidden" id="rooms-area">
                 <div class="detail-content">

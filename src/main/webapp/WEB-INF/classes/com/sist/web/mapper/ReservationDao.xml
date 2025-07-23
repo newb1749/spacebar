@@ -174,8 +174,8 @@
     WHERE r.RSV_SEQ = #{rsvSeq}
   </select>
 
-  <!-- 호스트 ID로 예약 리스트 조회(호스트페이지 - 판매 내역에 사용) -->
-  <select id="reservationsListByHostId" resultMap="reservationResultMap" parameterType="String">
+  <!-- 호스트 ID로 조회한 판매내역 리스트 -->
+  <select id="reservationsListByHostId" resultMap="reservationResultMap" parameterType="com.sist.web.model.Reservation">
 	SELECT RSV_SEQ,
 	       GUEST_ID,
 	       HOST_ID,
@@ -196,9 +196,59 @@
 	       REG_DT,
 	       UPDATE_DT,
 	       ROOM_TYPE_SEQ
-	  FROM RESERVATION
-	 WHERE HOST_ID = #{value}
-	 ORDER BY RSV_SEQ DESC
+	  FROM(SELECT ROWNUM RNUM,
+	              RSV_SEQ,
+	              GUEST_ID,
+	              HOST_ID,
+	              RSV_CHECK_IN_DT,
+	              RSV_CHECK_OUT_DT,
+	              RSV_CHECK_IN_TIME,
+	              RSV_CHECK_OUT_TIME,
+	              NUM_GUESTS,
+	              TOTAL_AMT,
+	              FINAL_AMT,
+	              RSV_STAT,
+	              RSV_PAYMENT_STAT,
+	              CANCEL_DT,
+	              CANCEL_REASON,
+	              REFUND_AMT,
+	              GUEST_MSG,
+	              HOST_MSG,
+	              REG_DT,
+	              UPDATE_DT,
+	              ROOM_TYPE_SEQ
+	         FROM(SELECT RSV_SEQ,
+	                     GUEST_ID,
+	                     HOST_ID,
+	                     NVL(RSV_CHECK_IN_DT,'YYYY.MM.DD') RSV_CHECK_IN_DT,
+	                     NVL(RSV_CHECK_OUT_DT,'YYYY.MM.DD') RSV_CHECK_OUT_DT,
+	                     NVL(RSV_CHECK_IN_TIME,'HH24:MI') RSV_CHECK_IN_TIME,
+	                     NVL(RSV_CHECK_OUT_TIME,'HH24:MI') RSV_CHECK_OUT_TIME,
+	                     NVL(NUM_GUESTS,0) NUM_GUESTS,
+	                     NVL(TOTAL_AMT,0) TOTAL_AMT,
+	                     NVL(FINAL_AMT,0) FINAL_AMT,
+	                     NVL(RSV_STAT,'PENDING') RSV_STAT,
+	                     NVL(RSV_PAYMENT_STAT,'PENDING') RSV_PAYMENT_STAT,
+	                     CANCEL_DT,
+	                     NVL(CANCEL_REASON,'') CANCEL_REASON,
+	                     NVL(REFUND_AMT,0) REFUND_AMT,
+	                     NVL(GUEST_MSG,'') GUEST_MSG,
+	                     NVL(HOST_MSG,'') HOST_MSG,
+	                     REG_DT,
+	                     UPDATE_DT,
+	                     ROOM_TYPE_SEQ
+	            FROM RESERVATION
+	          WHERE HOST_ID = #{hostId}
+	          ORDER BY RSV_SEQ DESC))
+	  WHERE RNUM <![CDATA[>=]]> #{startRow}
+	    AND RNUM <![CDATA[<=]]> #{endRow}
+  </select>
+  
+  <!-- 호스트 ID로 조회한 판매내역 총 갯수 -->
+  <select id="reservationsListByHostIdCount" resultType="int" parameterType="com.sist.web.model.Reservation">
+  	SELECT COUNT(RSV_SEQ) CNT
+	  FROM RESERVATION 
+	 WHERE HOST_ID = #{hostId}
   </select>
 
 </mapper>

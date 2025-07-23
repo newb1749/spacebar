@@ -40,6 +40,9 @@ public class Reservation implements Serializable{
 	    
 	    private String reviewYn;
 
+		private long startRow;
+		private long endRow;
+	    
 	    public Coupon getCoupon() {
 	        return coupon;
 	    }
@@ -99,6 +102,8 @@ public class Reservation implements Serializable{
 		    
 		    roomTypeTitle = "";
 		    roomTypeImgName = "";
+			startRow = 0;
+			endRow =0;
 	    }
 	    
 	    
