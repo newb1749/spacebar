@@ -4,29 +4,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <meta charset="UTF-8">
   <title>내 예약 내역</title>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <%-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>--%>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
-  <script src="${pageContext.request.contextPath}/resources/js/tiny-slider.js" defer></script>
+ <%--  <script src="${pageContext.request.contextPath}/resources/js/tiny-slider.js" defer></script>
   <script src="${pageContext.request.contextPath}/resources/js/custom.js" defer></script>
   <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js" defer></script>
-
+ --%>
   <style>
     body {
       padding-top: 80px;
       background-color: #f8f9fa;
     }
     h2 {
-      margin-top: 120px;
+      margin-top: 50px;
       text-align: left !important;
     }
-    .container {
+    /* .container {
       max-width: 960px;
       margin: 0 auto;
-    }
+    } */
     table {
       margin-top: 20px;
       font-size: 1.1rem;
@@ -67,8 +68,7 @@
   </script>
 </head>
 <body>
-
-<jsp:include page="/WEB-INF/views/include/navigation.jsp" />
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <div class="container">
   <h2>내 예약 내역</h2>
