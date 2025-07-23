@@ -121,7 +121,7 @@
 									      </td>
 									    </tr>
 									    <tr>
-									      <th>상태</th>
+									      <th>예약상태</th>
 									      <td>
 									        <c:choose>
 									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
