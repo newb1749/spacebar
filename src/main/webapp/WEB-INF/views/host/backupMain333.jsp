@@ -1,4 +1,4 @@
-<%-- /WEB-INF/views/host/main.jsp 나오긴함 --%>
+<%-- /WEB-INF/views/host/main.jsp --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <!DOCTYPE html>
@@ -395,20 +395,6 @@ window.onload = function () {
   border-radius: 6px;
 }
 
-/* 주간, 월간, 연간 클릭한거 표시
-*/
-.btn-period.active {
-  background-color: #007bff;
-  color: white;
-  border: 1px solid #007bff;
-}
-
-.hidden {
-    display: none;
-}
-.content-area {
-    padding: 20px;
-}
 
 </style>
 

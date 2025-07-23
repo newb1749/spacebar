@@ -1,4 +1,4 @@
-<%-- /WEB-INF/views/host/main.jsp 나오긴함 --%>
+<%-- /WEB-INF/views/host/main.jsp --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <!DOCTYPE html>
@@ -18,6 +18,7 @@
         <div class="sidebar">
             <h2>판매자 메뉴</h2>
             <div class="menu-item active" onclick="showContent('dashboard')">대시보드</div>
+            <div class="menu-item" onclick="showContent('chart')">판매 추이</div>
             <div class="menu-item" onclick="showContent('sales')">판매 내역</div>
             <div class="menu-item" onclick="showContent('rooms')">숙소/공간 관리</div>
             <div class="menu-item" onclick="showContent('reviews')">리뷰 관리</div>
@@ -51,6 +52,11 @@
 				</div>
 
             </div>
+            
+			<!-- 판매 추이 chart 영역 -->
+			<div id="chart-area" class="content-area hidden">
+			    <%@ include file="/WEB-INF/views/host/fragment/chart.jsp" %>
+			</div>
 
             <!-- 판매 내역 -->
             <div class="content-area hidden" id="sales-area">
@@ -123,6 +129,7 @@
 <script>
     	// [추가] rooms 콘텐츠가 로딩되었는지 확인하는 변수
 window.onload = function () {
+  initWeekCalendar();
   const lastTab = localStorage.getItem("lastHostTab") || "dashboard";
   showContent(lastTab);
 
@@ -139,6 +146,9 @@ window.onload = function () {
     if (start && end) {
       const weekDetail = `${start}~${end}`;
       console.log("📦 초기 주간 periodDetail:", weekDetail);
+      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".btn-period")[0].classList.add("active"); // 주간 버튼
+      
       loadStats("week", weekDetail); // ✅ 이렇게 정확히 넘겨야 함
     } else {
       console.warn("❌ 주간 날짜가 비어있습니다.");
@@ -150,22 +160,30 @@ window.onload = function () {
     	let isRoomsContentLoaded = false;
     
         // 메뉴 클릭 시 컨텐츠 전환 함수      
-        function showContent(area) {
-            localStorage.setItem("lastHostTab", area);
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            document.querySelectorAll('.content-area').forEach(item => item.classList.add('hidden'));
-            document.querySelector('.menu-item[onclick*="' + area + '"]').classList.add('active');
-            const contentArea = document.getElementById(area + '-area');
-            contentArea.classList.remove('hidden');
+		function showContent(area) {
+		    localStorage.setItem("lastHostTab", area);
+		
+		    // 모든 메뉴에서 active 제거
+		    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+		
+		    // 모든 콘텐츠 영역 숨김 (class="content-area" 기준)
+		    document.querySelectorAll('.content-area').forEach(item => item.classList.add('hidden'));
+		
+		    // 선택한 메뉴에 active 클래스 추가
+		    document.querySelector(`.menu-item[onclick*="'${area}'"]`).classList.add('active');
+		
+		    // 해당 콘텐츠 영역 보이기
+		    const contentArea = document.getElementById(area + '-area');
+		    contentArea.classList.remove('hidden');
+		
+		    // 특별 처리 영역 (ajax 로딩)
+		    if (area === 'rooms') {
+		        loadRoomsContent(true);
+		    } else if (area === 'reviews') {
+		        loadReviewManageContent(true);
+		    }
+		}
 
-            if (area === 'rooms') {
-            	contentArea.classList.remove('hidden'); 
-                loadRoomsContent(true);
-            } else if (area === 'reviews') {
-            	contentArea.classList.remove('hidden');
-                loadReviewManageContent(true); // 리뷰 관리 fragment도 비동기로 로딩
-            }
-        }
 
 
         // [추가] roomList를 AJAX로 불러오는 함수
@@ -222,6 +240,12 @@ window.onload = function () {
 	      console.log("📥 loadStats 호출됨, period:", period);
 			
 	      currentPeriod = period;  
+	      
+	      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
+	      const index = { week: 0, month: 1, year: 2, total: 3 }[period];
+	      if (typeof index !== 'undefined') {
+	        document.querySelectorAll(".btn-period")[index].classList.add("active");
+	      }
 	      
 	      let finalPeriodDetail = inputPeriodDetail;
 
@@ -409,6 +433,8 @@ window.onload = function () {
 .content-area {
     padding: 20px;
 }
+
+
 
 </style>
 
