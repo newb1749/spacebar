@@ -205,64 +205,67 @@ $(function(){
 			    <div class="welcome-message">회원정보 수정</div>
 			    <div class="sub-message">회원정보를 확인하고 수정하실 수 있습니다.</div>
 			    
-			    <div class="detail-content p-4"> <h3 class="mb-4">회원정보</h3> <form id="userUpdateForm"> <div class="mb-3 row info-item"> <label for="userId" class="col-sm-3 col-form-label info-label">아이디 :</label>
+			    <div class="detail-content p-4"> 
+			    <h3 class="mb-4">회원정보</h3> 
+			    <form id="userUpdateForm"> 
+			    		<div class="mb-3 row info-item"> 
+			    			<label for="userId" class="col-sm-3 col-form-label info-label">아이디 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="userId" value="${user.userId}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.userId}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="userName" class="col-sm-3 col-form-label info-label">이름 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="userName" value="${user.userName}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.userName}</p>
 			                </div>
 			            </div>
 			 
 			            <div class="mb-3 row info-item">
 			                <label for="nickName" class="col-sm-3 col-form-label info-label">닉네임 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="nickName" value="${user.nickName}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.nickName}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="phone" class="col-sm-3 col-form-label info-label">연락처 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="phone" value="${user.phone}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.phone}</p>
 			                </div>               
 			            </div>
 			            
 						<div class="mb-3 row info-item">
 						    <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
 						    <div class="col-sm-9">
-						        <input type="text" readonly class="form-control-plaintext info-value" id="userAddr" value="${user.userAddr}" style="width: 500px;">
-						        </div>
+						        <p class="form-control-plaintext mb-0" style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #0d0000;">
+    								${user.userAddr}
+								</p>
+						    </div>
 						</div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="email" class="col-sm-3 col-form-label info-label">이메일 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="email" value="${user.email}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.email}</p>
 			                </div> 
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="joinDt" class="col-sm-3 col-form-label info-label">가입일 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="joinDt" value="${user.joinDt}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.joinDt}</p>
 			                </div>
 			            </div>
 			            
 			            <div class="mb-3 row info-item">
 			                <label for="grade" class="col-sm-3 col-form-label info-label">등급 :</label>
 			                <div class="col-sm-9">
-			                    <input type="text" readonly class="form-control-plaintext info-value" id="grade" value="${user.grade}">
+			                    <p class="form-control-plaintext mb-0" style="color: #0d0000">${user.grade}</p>
 			                </div>
 			            </div>
-			            
-			            
-			            	<button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
-			            
+			            <button type="button" id="btnUpdate" class="btn btn-primary">수정하기</button>
 			        </form>
 			    </div>
 			</div>
@@ -532,10 +535,10 @@ $(function(){
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
 			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
-			<div  class=cart-container>
+			<div  class=container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
-			  <form action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>
+			  <form name="cart" id="cart" action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>
 			    <label>
 			      <input type="checkbox" id="selectAll"/> 전체선택
 			    </label><br/><br/>
