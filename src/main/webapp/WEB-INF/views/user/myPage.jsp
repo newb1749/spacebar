@@ -381,11 +381,18 @@ $(function(){
 					            <td>
 					              <c:choose>
 					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
-					                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
-					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-					                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
-					                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
-					                </form>
+					                	<c:choose>
+					                		<c:when test="${r.reviewYn eq 'N'}">
+							                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
+							                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+							                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+							                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+					                		</form>
+					                		</c:when>
+					                		<c:otherwise>
+					                			<br>리뷰작성완료
+					                		</c:otherwise>
+					                  	</c:choose>
 					                </c:when>
 					                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
 					                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>

@@ -26,6 +26,7 @@
     <result property="regDt" column="REG_DT" />
     <result property="updateDt" column="UPDATE_DT" />
     <result property="roomTypeSeq" column="ROOM_TYPE_SEQ" />
+    <result property="reviewYn" column="REVIEW_YN" />
   </resultMap>
 
   <!-- 예약 등록 -->
@@ -71,7 +72,8 @@
       HOST_MSG,
       REG_DT,
       UPDATE_DT,
-      ROOM_TYPE_SEQ
+      ROOM_TYPE_SEQ,
+      REVIEW_YN
     FROM RESERVATION
     WHERE GUEST_ID = #{guestId}
     ORDER BY RSV_SEQ DESC
