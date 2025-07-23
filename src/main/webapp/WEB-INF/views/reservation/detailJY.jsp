@@ -12,6 +12,7 @@
   <title>예약 내용 확인</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
+<<<<<<< HEAD
   <style>
 .site-nav .container {
   max-width: none !important;   /* 부트스트랩 max-width 제거 */
@@ -75,6 +76,134 @@ h3 {
   margin: 0 auto;
 }
   </style>
+=======
+<style>
+  body {
+    padding-top: 30px;
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  h3 {
+    margin-top: 120px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #343a40;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+
+  .table {
+  border-collapse: collapse; /* 경계선 붙이기 */
+  border-radius: 12px;
+  overflow: hidden; /* 둥근 모서리 깨짐 방지 */
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  max-width: 1140px;
+  width: 100%;
+  margin: 0 auto 40px;
+}
+
+  .table th,
+  .table td {
+    vertical-align: middle !important;
+    text-align: center;
+    font-size: 1.3rem; /* 👈 글씨 크기 키움 */
+    color: #495057;
+    padding: 0.75rem;
+  }
+
+  .table th {
+    background-color: #343a40;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .btn-primary {
+	  background-color: #fe7743;
+	  border: none;
+	  font-weight: 700;
+	  font-size: 1.1rem;
+	  width: 100%;
+	  max-width: 700px;
+	  padding: 12px;
+	  display: block;
+	  margin: 30px auto 30px; /* ✅ 상단 여백 60px 추가 */
+	  transition: background-color 0.3s ease;
+	}
+
+  .btn-primary:hover {
+    background-color: #e96328;
+  }.coupon-dropdown {
+  max-width: 500px;
+  margin: 0 auto 30px;
+  position: relative;
+}
+
+.coupon-label {
+  font-size: 20px;
+  margin-bottom: 8px;
+  display: block;
+  color: black; /* 글자색 검정 */
+}
+
+.dropdown-selected {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  user-select: none;
+}
+
+.dropdown-selected:focus {
+  outline: none;
+  border-color: #fe7743;
+  box-shadow: 0 0 8px rgba(254, 119, 67, 0.5);
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1.5px solid #ccc;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: none;
+}
+
+.dropdown-list li {
+  padding: 10px 12px;
+  cursor: pointer;
+  color: black; /* 글자색 검정 */
+}
+
+.dropdown-list li:hover {
+  background-color: #fe7743;
+  color: white;
+  color: black; /* 글자색 검정 */
+}
+
+/* 옵션에 마우스 올려도 파란색 기본 하이라이트 없게
+.coupon-box select option:hover,
+.coupon-box select option:focus {
+  background-color: #ffe8d6 !important;
+  color: #fe7743 !important;
+  border-radius: 8px !important;
+} */
+
+</style>
+
+>>>>>>> develop/kjy
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
@@ -125,9 +254,9 @@ h3 {
 
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-<div style="max-width:700px; margin: 20px auto; text-align:center; color:#888;">
+<%-- <div style="max-width:700px; margin: 20px auto; text-align:center; color:#888;">
   쿠폰 개수: ${fn:length(couponList)}
-</div>
+</div> --%>
 <div class="container">
   <h3>예약 내용 확인</h3>
 
@@ -162,29 +291,50 @@ h3 {
     </tr>
   </table>
 
-  <div class="coupon-box mb-3 text-center">
-    <label for="couponSelect" class="mb-1 fw-bold">쿠폰 선택</label>
-    <select name="couponSeq" id="couponSelect" class="form-select w-100">
-      <c:choose>
-        <c:when test="${not empty couponList}">
-          <option value="" data-discount="0" data-type="none">-- 쿠폰 선택 안함 --</option>
-          <c:forEach var="coupon" items="${couponList}">
-            <c:set var="discountType" value="${coupon.discountRate > 0 ? 'rate' : 'amount'}" />
-            <c:set var="discountValue" value="${coupon.discountRate > 0 ? coupon.discountRate : coupon.discountAmt}" />
-            <option 
-              value="${coupon.cpnSeq}" 
-              data-discount="${discountValue}" 
-              data-type="${discountType}">
-              ${coupon.cpnName} - ${coupon.cpnDesc}
-            </option>
-          </c:forEach>
-        </c:when>
-        <c:otherwise>
-          <option disabled selected>사용 가능한 쿠폰이 없습니다.</option>
-        </c:otherwise>
-      </c:choose>
-    </select>
-  </div>
+  <div class="coupon-dropdown">
+  <label for="couponSelect" class="coupon-label">쿠폰 선택</label>
+  <div class="dropdown-selected" tabindex="0">-- 쿠폰 선택 안함 --</div>
+  <ul class="dropdown-list" style="display:none;">
+    <c:choose>
+      <c:when test="${not empty couponList}">
+        <li data-value="">-- 쿠폰 선택 안함 --</li>
+        <c:forEach var="coupon" items="${couponList}">
+          <li data-value="${coupon.cpnSeq}">
+            ${coupon.cpnName} - ${coupon.cpnDesc}
+          </li>
+        </c:forEach>
+      </c:when>
+      <c:otherwise>
+        <li>사용 가능한 쿠폰이 없습니다.</li>
+      </c:otherwise>
+    </c:choose>
+  </ul>
+  <input type="hidden" name="couponSeq" id="couponSeq" value="" />
+</div>
+
+<script>
+  $(function() {
+    $(".dropdown-selected").click(function() {
+      $(".dropdown-list").not($(this).next()).slideUp(200);
+      $(this).next(".dropdown-list").slideToggle(200);
+    });
+
+    $(".dropdown-list li").click(function() {
+      var text = $(this).text();
+      var value = $(this).data("value") || "";
+      $("#couponSeq").val(value);
+      $(".dropdown-selected").text(text);
+      $(this).parent().slideUp(200);
+    });
+
+    $(document).click(function(e) {
+      if (!$(e.target).closest(".coupon-dropdown").length) {
+        $(".dropdown-list").slideUp(200);
+      }
+    });
+  });
+</script>
+
 
   <form id="paymentForm" action="${pageContext.request.contextPath}/payment/chargeMileage" method="post">
     <input type="hidden" name="roomTypeSeq" value="${reservation.roomTypeSeq}" />
