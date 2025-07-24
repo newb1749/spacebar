@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.LocationDao">
+	<resultMap type="com.sist.web.model.NearbyRoomModel" id="NearbyRoomResultMap">
+		<result property="roomSeq" column="ROOM_SEQ"/>
+	    <result property="roomTitle" column="ROOM_TITLE"/>
+	    <result property="latitude" column="LATITUDE"/>
+	    <result property="longitude" column="LONGITUDE"/>
+	    <result property="distance" column="DISTANCE"/>
+	    <result property="thumbnailImg" column="THUMBNAIL_IMG" />
+	    <result property="averageRating" column="AVERAGE_RATING" />
+    	<result property="reviewCount" column="REVIEW_COUNT" />
+	</resultMap>
+
+	 <!-- 유저 위치 기반해서 거리 계산 -->
+	<select id="selectNearbyRooms" parameterType="map" resultMap="NearbyRoomResultMap">
+	  SELECT 
+	    R.ROOM_SEQ,
+	    R.ROOM_TITLE,
+	    R.LATITUDE,
+	    R.LONGITUDE,
+	    (6371 * ACOS(
+	      COS(#{latitude} * ACOS(-1) / 180) * COS(R.LATITUDE * ACOS(-1) / 180) *
+	      COS((R.LONGITUDE - #{longitude}) * ACOS(-1) / 180) +
+	      SIN(#{latitude} * ACOS(-1) / 180) * SIN(R.LATITUDE * ACOS(-1) / 180)
+	    )) AS DISTANCE,
+	    R.AVERAGE_RATING,
+	    R.REVIEW_COUNT,
+	    '/resources/upload/room/main/' || I.ROOM_IMG_NAME AS THUMBNAIL_IMG
+	  FROM ROOM R
+	  JOIN ROOM_IMAGE I ON R.ROOM_SEQ = I.ROOM_SEQ AND I.IMG_TYPE = 'main'
+	  WHERE R.LATITUDE IS NOT NULL
+	    AND R.LONGITUDE IS NOT NULL
+	    AND R.SALE_YN = 'Y'
+	    AND R.DEL_YN = 'N'
+	    <if test="categorySeq != null and categorySeq != 0">
+	      AND R.ROOM_CAT_SEQ = #{categorySeq}
+	    </if>
+	  <choose>
+	    <when test="orderBy == 'rating'">
+	      ORDER BY R.AVERAGE_RATING DESC NULLS LAST
+	    </when>
+	    <otherwise>
+	      ORDER BY DISTANCE
+	    </otherwise>
+	  </choose>
+	  FETCH FIRST #{limit} ROWS ONLY
+	</select>
+
+
+
+
+
+
+
+
+</mapper>

@@ -102,4 +102,9 @@
       });
     }
   }
+  
+  
+  $(document).ready(function () {
+	  initWeekCalendar(); // 이 시점에는 이미 #weekCalendar DOM 있음
+	});
 </script>
