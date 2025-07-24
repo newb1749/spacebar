@@ -113,6 +113,7 @@ public class HostController {
 	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 	    
 	    // 예약정보 조회
+	    /*
 	    List<Reservation> reservations = reservationService.reservationsListByHostId(sessionUserId);
 	    
 	    for (Reservation rsv : reservations) 
@@ -136,6 +137,7 @@ public class HostController {
 	        }
 	    }
 	    model.addAttribute("reservations", reservations);
+		*/
 	    return "/host/main";
 	}
 
@@ -241,6 +243,7 @@ public class HostController {
 	    room.setCancelPolicy(HttpUtil.get(request, "cancelPolicy", ""));
 	    room.setMinTimes(HttpUtil.get(request, "minTimes", (short) 0));
 	    room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
+
 	    
 	    // 편의시설
 	    String[] facilityNosStr =  request.getParameterValues("facilitySeqs");

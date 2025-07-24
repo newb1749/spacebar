@@ -1,0 +1,161 @@
+/* location.css (최종 수정본) */
+
+html, body {
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+    background-color: #f8f9fa; /* ◀◀◀ 이 라인을 추가하세요. */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 1. 내비게이션 바 (navigation.jsp) */
+/* navigation.jsp의 <nav> 태그 클래스가 'site-nav'가 맞는지 확인하세요. */
+.site-nav {
+    height: 76px;  /* 실제 내비게이션 바 높이 */
+    flex-shrink: 0; /* 높이가 줄어들지 않도록 고정 */
+    z-index: 1001; /* 다른 요소들보다 위에 있도록 설정 */
+    position: relative; /* z-index 적용을 위함 */
+}
+
+/* 2. 내비게이션 바를 제외한 모든 콘텐츠를 감싸는 래퍼 */
+.page-content-wrapper {
+    flex-grow: 1; 
+    display: flex;
+    min-height: 0;
+    background-color: #f8f9fa;
+    padding: 20px; /* ◀◀◀ 이 라인을 추가하세요. */
+    box-sizing: border-box; /* ◀◀◀ 패딩이 크기에 영향을 주지 않도록 추가 */
+}
+
+/* 3. 좌우 패널을 담는 메인 컨테이너 */
+.nearby-container {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    gap: 20px;
+    padding: 0; /* ◀◀◀ 기존 패딩은 부모로 옮겼으므로 0으로 변경 */
+    box-sizing: border-box;
+}
+
+/* 좌측 패널: 필터 + 목록 */
+.left-panel {
+    width: 400px;
+    min-width: 350px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-area {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.filter-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.filter-btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.room-list-wrapper {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 15px;
+}
+
+.room-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.room-list li {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    gap: 15px;
+}
+.room-list li:last-child { border-bottom: none; }
+.room-list img { width: 120px; height: 90px; object-fit: cover; border-radius: 6px; }
+.room-info { font-size: 14px; color: #555; }
+.room-info strong { font-size: 16px; color: #000; display: block; margin-bottom: 5px; }
+
+/* 우측 패널: 지도 */
+.right-panel {
+    flex: 1;
+    border-radius: 8px;
+    position: relative;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+/* 지도 위 카테고리 필터 */
+.map-category-filter {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 90%; 
+    max-width: 1000px;
+}
+
+.category-scroll-container {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.category-scroll-container::-webkit-scrollbar { display: none; }
+
+.map-cat-btn {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.map-cat-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+.map-cat-btn.active { background-color: #007bff; color: white; border-color: #007bff; font-weight: bold; }
+.map-cat-btn .fas { margin-right: 4px; }
