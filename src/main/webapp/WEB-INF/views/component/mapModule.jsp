@@ -28,7 +28,7 @@
     }
   });
 </script>
-<p>latitude: ${room.latitude}</p>
-<p>longitude: ${room.longitude}</p>
+<!--  <p>latitude: ${room.latitude}</p>
+<p>longitude: ${room.longitude}</p>-->
 
 <script src="<c:url value='/resources/js/map.js' />"></script>

@@ -237,7 +237,7 @@ function fn_list(curPage) {
 	        <!-- 이전 블럭 -->
 	        <c:if test="${paging.prevBlockPage gt 0}">
 	          <li class="page-item">
-	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블럭</a>
+	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">&lt;</a>
 	          </li>
 	        </c:if>
 	
@@ -260,7 +260,7 @@ function fn_list(curPage) {
 	        <!-- 다음 블럭 -->
 	        <c:if test="${paging.nextBlockPage gt 0}">
 	          <li class="page-item">
-	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">다음블럭</a>
+	            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">&gt;</a>
 	          </li>
 	        </c:if>
 	      </c:if>

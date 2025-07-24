@@ -42,8 +42,8 @@ public class QnaController {
 	@Autowired
 	private UserService userService;
 	
-	private static final int LIST_COUNT = 3; 	// 한 페이지의 게시물 수
-	private static final int PAGE_COUNT = 3;	// 페이징 수
+	private static final int LIST_COUNT = 5; 	// 한 페이지의 게시물 수
+	private static final int PAGE_COUNT = 5;	// 페이징 수
 	
 	//게시판 리스트
 	@RequestMapping(value="/qna/list")

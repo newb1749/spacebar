@@ -23,7 +23,7 @@
 			    <img src="/resources/upload/userprofile/${review.userId}.${review.profImgExt}" class="profile-img" alt="프로필 이미지" />
 			  </c:when>
 			  <c:otherwise>
-			    <img src="/resources/upload/userprofile/회원.png" class="profile-img" alt="기본 프로필 이미지" />
+			    <img src="/resources/upload/userprofile/default_profile.png" class="profile-img" alt="기본 프로필 이미지" />
 			  </c:otherwise>
 			</c:choose>
 	        작성자: ${review.userNickname} | 평점: ${review.rating} | 작성일: ${review.regDt}
