@@ -43,14 +43,14 @@
             </c:otherwise>
         </c:choose>
 
-        <a href="/index" class="btn btn-success mt-3">로그인 하러 가기</a>
+        <a href="/user/loginForm" class="btn btn-success mt-3">로그인 하러 가기</a>
 
         <div class="links mt-3">
-            <a href="/user/findPwdForm_mj">비밀번호 찾기</a>
-            <a href="/user/regForm_mj">회원가입</a>
+            <a href="/user/findPwdForm">비밀번호 찾기</a>
+            <a href="/user/regForm">회원가입</a>
         </div>
     </div>
-</div>
+</div><br/>
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 </body>

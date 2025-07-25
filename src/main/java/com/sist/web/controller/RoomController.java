@@ -100,8 +100,8 @@ public class RoomController {
 	
 	private static final int LIST_COUNT = 9; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 3;	// 페이징 수
-	private static final int QNA_LIST_COUNT = 3; 	// Qna 한 페이지의 게시물 수
-	private static final int QNA_PAGE_COUNT = 3;	// Qna 페이징 수
+	private static final int QNA_LIST_COUNT = 2; 	// Qna 한 페이지의 게시물 수
+	private static final int QNA_PAGE_COUNT = 5;	// Qna 페이징 수
 	
     /**
      * 숙소 등록 폼 페이지로 이동

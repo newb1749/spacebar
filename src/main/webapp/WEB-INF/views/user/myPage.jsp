@@ -152,7 +152,7 @@ $(function(){
     alert('${message}');
   </script>
   </c:if>
-    <div class="container">
+    <div class="my-container">
         <div class="sidebar">
             <h2>마이페이지</h2>
             <c:if test="${user.userType == 'H'}">
@@ -367,7 +367,7 @@ $(function(){
 					        <c:forEach var="r" items="${reservations}">
 					          <tr>
 					            <td>${r.rsvSeq}</td>
-					            <td>${r.roomTypeTitle}</td>
+					            <td><a href="/room/roomDetail?roomSeq=${r.roomSeq}">${r.roomTypeTitle}</a></td>
 					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
 					            <td>
@@ -381,11 +381,18 @@ $(function(){
 					            <td>
 					              <c:choose>
 					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
-					                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
-					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-					                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
-					                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
-					                </form>
+					                	<c:choose>
+					                		<c:when test="${r.reviewYn eq 'N'}">
+							                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
+							                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+							                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+							                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+					                		</form>
+					                		</c:when>
+					                		<c:otherwise>
+					                			<br>리뷰작성완료
+					                		</c:otherwise>
+					                  	</c:choose>
 					                </c:when>
 					                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
 					                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
@@ -415,6 +422,9 @@ $(function(){
                 <div class="sub-message">마일리지 충전하신 내역을 확인하실 수 있습니다.</div>
                 <div class="detail-content">
                     <h3>마일리지 충전 내역</h3>
+                    <div class="mt-3 text-end">
+				      <a href="/payment/chargeMileage" class="btn btn-outline-primary">마일리지 충전하기</a>
+				    </div>
                     <div class="info-item">
                     </div>
                     <table class="table table-hover">
@@ -449,9 +459,6 @@ $(function(){
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-3 text-end">
-			      <a href="/payment/chargeMileage" class="btn btn-outline-primary">마일리지 충전하기</a>
-			    </div>
             </div>
 
 			<%-- 내가 쓴 게시글 --%>
@@ -496,7 +503,7 @@ $(function(){
             <div id="wishlist-content" class="content-area hidden">
 	            <div class="welcome-message">위시리스트</div>
 	            <div class="sub-message">회원님의 위시리스트 목록입니다.</div>
-				<div class="container">
+				<div class="my-container">
 				<div class="detail-content">
 					 <h3>위시리스트</h3>
 					  <c:if test="${empty wishList}">
@@ -547,7 +554,7 @@ $(function(){
 			<div id="cart-content" class="content-area  hidden">
 			<div class="welcome-message">장바구니</div>
 			<div class="sub-message">회원님의 장바구니 목록입니다.</div>
-			<div  class=container>
+			<div  class=my-container>
 			  <div class="detail-content">
 			  	<h3>장바구니</h3>
 			  <form name="cart" id="cart" action="${pageContext.request.contextPath}/cart/confirm" method="post"><br/>

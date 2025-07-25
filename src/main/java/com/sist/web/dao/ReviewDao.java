@@ -104,5 +104,8 @@ public interface ReviewDao {
     
     // 리뷰 평균 평점 조회 (누적, 연간, 월간, 주간)
     public Double selectAvgRatingByHostWithPeriod(Map<String, Object> paramMap);
+    
+    //리뷰 유무확인
+    public int reservationReviewUpdate(int rsvSeq);
 
 }

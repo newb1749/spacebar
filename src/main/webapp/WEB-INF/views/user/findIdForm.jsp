@@ -24,7 +24,7 @@ function fn_submit()
 
     if (confirm("아이디를 찾으시겠습니까?")) 
     {
-		$("#findIdForm").attr("action","searchResultId_mj").submit();
+		$("#findIdForm").attr("action","searchResultId").submit();
     }
 }
 
@@ -49,21 +49,21 @@ function fn_submit()
                                 <form id="findIdForm" name="findIdForm"  method="post">
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" id="userName" name="userName" placeholder="이름 입력" size=10>
-                                    </div>
+                                    </div><br/>
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" id="phone" name="phone" placeholder="전화번호 입력 ex)010-0000-0000">
-                                    </div>
+                                    </div><br/>
                                     <a href="javascript:void(0)" onclick="fn_submit(); return false;" class="btn btn-primary btn-user btn-block">아이디 찾기</a>
                                 </form>
                                 <hr>
                                 <div class="text-center">
-                                    <a class="small" href="/user/findPwdForm_mj">비밀번호 찾기</a>
+                                    <a class="small" href="/user/findPwdForm">비밀번호 찾기</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small" href="/user/regForm_mj">회원가입</a>
+                                    <a class="small" href="/user/regForm">회원가입</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small" href="/index">로그인</a>
+                                    <a class="small" href="/user/loginForm">로그인</a>
                                 </div>
                             </div>
                         
