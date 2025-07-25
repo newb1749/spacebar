@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
@@ -196,7 +197,7 @@ function fn_list(curPage)
       <ul class="pagination justify-content-center">
 <c:if test="${!empty paging}">
 	<c:if test="${paging.prevBlockPage gt 0}">
-         <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블럭</a></li>
+         <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">&lt;</a></li>
      </c:if>    
 	<c:forEach var="i" begin="${paging.startPage}" end="${paging.endPage}">
 		<c:choose>
@@ -210,7 +211,7 @@ function fn_list(curPage)
     </c:forEach>
    
    <c:if test="${paging.nextBlockPage gt 0}"> 
-         <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">다음블럭</a></li>
+         <li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">&gt;</a></li>
    </c:if>
 </c:if>
       </ul>
@@ -230,5 +231,3 @@ function fn_list(curPage)
 
 
 </html>
-
-

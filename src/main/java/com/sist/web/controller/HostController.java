@@ -40,11 +40,11 @@ import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.ReviewDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Facility;
-
+import com.sist.web.model.Paging;
 import com.sist.web.model.Review;
 
 import com.sist.web.model.Reservation;
-
+import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
@@ -102,6 +102,8 @@ public class HostController {
     @Autowired
     private RoomImgService roomImgService;
 
+	private static final int LIST_COUNT = 2; 	// 한 페이지의 게시물 수
+	private static final int PAGE_COUNT = 5;	// 페이징 수
     
 	/**
 	 * 호스트 메인 페이지로 이동
@@ -111,35 +113,62 @@ public class HostController {
 	public String hostPage(Model model, HttpServletRequest request, HttpServletResponse response) 
 	{
 	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    long curPage = HttpUtil.get(request, "curPage", (long)1);
 	    
-	    // 예약정보 조회
-	    List<Reservation> reservations = reservationService.reservationsListByHostId(sessionUserId);
-	    
-	    for (Reservation rsv : reservations) 
-	    {
-	        int roomTypeSeq = rsv.getRoomTypeSeq();
-	        
-	        //숙소 제목
-	        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
-	        if (roomType != null) 
-	        {
-	            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
 
-	        }
-	        
-	        // 이미지
-	        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
-	        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
-	        {
-	            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
-	            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
-	        }
+	    // 호스트 ID로 조회한 판매내역 리스트
+	    List<Reservation> reservations = null;
+	    Reservation search = new Reservation();
+	    Paging paging = null;
+		int totalCount = 0;
+
+		search.setHostId(sessionUserId);
+		
+		totalCount = reservationService.reservationsListByHostIdCount(search);
+  
+	    if(totalCount > 0)
+	    {
+	    	paging = new Paging("/host/main",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+	    	
+	    	search.setStartRow((long)paging.getStartRow());
+	    	search.setEndRow((long)paging.getEndRow());
+	    	
+	    	reservations = reservationService.reservationsListByHostId(search);
+	    		    	
 	    }
+	    
+	    if(reservations != null) 
+	    {
+		    for (Reservation rsv : reservations) 
+		    {
+		        int roomTypeSeq = rsv.getRoomTypeSeq();
+		        
+		        //숙소 제목
+		        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+		        if (roomType != null) 
+		        {
+		            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
+	
+		        }
+		        
+		        // 이미지
+		        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
+		        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
+		        {
+		            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
+		            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
+		        }
+		    }
+	    }
+	    
 	    model.addAttribute("reservations", reservations);
-	    return "/host/main";
+	    model.addAttribute("totalCount", totalCount);
+    	model.addAttribute("curPage", curPage);
+	    model.addAttribute("paging", paging);
+	    
+
 	}
 
-	
 	// **************************************************************************************
 	// *********************************** 숙소/공간 관리 ***************************************
 	// **************************************************************************************
@@ -241,6 +270,7 @@ public class HostController {
 	    room.setCancelPolicy(HttpUtil.get(request, "cancelPolicy", ""));
 	    room.setMinTimes(HttpUtil.get(request, "minTimes", (short) 0));
 	    room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
+
 	    
 	    // 편의시설
 	    String[] facilityNosStr =  request.getParameterValues("facilitySeqs");
@@ -509,8 +539,6 @@ public class HostController {
 	}
 
 
-	
-	
 	
 	
 	

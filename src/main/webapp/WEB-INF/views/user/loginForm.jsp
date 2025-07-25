@@ -10,7 +10,11 @@ body {
   padding-bottom: 40px;
   /* background-color: #eee; */
 }
+.container {
 
+  padding-top: 10px;
+  padding-bottom: 100px;
+}
 .form-signin {
   max-width: 330px;
   padding: 15px;

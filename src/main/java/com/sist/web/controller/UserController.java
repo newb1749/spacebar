@@ -640,14 +640,9 @@ public class UserController
 	public String myPageForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		int cpnSeq = HttpUtil.get(request, "cpnSeq", 0);
 		int roomTypeSeq = HttpUtil.get(request, "roomTypeSeq", 0);
-		int cartSeq = HttpUtil.get(request, "cartSeq", 0);
 		
 		logger.debug("sessionUserId : " + sessionUserId);
-		logger.debug("cpnSeq : " + cpnSeq);
-		logger.debug("roomTypeSeq : " + roomTypeSeq);
-		logger.debug("cartSeq : " + cartSeq);
 		
 		if(StringUtil.isEmpty(sessionUserId))
 		{
@@ -658,44 +653,51 @@ public class UserController
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
-		//호스트일때 숙소/공간 정보관리
-//		if(user != null && StringUtil.equals(user.getUserType(), "H"))
-//		{
-//		    List<Room> hostRoomList = roomServiceSh.selectHostRoomList(sessionUserId);
-//		    model.addAttribute("hostRoomList", hostRoomList);
-//		}
-		
 		//쿠폰 정보
 		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);		
 		model.addAttribute("couponList", couponList);
 
 		int couponCount = couponService.couponCountByUser(sessionUserId);
-		model.addAttribute("couponCount", couponCount);
-		
+		model.addAttribute("couponCount", couponCount);		
 
 		//예약 정보
         List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        for (Reservation r : reservations) {
-            try {
-                if (r.getRsvCheckInDt() != null) {
+        
+        for (Reservation r : reservations) 
+        {
+        	roomTypeSeq = r.getRoomTypeSeq();
+        	
+        	RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+        	
+        	if(roomType != null)
+        	{
+        		r.setRoomTypeTitle(roomType.getRoomTypeTitle());
+        		r.setRoomSeq(roomType.getRoomSeq()); 
+        	}
+        	
+            try 
+            {
+                if (r.getRsvCheckInDt() != null) 
+                {
                     Date checkInDate = sdf.parse(r.getRsvCheckInDt());
                     r.setRsvCheckInDateObj(checkInDate);
                 }
-                if (r.getRsvCheckOutDt() != null) {
+                
+                if (r.getRsvCheckOutDt() != null) 
+                {
                     Date checkOutDate = sdf.parse(r.getRsvCheckOutDt());
                     r.setRsvCheckOutDateObj(checkOutDate);
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 // 필요시 로그 기록
             }
+
         }
 		model.addAttribute("reservations", reservations);
-		
-		//마일리지 조회 내역
-//		int mile = mileageService.getUserMileage(sessionUserId);
-//		model.addAttribute("mile", mile);
 		
 		//마일리지 충전 내역
 		List<MileageHistory> mileHistory = mileageHistoryService.getMileageHistory(sessionUserId);

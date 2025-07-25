@@ -9,7 +9,38 @@
     <link rel="stylesheet" href="/resources/css/myPage.css">
     <style>
         /* 만약 직접 테스트 중이면 위 myPage.css 대신 여기 style을 사용 */
+
+    /* 테이블 선 없애기 */
+    .table-borderless th,
+    .table-borderless td,
+    .table-borderless {
+        border: none !important;
+    }
+    /* 이미지 사이즈 조절 */나
+    .img {
+       width: 350px;
+  	   flex-shrink: 0;
+       height: 100%;  
+    }
+    .img img {
+      width: 100%;
+	  height: 100%;
+	  object-fit: cover;
+	  border-radius: 12px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
     </style>
+    <script type="text/javascript">
+    function fn_list(curPage)
+    {
+    	//document.mainPaging.hibbsSeq.value = "";
+    	document.mainPaging.curPage.value = curPage;
+    	document.mainPaging.action = "/host/main";
+    	document.mainPaging.submit();
+    }
+  </script>
+
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
@@ -65,15 +96,14 @@
 			            <c:when test="${!empty reservations}"> 
 			            <c:forEach var="res" items="${reservations}" >
 							<div class="info-item mb-3 border p-3 mt-3 shadow-sm rounded">
-							  <div class="row g-3 align-items-center">
+							  <div class="row g-3 align-items-stretch">
 						    	 <div class="col-md-6">
-							      <div class="cart-img">
-							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"
-							             style="width: 100%; height: auto; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+							      <div class="img">
+							        <img src="/resources/upload/roomtype/main/${res.roomTypeImgName}" alt="숙소 이미지"/>
 							      </div>
 							     </div>
 							    <div class="col-md-6 d-flex flex-column justify-content-center align-items-start" style="height: 100%;">
-									<table class="table table-bordered table-sm" style="font-size: 0.95rem;">
+									<table class="table table-sm table-borderless" style="font-size: 0.95rem;">
 									  <tbody>
 									    <tr>
 									      <th>예약번호</th>
@@ -114,7 +144,7 @@
 									      <td>
 									        <c:choose>
 									          <c:when test="${res.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
-									          <c:when test="${res.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+									          <c:when test="${res.rsvPaymentStat eq 'UNPAID' or res.rsvPaymentStat eq '취소'}">미결제</c:when>
 									          <c:when test="${res.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
 									          <c:otherwise>-</c:otherwise>
 									        </c:choose>
@@ -124,9 +154,9 @@
 									      <th>예약상태</th>
 									      <td>
 									        <c:choose>
+									          <c:when test="${empty res.rsvStat or res.rsvStat eq 'PENDING' or res.rsvStat eq '취소'}">결제대기</c:when>	
 									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
-									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>
-									          <c:when test="${res.rsvStat eq 'PENDING'}">결제대기</c:when>
+									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>									          
 									          <c:otherwise>-</c:otherwise>
 									        </c:choose>
 									      </td>
@@ -149,10 +179,51 @@
 			                    <a href="/room/addForm" class="btn btn-success">새 숙소 등록하기</a>
 			                </div>
 			            </c:otherwise>
-			        </c:choose>                      
+			        </c:choose>    			        
+					<!-- 📌 QnA 리스트 아래 페이징 영역 시작 -->
+					<div class="paging text-center mt-4">
+					  <nav>
+					    <ul class="pagination justify-content-center">
+					      <c:if test="${!empty paging}">
+					        <!-- 이전 블럭 -->
+					        <c:if test="${paging.prevBlockPage gt 0}">
+					          <li class="page-item">
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">&lt;</a>
+					          </li>
+					        </c:if>
+					
+					        <!-- 페이지 번호 -->
+					        <c:forEach var="i" begin="${paging.startPage}" end="${paging.endPage}">
+					          <c:choose>
+					            <c:when test="${i ne curPage}">
+					              <li class="page-item">
+					                <a class="page-link" href="javascript:void(0)" onclick="fn_list(${i})">${i}</a>
+					              </li>
+					            </c:when>
+					            <c:otherwise>
+					              <li class="page-item active">
+					                <a class="page-link" href="javascript:void(0)" style="cursor:default;">${i}</a>
+					              </li>
+					            </c:otherwise>
+					          </c:choose>
+					        </c:forEach>
+					
+					        <!-- 다음 블럭 -->
+					        <c:if test="${paging.nextBlockPage gt 0}">
+					          <li class="page-item">
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">&gt;</a>
+					          </li>
+					        </c:if>
+					      </c:if>
+					    </ul>
+					  </nav>
+					</div>
+					<!-- 📌 QnA 리스트 아래 페이징 영역 끝 -->                  
 			    </div>
 			</div>
-
+          <form name="mainPaging" id="mainPaging">
+          	<input type="hidden" name="curPage" value="${curPage}" />
+          </form>
             <!-- 숙소/공간 관리 -->
             <div class="content-area hidden" id="rooms-area">
                 <div class="detail-content">
@@ -188,33 +259,32 @@
     
 <script>
     	// [추가] rooms 콘텐츠가 로딩되었는지 확인하는 변수
+// 첫 번째 코드의 window.onload 수정 제안
 window.onload = function () {
-
-  initWeekCalendar();
   const lastTab = localStorage.getItem("lastHostTab") || "dashboard";
-  
   showContent(lastTab);
 
   if (lastTab === "dashboard") {
     console.log("📊 대시보드 진입 - 초기 세팅 시작");
 
+    // DOM 렌더링 이후 실행
+    setTimeout(() => {
+      initWeekCalendar();
 
-    // ✅ 바로 아래가 문제였던 부분 (start, end 가져오는 부분)
-    const start = document.getElementById("weekCalendar_start")?.value;
-    const end = document.getElementById("weekCalendar_end")?.value;
+      const start = document.getElementById("weekCalendar_start")?.value;
+      const end = document.getElementById("weekCalendar_end")?.value;
 
-    if (start && end) {
-      const weekDetail = `${start}~${end}`;
-      console.log("📦 초기 주간 periodDetail:", weekDetail);
-      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
-      document.querySelectorAll(".btn-period")[0].classList.add("active"); // 주간 버튼
-      
-      loadStats("week", weekDetail); // ✅ 이렇게 정확히 넘겨야 함
-    } else {
-      console.warn("❌ 주간 날짜가 비어있습니다.");
-    }
+      if (start && end) {
+        const weekDetail = `${start}~${end}`;
+        console.log("📦 초기 주간 periodDetail:", weekDetail);
+        loadStats("week", weekDetail);
+      } else {
+        console.warn("❌ 주간 날짜가 비어있습니다.");
+      }
+    }, 100); // 100~300ms 사이에서 조절 가능
   }
 };
+
 
 
     	let isRoomsContentLoaded = false;
@@ -317,7 +387,7 @@ window.onload = function () {
 	      console.log("📥 loadStats 호출됨, period:", period);
 			
 	      currentPeriod = period;  
-	      
+	      // 버튼 클릭 표시
 	      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
 	      const index = { week: 0, month: 1, year: 2, total: 3 }[period];
 	      if (typeof index !== 'undefined') {
@@ -454,7 +524,7 @@ window.onload = function () {
   height: 120px;
 }
 .main-content {
-  padding-top: 20px; /* .site-nav 높이만큼 여백 줌 */
+  padding-top: 68px; /* .site-nav 높이만큼 여백 줌 */
 }
 
 /**
@@ -464,6 +534,7 @@ window.onload = function () {
   margin-top: 20px;
   text-align: center;
 }
+
 
 .btn-group {
   display: flex;
@@ -523,4 +594,3 @@ window.onload = function () {
 
 
 </style>
-

@@ -346,6 +346,11 @@
 	  </choose>	  
 	</select>
 
+  <update id="reservationReviewUpdate" parameterType="int">
+  	UPDATE RESERVATION
+	SET REVIEW_YN = 'Y'
+	WHERE RSV_SEQ = #{value}
+  </update>
 	
 	
 	
