@@ -1,6 +1,7 @@
 package com.sist.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -73,6 +74,23 @@ public interface RoomDao {
      * @return
      */
     public List<Room> selectRoomsByHostId(String hostId);
+    
+    /**
+     * 좌표가 없는 숙소 목록을 조회하는 메서드
+     * @return 좌표 없는 숙소의 SEQ, 주소(ADDRESS)가 담긴 Map의 리스트
+     */
+    public List<Map<String, Object>> findRoomsWithoutCoordinates();
+
+    /**
+     * 특정 숙소(roomSeq)의 위도, 경도 좌표를 업데이트하는 메서드
+     * @param roomSeq 업데이트할 숙소의 기본 키 (PK)
+     * @param latitude 새로운 위도
+     * @param longitude 새로운 경도
+     */
+    public void updateRoomCoordinates(@Param("roomSeq") long roomSeq,
+                                      @Param("latitude") double latitude,
+                                      @Param("longitude") double longitude);
+    
 }
 
 
