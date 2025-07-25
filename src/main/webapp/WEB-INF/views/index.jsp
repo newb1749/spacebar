@@ -41,19 +41,31 @@
 
   .site-nav .container{max-width:none !important;width:1300px;margin:0 auto !important;padding:0 !important;}
   @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
+<<<<<<< HEAD
   .section{padding-top:3rem !important;padding-bottom:3rem !important;}
   .section-space .heading,.section-room .heading{margin-top:.5rem !important;margin-bottom:.5rem !important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;}
   .wish-heart.clicked{animation:pulse .3s ease;}
 
   body{padding-top:110px;background:#f9f9f9;font-family:'Work Sans','Noto Sans KR',sans-serif;}
+=======
+  .section{padding-top:2rem !important;padding-bottom:2rem !important;}
+  .section-space .heading,.section-room .heading{margin-top:.5rem !important;margin-bottom:.5rem !important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;}
+  .wish-heart.clicked{animation:pulse .3s ease;}
+
+  body{padding-top:100px;background:#f9f9f9;font-family:'Work Sans','Noto Sans KR',sans-serif;}
+>>>>>>> develop/kjy
   .container{max-width:1300px;margin:0 auto;}
 
   #wishlistBody{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
 
+<<<<<<< HEAD
   .property-slider-wrap {
   position: relative;
   overflow: visible; /* ✅ 버튼이 바깥으로 나가게 허용 */
 }
+=======
+  .property-slider-wrap{position:relative;padding:0;overflow:hidden;margin-top:.5rem;margin-bottom:.5rem;}
+>>>>>>> develop/kjy
   .property-item{
     position:relative;background:#fff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);
     overflow:hidden;transition:transform .2s ease;margin-bottom:20px;
@@ -103,6 +115,7 @@
   .property-item .img{display:block;width:100%;}
   .property-item .img img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;}
 
+<<<<<<< HEAD
 .property-slider-wrap .controls .prev,
 .property-slider-wrap .controls .next {
   position: absolute;
@@ -169,6 +182,17 @@
 .property-slider-wrap .controls .next:hover {
   color: #007bff;  /* 👉 hover 시 색만 변화 */
 }
+=======
+  .property-slider-wrap .controls .prev,
+  .property-slider-wrap .controls .next{
+    width:auto !important;height:auto !important;border:none !important;background:none !important;
+    font-size:1.5rem;color:#00204a;line-height:1;cursor:pointer;user-select:none;
+  }
+  .property-slider-wrap .controls{
+    display:flex;justify-content:space-between;margin-top:-8px;padding:0 10px;pointer-events:none;
+  }
+  .property-slider-wrap .controls span{pointer-events:auto;}
+>>>>>>> develop/kjy
 
   .sec-testimonials{padding-top:2rem;padding-bottom:2rem;}
   .testimonial{
