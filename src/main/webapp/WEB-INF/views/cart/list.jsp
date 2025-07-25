@@ -21,7 +21,7 @@
 
     /* 카드 레이아웃 */
     .cart-container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 12px 0;
     }
@@ -32,7 +32,7 @@
      position: relative;      /* 이 한 줄만 추가해 주시면 됩니다! */
       display: flex;
   align-items: stretch;    /* 자식 요소 높이를 카드 높이에 맞춤 */
-  height: 130px;           /* 원하시는 고정 높이로 조정하세요 */
+  height: 160px;           /* 원하시는 고정 높이로 조정하세요 */
   padding-left: 32px;
   background: #fff;
   border-radius: 8px;
@@ -50,11 +50,12 @@
       margin: 0;
       padding: 0;
       z-index: 1; /* 혹시 가려지면 z-index도 높여주세요 */
+      
     }
 
     /* 나머지 카드 내부 스타일 그대로 */
     .cart-img {
-       width: 200px;
+       width: 260px;
   flex-shrink: 0;
   height: 100%;  
     }
@@ -62,6 +63,7 @@
       width: 100%;
   height: 100%;
   object-fit: cover;
+   border-radius: 8px; 
     }
     .cart-info {
       flex: 1;                       
@@ -73,7 +75,7 @@
     }
     .room-title { 
     
- font-size: 1.1rem;
+ font-size: 1.5rem;
   font-weight: 700;
   color: #222;
   white-space: nowrap;          /* 한 줄 고정 */
@@ -81,18 +83,18 @@
   text-overflow: ellipsis;      /* 넘치면 … */
     
     }
-    .cart-location { font-size:0.75rem; color:#777; }
+    .cart-location { font-size:1rem; color:#777; }
     .divider { border-bottom:1px solid #eee; margin:4px 0; }
-    .type-title { font-size:0.95rem; font-weight:600; color:#444; }
-    .cart-meta { font-size:0.8rem; color:#555; margin-bottom:4px; }
-    .cart-price { font-size: 0.95rem;
+    .type-title { font-size:1.3rem; font-weight:600; color:#444; }
+    .cart-meta { font-size:1rem; color:#555; margin-bottom:4px; }
+    .cart-price { font-size: 1rem;
   font-weight: bold;
   color: #007B5E; }
-    .cancel-rule { font-size:0.7rem; color:#888; }
+    .cancel-rule { font-size:0.9rem; color:#888; }
     .cart-actions {   position: absolute;
   bottom: 8px;  /* 카드를 꽉 채워도 항상 하단에 */
   right: 8px; }
-    .btn-delete { font-size:0.75rem; color:#999; text-decoration:none; }
+    .btn-delete { font-size:0.9rem; color:#999; text-decoration:none; }
     .btn-delete:hover { color:#e74c3c; }
 
     /* 요약(하단) */
@@ -104,7 +106,7 @@
     .cart-summary .total-amt { font-weight:bold; color:#007B5E; }
     .btn-buy {
       background:#007B5E; color:#fff; padding:6px 12px;
-      border:none; border-radius:6px; cursor:pointer; font-size:0.9rem;
+      border:none; border-radius:6px; cursor:pointer; font-size:1.2rem;
     }
     .btn-buy:disabled { background:#ccc; cursor:not-allowed; }
   </style>

@@ -166,7 +166,8 @@ public class HostController {
     	model.addAttribute("curPage", curPage);
 	    model.addAttribute("paging", paging);
 	    
-
+	    
+	    return "/host/main";
 	}
 
 	// **************************************************************************************
