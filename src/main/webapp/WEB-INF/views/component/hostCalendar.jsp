@@ -21,7 +21,7 @@
   </div>
   <div class="stat-card">
     <div class="stat-number"><h2 id="totalAmount">0원</h2></div>
-    <div class="stat-label">누적 정산 금액</div>
+    <div class="stat-label">총 판매 금액</div>
   </div>
   <div class="stat-card">
     <div class="stat-number"><h2 id="avgReviewScore">0.0</h2></div>
@@ -102,4 +102,9 @@
       });
     }
   }
+  
+  
+  $(document).ready(function () {
+	  initWeekCalendar(); // 이 시점에는 이미 #weekCalendar DOM 있음
+	});
 </script>

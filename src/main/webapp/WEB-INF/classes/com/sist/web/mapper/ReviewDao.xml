@@ -330,20 +330,27 @@
 	  WHERE R.REVIEW_STAT = 'Y'
 	    AND RM.HOST_ID = #{hostId}
 	  <choose>
-	    <when test="period == 'week'">
-	      AND R.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail}, 1, 10), 'YYYY-MM-DD')
-	                      AND TO_DATE(SUBSTR(#{periodDetail}, 12, 10), 'YYYY-MM-DD')
+	    <when test="period == 'week' and periodDetail != null and periodDetail != ''">
+	      AND R.REG_DT BETWEEN TO_DATE(SUBSTR(#{periodDetail, jdbcType=VARCHAR}, 1, 10), 'YYYY-MM-DD')
+	                      AND TO_DATE(SUBSTR(#{periodDetail, jdbcType=VARCHAR}, 12, 10), 'YYYY-MM-DD')
 	    </when>
-	    <when test="period == 'month'">
-	      AND TO_CHAR(R.REG_DT, 'YYYY-MM') = #{periodDetail}
+	    <when test="period == 'month' and periodDetail != null and periodDetail != ''">
+	      AND TO_CHAR(R.REG_DT, 'YYYY-MM') = #{periodDetail, jdbcType=VARCHAR}
 	    </when>
-	    <when test="period == 'year'">
-	      AND TO_CHAR(R.REG_DT, 'YYYY') = #{periodDetail}
+	    <when test="period == 'year' and periodDetail != null and periodDetail != ''">
+	      AND TO_CHAR(R.REG_DT, 'YYYY') = #{periodDetail, jdbcType=VARCHAR}
 	    </when>
-	  </choose>
+	  <otherwise>
+	    -- total의 경우 조건 없음 (전체)
+	  </otherwise>
+	  </choose>	  
 	</select>
 
-
+  <update id="reservationReviewUpdate" parameterType="int">
+  	UPDATE RESERVATION
+	SET REVIEW_YN = 'Y'
+	WHERE RSV_SEQ = #{value}
+  </update>
 	
 	
 	

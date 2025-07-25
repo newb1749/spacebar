@@ -14,7 +14,7 @@
     body {
       padding-top: 100px;
       font-family: 'Noto Sans KR', sans-serif;
-      background: #f5f5f5;
+      background: #FFFFFF;
       font-size: 0.9rem;
       line-height: 1.2;
     }

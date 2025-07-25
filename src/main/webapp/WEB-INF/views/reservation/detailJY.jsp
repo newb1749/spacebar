@@ -12,17 +12,16 @@
   <title>예약 내용 확인</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
+<<<<<<< HEAD
   <style>
-  
-
- .site-nav .container {
+.site-nav .container {
   max-width: none !important;   /* 부트스트랩 max-width 제거 */
   width:68% !important;        /* 화면 너비의 80% */
   margin: 0 auto !important;    /* 가운데 정렬 */
   padding: 0 !important;
 }
 
-/* ─── 기존 CSS ─── *//*
+/* ─── 기존 CSS ─── */
 body {
   padding-top: 100px;
   background-color: #f8f9fa;
@@ -75,10 +74,11 @@ h3 {
 .container {
   max-width: 700px;
   margin: 0 auto;
-} */
-  --> 
-
- body {
+}
+  </style>
+=======
+<style>
+  body {
     padding-top: 30px;
     background-color: #f8f9fa;
     font-family: 'Noto Sans KR', sans-serif;
@@ -94,9 +94,9 @@ h3 {
   }
 
   .table {
-  border-collapse: collapse; 
+  border-collapse: collapse; /* 경계선 붙이기 */
   border-radius: 12px;
-  overflow: hidden; 
+  overflow: hidden; /* 둥근 모서리 깨짐 방지 */
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   background-color: #fff;
   max-width: 1140px;
@@ -108,7 +108,7 @@ h3 {
   .table td {
     vertical-align: middle !important;
     text-align: center;
-    font-size: 1.3rem;
+    font-size: 1.3rem; /* 👈 글씨 크기 키움 */
     color: #495057;
     padding: 0.75rem;
   }
@@ -128,7 +128,7 @@ h3 {
 	  max-width: 700px;
 	  padding: 12px;
 	  display: block;
-	  margin: 30px auto 30px; 
+	  margin: 30px auto 30px; /* ✅ 상단 여백 60px 추가 */
 	  transition: background-color 0.3s ease;
 	}
 
@@ -144,7 +144,7 @@ h3 {
   font-size: 20px;
   margin-bottom: 8px;
   display: block;
-  color: black;
+  color: black; /* 글자색 검정 */
 }
 
 .dropdown-selected {
@@ -184,22 +184,26 @@ h3 {
 .dropdown-list li {
   padding: 10px 12px;
   cursor: pointer;
-  color: black;
+  color: black; /* 글자색 검정 */
 }
 
 .dropdown-list li:hover {
   background-color: #fe7743;
   color: white;
-  color: black
+  color: black; /* 글자색 검정 */
 }
 
- 옵션에 마우스 올려도 파란색 기본 하이라이트 없게
+/* 옵션에 마우스 올려도 파란색 기본 하이라이트 없게
 .coupon-box select option:hover,
 .coupon-box select option:focus {
   background-color: #ffe8d6 !important;
   color: #fe7743 !important;
   border-radius: 8px !important;
-}</style>
+} */
+
+</style>
+
+>>>>>>> develop/kjy
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(document).ready(function() {
@@ -305,7 +309,7 @@ h3 {
       </c:otherwise>
     </c:choose>
   </ul>
-  <!-- <input type="hidden" name="couponSeq" id="couponSeq" value="" /> -->
+  <input type="hidden" name="couponSeq" id="couponSeq" value="" />
 </div>
 
 <script>
@@ -318,8 +322,7 @@ h3 {
     $(".dropdown-list li").click(function() {
       var text = $(this).text();
       var value = $(this).data("value") || "";
-      /* $("#couponSeq").val(value); */
-      $("#appliedCouponSeq").val(value);
+      $("#couponSeq").val(value);
       $(".dropdown-selected").text(text);
       $(this).parent().slideUp(200);
     });

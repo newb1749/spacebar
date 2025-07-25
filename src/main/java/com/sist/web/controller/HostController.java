@@ -40,11 +40,11 @@ import com.sist.web.dao.FacilityDao;
 import com.sist.web.dao.ReviewDao;
 import com.sist.web.dao.RoomDao;
 import com.sist.web.model.Facility;
-
+import com.sist.web.model.Paging;
 import com.sist.web.model.Review;
 
 import com.sist.web.model.Reservation;
-
+import com.sist.web.model.Response;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomImage;
 import com.sist.web.model.RoomType;
@@ -102,6 +102,8 @@ public class HostController {
     @Autowired
     private RoomImgService roomImgService;
 
+	private static final int LIST_COUNT = 2; 	// 한 페이지의 게시물 수
+	private static final int PAGE_COUNT = 5;	// 페이징 수
     
 	/**
 	 * 호스트 메인 페이지로 이동
@@ -111,35 +113,62 @@ public class HostController {
 	public String hostPage(Model model, HttpServletRequest request, HttpServletResponse response) 
 	{
 	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
+	    long curPage = HttpUtil.get(request, "curPage", (long)1);
 	    
-	    // 예약정보 조회
-	    List<Reservation> reservations = reservationService.reservationsListByHostId(sessionUserId);
-	    
-	    for (Reservation rsv : reservations) 
-	    {
-	        int roomTypeSeq = rsv.getRoomTypeSeq();
-	        
-	        //숙소 제목
-	        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
-	        if (roomType != null) 
-	        {
-	            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
 
-	        }
-	        
-	        // 이미지
-	        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
-	        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
-	        {
-	            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
-	            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
-	        }
+	    // 호스트 ID로 조회한 판매내역 리스트
+	    List<Reservation> reservations = null;
+	    Reservation search = new Reservation();
+	    Paging paging = null;
+		int totalCount = 0;
+
+		search.setHostId(sessionUserId);
+		
+		totalCount = reservationService.reservationsListByHostIdCount(search);
+  
+	    if(totalCount > 0)
+	    {
+	    	paging = new Paging("/host/main",totalCount,LIST_COUNT, PAGE_COUNT, curPage,"curPage");
+	    	
+	    	search.setStartRow((long)paging.getStartRow());
+	    	search.setEndRow((long)paging.getEndRow());
+	    	
+	    	reservations = reservationService.reservationsListByHostId(search);
+	    		    	
 	    }
+	    
+	    if(reservations != null) 
+	    {
+		    for (Reservation rsv : reservations) 
+		    {
+		        int roomTypeSeq = rsv.getRoomTypeSeq();
+		        
+		        //숙소 제목
+		        RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
+		        if (roomType != null) 
+		        {
+		            rsv.setRoomTypeTitle(roomType.getRoomTypeTitle());
+	
+		        }
+		        
+		        // 이미지
+		        List<RoomTypeImage> roomTypeImgs = roomImgService.getRoomTypeImgDetail(roomTypeSeq);
+		        if (roomTypeImgs != null && !roomTypeImgs.isEmpty()) 
+		        {
+		            RoomTypeImage roomTypeImg = roomTypeImgs.get(0);
+		            rsv.setRoomTypeImgName(roomTypeImg.getRoomTypeImgName());
+		        }
+		    }
+	    }
+	    
 	    model.addAttribute("reservations", reservations);
+	    model.addAttribute("totalCount", totalCount);
+    	model.addAttribute("curPage", curPage);
+	    model.addAttribute("paging", paging);
+	    
 	    return "/host/main";
 	}
 
-	
 	// **************************************************************************************
 	// *********************************** 숙소/공간 관리 ***************************************
 	// **************************************************************************************
@@ -241,6 +270,7 @@ public class HostController {
 	    room.setCancelPolicy(HttpUtil.get(request, "cancelPolicy", ""));
 	    room.setMinTimes(HttpUtil.get(request, "minTimes", (short) 0));
 	    room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
+
 	    
 	    // 편의시설
 	    String[] facilityNosStr =  request.getParameterValues("facilitySeqs");
@@ -451,9 +481,8 @@ public class HostController {
 	}
 
 
-
 	/**
-	 * 기간(누적, 연간, 월간, 주간) 별로 총 판매 건수, 총 판매 금액, 평균 리뷰 평점 조회 d
+	 * 기간(누적, 연간, 월간, 주간) 별로 총 판매 건수, 총 판매 금액, 평균 리뷰 평점 조회 
 	 * @param period
 	 * @param session
 	 * @return
@@ -471,14 +500,14 @@ public class HostController {
 	    	result.put("avgRating", 0.0);
 	    }	    
 
-	    logger.debug("📊 [host/statistics 요청]");
+	    logger.debug("[host/statistics 요청]");
 	    logger.debug(" - hostId       : {}", hostId);
 	    logger.debug(" - period        : {}", period);
 	    logger.debug(" - periodDetail  : {}", periodDetail);
 	    
 	    Map<String, Object> result = new HashMap<>();
-	    result.put("totalSales", hostService.getTotalSalesCount(hostId, period));
-	    result.put("totalAmount", hostService.getTotalSalesAmount(hostId, period));
+	    result.put("totalSales", hostService.getTotalSalesCount(hostId, period, periodDetail));
+	    result.put("totalAmount", hostService.getTotalSalesAmount(hostId, period, periodDetail));
 	    result.put("avgRating", hostService.getAvgRatingByHostWithPeriod(hostId, period, periodDetail));
 	    
 	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
@@ -487,35 +516,29 @@ public class HostController {
 	    return result;
 	}
 	
+	
 	/**
-	 * 날짜(연간, 월간, 주간)로 3개 검색
-	 * @param period
-	 * @param periodDetail
+	 * 정해진 단위(월간, 주간)로 선택한 기간 동안 총 판매 건수, 총 판매 금액, 평균 리뷰 점수를 그래프로 보여주기
+	 * @param startDate
+	 * @param endDate
+	 * @param groupBy
 	 * @param request
 	 * @return
 	 */
-	/*
-	@GetMapping("/host/statistics")
+	@GetMapping("/host/statisticsChart")
 	@ResponseBody
-	public Map<String, Object> getStatsByPeriod(@RequestParam String period,
-	                                            @RequestParam(required = false) String periodDetail,
-	                                            HttpServletRequest request) {
-
+	public List<Map<String, Object>> getStatisticsChart(
+	    @RequestParam String startDate,
+	    @RequestParam String endDate,
+	    @RequestParam String groupBy,
+	    HttpServletRequest request
+	) 
+	{
 	    String hostId = (String) SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
-	    logger.debug("[호스트 통계 요청] hostId={}, period={}, periodDetail={}", hostId, period, periodDetail);
-
-	    Map<String, Object> result = hostService.getStatsByPeriod(hostId, period, periodDetail);
-	    logger.debug("[호스트 통계 응답] result={}", result);
-
-	    return result;
+	    return hostService.getStatsForChart(hostId, startDate, endDate, groupBy);
 	}
-	*/
 
 
-	
-	
-	
-	
 	
 	
 	

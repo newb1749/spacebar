@@ -14,7 +14,7 @@
 <title>공간대여 리스트</title>
 <style>
 body {
-  padding-top: 100px;
+  padding-top: 20px;
 }
 
 .wish-heart {

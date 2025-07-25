@@ -109,10 +109,29 @@
 				<div class="card mb-4">
 				    <div class="card-header"><i class="fa-solid fa-location-dot"></i>위치 및 운영 정책</div>
 				    <div class="card-body">
-				        <div class="mb-3">
-				            <label for="roomAddr" class="form-label">주소</label>
-				            <input type="text" class="form-control" id="roomAddr" name="roomAddr" value="${room.roomAddr}" required>
-				        </div>
+					<div class="mb-3">
+					    <label for="roomAddr" class="form-label">주소</label>
+					
+					    <!-- 주소 입력 -->
+					    <input type="text" class="form-control mb-2" id="roomAddr" name="roomAddr" value="${room.roomAddr}" required />
+					
+					    <!-- 위도/경도 hidden input -->
+					    <input type="hidden" id="latitude" name="latitude" value="${room.latitude}" />
+					    <input type="hidden" id="longitude" name="longitude" value="${room.longitude}" />
+					
+					    <!-- 버튼 및 출력 -->
+					    <div class="d-flex align-items-center gap-2 mt-2">
+					        <button type="button" class="btn btn-outline-primary btn-sm" id="btnConvertLatLng">
+					            주소 → 위도/경도 변환
+					        </button>
+					        <span class="form-text text-success" id="latLngResult">
+					            <c:if test="${not empty room.latitude}">
+					                현재 위도: ${room.latitude}, 경도: ${room.longitude}
+					            </c:if>
+					        </span>
+					    </div>
+					</div>
+
 				        <div class="mb-3">
 				            <label for="region" class="form-label">지역</label>
 							<select class="form-select" id="region" name="region" required>
@@ -546,6 +565,34 @@ $(document).ready(function() {
 }); 
 </script>
 
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${initParam.KAKAO_MAP_KEY}&libraries=services"></script>
+
+<script>
+$('#btnConvertLatLng').on('click', function () {
+    const address = $('#roomAddr').val().trim();
+    if (address === '') {
+        alert('주소를 입력해주세요.');
+        $('#roomAddr').focus();
+        return;
+    }
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function (result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            const lat = result[0].y;
+            const lng = result[0].x;
+
+            $('#latitude').val(lat);
+            $('#longitude').val(lng);
+
+            $('#latLngResult').text('위도: ' + lat + ', 경도: ' + lng);
+        } else {
+            alert('주소 변환에 실패했습니다.');
+        }
+    });
+});
+</script>
 
 
 </body>

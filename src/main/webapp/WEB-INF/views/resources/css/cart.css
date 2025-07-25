@@ -7,28 +7,33 @@
     }
 
     /* 카드 레이아웃 */
-    .cart-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 12px 0;
+    .container {
+    max-width: 1200px;
+    margin: 0 auto;
 
     }
     .cart-container h2 {
       margin-bottom: 12px;
     }
     .cart-card {
-     position: relative;      /* 이 한 줄만 추가해 주시면 됩니다! */
+      position: relative;      /* 이 한 줄만 추가해 주시면 됩니다! */
       display: flex;
-  align-items: stretch;    /* 자식 요소 높이를 카드 높이에 맞춤 */
-  height: 130px;           /* 원하시는 고정 높이로 조정하세요 */
-  padding-left: 32px;
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	  align-items: stretch;    /* 자식 요소 높이를 카드 높이에 맞춤 */
+	  height: 130px;           /* 원하시는 고정 높이로 조정하세요 */
+	  padding-left: 32px;
+	  background: #fff;
+	  border-radius: 8px;
+	  overflow: hidden;
+	  margin-bottom: 10px;
+	  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	  margin-left: 10px;
+	  margin-right: 10px;
+	  border: 1px solid #ccc;
     }
-
+	#cart {
+	  width: 1000px;
+	  margin: 0 auto;
+	}
     /* 체크박스 */
     .cart-checkbox {
       position: absolute;
@@ -44,7 +49,7 @@
     .cart-img {
        width: 200px;
   flex-shrink: 0;
-  height: 100%;  
+  height: 85%;  
     }
     .cart-img img {
       width: 100%;
@@ -89,6 +94,7 @@
       display: flex; justify-content: space-between; align-items:center;
       background:#fff; padding:8px 12px; border-radius:8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
     }
     .cart-summary .total-amt { font-weight:bold; color:#007B5E; }
     .btn-buy {
