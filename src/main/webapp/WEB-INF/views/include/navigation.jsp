@@ -10,9 +10,15 @@
 }
 
 /* ===== 기본 ===== */
+<<<<<<< HEAD
+.logo{display:flex;align-items:center;line-height:1; margin-left: 9px;}
+.logo-img{height:59px;max-width:299px;display:block;}
+@media (max-width:1000px){.logo-img{height:52px;}}
+=======
 .logo{display:flex;align-items:center;line-height:1;}
 .logo-img{height:48px;max-width:220px;display:block;}
 @media (max-width:768px){.logo-img{height:36px;}}
+>>>>>>> develop/kjy
 
 .visually-hidden{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;
@@ -23,11 +29,19 @@
 .site-nav{
   position:fixed;top:0;left:0;right:0;z-index:9999;
   margin:0 !important;padding:0 !important;
+<<<<<<< HEAD
+  
+=======
+>>>>>>> develop/kjy
 }
 .site-nav .menu-bg-wrap{
   background:transparent !important;box-shadow:none !important;
   margin:0 !important;padding:0 !important;
   min-height:var(--nav-h);display:flex;align-items:center;
+<<<<<<< HEAD
+  border: 1px solid #005b5c;
+=======
+>>>>>>> develop/kjy
 }
 .site-nav.nav-solid .menu-bg-wrap{
   background:#fff !important;box-shadow:0 2px 10px rgba(0,0,0,.06);
