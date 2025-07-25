@@ -142,7 +142,7 @@ public class ReservationControllerJY {
                 reservation.getRsvCheckOutDt());
 
         reservation.setTotalAmt(totalAmt);
-        reservation.setFinalAmt(totalAmt);
+        reservationService.calculateFinalAmount(reservation);  
 
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         // 쿠폰 및 마일리지 정보 조회
@@ -423,7 +423,7 @@ public class ReservationControllerJY {
 	        }
     	
         }
-        
+        logger.debug("Calculated totalAmount = " + totalAmount); 
         return totalAmount;
     }
 

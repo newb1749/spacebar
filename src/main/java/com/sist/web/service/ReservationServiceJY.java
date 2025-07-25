@@ -163,6 +163,7 @@ public class ReservationServiceJY
         int discountAmount = 0;
 
         Integer couponSeq = reservation.getCouponSeq();
+        System.out.println("---------------- couponSeq = " + reservation.getCouponSeq() + "-----------------");
         if (couponSeq != null) {
             Coupon coupon = couponService.getCouponBySeq(couponSeq);
             
@@ -201,6 +202,10 @@ public class ReservationServiceJY
         }
 
         int finalAmount = baseAmount - discountAmount;
+        reservation.setFinalAmt(Math.max(finalAmount, 0));
+        
+
+        System.out.println("33333333333 Math.max(finalAmount, 0) : [" + Math.max(finalAmount, 0) + "] 3333333333");
         return Math.max(finalAmount, 0);
     }
 
