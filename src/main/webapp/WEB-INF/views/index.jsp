@@ -303,7 +303,7 @@
     </c:forEach>
   </div>
   <div class="hero-title">
-    <div class="hero-sub"> Find, book, and share inspiring rooms—instantly.</div>
+    <div class="hero-sub"> press to pause and find your perfect space.</div>
     <div class="hero-main">
       <span class="static"></span><span id="typewriter"></span><span class="cursor">_</span>
     </div>

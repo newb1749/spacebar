@@ -29,7 +29,6 @@
   background:transparent !important;box-shadow:none !important;
   margin:0 !important;padding:0 !important;
   min-height:var(--nav-h);display:flex;align-items:center;
-  border: 1px solid #005b5c;
 }
 .site-nav.nav-solid .menu-bg-wrap{
   background:#fff !important;box-shadow:0 2px 10px rgba(0,0,0,.06);
