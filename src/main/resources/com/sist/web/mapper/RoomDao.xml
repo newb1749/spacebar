@@ -599,5 +599,60 @@
             ROOM_SEQ DESC
     </select>
     
-     
+    <!-- 지도에서 이용 -->
+   <select id="findRoomsWithoutCoordinates" resultType="map">
+	    SELECT
+	        ROOM_SEQ,
+	        ROOM_ADDR
+	    FROM
+	        ROOM
+	    WHERE
+	        LATITUDE = 0 OR LATITUDE IS NULL OR LONGITUDE = 0 OR LONGITUDE IS NULL
+	</select>
+
+	<update id="updateRoomCoordinates">
+	    UPDATE ROOM
+	    SET
+	        LATITUDE = #{latitude},
+	        LONGITUDE = #{longitude}
+	    WHERE
+	        ROOM_SEQ = #{roomSeq}
+	</update>
+	
+	<!-- 위치 기반 룸 대표이미지 리스트 -->
+	<select id="selectAllRoomsWithMainImage" resultMap="roomResultMap">
+	    SELECT
+	        A.ROOM_SEQ,
+	        A.ROOM_CAT_SEQ,
+	        A.HOST_ID,
+	        A.ROOM_ADDR,
+	        A.LATITUDE,
+	        A.LONGITUDE,
+	        A.REGION,
+	        A.AUTO_CONFIRM_YN,
+	        A.ROOM_TITLE,
+	        A.ROOM_DESC,
+	        A.CANCEL_POLICY,
+	        A.MIN_TIMES,
+	        A.MAX_TIMES,
+	        A.AVERAGE_RATING,
+	        A.REVIEW_COUNT,
+	        TO_CHAR(A.REG_DT, 'YYYY.MM.DD') AS REG_DT,
+	        TO_CHAR(A.UPDATE_DT, 'YYYY.MM.DD') AS UPDATE_DT,
+	        A.SALE_YN,
+	        (SELECT ROOM_IMG_NAME 
+	           FROM ROOM_IMAGE 
+	          WHERE ROOM_SEQ = A.ROOM_SEQ 
+	            AND IMG_TYPE = 'main' 
+	            AND ROWNUM = 1) AS ROOM_IMG_NAME
+	    FROM ROOM A
+	    WHERE A.LATITUDE IS NOT NULL 
+	      AND A.LATITUDE != 0
+	      AND A.LONGITUDE IS NOT NULL 
+	      AND A.LONGITUDE != 0
+	      AND A.SALE_YN = 'Y'
+	    ORDER BY A.ROOM_SEQ DESC
+	</select>
+	
+	     
 </mapper>

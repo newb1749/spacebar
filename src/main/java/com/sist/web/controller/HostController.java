@@ -115,12 +115,13 @@ public class HostController {
 	    String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 	    long curPage = HttpUtil.get(request, "curPage", (long)1);
 	    
+
 	    // 호스트 ID로 조회한 판매내역 리스트
 	    List<Reservation> reservations = null;
 	    Reservation search = new Reservation();
 	    Paging paging = null;
 		int totalCount = 0;
-	    
+
 		search.setHostId(sessionUserId);
 		
 		totalCount = reservationService.reservationsListByHostIdCount(search);
@@ -269,6 +270,7 @@ public class HostController {
 	    room.setCancelPolicy(HttpUtil.get(request, "cancelPolicy", ""));
 	    room.setMinTimes(HttpUtil.get(request, "minTimes", (short) 0));
 	    room.setMaxTimes(HttpUtil.get(request, "maxTimes", (short) 0));
+
 	    
 	    // 편의시설
 	    String[] facilityNosStr =  request.getParameterValues("facilitySeqs");
@@ -537,8 +539,6 @@ public class HostController {
 	}
 
 
-	
-	
 	
 	
 	
