@@ -12,8 +12,9 @@
   <title>예약 내용 확인</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" />
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css" />
-<<<<<<< HEAD
-  <style>
+
+<!--   
+<style>
 .site-nav .container {
   max-width: none !important;   /* 부트스트랩 max-width 제거 */
   width:68% !important;        /* 화면 너비의 80% */
@@ -75,8 +76,7 @@ h3 {
   max-width: 700px;
   margin: 0 auto;
 }
-  </style>
-=======
+  </style> -->
 <style>
   body {
     padding-top: 30px;
@@ -203,52 +203,84 @@ h3 {
 
 </style>
 
->>>>>>> develop/kjy
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    $(document).ready(function() {
-      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("SESSION_USER_ID") : "" %>';
-      if (!sessionUserId) {
-        alert("로그인이 필요합니다.");
-        window.location.href = '${pageContext.request.contextPath}/index.jsp';
-      }
-
-      const originalFinalAmt = Number("${reservation.finalAmt}");
-
-      // 쿠폰 선택 시 금액 차감
-      $("#couponSelect").on("change", function () {
-        const selected = $(this).find("option:selected");
-        const discount = Number(selected.data("discount")) || 0;
-        const type = selected.data("type");
-        let discountedAmt = originalFinalAmt;
-
-        if (type === 'rate') {
-          discountedAmt = originalFinalAmt - Math.floor(originalFinalAmt * discount / 100);
-        } else if (type === 'amount') {
-          discountedAmt = originalFinalAmt - discount;
-        }
-
-        if (discountedAmt < 0) discountedAmt = 0;
-
-        $("#discountedAmt").text(discountedAmt.toLocaleString() + "원");
-        $("#appliedCouponSeq").val(selected.val());
-        $("#finalAmt").val(discountedAmt);
-      });
+$(function() {
+    const originalFinalAmt = Number("${reservation.finalAmt}");
+    
+    // 드롭다운 클릭 이벤트
+    $(".dropdown-selected").click(function() {
+        $(".dropdown-list").not($(this).next()).slideUp(200);
+        $(this).next(".dropdown-list").slideToggle(200);
     });
 
-    function confirmPayment() {
-      const finalAmt = Number($("#finalAmt").val()) || 0;
-      const mileage = Number("${userMileage}") || 0;
-
-      if (mileage < finalAmt) {
-        if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
-          location.href = "${pageContext.request.contextPath}/reservation/chargeMileage";
+    // 쿠폰 선택 이벤트 (수정된 부분)
+    $(".dropdown-list li").click(function() {
+        var text = $(this).text();
+        var value = $(this).data("value") || "";
+        var discount = Number($(this).data("discount")) || 0;
+        var type = $(this).data("type") || "";
+        
+        // 쿠폰 값 설정
+        $("#couponSeq").val(value);
+        $(".dropdown-selected").text(text);
+        $(this).parent().slideUp(200);
+        
+        // 할인 적용 계산
+        let discountedAmt = originalFinalAmt;
+        if (discount > 0) {
+            if (type === 'rate') {
+                discountedAmt = originalFinalAmt - Math.floor(originalFinalAmt * discount / 100);
+            } else if (type === 'amount') {
+                discountedAmt = originalFinalAmt - discount;
+            }
         }
-      } else {
-        document.getElementById("paymentForm").submit();
-      }
+        
+        if (discountedAmt < 0) discountedAmt = 0;
+        
+        // 화면에 할인된 금액 표시
+        $("#discountedAmt").text(discountedAmt.toLocaleString() + "원");
+        $("#finalAmt").val(discountedAmt);
+        
+        console.log("쿠폰 적용:", {
+            couponSeq: value,
+            discount: discount,
+            type: type,
+            originalAmt: originalFinalAmt,
+            discountedAmt: discountedAmt
+        });
+    });
+
+    // 외부 클릭 시 드롭다운 닫기
+    $(document).click(function(e) {
+        if (!$(e.target).closest(".coupon-dropdown").length) {
+            $(".dropdown-list").slideUp(200);
+        }
+    });
+});
+
+function confirmPayment() {
+    const finalAmt = Number($("#finalAmt").val()) || 0;
+    const mileage = Number("${userMileage}") || 0;
+    
+    console.log("결제 확인:", {finalAmt: finalAmt, mileage: mileage});
+
+    if (mileage < finalAmt) {
+        if (confirm("보유 마일리지가 부족합니다. 마일리지를 충전하시겠습니까?")) {
+            // 세션에 예약 정보 저장하고 충전 페이지로 이동
+            $.post("${pageContext.request.contextPath}/reservation/saveSession", 
+                $("#paymentForm").serialize())
+                .done(function() {
+                    location.href = "${pageContext.request.contextPath}/reservation/chargeMileage";
+                });
+        }
+    } else {
+        // 마일리지 결제 처리
+        $("#paymentForm").attr("action", "${pageContext.request.contextPath}/payment/mileagePay");
+        $("#paymentForm").submit();
     }
-  </script>
+}
+</script>
 </head>
 <body>
 
@@ -297,10 +329,20 @@ h3 {
   <ul class="dropdown-list" style="display:none;">
     <c:choose>
       <c:when test="${not empty couponList}">
-        <li data-value="">-- 쿠폰 선택 안함 --</li>
+        <li data-value="" data-discount="0" data-type="">-- 쿠폰 선택 안함 --</li>
         <c:forEach var="coupon" items="${couponList}">
-          <li data-value="${coupon.cpnSeq}">
+          <li data-value="${coupon.cpnSeq}" 
+              data-discount="${coupon.discountRate > 0 ? coupon.discountRate : coupon.discountAmt}" 
+              data-type="${coupon.discountRate > 0 ? 'rate' : 'amount'}">
             ${coupon.cpnName} - ${coupon.cpnDesc}
+            <c:choose>
+              <c:when test="${coupon.discountRate > 0}">
+                (${coupon.discountRate}% 할인)
+              </c:when>
+              <c:otherwise>
+                (<fmt:formatNumber value="${coupon.discountAmt}" type="number"/>원 할인)
+              </c:otherwise>
+            </c:choose>
           </li>
         </c:forEach>
       </c:when>
@@ -312,31 +354,8 @@ h3 {
   <input type="hidden" name="couponSeq" id="couponSeq" value="" />
 </div>
 
-<script>
-  $(function() {
-    $(".dropdown-selected").click(function() {
-      $(".dropdown-list").not($(this).next()).slideUp(200);
-      $(this).next(".dropdown-list").slideToggle(200);
-    });
 
-    $(".dropdown-list li").click(function() {
-      var text = $(this).text();
-      var value = $(this).data("value") || "";
-      $("#couponSeq").val(value);
-      $(".dropdown-selected").text(text);
-      $(this).parent().slideUp(200);
-    });
-
-    $(document).click(function(e) {
-      if (!$(e.target).closest(".coupon-dropdown").length) {
-        $(".dropdown-list").slideUp(200);
-      }
-    });
-  });
-</script>
-
-
-  <form id="paymentForm" action="${pageContext.request.contextPath}/payment/chargeMileage" method="post">
+  <form id="paymentForm" action="${pageContext.request.contextPath}/payment/mileagePay" method="post">
     <input type="hidden" name="roomTypeSeq" value="${reservation.roomTypeSeq}" />
     <input type="hidden" name="rsvCheckInDt" value="${reservation.rsvCheckInDt}" />
     <input type="hidden" name="rsvCheckOutDt" value="${reservation.rsvCheckOutDt}" />
@@ -344,11 +363,12 @@ h3 {
     <input type="hidden" name="rsvCheckOutTime" value="${reservation.rsvCheckOutTime}" />
     <input type="hidden" name="numGuests" value="${reservation.numGuests}" />
     <input type="hidden" name="guestMsg" value="${reservation.guestMsg}" />
+    <input type="hidden" name="totalAmt" value="${reservation.totalAmt}" />
     <input type="hidden" id="finalAmt" name="finalAmt" value="${reservation.finalAmt}" />
     <input type="hidden" id="appliedCouponSeq" name="couponSeq" value="" />
 
     <button type="button" class="btn btn-primary" onclick="confirmPayment()">결제하기</button>
-  </form>
+</form>
 </div>
 
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
