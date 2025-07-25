@@ -42,6 +42,7 @@ public class Reservation implements Serializable{
 
 		private long startRow;
 		private long endRow;
+		private int roomSeq;
 	    
 	    public Coupon getCoupon() {
 	        return coupon;
@@ -103,11 +104,16 @@ public class Reservation implements Serializable{
 		    roomTypeTitle = "";
 		    roomTypeImgName = "";
 			startRow = 0;
-			endRow =0;
+			endRow = 0;
+			roomSeq = 0;
 	    }
-	    
-	    
 
+		public int getRoomSeq() {
+			return roomSeq;
+		}
+		public void setRoomSeq(int roomSeq) {
+			this.roomSeq = roomSeq;
+		}
 		public long getStartRow() {
 			return startRow;
 		}

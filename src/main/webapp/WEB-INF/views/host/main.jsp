@@ -16,7 +16,7 @@
     .table-borderless {
         border: none !important;
     }
-    /* 이미지 사이즈 조절 */
+    /* 이미지 사이즈 조절 */나
     .img {
        width: 350px;
   	   flex-shrink: 0;
@@ -144,7 +144,7 @@
 									      <td>
 									        <c:choose>
 									          <c:when test="${res.rsvPaymentStat eq 'PAID'}">결제완료</c:when>
-									          <c:when test="${res.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
+									          <c:when test="${res.rsvPaymentStat eq 'UNPAID' or res.rsvPaymentStat eq '취소'}">미결제</c:when>
 									          <c:when test="${res.rsvPaymentStat eq 'CANCELED'}">결제취소</c:when>
 									          <c:otherwise>-</c:otherwise>
 									        </c:choose>
@@ -154,9 +154,9 @@
 									      <th>예약상태</th>
 									      <td>
 									        <c:choose>
+									          <c:when test="${empty res.rsvStat or res.rsvStat eq 'PENDING' or res.rsvStat eq '취소'}">결제대기</c:when>	
 									          <c:when test="${res.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
-									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>
-									          <c:when test="${res.rsvStat eq 'PENDING'}">결제대기</c:when>
+									          <c:when test="${res.rsvStat eq 'CANCELED'}">예약취소</c:when>									          
 									          <c:otherwise>-</c:otherwise>
 									        </c:choose>
 									      </td>
@@ -188,7 +188,7 @@
 					        <!-- 이전 블럭 -->
 					        <c:if test="${paging.prevBlockPage gt 0}">
 					          <li class="page-item">
-					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">이전블럭</a>
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.prevBlockPage})">&lt;</a>
 					          </li>
 					        </c:if>
 					
@@ -211,7 +211,7 @@
 					        <!-- 다음 블럭 -->
 					        <c:if test="${paging.nextBlockPage gt 0}">
 					          <li class="page-item">
-					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">다음블럭</a>
+					            <a class="page-link" href="javascript:void(0)" onclick="fn_list(${paging.nextBlockPage})">&gt;</a>
 					          </li>
 					        </c:if>
 					      </c:if>
@@ -259,33 +259,32 @@
     
 <script>
     	// [추가] rooms 콘텐츠가 로딩되었는지 확인하는 변수
+// 첫 번째 코드의 window.onload 수정 제안
 window.onload = function () {
-
-  initWeekCalendar();
   const lastTab = localStorage.getItem("lastHostTab") || "dashboard";
-  
   showContent(lastTab);
 
   if (lastTab === "dashboard") {
     console.log("📊 대시보드 진입 - 초기 세팅 시작");
 
+    // DOM 렌더링 이후 실행
+    setTimeout(() => {
+      initWeekCalendar();
 
-    // ✅ 바로 아래가 문제였던 부분 (start, end 가져오는 부분)
-    const start = document.getElementById("weekCalendar_start")?.value;
-    const end = document.getElementById("weekCalendar_end")?.value;
+      const start = document.getElementById("weekCalendar_start")?.value;
+      const end = document.getElementById("weekCalendar_end")?.value;
 
-    if (start && end) {
-      const weekDetail = `${start}~${end}`;
-      console.log("📦 초기 주간 periodDetail:", weekDetail);
-      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
-      document.querySelectorAll(".btn-period")[0].classList.add("active"); // 주간 버튼
-      
-      loadStats("week", weekDetail); // ✅ 이렇게 정확히 넘겨야 함
-    } else {
-      console.warn("❌ 주간 날짜가 비어있습니다.");
-    }
+      if (start && end) {
+        const weekDetail = `${start}~${end}`;
+        console.log("📦 초기 주간 periodDetail:", weekDetail);
+        loadStats("week", weekDetail);
+      } else {
+        console.warn("❌ 주간 날짜가 비어있습니다.");
+      }
+    }, 100); // 100~300ms 사이에서 조절 가능
   }
 };
+
 
 
     	let isRoomsContentLoaded = false;
@@ -388,7 +387,7 @@ window.onload = function () {
 	      console.log("📥 loadStats 호출됨, period:", period);
 			
 	      currentPeriod = period;  
-	      
+	      // 버튼 클릭 표시
 	      document.querySelectorAll(".btn-period").forEach(btn => btn.classList.remove("active"));
 	      const index = { week: 0, month: 1, year: 2, total: 3 }[period];
 	      if (typeof index !== 'undefined') {
@@ -525,7 +524,7 @@ window.onload = function () {
   height: 120px;
 }
 .main-content {
-  padding-top: 20px; /* .site-nav 높이만큼 여백 줌 */
+  padding-top: 68px; /* .site-nav 높이만큼 여백 줌 */
 }
 
 /**
@@ -535,6 +534,7 @@ window.onload = function () {
   margin-top: 20px;
   text-align: center;
 }
+
 
 .btn-group {
   display: flex;
@@ -594,4 +594,3 @@ window.onload = function () {
 
 
 </style>
-

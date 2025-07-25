@@ -281,7 +281,7 @@ function fn_emailCheck(value)
             </form>
         </div>
     </div>
-</div>
+</div><br/>
 <%@ include file="/WEB-INF/views/include/footer.jsp"%>
 <script>
 document.getElementById('profImgExt').addEventListener('change', function(event) 

@@ -12,7 +12,7 @@
 	body {
 	  padding-top: 100px;
 	  font-family: 'Noto Sans KR', sans-serif;
-	  background-color: #f8f9fa;
+	  background-color: #FFFFFF;
 	}
 	.card {
 	  max-width: 500px;
