@@ -31,7 +31,7 @@
 	  border: 1px solid #ccc;
     }
 	#cart {
-	  width: 800px;
+	  width: 1000px;
 	  margin: 0 auto;
 	}
     /* 체크박스 */
@@ -94,6 +94,7 @@
       display: flex; justify-content: space-between; align-items:center;
       background:#fff; padding:8px 12px; border-radius:8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
     }
     .cart-summary .total-amt { font-weight:bold; color:#007B5E; }
     .btn-buy {

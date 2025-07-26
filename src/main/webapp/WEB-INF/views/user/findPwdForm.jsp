@@ -59,7 +59,7 @@ function fn_submit()
 
     if (confirm("비밀번호를 찾으시겠습니까?")) 
     {
-		$("#findPwdForm").attr("action","searchResultPwd_mj").submit();
+		$("#findPwdForm").attr("action","searchResultPwd").submit();
     }
 }
 
@@ -73,9 +73,9 @@ function fn_submit()
         <div class="col-xl-10 col-lg-12 col-md-9">
             <div class="card o-hidden border-0 shadow-lg my-5">
                 <div class="card-body p-0">
-                    <div class="row d-flex align-items-center justify-content-center" style="min-height: 400px;">
+                    
                         <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
-                        <div class="col-lg-6">
+                        
                             <div class="p-5">
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-2">비밀번호 찾기</h1>
@@ -84,24 +84,24 @@ function fn_submit()
                                 <form id="findPwdForm" name="findPwdForm"  method="post">
                                 	<div class="form-group">
                                         <input type="text" class="form-control form-control-user" id="userId" name="userId" placeholder="아이디 입력">
-                                    </div>
+                                    </div><br/>
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" id="userName" name="userName" placeholder="이름 입력">
-                                    </div>
+                                    </div><br/>
                                     <div class="form-group">
                                         <input type="text" class="form-control form-control-user" id="phone" name="phone" placeholder="전화번호 입력 ex)010-0000-0000">
-                                    </div>
+                                    </div><br/>
                                     <a href="javascript:void(0)" onclick="fn_submit(); return false;" class="btn btn-primary btn-user btn-block">비밀번호 찾기</a>
                                 </form>
                                 <hr>
                                 <div class="text-center">
-                                    <a class="small" href="/user/findIdForm_mj">아이디 찾기</a>
+                                    <a class="small" href="/user/findIdForm">아이디 찾기</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small" href="/user/regForm_mj">회원가입</a>
+                                    <a class="small" href="/user/regForm">회원가입</a>
                                 </div>
                                 <div class="text-center">
-                                    <a class="small" href="/index">로그인</a>
+                                    <a class="small" href="/user/loginForm">로그인</a>
                                 </div>
                             </div>
                         </div>

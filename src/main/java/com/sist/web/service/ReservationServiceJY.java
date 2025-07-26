@@ -242,14 +242,14 @@ public class ReservationServiceJY
     }
 
 
-    //호스트 ID로 예약 리스트 조회(호스트페이지 - 판매 내역에 사용)
-    public List<Reservation> reservationsListByHostId(String hostId)
+    //호스트 ID로 조회한 판매내역 리스트
+    public List<Reservation> reservationsListByHostId(Reservation reservation)
     {
     	List<Reservation> list = null;
     	
     	try
     	{
-    		list = reservationDao.reservationsListByHostId(hostId);
+    		list = reservationDao.reservationsListByHostId(reservation);
     	}
     	catch(Exception e)
     	{
@@ -259,4 +259,20 @@ public class ReservationServiceJY
     	return list;
     }
     
+    //호스트 ID로 조회한 판매내역 총 갯수
+    public int reservationsListByHostIdCount(Reservation reservation)
+    {
+    	int count = 0; 
+    	
+    	try
+    	{
+    		count = reservationDao.reservationsListByHostIdCount(reservation);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[reservationService]reservationsListByHostIdCount Exception", e);
+    	}
+    	
+    	return count;
+    }
 }

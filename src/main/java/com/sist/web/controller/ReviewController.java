@@ -100,6 +100,8 @@ public class ReviewController {
         logger.debug("받은 데이터 - rsvSeq: {}, rating: {}, title: {}", review.getRsvSeq(), review.getRating(), review.getReviewTitle());
         logger.debug("파일 개수: {}", files != null ? files.size() : 0);
         
+        int rsvSeq = HttpUtil.get(request, "rsvSeq", 0);
+        
     	String userId = (String)SessionUtil.getSession(request.getSession(), AUTH_SESSION_NAME);
         if (userId == null || userId.isEmpty()) {
             // 비로그인 상태일 경우 로그인 페이지로 리디렉션
@@ -143,7 +145,6 @@ public class ReviewController {
     			 // model.addAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
     			 //return "redirect:/user/myPage_mj";
     			 redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
-    			 
     		}
     		else
     		{
@@ -171,7 +172,8 @@ public class ReviewController {
         else 
         {
         	redirectAttributes.addFlashAttribute("message", "리뷰가 성공적으로 등록되었습니다.");
-            return "redirect:/user/myPage";
+        	int count = reviewService.reservationReviewUpdate(rsvSeq);
+        	return "redirect:/user/myPage";
         }
     }
     
