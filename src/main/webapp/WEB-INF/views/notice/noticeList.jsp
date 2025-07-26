@@ -15,6 +15,14 @@
   <meta charset="UTF-8">
   <title>공지사항 목록</title>
   <style>
+  
+    	.site-nav .container {
+    max-width: none !important; /* 부트스트랩 max-width 제거 */
+    width: 1330px;  /* 화면 너비의 80% */
+    margin: 0 auto !important;   /* 가운데 정렬 */
+    padding: 0 !important;
+  }
+  
     .section-block {
       padding: 40px 0;
       margin-bottom: 40px;

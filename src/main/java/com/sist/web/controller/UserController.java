@@ -34,6 +34,7 @@ import com.sist.web.model.FreeBoard;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
+import com.sist.web.model.Review;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.User;
@@ -44,7 +45,7 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
@@ -59,9 +60,6 @@ public class UserController
 	
 	@Autowired
 	private UserService_mj userService;
-	
-	@Autowired
-	private RoomServiceSh roomServiceSh;
 	
 	@Autowired
 	private CouponServiceJY couponService;
@@ -92,6 +90,9 @@ public class UserController
 	
 	@Autowired
 	private FreeBoardService freeBoardService;
+	
+	@Autowired
+	private ReviewService reviewService;	
 	
 	@Value("#{env['upload.save.dir']}")
 	private String UPLOAD_SAVE_DIR;
@@ -640,14 +641,9 @@ public class UserController
 	public String myPageForm(Model model ,HttpServletRequest request, HttpServletResponse response)
 	{
 		String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-		int cpnSeq = HttpUtil.get(request, "cpnSeq", 0);
 		int roomTypeSeq = HttpUtil.get(request, "roomTypeSeq", 0);
-		int cartSeq = HttpUtil.get(request, "cartSeq", 0);
 		
 		logger.debug("sessionUserId : " + sessionUserId);
-		logger.debug("cpnSeq : " + cpnSeq);
-		logger.debug("roomTypeSeq : " + roomTypeSeq);
-		logger.debug("cartSeq : " + cartSeq);
 		
 		if(StringUtil.isEmpty(sessionUserId))
 		{
@@ -658,20 +654,16 @@ public class UserController
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
 		
-		//호스트일때 숙소/공간 정보관리
-//		if(user != null && StringUtil.equals(user.getUserType(), "H"))
-//		{
-//		    List<Room> hostRoomList = roomServiceSh.selectHostRoomList(sessionUserId);
-//		    model.addAttribute("hostRoomList", hostRoomList);
-//		}
+		//리뷰 정보
+    	List<Review> myReviews = reviewService.selectMyReviews(sessionUserId);
+    	model.addAttribute("myReviews", myReviews);
 		
 		//쿠폰 정보
 		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);		
 		model.addAttribute("couponList", couponList);
 
 		int couponCount = couponService.couponCountByUser(sessionUserId);
-		model.addAttribute("couponCount", couponCount);
-		
+		model.addAttribute("couponCount", couponCount);		
 
 		//예약 정보
         List<Reservation> reservations = reservationService.getReservationsByGuestId(sessionUserId);
@@ -687,6 +679,7 @@ public class UserController
         	if(roomType != null)
         	{
         		r.setRoomTypeTitle(roomType.getRoomTypeTitle());
+        		r.setRoomSeq(roomType.getRoomSeq()); 
         	}
         	
             try 
@@ -707,12 +700,9 @@ public class UserController
             {
                 // 필요시 로그 기록
             }
+
         }
 		model.addAttribute("reservations", reservations);
-		
-		//마일리지 조회 내역
-//		int mile = mileageService.getUserMileage(sessionUserId);
-//		model.addAttribute("mile", mile);
 		
 		//마일리지 충전 내역
 		List<MileageHistory> mileHistory = mileageHistoryService.getMileageHistory(sessionUserId);

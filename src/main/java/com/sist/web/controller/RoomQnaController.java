@@ -237,7 +237,7 @@ public class RoomQnaController
     	int roomQnaSeq = HttpUtil.get(request, "roomQnaSeq", 0);
     	String roomQnaCmtContent = HttpUtil.get(request, "roomQnaCmtContent");
     	String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
-    	
+
     	logger.debug("Q&A 답글 등록 sessionUserId : " + sessionUserId);
         logger.debug("roomQnaSeq : " + roomQnaSeq);
         logger.debug("roomQnaCmtContent : " + roomQnaCmtContent);       
@@ -249,7 +249,7 @@ public class RoomQnaController
     		roomQnaCmt.setRoomQnaCmtContent(roomQnaCmtContent);
     		roomQnaCmt.setUserId(sessionUserId);
     		roomQnaCmt.setRooQnaCmtStat("Y");
-    		
+
     		if(roomQnaCommentService.qnaCommentInsert(roomQnaCmt) > 0)
     		{
     			ajaxRes.setResponse(0, "success");
