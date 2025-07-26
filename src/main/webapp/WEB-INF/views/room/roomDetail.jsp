@@ -767,15 +767,26 @@ function fn_review_list(page) {
     <div class="card-body text-center">
     
      <p class="text-secondary mb-2">이 방의 호스트</p>
-      <!-- 1) 프로필 이미지 -->
-      <c:choose>
-	      <c:when test="${!empty host.profImgExt}">
-		      <img
-		        src="${pageContext.request.contextPath}/resources/upload/userprofile/${host.userId}.${host.profImgExt}"
-		        alt="호스트 프로필"
-		        class="rounded-circle mb-3"
-		        style="width: 80px; height: 80px; object-fit: cover;"
-		      />
+	<!-- 1) 프로필 이미지 -->
+	<c:choose>
+	  <c:when test="${!empty host.profImgExt}">
+	    <img
+	      src="${pageContext.request.contextPath}/resources/upload/userprofile/${host.userId}.${host.profImgExt}"
+	      alt="호스트 프로필"
+	      class="rounded-circle mb-3"
+	      style="width: 80px; height: 80px; object-fit: cover;"
+	    />
+	  </c:when>
+	  <c:otherwise>
+	    <img
+	      src="${pageContext.request.contextPath}/resources/upload/userprofile/default_profile.png"
+	      alt="기본 프로필"
+	      class="rounded-circle mb-3"
+	      style="width: 80px; height: 80px; object-fit: cover;"
+	    />
+	  </c:otherwise>
+	</c:choose>
+
       <!-- 2) 호스트 이름 -->
       <h5 class="card-title mb-1">${host.nickName}</h5>
 
