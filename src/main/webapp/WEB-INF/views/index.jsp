@@ -41,16 +41,31 @@
 
   .site-nav .container{max-width:none !important;width:1300px;margin:0 auto !important;padding:0 !important;}
   @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
+<<<<<<< HEAD
+  .section{padding-top:3rem !important;padding-bottom:3rem !important;}
+  .section-space .heading,.section-room .heading{margin-top:.5rem !important;margin-bottom:.5rem !important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;}
+  .wish-heart.clicked{animation:pulse .3s ease;}
+
+  body{padding-top:110px;background:#f9f9f9;font-family:'Work Sans','Noto Sans KR',sans-serif;}
+=======
   .section{padding-top:2rem !important;padding-bottom:2rem !important;}
   .section-space .heading,.section-room .heading{margin-top:.5rem !important;margin-bottom:.5rem !important;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;}
   .wish-heart.clicked{animation:pulse .3s ease;}
 
   body{padding-top:100px;background:#f9f9f9;font-family:'Work Sans','Noto Sans KR',sans-serif;}
+>>>>>>> develop/kjy
   .container{max-width:1300px;margin:0 auto;}
 
   #wishlistBody{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;}
 
+<<<<<<< HEAD
+  .property-slider-wrap {
+  position: relative;
+  overflow: visible; /* ✅ 버튼이 바깥으로 나가게 허용 */
+}
+=======
   .property-slider-wrap{position:relative;padding:0;overflow:hidden;margin-top:.5rem;margin-bottom:.5rem;}
+>>>>>>> develop/kjy
   .property-item{
     position:relative;background:#fff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);
     overflow:hidden;transition:transform .2s ease;margin-bottom:20px;
@@ -100,6 +115,74 @@
   .property-item .img{display:block;width:100%;}
   .property-item .img img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;}
 
+<<<<<<< HEAD
+.property-slider-wrap .controls .prev,
+.property-slider-wrap .controls .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.2rem;          /* 👉 화살표 크기만 조절 */
+  color: #00204a;             /* 👉 화살표 색상 */
+  background: none;           /* ✅ 배경 제거 */
+  border: none;               /* ✅ 테두리 제거 */
+  border-radius: 0;           /* ✅ 둥글게 제거 */
+  width: auto;                /* ✅ 너비 제한 없음 */
+  height: auto;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.2s ease;
+}
+
+.property-slider-wrap .controls .prev {
+  left: -50px; /* ✅ 슬라이더 바깥으로 튀어나가게 */
+}
+
+.property-slider-wrap .controls .next {
+  right: -50px; /* ✅ 반대쪽도 마찬가지 */
+}
+	
+	
+	.property-slider-wrap .controls {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  transform: translateY(-50%);
+  width: 100%;
+  pointer-events: none; /* 자식 span만 클릭 가능하게 */
+}
+
+.property-slider-wrap .controls span {
+  font-size: 2rem;
+  color: #00204a;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  width: 33px;
+  height: 33px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background 0.2s;
+  
+    outline: none;         /* ✅ 기본 포커스 테두리 제거 */
+  box-shadow: none;      /* ✅ 일부 브라우저는 이걸로도 그림자 생김 */
+}
+
+.property-slider-wrap .controls span:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.property-slider-wrap .controls span:hover {
+  background: #ddd;
+}
+
+.property-slider-wrap .controls .prev:hover,
+.property-slider-wrap .controls .next:hover {
+  color: #007bff;  /* 👉 hover 시 색만 변화 */
+}
+=======
   .property-slider-wrap .controls .prev,
   .property-slider-wrap .controls .next{
     width:auto !important;height:auto !important;border:none !important;background:none !important;
@@ -109,6 +192,7 @@
     display:flex;justify-content:space-between;margin-top:-8px;padding:0 10px;pointer-events:none;
   }
   .property-slider-wrap .controls span{pointer-events:auto;}
+>>>>>>> develop/kjy
 
   .sec-testimonials{padding-top:2rem;padding-bottom:2rem;}
   .testimonial{
@@ -243,7 +327,7 @@
     </c:forEach>
   </div>
   <div class="hero-title">
-    <div class="hero-sub"> Find, book, and share inspiring rooms—instantly.</div>
+    <div class="hero-sub"> press to pause and find your perfect space.</div>
     <div class="hero-main">
       <span class="static"></span><span id="typewriter"></span><span class="cursor">_</span>
     </div>
@@ -509,7 +593,7 @@
 <script src="/resources/js/tiny-slider.js"></script>
 <script src="/resources/js/aos.js"></script>
 <script src="/resources/js/navbar.js"></script>
-script src="/resources/js/counter.js"></script>
+<script src="/resources/js/counter.js"></script>
 <script src="/resources/js/custom.js"></script>
 <script>
 function toggleWish(roomSeq, btn){

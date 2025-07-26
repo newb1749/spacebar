@@ -34,6 +34,7 @@ import com.sist.web.model.FreeBoard;
 import com.sist.web.model.MileageHistory;
 import com.sist.web.model.Reservation;
 import com.sist.web.model.Response;
+import com.sist.web.model.Review;
 import com.sist.web.model.Room;
 import com.sist.web.model.RoomType;
 import com.sist.web.model.User;
@@ -44,7 +45,7 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.MileageHistoryService;
 import com.sist.web.service.MileageServiceJY;
 import com.sist.web.service.ReservationServiceJY;
-import com.sist.web.service.RoomServiceSh;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.RoomTypeService;
 import com.sist.web.service.UserService_mj;
 import com.sist.web.service.WishlistService;
@@ -59,9 +60,6 @@ public class UserController
 	
 	@Autowired
 	private UserService_mj userService;
-	
-	@Autowired
-	private RoomServiceSh roomServiceSh;
 	
 	@Autowired
 	private CouponServiceJY couponService;
@@ -92,6 +90,9 @@ public class UserController
 	
 	@Autowired
 	private FreeBoardService freeBoardService;
+	
+	@Autowired
+	private ReviewService reviewService;	
 	
 	@Value("#{env['upload.save.dir']}")
 	private String UPLOAD_SAVE_DIR;
@@ -652,6 +653,10 @@ public class UserController
 		//회원 정보
 		User user = userService.userSelect(sessionUserId);
 		model.addAttribute("user", user);
+		
+		//리뷰 정보
+    	List<Review> myReviews = reviewService.selectMyReviews(sessionUserId);
+    	model.addAttribute("myReviews", myReviews);
 		
 		//쿠폰 정보
 		List<Coupon> couponList = couponService.couponListByUser(sessionUserId);		

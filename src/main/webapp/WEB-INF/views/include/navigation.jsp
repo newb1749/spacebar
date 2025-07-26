@@ -10,9 +10,11 @@
 }
 
 /* ===== 기본 ===== */
+
 .logo{display:flex;align-items:center;line-height:1;}
 .logo-img{height:48px;max-width:220px;display:block;}
 @media (max-width:768px){.logo-img{height:36px;}}
+
 
 .visually-hidden{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;
