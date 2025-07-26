@@ -374,7 +374,12 @@ $(function(){
 					        <c:forEach var="r" items="${reservations}">
 					          <tr>
 					            <td>${r.rsvSeq}</td>
-					            <td><a href="/room/roomDetail?roomSeq=${r.roomSeq}">${r.roomTypeTitle}</a></td>
+					            <td>
+								  <a href="/room/roomDetail?roomSeq=${r.roomSeq}" target="_blank" rel="noopener noreferrer">
+								    ${r.roomTypeTitle}
+								  </a>
+								</td>
+
 					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/><br/> / <fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
 					            
 					            <td>
@@ -390,11 +395,12 @@ $(function(){
 					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
 					                	<c:choose>
 					                		<c:when test="${r.reviewYn eq 'N'}">
-							                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
-							                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-							                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
-							                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
-					                		</form>
+											<form action="${pageContext.request.contextPath}/review/writeForm" method="get" target="_blank">
+											  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+											  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+											  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+											</form>
+
 					                		</c:when>
 					                		<c:otherwise>
 					                			<br>리뷰작성완료
@@ -540,7 +546,11 @@ $(function(){
 								<c:forEach var="post" items="${freeBoard}" varStatus="status">
 								    <tr>
 								    	<td>${status.count}</td>
-								        <td><a href="/board/view?freeBoardSeq=${post.freeBoardSeq}">${post.freeBoardTitle}</a></td>
+								        <td>
+										  <a href="/board/view?freeBoardSeq=${post.freeBoardSeq}" target="_blank">
+										    ${post.freeBoardTitle}
+										  </a>
+										</td>
 								        <td>${post.regDt}</td>
 								        <td><fmt:formatNumber value="${post.freeBoardViews}" pattern="#,###"/></td>
 								    </tr>
@@ -571,7 +581,7 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-						  	  <a href="/room/roomDetailSh">
+						  	  <a href="/room/roomDetail">
 							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
