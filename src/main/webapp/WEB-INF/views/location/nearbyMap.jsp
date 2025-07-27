@@ -36,7 +36,7 @@
 
         <div class="right-panel">
             <div class="map-category-filter">
-                <div class="category-scroll-container">
+            
                     <button class="map-cat-btn active" data-cat-seq=""><i class="fas fa-border-all"></i> 전체</button>
                     <button class="map-cat-btn" data-cat-seq="1">파티룸</button>
                     <button class="map-cat-btn" data-cat-seq="2">카페</button>
@@ -52,7 +52,6 @@
                     <button class="map-cat-btn" data-cat-seq="12">리조트</button>
                     <button class="map-cat-btn" data-cat-seq="13">주택</button>
                     <button class="map-cat-btn" data-cat-seq="14">캠핑장</button>
-                </div>
             </div>
             
             <div id="map"></div>
