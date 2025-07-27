@@ -571,7 +571,15 @@ function fn_review_list(page) {
 			      ${room.roomAddr} (${room.region})
 			    </p>
 			    <!-- 상세 설명 -->
-			    <p class="text-black-50">${room.roomDesc}</p>
+				<%
+				    // controller에서 처리하는 것이 더 좋지만, jsp에서 처리한다면 scriptlet을 사용해 newline 문자를 정의할 수 있습니다.
+				    pageContext.setAttribute("brTag", "<br/>");
+				    pageContext.setAttribute("newLineChar", "\n");
+				%>
+				<p class="text-black-50">
+				    <c:out value="${fn:replace(room.roomDesc, newLineChar, brTag)}" escapeXml="false"/>
+				</p>
+
 			  </div>
 			</section>
 			
@@ -628,7 +636,9 @@ function fn_review_list(page) {
                 ${rt.roomTypeTitle}
               </h5>
               <c:if test="${not empty rt.roomTypeDesc}">
-                <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+			      <p class="text-muted mb-0">
+			          <c:out value="${fn:replace(rt.roomTypeDesc, newLineChar, brTag)}" escapeXml="false"/>
+			      </p>
               </c:if>
               <div style="border-bottom:1px solid #eee; margin: 16px 0;"></div>
               <p class="mb-3 price-line">
