@@ -101,7 +101,7 @@ function fetchNearbyRooms(lat, lng) {
         data: {
             latitude: lat,
             longitude: lng,
-            limit: 20,
+            limit: 70,
             categorySeq: selectedCategory || null, // 빈 문자열 대신 null
             orderBy: orderBy
         },
@@ -140,12 +140,23 @@ function updateMapAndList(userLat, userLng, rooms) {
         marker.setMap(map);
         roomMarkers.push(marker);
 
-        const info = new kakao.maps.InfoWindow({
-            content: `<div style="padding:5px; font-size:12px;"><b>${room.roomTitle}</b><br>거리: ${room.distance.toFixed(2)}km</div>`,
+        const detailUrl = `/room/roomDetail?roomSeq=${room.roomSeq}`;
+
+        // 정보창 내용 전체를 클릭 가능한 div로 감쌉니다.
+        const iwContent = `
+            <div onclick="window.open('${detailUrl}', '_blank');" style="padding:8px; font-size:12px; cursor:pointer;">
+                <strong style="display:block; margin-bottom:4px;">${room.roomTitle}</strong>
+                거리: ${room.distance.toFixed(2)}km
+            </div>
+        `;
+        
+	    const infowindow = new kakao.maps.InfoWindow({
+            content: iwContent,
             removable: true
         });
-
-        kakao.maps.event.addListener(marker, 'click', () => info.open(map, marker));
+        kakao.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map, marker);
+        });
     });
 
     // 목록 렌더링

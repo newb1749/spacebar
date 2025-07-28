@@ -133,6 +133,14 @@ $(function(){
   
 });
 //==========================장바구니 끝==========================//
+//==========================리뷰 시작==========================//
+    <c:if test="${not empty message}">
+        alert('${message}');
+    </c:if>
+    <c:if test="${not empty errorMessage}">
+        alert('${errorMessage}');
+    </c:if>
+  //==========================리뷰 끝==========================//
 </script>
 <style>
 .site-nav .container {
@@ -164,6 +172,7 @@ $(function(){
 	            <div class="menu-item"  onclick="showContent('coupon')">쿠폰내역</div>
 	            <div class="menu-item"  onclick="showContent('reservation')">예약 내역</div>
 	            <div class="menu-item"  onclick="showContent('mile')">마일리지 충전 내역</div>
+	            <div class="menu-item"  onclick="showContent('review')">내가 쓴 리뷰</div>
 	            <div class="menu-item"  onclick="showContent('posts')">내가 쓴 게시글</div>
 	            <div class="menu-item"  onclick="showContent('wishlist')">위시리스트</div>
 	            <div class="menu-item"  onclick="showContent('cart')">장바구니</div>
@@ -245,9 +254,7 @@ $(function(){
 						<div class="mb-3 row info-item">
 						    <label for="userAddr" class="col-sm-3 col-form-label info-label">주소 :</label>
 						    <div class="col-sm-9">
-						        <p class="form-control-plaintext mb-0" style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #0d0000;">
-    								${user.userAddr}
-								</p>
+								<p class="form-control-plaintext mb-0" style="color: #0d0000; white-space: nowrap">${user.userAddr}</p>
 						    </div>
 						</div>
 			            
@@ -286,12 +293,12 @@ $(function(){
 				  <table class="table table-bordered">
 				    <thead>
 				      <tr>
-				        <th>쿠폰번호</th>
-				        <th>쿠폰명</th>
-				        <th>설명</th>
-				        <th>쿠폰 발급일</th>
-				        <th>쿠폰 사용 여부</th>
-				        <th>사용 가능 쿠폰</th>
+				        <th style="width:10%;">쿠폰번호</th>
+				        <th style="width:20%;">쿠폰명</th>
+				        <th style="width:30%;">설명</th>
+				        <th style="width:15%;">쿠폰 발급일</th>
+				        <th style="width:10%;">쿠폰 사용 여부</th>
+				        <th style="width:10%;">사용 가능 쿠폰</th>
 				      </tr>
 				    </thead>
 				    <tbody>
@@ -354,22 +361,27 @@ $(function(){
 					    <table class="table table-bordered">
 					      <thead>
 					        <tr>
-					          <th>예약번호</th>
-					          <th>객실명</th>
-					          <th>체크인</th>
-					          <th>체크아웃</th>
-					          <th>상태</th>
-					          <th>결제상태</th>
-					          <th>총금액</th>
+					          <th style="width:7%;">예약번호</th>
+					          <th style="width:25%;">객실명</th>
+					          <th style="width:18%;">체크인 / 체크아웃</th>
+
+					          <th style="width:7%;">상태</th>
+					          <th style="width:20%;">결제상태</th>
+					          <th style="width:20%;">총금액</th>
 					        </tr>
 					      </thead>
 					      <tbody>
 					        <c:forEach var="r" items="${reservations}">
 					          <tr>
 					            <td>${r.rsvSeq}</td>
-					            <td><a href="/room/roomDetail?roomSeq=${r.roomSeq}">${r.roomTypeTitle}</a></td>
-					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/></td>
-					            <td><fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+					            <td>
+								  <a href="/room/roomDetail?roomSeq=${r.roomSeq}" target="_blank" rel="noopener noreferrer">
+								    ${r.roomTypeTitle}
+								  </a>
+								</td>
+
+					            <td><fmt:formatDate value="${r.rsvCheckInDateObj}" pattern="yyyy-MM-dd"/><br/> / <fmt:formatDate value="${r.rsvCheckOutDateObj}" pattern="yyyy-MM-dd"/></td>
+					            
 					            <td>
 					              <c:choose>
 					                <c:when test="${r.rsvStat eq 'CONFIRMED'}">예약완료</c:when>
@@ -383,11 +395,12 @@ $(function(){
 					                <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
 					                	<c:choose>
 					                		<c:when test="${r.reviewYn eq 'N'}">
-							                <form action="${pageContext.request.contextPath}/review/writeForm" method="get">
-							                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-							                  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
-							                  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
-					                		</form>
+											<form action="${pageContext.request.contextPath}/review/writeForm" method="get" target="_blank">
+											  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+											  <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+											  <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+											</form>
+
 					                		</c:when>
 					                		<c:otherwise>
 					                			<br>리뷰작성완료
@@ -399,13 +412,19 @@ $(function(){
 					                <c:otherwise>-</c:otherwise>
 					              </c:choose>
 					            </td>
+					            
+								<jsp:useBean id="now" class="java.util.Date" />
+								<fmt:formatDate value="${now}" pattern="yyyyMMdd" var="todayStr" />
+					            
 					            <td class="amount">
 					              <fmt:formatNumber value="${r.finalAmt}" groupingUsed="true"/> 원
 					              <c:if test="${r.rsvStat eq 'CONFIRMED'}">
-					                <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('정말 취소하시겠습니까?')">
-					                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-					                  <button type="submit" class="btn btn-sm btn-danger">환불</button>
-					                </form>
+					              	<c:if test="${r.rsvCheckInDateObj gt now}">
+						                <form action="${pageContext.request.contextPath}/reservation/cancel" method="post" onsubmit="return confirm('정말 취소하시겠습니까?')">
+						                  <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+						                  <button type="submit" class="btn btn-sm btn-danger">환불</button>
+						                </form>
+					                </c:if>
 					              </c:if>
 					            </td>
 					          </tr>
@@ -460,6 +479,51 @@ $(function(){
                     </table>
                 </div>
             </div>
+            
+            <%-- 내가 쓴 리뷰 --%>
+            <div id="review-content" class="content-area hidden">
+                <div class="welcome-message">내가 쓴 리뷰</div>
+                <div class="sub-message">회원님이 작성하신 리뷰 목록입니다.</div>
+                <div class="detail-content">
+                    <h3>내가 쓴 리뷰</h3>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+			                    <th style="width:25%;">숙소/객실 정보</th>
+			                    <th style="width:35%;">제목</th>
+			                    <th style="width:10%;">평점</th>
+			                    <th style="width:15%;">작성일</th>
+			                    <th style="width:15%;">관리</th>
+                            </tr>
+                        </thead>
+			            <tbody>
+			                <c:if test="${empty myReviews}">
+			                    <tr>
+			                        <td colspan="5">작성한 리뷰가 없습니다.</td>
+			                    </tr>
+			                </c:if>
+			                <c:forEach var="review" items="${myReviews}">
+			                    <tr>
+			                        <td>
+			                            <strong>${review.roomTitle}</strong><br>
+			                            <small>${review.roomTypeTitle}</small>
+			                        </td>
+			                        <td class="title">${review.reviewTitle}</td>
+			                        <td>⭐ ${review.rating}</td>
+			                        <td>${review.regDt}</td>
+			                        <td>
+			                            <button type="button" class="btn" onclick="location.href='/review/updateForm?reviewSeq=${review.reviewSeq}'">수정</button>
+			                            <form action="/review/inactiveProc" method="post" style="display:inline;" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+			                                <input type="hidden" name="reviewSeq" value="${review.reviewSeq}">
+			                                <button type="submit" class="btn btn-delete">삭제</button>
+			                            </form>
+			                        </td>
+			                    </tr>
+			                </c:forEach>
+			            </tbody>
+                    </table>
+                </div>
+            </div>
 
 			<%-- 내가 쓴 게시글 --%>
             <div id="posts-content" class="content-area hidden">
@@ -482,7 +546,11 @@ $(function(){
 								<c:forEach var="post" items="${freeBoard}" varStatus="status">
 								    <tr>
 								    	<td>${status.count}</td>
-								        <td><a href="/board/view?freeBoardSeq=${post.freeBoardSeq}">${post.freeBoardTitle}</a></td>
+								        <td>
+										  <a href="/board/view?freeBoardSeq=${post.freeBoardSeq}" target="_blank">
+										    ${post.freeBoardTitle}
+										  </a>
+										</td>
 								        <td>${post.regDt}</td>
 								        <td><fmt:formatNumber value="${post.freeBoardViews}" pattern="#,###"/></td>
 								    </tr>
@@ -513,7 +581,7 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-						  	  <a href="/room/roomDetailSh">
+						  	  <a href="/room/roomDetail">
 							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 

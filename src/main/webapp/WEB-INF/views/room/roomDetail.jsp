@@ -349,7 +349,27 @@
     box-shadow: 0 2px 6px rgba(56, 142, 60, 0.2);
   }
 
+.sticky-tabs.is-fixed {
+  position: fixed;
+  top: 0px; /* ← 네비게이션 높이만큼 조절 (예: nav가 80px이면) */
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
 
+.tabs-list li a {
+  display: block;
+  padding: 0.6rem 1.2rem;
+  color: #333;
+  font-weight: 700;        /* ← 더 굵게 (기존 500 → 700) */
+  font-size: 1.1rem;       /* ← 약간 크게 (기존보다 키움) */
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
   </style>
 <script>
 // 리뷰 비동기로
@@ -551,7 +571,15 @@ function fn_review_list(page) {
 			      ${room.roomAddr} (${room.region})
 			    </p>
 			    <!-- 상세 설명 -->
-			    <p class="text-black-50">${room.roomDesc}</p>
+				<%
+				    // controller에서 처리하는 것이 더 좋지만, jsp에서 처리한다면 scriptlet을 사용해 newline 문자를 정의할 수 있습니다.
+				    pageContext.setAttribute("brTag", "<br/>");
+				    pageContext.setAttribute("newLineChar", "\n");
+				%>
+				<p class="text-black-50">
+				    <c:out value="${fn:replace(room.roomDesc, newLineChar, brTag)}" escapeXml="false"/>
+				</p>
+
 			  </div>
 			</section>
 			
@@ -608,7 +636,9 @@ function fn_review_list(page) {
                 ${rt.roomTypeTitle}
               </h5>
               <c:if test="${not empty rt.roomTypeDesc}">
-                <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+			      <p class="text-muted mb-0">
+			          <c:out value="${fn:replace(rt.roomTypeDesc, newLineChar, brTag)}" escapeXml="false"/>
+			      </p>
               </c:if>
               <div style="border-bottom:1px solid #eee; margin: 16px 0;"></div>
               <p class="mb-3 price-line">
@@ -673,6 +703,10 @@ function fn_review_list(page) {
 	      <jsp:param name="address"   value="${room.roomAddr}"   />
 	      <jsp:param name="roomName"  value="${room.roomTitle}"  />
 	    </jsp:include>
+	    <div class="mt-4 p-3 bg-light border rounded shadow-sm">
+      <i class="fa fa-map-marker-alt text-success me-2"></i>
+      <strong>주소:</strong> ${room.roomAddr}
+    </div>
 	  </div>
 	</section>
 	<!-- 지도 섹션 끝 -->
@@ -686,8 +720,9 @@ function fn_review_list(page) {
           <c:forEach var="fac" items="${facilityList}">
             <div class="col-3 mb-3">
               <span 
-                class="badge bg-secondary w-100 text-center" 
-                style="font-size:1.1rem; padding:0.6em 0;">
+                class="w-100 text-center d-inline-block"
+                style="font-size:1.1rem; padding:0.6em 0; background-color:#fff; border:1px solid #ddd; border-radius:12px; font-weight:700;">
+                 <img src="/resources/upload/facility/${fac.facSeq}.png" alt="${fac.facName}" style="height:40px; margin-right:8px;">
                 ${fac.facName}
               </span>
             </div>
@@ -742,7 +777,7 @@ function fn_review_list(page) {
     <div class="card-body text-center">
     
      <p class="text-secondary mb-2">이 방의 호스트</p>
-      <!-- 1) 프로필 이미지 -->
+	<!-- 1) 프로필 이미지 -->
       <c:choose>
 	      <c:when test="${!empty profImgExt}">
 		      <img
@@ -756,6 +791,7 @@ function fn_review_list(page) {
 	      	 <img src="/resources/upload/userprofile/default_profile.png" alt="profile" width="40" height="40" style="border-radius: 50%;" />
 	      </c:otherwise>
 	  </c:choose>
+
       <!-- 2) 호스트 이름 -->
       <h5 class="card-title mb-1">${host.nickName}</h5>
 
@@ -834,18 +870,18 @@ function fn_review_list(page) {
 <script src="${pageContext.request.contextPath}/resources/js/custom.js"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function(){
-    const tabBar = document.querySelector('.sticky-tabs');
-    const startOffset = tabBar.getBoundingClientRect().top + window.pageYOffset;
+document.addEventListener('DOMContentLoaded', function(){
+	  const tabBar = document.querySelector('.sticky-tabs');
+	  const startOffset = tabBar.offsetTop;
 
-    window.addEventListener('scroll', () => {
-      if (window.pageYOffset >= startOffset) {
-        tabBar.classList.add('is–fixed');
-      } else {
-        tabBar.classList.remove('is–fixed');
-      }
-    });
-  });
+	  window.addEventListener('scroll', () => {
+	    if (window.pageYOffset >= startOffset) {
+	      tabBar.classList.add('is-fixed');
+	    } else {
+	      tabBar.classList.remove('is-fixed');
+	    }
+	  });
+	});
 </script>
 
 <script>

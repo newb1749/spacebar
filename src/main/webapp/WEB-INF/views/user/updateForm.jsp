@@ -213,9 +213,16 @@ function fn_emailCheck(value)
 				    
 				    <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
 				        <!-- 이미지 미리보기 -->
-				        <img id="previewImg" src="/resources/upload/userprofile/${user.userId}.${user.profImgExt}" 
-				             alt="프로필 이미지" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" />
-				
+				        <c:choose>
+					        <c:when test="${!empty user.profImgExt}">
+						        <img id="previewImg" src="/resources/upload/userprofile/${user.userId}.${user.profImgExt}" 
+						             alt="프로필 이미지" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" />
+					        </c:when>
+					        <c:otherwise>
+					        	<img id="previewImg" src="/resources/upload/userprofile/default_profile.png" 
+						             alt="프로필 이미지" width="100" height="100" style="object-fit: cover; border: 1px solid #ccc;" />
+					        </c:otherwise>
+						</c:choose>
 				        <!-- 파일 선택 -->
 				        <input type="file" id="profImgExt" name="profImgExt" accept="image/*" />
 				    </div>

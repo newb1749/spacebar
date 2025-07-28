@@ -248,7 +248,7 @@
 				                <option value="충북" <c:if test="${room.region eq '충북'}">selected</c:if>>충북</option>
 				            </select>
 				        </div>
-				        <div class="form-check mb-3">
+				        <!--<div class="form-check mb-3">
 				            <c:choose>
 				                <c:when test="${room.autoConfirmYn eq 'Y'}">
 				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y" checked>
@@ -257,10 +257,10 @@
 				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y">
 				                </c:otherwise>
 				            </c:choose>
-				            <label class="form-check-label" for="autoConfirmYn">
+				              <label class="form-check-label" for="autoConfirmYn">
 				                예약 자동 승인 사용
 				            </label>
-				        </div>
+				        </div>-->
 				    </div>
 				</div>
 
@@ -269,42 +269,42 @@
 				    <div class="card-header"><i class="fa-solid fa-person-shelter"></i>편의시설</div>
 				    <div class="card-body">
 				        <div class="facility-grid">
-				            <div class="facility-box" data-value="1"><input type="checkbox" name="facilitySeqs" value="1"><i class="fa-solid fa-wifi"></i><span>와이파이</span></div>
-				            <div class="facility-box" data-value="2"><input type="checkbox" name="facilitySeqs" value="2"><i class="fa-solid fa-snowflake"></i><span>냉장고</span></div>
-				            <div class="facility-box" data-value="3"><input type="checkbox" name="facilitySeqs" value="3"><i class="fa-kitchen-set"></i><span>전자레인지</span></div>
-				            <div class="facility-box" data-value="4"><input type="checkbox" name="facilitySeqs" value="4"><i class="fa-solid fa-faucet"></i><span>정수기</span></div>
-				            <div class="facility-box" data-value="5"><input type="checkbox" name="facilitySeqs" value="5"><i class="fa-solid fa-temperature-half"></i><span>에어컨/난방</span></div>
-				            <div class="facility-box" data-value="6"><input type="checkbox" name="facilitySeqs" value="6"><i class="fa-solid fa-wind"></i><span>드라이기</span></div>
-				            <div class="facility-box" data-value="7"><input type="checkbox" name="facilitySeqs" value="7"><i class="fa-solid fa-shirt"></i><span>다리미</span></div>
-				            <div class="facility-box" data-value="8"><input type="checkbox" name="facilitySeqs" value="8"><i class="fa-rectangle-vertical"></i><span>거울</span></div>
-				            <div class="facility-box" data-value="9"><input type="checkbox" name="facilitySeqs" value="9"><i class="fa-solid fa-bed"></i><span>침구</span></div>
-				            <div class="facility-box" data-value="10"><input type="checkbox" name="facilitySeqs" value="10"><i class="fa-solid fa-soap"></i><span>욕실용품</span></div>
-				            <div class="facility-box" data-value="11"><input type="checkbox" name="facilitySeqs" value="11"><i class="fa-shirt"></i><span>옷걸이/행거</span></div>
-				            <div class="facility-box" data-value="12"><input type="checkbox" name="facilitySeqs" value="12"><i class="fa-solid fa-tv"></i><span>TV (OTT)</span></div>
-				            <div class="facility-box" data-value="13"><input type="checkbox" name="facilitySeqs" value="13"><i class="fa-solid fa-jug-detergent"></i><span>세탁기/건조기</span></div>
-				            <div class="facility-box" data-value="14"><input type="checkbox" name="facilitySeqs" value="14"><i class="fa-solid fa-utensils"></i><span>취사도구</span></div>
-				            <div class="facility-box" data-value="15"><input type="checkbox" name="facilitySeqs" value="15"><i class="fa-solid fa-fire-burner"></i><span>바베큐 시설</span></div>
-				            <div class="facility-box" data-value="16"><input type="checkbox" name="facilitySeqs" value="16"><i class="fa-solid fa-person-swimming"></i><span>수영장</span></div>
-				            <div class="facility-box" data-value="17"><input type="checkbox" name="facilitySeqs" value="17"><i class="fa-solid fa-volume-xmark"></i><span>방음 시설</span></div>
-				            <div class="facility-box" data-value="18"><input type="checkbox" name="facilitySeqs" value="18"><i class="fa-solid fa-microphone"></i><span>마이크/오디오</span></div>
-				            <div class="facility-box" data-value="19"><input type="checkbox" name="facilitySeqs" value="19"><i class="fa-solid fa-speaker"></i><span>앰프/스피커</span></div>
-				            <div class="facility-box" data-value="20"><input type="checkbox" name="facilitySeqs" value="20"><i class="fa-solid fa-lightbulb"></i><span>조명 장비</span></div>
-				            <div class="facility-box" data-value="21"><input type="checkbox" name="facilitySeqs" value="21"><i class="fa-solid fa-camera"></i><span>삼각대/촬영 장비</span></div>
-				            <div class="facility-box" data-value="22"><input type="checkbox" name="facilitySeqs" value="22"><i class="fa-brands fa-bluetooth-b"></i><span>블루투스 스피커</span></div>
-				            <div class="facility-box" data-value="23"><input type="checkbox" name="facilitySeqs" value="23"><i class="fa-solid fa-drum"></i><span>악기류</span></div>
-				            <div class="facility-box" data-value="24"><input type="checkbox" name="facilitySeqs" value="24"><i class="fa-solid fa-video"></i><span>빔프로젝터</span></div>
-				            <div class="facility-box" data-value="25"><input type="checkbox" name="facilitySeqs" value="25"><i class="fa-solid fa-display"></i><span>TV 모니터</span></div>
-				            <div class="facility-box" data-value="26"><input type="checkbox" name="facilitySeqs" value="26"><i class="fa-solid fa-chalkboard"></i><span>화이트보드</span></div>
-				            <div class="facility-box" data-value="27"><input type="checkbox" name="facilitySeqs" value="27"><i class="fa-solid fa-print"></i><span>프린터/복합기</span></div>
-				            <div class="facility-box" data-value="28"><input type="checkbox" name="facilitySeqs" value="28"><i class="fa-solid fa-chair"></i><span>의자/책상</span></div>
-				            <div class="facility-box" data-value="29"><input type="checkbox" name="facilitySeqs" value="29"><i class="fa-solid fa-mug-hot"></i><span>커피머신</span></div>
-				            <div class="facility-box" data-value="30"><input type="checkbox" name="facilitySeqs" value="30"><i class="fa-solid fa-shower"></i><span>화장실/샤워실</span></div>
-				            <div class="facility-box" data-value="31"><input type="checkbox" name="facilitySeqs" value="31"><i class="fa-solid fa-sink"></i><span>취사장/개수대</span></div>
-				            <div class="facility-box" data-value="32"><input type="checkbox" name="facilitySeqs" value="32"><i class="fa-solid fa-plug"></i><span>전기 공급</span></div>
-				            <div class="facility-box" data-value="33"><input type="checkbox" name="facilitySeqs" value="33"><i class="fa-solid fa-campground"></i><span>텐트/타프</span></div>
-				            <div class="facility-box" data-value="34"><input type="checkbox" name="facilitySeqs" value="34"><i class="fa-solid fa-fire"></i><span>캠프파이어</span></div>
-				            <div class="facility-box" data-value="35"><input type="checkbox" name="facilitySeqs" value="35"><i class="fa-solid fa-table-picnic"></i><span>야외 테이블/의자</span></div>
-				            <div class="facility-box" data-value="36"><input type="checkbox" name="facilitySeqs" value="36"><i class="fa-solid fa-bug-slash"></i><span>벌레퇴치용품</span></div>
+				            <div class="facility-box" data-value="1"><input type="checkbox" name="facilitySeqs" value="1"><img src="/resources/upload/facility/1.png" alt="이미지" style="height:40px; margin-right:8px;"><span>와이파이</span></div>
+				            <div class="facility-box" data-value="2"><input type="checkbox" name="facilitySeqs" value="2"><img src="/resources/upload/facility/2.png" alt="이미지" style="height:40px; margin-right:8px;"><span>냉장고</span></div>
+				            <div class="facility-box" data-value="3"><input type="checkbox" name="facilitySeqs" value="3"><img src="/resources/upload/facility/3.png" alt="이미지" style="height:40px; margin-right:8px;"><span>전자레인지</span></div>
+				            <div class="facility-box" data-value="4"><input type="checkbox" name="facilitySeqs" value="4"><img src="/resources/upload/facility/4.png" alt="이미지" style="height:40px; margin-right:8px;"><span>정수기</span></div>
+				            <div class="facility-box" data-value="5"><input type="checkbox" name="facilitySeqs" value="5"><img src="/resources/upload/facility/5.png" alt="이미지" style="height:40px; margin-right:8px;"><span>에어컨/난방</span></div>
+				            <div class="facility-box" data-value="6"><input type="checkbox" name="facilitySeqs" value="6"><img src="/resources/upload/facility/6.png" alt="이미지" style="height:40px; margin-right:8px;"><span>드라이기</span></div>
+				            <div class="facility-box" data-value="7"><input type="checkbox" name="facilitySeqs" value="7"><img src="/resources/upload/facility/7.png" alt="이미지" style="height:40px; margin-right:8px;"><span>다리미</span></div>
+				            <div class="facility-box" data-value="8"><input type="checkbox" name="facilitySeqs" value="8"><img src="/resources/upload/facility/8.png" alt="이미지" style="height:40px; margin-right:8px;"><span>거울</span></div>
+				            <div class="facility-box" data-value="9"><input type="checkbox" name="facilitySeqs" value="9"><img src="/resources/upload/facility/9.png" alt="이미지" style="height:40px; margin-right:8px;"><span>침구</span></div>
+				            <div class="facility-box" data-value="10"><input type="checkbox" name="facilitySeqs" value="10"><img src="/resources/upload/facility/10.png" alt="이미지" style="height:40px; margin-right:8px;"><span>욕실용품</span></div>
+				            <div class="facility-box" data-value="11"><input type="checkbox" name="facilitySeqs" value="11"><img src="/resources/upload/facility/11.png" alt="이미지" style="height:40px; margin-right:8px;"><span>옷걸이/행거</span></div>
+				            <div class="facility-box" data-value="12"><input type="checkbox" name="facilitySeqs" value="12"><img src="/resources/upload/facility/12.png" alt="이미지" style="height:40px; margin-right:8px;"><span>TV (OTT)</span></div>
+				            <div class="facility-box" data-value="13"><input type="checkbox" name="facilitySeqs" value="13"><img src="/resources/upload/facility/13.png" alt="이미지" style="height:40px; margin-right:8px;"><span>세탁기/건조기</span></div>
+				            <div class="facility-box" data-value="14"><input type="checkbox" name="facilitySeqs" value="14"><img src="/resources/upload/facility/14.png" alt="이미지" style="height:40px; margin-right:8px;"><span>취사도구</span></div>
+				            <div class="facility-box" data-value="15"><input type="checkbox" name="facilitySeqs" value="15"><img src="/resources/upload/facility/15.png" alt="이미지" style="height:40px; margin-right:8px;"><span>바베큐 시설</span></div>
+				            <div class="facility-box" data-value="16"><input type="checkbox" name="facilitySeqs" value="16"><img src="/resources/upload/facility/16.png" alt="이미지" style="height:40px; margin-right:8px;"><span>수영장</span></div>
+				            <div class="facility-box" data-value="17"><input type="checkbox" name="facilitySeqs" value="17"><img src="/resources/upload/facility/17.png" alt="이미지" style="height:40px; margin-right:8px;"><span>방음 시설</span></div>
+				            <div class="facility-box" data-value="18"><input type="checkbox" name="facilitySeqs" value="18"><img src="/resources/upload/facility/18.png" alt="이미지" style="height:40px; margin-right:8px;"><span>마이크/오디오</span></div>
+				            <div class="facility-box" data-value="19"><input type="checkbox" name="facilitySeqs" value="19"><img src="/resources/upload/facility/19.png" alt="이미지" style="height:40px; margin-right:8px;"><span>앰프/스피커</span></div>
+				            <div class="facility-box" data-value="20"><input type="checkbox" name="facilitySeqs" value="20"><img src="/resources/upload/facility/20.png" alt="이미지" style="height:40px; margin-right:8px;"><span>조명 장비</span></div>
+				            <div class="facility-box" data-value="21"><input type="checkbox" name="facilitySeqs" value="21"><img src="/resources/upload/facility/21.png" alt="이미지" style="height:40px; margin-right:8px;"><span>삼각대/촬영 장비</span></div>
+				            <div class="facility-box" data-value="22"><input type="checkbox" name="facilitySeqs" value="22"><img src="/resources/upload/facility/22.png" alt="이미지" style="height:40px; margin-right:8px;"><span>블루투스 스피커</span></div>
+				            <div class="facility-box" data-value="23"><input type="checkbox" name="facilitySeqs" value="23"><img src="/resources/upload/facility/23.png" alt="이미지" style="height:40px; margin-right:8px;"><span>악기류</span></div>
+				            <div class="facility-box" data-value="24"><input type="checkbox" name="facilitySeqs" value="24"><img src="/resources/upload/facility/24.png" alt="이미지" style="height:40px; margin-right:8px;"><span>빔프로젝터</span></div>
+				            <div class="facility-box" data-value="25"><input type="checkbox" name="facilitySeqs" value="25"><img src="/resources/upload/facility/25.png" alt="이미지" style="height:40px; margin-right:8px;"><span>TV 모니터</span></div>
+				            <div class="facility-box" data-value="26"><input type="checkbox" name="facilitySeqs" value="26"><img src="/resources/upload/facility/26.png" alt="이미지" style="height:40px; margin-right:8px;"><span>화이트보드</span></div>
+				            <div class="facility-box" data-value="27"><input type="checkbox" name="facilitySeqs" value="27"><img src="/resources/upload/facility/27.png" alt="이미지" style="height:40px; margin-right:8px;"><span>프린터/복합기</span></div>
+				            <div class="facility-box" data-value="28"><input type="checkbox" name="facilitySeqs" value="28"><img src="/resources/upload/facility/28.png" alt="이미지" style="height:40px; margin-right:8px;"><span>의자/책상</span></div>
+				            <div class="facility-box" data-value="29"><input type="checkbox" name="facilitySeqs" value="29"><img src="/resources/upload/facility/29.png" alt="이미지" style="height:40px; margin-right:8px;"><span>커피머신</span></div>
+				            <div class="facility-box" data-value="30"><input type="checkbox" name="facilitySeqs" value="30"><img src="/resources/upload/facility/30.png" alt="이미지" style="height:40px; margin-right:8px;"><span>화장실/샤워실</span></div>
+				            <div class="facility-box" data-value="31"><input type="checkbox" name="facilitySeqs" value="31"><img src="/resources/upload/facility/31.png" alt="이미지" style="height:40px; margin-right:8px;"><span>취사장/개수대</span></div>
+				            <div class="facility-box" data-value="32"><input type="checkbox" name="facilitySeqs" value="32"><img src="/resources/upload/facility/32.png" alt="이미지" style="height:40px; margin-right:8px;"><span>전기 공급</span></div>
+				            <div class="facility-box" data-value="33"><input type="checkbox" name="facilitySeqs" value="33"><img src="/resources/upload/facility/33.png" alt="이미지" style="height:40px; margin-right:8px;"><span>텐트/타프</span></div>
+				            <div class="facility-box" data-value="34"><input type="checkbox" name="facilitySeqs" value="34"><img src="/resources/upload/facility/34.png" alt="이미지" style="height:40px; margin-right:8px;"><span>캠프파이어</span></div>
+				            <div class="facility-box" data-value="35"><input type="checkbox" name="facilitySeqs" value="35"><img src="/resources/upload/facility/35.png" alt="이미지" style="height:40px; margin-right:8px;"><span>야외 테이블/의자</span></div>
+				            <div class="facility-box" data-value="36"><input type="checkbox" name="facilitySeqs" value="36"><img src="/resources/upload/facility/36.png" alt="이미지" style="height:40px; margin-right:8px;"><span>벌레퇴치용품</span></div>
 				        </div>
 				    </div>
 				</div>
