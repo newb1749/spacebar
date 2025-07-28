@@ -777,9 +777,9 @@ function fn_review_list(page) {
     <div class="card-body text-center">
     
      <p class="text-secondary mb-2">이 방의 호스트</p>
-      <!-- 1) 프로필 이미지 -->
+	<!-- 1) 프로필 이미지 -->
       <c:choose>
-	      <c:when test="${!empty host.profImgExt}">
+	      <c:when test="${!empty profImgExt}">
 		      <img
 		        src="${pageContext.request.contextPath}/resources/upload/userprofile/${host.userId}.${host.profImgExt}"
 		        alt="호스트 프로필"

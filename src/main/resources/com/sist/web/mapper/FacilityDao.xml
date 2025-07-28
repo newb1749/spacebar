@@ -29,6 +29,10 @@
 	  VALUES (#{roomSeq, jdbcType=INTEGER}, #{facSeq, jdbcType=INTEGER})
 	</insert>
 
-
+	<!-- 전체 편의시설 조회 -->
+	<select id="selectFacilityAll" resultMap="facilityResultMap">
+	    SELECT FAC_SEQ, FAC_NAME, FAC_ICON_EXT
+	    FROM FACILITY
+	</select>
   
 </mapper>
