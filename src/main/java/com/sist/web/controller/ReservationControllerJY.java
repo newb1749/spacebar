@@ -174,6 +174,22 @@ public class ReservationControllerJY {
         }
         reservation.setGuestId(guestId);
 
+        // 🔥 시간 데이터 검증 및 로깅
+        logger.debug("=== 예약 상세 페이지 시간 데이터 ===");
+        logger.debug("체크인 시간 (전달받음): '{}'", reservation.getRsvCheckInTime());
+        logger.debug("체크아웃 시간 (전달받음): '{}'", reservation.getRsvCheckOutTime());
+        
+        // 🔥 시간 데이터가 비어있다면 기본값 설정 (폼에서 전달되지 않은 경우에만)
+        if (reservation.getRsvCheckInTime() == null || reservation.getRsvCheckInTime().trim().isEmpty()) {
+            reservation.setRsvCheckInTime("1500"); // 기본 체크인 시간 15:00
+            logger.debug("체크인 시간이 비어있어 기본값 설정: 1500");
+        }
+        
+        if (reservation.getRsvCheckOutTime() == null || reservation.getRsvCheckOutTime().trim().isEmpty()) {
+            reservation.setRsvCheckOutTime("1100"); // 기본 체크아웃 시간 11:00
+            logger.debug("체크아웃 시간이 비어있어 기본값 설정: 1100");
+        }
+
         RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
         if (roomType != null) {
             reservation.setHostId(roomType.getHostId());
@@ -189,21 +205,22 @@ public class ReservationControllerJY {
 
         String userId = (String) session.getAttribute("SESSION_USER_ID");
         // 쿠폰 및 마일리지 정보 조회
-        logger.debug("88888888888888888888888888888888");
+        logger.debug("쿠폰 조회 시작");
         List<Coupon> couponList = couponService.getAvailableCouponsForUser(userId);
-        
-        logger.debug("999999999999999999999999999999999999");
+        logger.debug("쿠폰 조회 완료");
         
         model.addAttribute("reservation", reservation);
         
-        if(couponList != null)
-        {
+        if(couponList != null) {
             model.addAttribute("couponList", couponList);
         }
 
         long userMileage = getUserMileage(guestId);
         model.addAttribute("userMileage", userMileage);
-        model.addAttribute("reservation", reservation);
+
+        logger.debug("=== 최종 예약 정보 ===");
+        logger.debug("체크인 시간 (최종): '{}'", reservation.getRsvCheckInTime());
+        logger.debug("체크아웃 시간 (최종): '{}'", reservation.getRsvCheckOutTime());
 
         return "/reservation/detailJY";
     }
@@ -226,7 +243,8 @@ public class ReservationControllerJY {
 
         if (reservation == null) {
             reservation = (Reservation) session.getAttribute("pendingReservation");
-            if (reservation != null) {
+            if (reservation != null) 
+            {
                 rsvSeq = reservation.getRsvSeq();
             }
         }
@@ -304,6 +322,25 @@ public class ReservationControllerJY {
         reservation.setRsvStat("CONFIRMED");        // 또는 "예약완료"
         reservation.setRsvPaymentStat("PAID");      // 또는 "결제완료"
         
+        // 🔥 시간 데이터 포맷팅 처리 (HH:MM -> HHMM)
+        if (reservation.getRsvCheckInTime() != null) {
+            String checkInTime = reservation.getRsvCheckInTime().trim();
+            if (checkInTime.contains(":")) {
+                checkInTime = checkInTime.replace(":", "");
+                reservation.setRsvCheckInTime(checkInTime);
+            }
+            logger.info("체크인 시간 DB 저장용으로 변환: {}", checkInTime);
+        }
+        
+        if (reservation.getRsvCheckOutTime() != null) {
+            String checkOutTime = reservation.getRsvCheckOutTime().trim();
+            if (checkOutTime.contains(":")) {
+                checkOutTime = checkOutTime.replace(":", "");
+                reservation.setRsvCheckOutTime(checkOutTime);
+            }
+            logger.info("체크아웃 시간 DB 저장용으로 변환: {}", checkOutTime);
+        }
+        
         // 쿠폰이 선택된 경우 할인 적용
         if (reservation.getCouponSeq() != null && reservation.getCouponSeq() > 0) {
             logger.info("쿠폰 적용: couponSeq = {}", reservation.getCouponSeq());
@@ -330,8 +367,9 @@ public class ReservationControllerJY {
             reservation.setRegDt(new Date());
             
             reservationService.insertReservation(reservation);
-            logger.info("예약 저장 성공 - rsvSeq: {}, 상태: {}, 결제상태: {}", 
-                       reservation.getRsvSeq(), reservation.getRsvStat(), reservation.getRsvPaymentStat());
+            logger.info("예약 저장 성공 - rsvSeq: {}, 상태: {}, 결제상태: {}, 체크인시간: {}, 체크아웃시간: {}", 
+                       reservation.getRsvSeq(), reservation.getRsvStat(), reservation.getRsvPaymentStat(),
+                       reservation.getRsvCheckInTime(), reservation.getRsvCheckOutTime());
 
             if (reservation.getCouponSeq() != null && reservation.getCouponSeq() > 0) {
                 logger.info("쿠폰 사용 완료 처리 시작: userId={}, cpnSeq={}", userId, reservation.getCouponSeq());
@@ -401,26 +439,154 @@ public class ReservationControllerJY {
     }
     // == chargeMileage 경로 끝 ==
 
+ // 🔥 통합된 예약 취소 처리 - 하나의 메서드로 정리
+ // 🔥 통합된 예약 취소 처리 - 하나의 메서드로 정리
+
+    @PostMapping("/reservation/cancel")
     @Transactional
-    public void cancelReservation(Reservation reservation) throws Exception {
-        System.out.println("[cancelReservation] 예약 취소 시작, refundAmt=" + reservation.getRefundAmt() + ", guestId=" + reservation.getGuestId());
-
-        // 🔥 취소 상태 명시적 설정
-        reservation.setRsvStat("취소");
-        reservation.setRsvPaymentStat("취소");
-        reservation.setCancelDt(new Date());
-        
-        reservationDao.cancelReservation(reservation);
-
-        if (reservation.getRefundAmt() > 0) {
-            System.out.println("[cancelReservation] 환불 마일리지 처리 시작");
-            mileageHistoryService.refundMileage(reservation.getGuestId(), reservation.getRefundAmt());
-            System.out.println("[cancelReservation] 환불 마일리지 처리 완료");
-        } else {
-            System.out.println("[cancelReservation] 환불 금액 없음, 마일리지 환불 처리 안함");
+    public String cancelReservation(@RequestParam("rsvSeq") Integer rsvSeq,
+                                   @RequestParam(value = "cancelReason", required = false) String cancelReason,
+                                   RedirectAttributes redirectAttributes,
+                                   HttpSession session) {
+        try {
+            logger.info("=== 예약 취소 처리 시작 ===");
+            logger.info("rsvSeq: {}, cancelReason: {}", rsvSeq, cancelReason);
+            
+            // 로그인 사용자 확인
+            String userId = (String) session.getAttribute("SESSION_USER_ID");
+            if (userId == null || userId.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+                return "redirect:/user/login";
+            }
+            
+            // 예약 정보 조회
+            Reservation existingReservation = reservationDao.selectReservationById(rsvSeq);
+            if (existingReservation == null) {
+                redirectAttributes.addFlashAttribute("error", "예약 정보를 찾을 수 없습니다.");
+                return "redirect:/reservation/reservationHistoryJY";
+            }
+            
+            // 예약자 본인 확인
+            if (!userId.equals(existingReservation.getGuestId())) {
+                redirectAttributes.addFlashAttribute("error", "본인의 예약만 취소할 수 있습니다.");
+                return "redirect:/reservation/reservationHistoryJY";
+            }
+            
+            // 이미 취소된 예약인지 확인
+            if ("CANCELLED".equals(existingReservation.getRsvStat()) || "취소".equals(existingReservation.getRsvStat())) {
+                redirectAttributes.addFlashAttribute("error", "이미 취소된 예약입니다.");
+                return "redirect:/reservation/reservationHistoryJY";
+            }
+            
+            // 환불 금액 계산 (전액 환불)
+            int refundAmount = existingReservation.getFinalAmt();
+            logger.info("환불 예정 금액: {}", refundAmount);
+            
+            // 🔥 cancelReason null 체크 및 기본값 설정 (더 확실하게)
+            if (cancelReason == null || cancelReason.trim().isEmpty()) {
+                cancelReason = "고객 요청";  // 기본 취소 사유
+            }
+            // 추가 안전장치
+            cancelReason = cancelReason.trim();
+            if (cancelReason.length() > 500) {  // DB 컬럼 길이 제한
+                cancelReason = cancelReason.substring(0, 500);
+            }
+            logger.info("취소 사유: {}", cancelReason);
+            
+            // 1️⃣ DB에서 예약 상태 업데이트
+            Reservation cancelReservation = new Reservation();
+            cancelReservation.setRsvSeq(rsvSeq);
+            cancelReservation.setRsvStat("취소");  // 🔥 기존 쿼리와 맞춤
+            cancelReservation.setRsvPaymentStat("취소");  // 🔥 기존 쿼리와 맞춤
+            cancelReservation.setCancelDt(new Date());
+            cancelReservation.setCancelReason(cancelReason);
+            cancelReservation.setRefundAmt(refundAmount);
+            
+            reservationDao.cancelReservation(cancelReservation);
+            logger.info("예약 상태 업데이트 완료");
+            
+            // 2️⃣ 마일리지 환불 처리
+            if (refundAmount > 0) 
+            {
+                logger.info("마일리지 환불 처리 시작: userId={}, refundAmount={}", userId, refundAmount);
+                
+                // 현재 마일리지 조회
+                long currentMileage = getUserMileage(userId);
+                
+                // 마일리지 환불 (증가)
+                int updatedRows = mileageHistoryDao.updateMileageAdd(userId, refundAmount);
+                
+                if (updatedRows > 0) {
+                    // 마일리지 히스토리에 환불 내역 추가
+                    MileageHistory history = new MileageHistory();
+                    history.setUserId(userId);
+                    history.setTrxType("환불");  // 🔥 중요: 환불 타입
+                    history.setTrxAmt(refundAmount);  // 🔥 양수로 저장 (환불은 증가)
+                    history.setBalanceAfterTrx(currentMileage + refundAmount);
+                    history.setTrxDt(new Date());
+                    
+                    mileageHistoryDao.insertMileageHistory(history);
+                    
+                    logger.info("마일리지 환불 완료: newBalance={}", currentMileage + refundAmount);
+                    
+                    redirectAttributes.addFlashAttribute("message", 
+                        "예약이 취소되고 " + refundAmount + "원이 마일리지로 환불되었습니다.");
+                } else {
+                    logger.error("마일리지 환불 실패: DB 업데이트 실패");
+                    redirectAttributes.addFlashAttribute("error", "마일리지 환불 처리 실패");
+                    return "redirect:/reservation/reservationHistoryJY";
+                }
+            } else {
+                redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
+            }
+            
+            logger.info("=== 예약 취소 처리 완료 ===");
+            
+            // 마일리지 내역 페이지로 리다이렉트
+            return "redirect:/reservation/mileageHistory";
+            
+        } catch (Exception e) {
+            logger.error("예약 취소 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("error", "예약 취소 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/reservation/reservationHistoryJY";
         }
     }
     
+    
+ // 마일리지 환불 처리 메서드 추가
+    private boolean refundMileage(String userId, int refundAmount) {
+        try {
+            // 현재 마일리지 조회
+            long currentMileage = getUserMileage(userId);
+            
+            // 마일리지 환불 (증가)
+            int updatedRows = mileageHistoryDao.updateMileageAdd(userId, refundAmount);
+            
+            if (updatedRows > 0) {
+                // 마일리지 히스토리에 환불 내역 추가
+                MileageHistory history = new MileageHistory();
+                history.setUserId(userId);
+                history.setTrxType("환불");  // 🔥 중요: 환불 타입으로 설정
+                history.setTrxAmt(refundAmount);  // 🔥 양수로 저장 (환불은 증가)
+                history.setBalanceAfterTrx(currentMileage + refundAmount);
+                history.setTrxDt(new Date());
+                
+                mileageHistoryDao.insertMileageHistory(history);
+                
+                logger.info("마일리지 환불 완료: userId={}, refundAmount={}, newBalance={}", 
+                           userId, refundAmount, currentMileage + refundAmount);
+                return true;
+            }
+            
+            logger.error("마일리지 환불 실패: DB 업데이트 실패");
+            return false;
+            
+        } catch (Exception e) {
+            logger.error("마일리지 환불 처리 중 오류 발생: userId={}, refundAmount={}", userId, refundAmount, e);
+            return false;
+        }
+    }
+
     private int calculateTotalAmount(int roomTypeSeq, String checkInDateStr, String checkOutDateStr) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeSeq);
         
@@ -565,8 +731,38 @@ public class ReservationControllerJY {
                 return "/payment/paymentConfirm";
             }
 
-            logger.info("예약 정보 조회 성공: rsvSeq={}, guestId={}, hostId={}, totalAmt={}", 
-                         reservation.getRsvSeq(), reservation.getGuestId(), reservation.getHostId(), reservation.getTotalAmt());
+            // 🔥 시간 데이터 포맷팅 처리
+            if (reservation.getRsvCheckInTime() != null) {
+                String checkInTime = reservation.getRsvCheckInTime().trim();
+                // HHMM 형식을 HH:MM으로 변환
+                if (checkInTime.length() == 4 && !checkInTime.contains(":")) {
+                    checkInTime = checkInTime.substring(0, 2) + ":" + checkInTime.substring(2, 4);
+                    reservation.setRsvCheckInTime(checkInTime);
+                }
+                logger.info("체크인 시간 처리됨: {}", checkInTime);
+            }
+            
+            if (reservation.getRsvCheckOutTime() != null) {
+                String checkOutTime = reservation.getRsvCheckOutTime().trim();
+                // HHMM 형식을 HH:MM으로 변환
+                if (checkOutTime.length() == 4 && !checkOutTime.contains(":")) {
+                    checkOutTime = checkOutTime.substring(0, 2) + ":" + checkOutTime.substring(2, 4);
+                    reservation.setRsvCheckOutTime(checkOutTime);
+                }
+                logger.info("체크아웃 시간 처리됨: {}", checkOutTime);
+            }
+
+            // 🔥 RoomType 정보 가져와서 제목 설정
+            if (reservation.getRoomTypeTitle() == null || reservation.getRoomTypeTitle().isEmpty()) {
+                RoomType roomType = roomTypeService.getRoomType(reservation.getRoomTypeSeq());
+                if (roomType != null && roomType.getRoomTypeTitle() != null) {
+                    reservation.setRoomTypeTitle(roomType.getRoomTypeTitle());
+                }
+            }
+
+            logger.info("예약 정보 조회 성공: rsvSeq={}, guestId={}, hostId={}, totalAmt={}, checkInTime={}, checkOutTime={}", 
+                         reservation.getRsvSeq(), reservation.getGuestId(), reservation.getHostId(), 
+                         reservation.getTotalAmt(), reservation.getRsvCheckInTime(), reservation.getRsvCheckOutTime());
 
             // 🔥 핵심: SUCCESS 상태로 설정
             model.addAttribute("status", "SUCCESS");
