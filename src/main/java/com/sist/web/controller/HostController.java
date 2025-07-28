@@ -219,6 +219,7 @@ public class HostController {
 	    List<Integer> checkedList = facilityList.stream()
 	            .map(Facility::getFacSeq) // f -> f.getFacSeq() 와 동일
 	            .collect(Collectors.toList());
+	    List<Facility> facility = facilityDao.selectFacilityAll();
 
 	   
 
@@ -231,6 +232,7 @@ public class HostController {
 	        
 	    model.addAttribute("facilityList", facilityList);
 	    model.addAttribute("checkedList", checkedList);
+	    model.addAttribute("facility", facility);
 
 	    
 	    // 5. 객실 타입 목록
