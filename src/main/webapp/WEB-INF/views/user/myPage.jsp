@@ -571,8 +571,7 @@ $(function(){
 					  <div id="wishlistBody">
 					    <c:forEach var="room" items="${wishList}">
 						  <div class="wishlist-item">
-						  	  <a href="/room/roomDetailSh">
-							  <!-- <a href="/room/detail?roomSeq=${room.roomSeq}">  -->
+							   <a href="/room/roomDetail?roomSeq=${room.roomSeq}">  
 							    <img src="/resources/upload/room/main/${room.roomImgName}" 
 								     onerror="this.src='/resources/upload/room/main/default-room.png'" 
 								     alt="${room.roomTitle}" 
@@ -665,7 +664,7 @@ $(function(){
 			          <div class="cart-price">
 			            <fmt:formatNumber value="${cart.cartTotalAmt}" type="number"/>원
 			          </div>
-			          <div class="cancel-rule">(${cart.cancelPolicy})</div>
+			          
 			          <div class="cart-actions">
 			            <a href="javascript:;" class="btn-delete"
 			               onclick="deleteCart(${cart.cartSeq})">&times; 삭제</a>
