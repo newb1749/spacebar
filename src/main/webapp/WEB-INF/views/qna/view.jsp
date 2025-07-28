@@ -165,7 +165,7 @@
          </c:choose>
       </div>
       <div class="view-content">
-         <c:out value="${qna.qnaContent}" />
+         <pre><c:out value="${qna.qnaContent}" /></pre>
       </div>
    </div>
 

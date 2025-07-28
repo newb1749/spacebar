@@ -33,6 +33,8 @@ import com.sist.web.service.RoomImgService;
 import com.sist.web.service.RoomService;
 import com.sist.web.util.HttpUtil;
 import com.sist.web.util.SessionUtil;
+import java.util.StringJoiner;
+
 
 @Controller("reviewController")
 public class ReviewController {
@@ -473,6 +475,27 @@ public class ReviewController {
         
         if (reviewList != null && !reviewList.isEmpty()) {
             for (Review review : reviewList) {
+            	
+            	if (review.getReviewContent() != null && !review.getReviewContent().isEmpty()) {
+            		String originalContent = review.getReviewContent().trim();
+            	    
+            	    // 1. 글을 줄바꿈(\n) 기준으로 나눔
+            	    String[] lines = originalContent.split("\\r?\\n");
+            	    
+            	    // 2. 각 줄의 앞뒤 공백을 제거(trim)하면서 <br/> 태그로 다시 합치기
+            	    StringJoiner joiner = new StringJoiner("<br/>");
+            	    for (String line : lines) {
+            	        String trimmedLine = line.trim();
+            	        if (!trimmedLine.isEmpty()) { // 빈 줄 제외
+            	            joiner.add(trimmedLine);
+            	        }
+            	    }
+            	    
+            	    logger.debug("Original content: [" + originalContent + "]");
+            	    logger.debug("Processed content: [" + joiner.toString() + "]");
+            	    // 3. 완성된 문자열을 reviewContent에 다시 설정
+            	    review.setReviewContent(joiner.toString());
+            	}
                 // 이미지
                 review.setReviewImageList(reviewService.selectReviewImages(review.getReviewSeq()));
                 

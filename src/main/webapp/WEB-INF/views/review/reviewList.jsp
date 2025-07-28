@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+<%@ page trimDirectiveWhitespaces="true" %>
 <!-- 해당 ROOM 상세보기에 속해 있는 리뷰 페이지, 비동기 -->
 
 
@@ -28,13 +29,19 @@
 			</c:choose>
 	        작성자: ${review.userNickname} | 평점: ${review.rating} | 작성일: ${review.regDt}
         </p>
-
+		<%
+		    // controller에서 처리하는 것이 더 좋지만, jsp에서 처리한다면 scriptlet을 사용해 newline 문자를 정의할 수 있습니다.
+		    pageContext.setAttribute("brTag", "<br/>");
+		    pageContext.setAttribute("newLineChar", "\n");
+		%>
         <c:forEach var="img" items="${review.reviewImageList}">
             <img src="/resources/upload/review/${img.reviewImgName}" style="max-width: 300px;">
         </c:forEach>
+        <div class="review-content">
+		    <c:out value="${review.reviewContent}" escapeXml="false"/>
+		</div>
 
-        <div class="review-content"><c:out value="${review.reviewContent}" escapeXml="false" /></div>
-		
+   
 	<div class="comment-section">
 
 	
@@ -271,7 +278,7 @@ document.querySelectorAll('.comment-section').forEach(function (sectionEl) {
     background: #f9f9f9;
     padding: 10px;
     word-break: break-word;
-    white-space: pre-wrap;
+    white-space: normal;
     overflow-wrap: break-word;
     max-width: 100%;
 }

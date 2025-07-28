@@ -101,7 +101,7 @@ function fetchNearbyRooms(lat, lng) {
         data: {
             latitude: lat,
             longitude: lng,
-            limit: 70,
+            limit: 100,
             categorySeq: selectedCategory || null, // 빈 문자열 대신 null
             orderBy: orderBy
         },

@@ -79,9 +79,7 @@
   <div class="container my-4">
     <h2 class="mb-3">자주 묻는 질문 (FAQ)</h2>
     <br>
-    
-  <div class="faq-question">0. 다음 회차 로또당첨 번호가 어떻게 되나요?</div>
-  <div class="faq-answer">8,10,14,20,33,41</div>
+   
 
   <div class="faq-question">1. 예약은 어떻게 하나요?</div>
   <div class="faq-answer">사이트에서 원하는 공간을 선택한 후, 날짜와 인원 수를 입력하고 결제하면 즉시 예약이 완료됩니다.</div>

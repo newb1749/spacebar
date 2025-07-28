@@ -565,7 +565,9 @@
                        class="img-fluid rounded"/>
                 </a>
               </div>
-              <blockquote class="mb-2">&ldquo;${rev.reviewContent}&rdquo;</blockquote>
+              <blockquote class="mb-2">
+			    &ldquo;<c:out value="${rev.reviewContent}" escapeXml="false"/>&rdquo;
+			</blockquote>
               <div class="fw-bold mb-1">${rev.roomTitle} (${rev.roomTypeTitle})</div>
               <div class="text-muted small">${rev.roomAddr}</div>
             </div>

@@ -29,6 +29,7 @@ import com.sist.web.service.FreeBoardService;
 import com.sist.web.service.UserService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
+import java.util.StringJoiner;
 
 @Controller("freeBoardController")
 public class FreeBoardController {
@@ -136,6 +137,24 @@ public class FreeBoardController {
 		if(freeBoardSeq > 0)
 		{
 			freeBoard = freeBoardService.boardView(freeBoardSeq, sessionUserId);
+			
+		    if (freeBoard != null && freeBoard.getFreeBoardContent() != null && !freeBoard.getFreeBoardContent().isEmpty()) {
+		        String content = freeBoard.getFreeBoardContent();
+
+		        // 맨 앞/뒤의 모든 공백과 줄바꿈을 강력하게 제거
+		        content = content.replaceFirst("^[\\s\\r\\n]+", "").replaceAll("[\\s\\r\\n]+$", "");
+
+		        // 각 라인을 분리
+		        String[] lines = content.split("\\r?\\n");
+		        
+		        // 각 라인의 좌우 공백을 제거하며 <br/>로 합치기
+		        StringJoiner joiner = new StringJoiner("<br/>");
+		        for (String line : lines) {
+		            joiner.add(line.trim()); 
+		        }
+		        freeBoard.setFreeBoardContent(joiner.toString());
+		    }
+		    
 			freeBoardComment = freeBoardService.commentList(freeBoardSeq);
 			
 			if(freeBoard != null && StringUtil.equals(freeBoard.getUserId(), sessionUserId))
