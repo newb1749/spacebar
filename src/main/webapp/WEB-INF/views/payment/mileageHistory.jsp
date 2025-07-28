@@ -13,11 +13,11 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <style>
     body {
-      padding-top: 80px;
+      /* padding-top: 80px; */
       background-color: #f8f9fa;
     }
     h2 {
-      margin-top: 120px;
+      /* margin-top: 120px; */
       text-align: left !important;
     }
     .alert strong {
