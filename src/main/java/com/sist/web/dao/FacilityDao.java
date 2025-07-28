@@ -24,5 +24,5 @@ public interface FacilityDao {
     // 이건 UserDao에 있음!!!!!!!!
     public int insertRoomFacility(@Param("roomSeq") int roomSeq, @Param("facSeq") int facSeq);
     
-    
+    public List<Facility> selectFacilityAll();
 }	

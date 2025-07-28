@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 
 <!DOCTYPE html>
@@ -172,62 +173,22 @@
 <!-- 편의 시설 -->
 <div class="card mb-4">
   <div class="facility-grid">
-    <c:forTokens var="fac" items="
-      1|fa-solid fa-wifi|와이파이,
-      2|fa-solid fa-snowflake|냉장고,
-      3|fa-kitchen-set|전자레인지,
-      4|fa-solid fa-faucet|정수기,
-      5|fa-solid fa-temperature-half|에어컨/난방,
-      6|fa-solid fa-wind|드라이기,
-      7|fa-solid fa-shirt|다리미,
-      8|fa-rectangle-vertical|거울,
-      9|fa-solid fa-bed|침구,
-      10|fa-solid fa-soap|욕실용품,
-      11|fa-shirt|옷걸이/행거,
-      12|fa-solid fa-tv|TV (OTT),
-      13|fa-solid fa-jug-detergent|세탁기/건조기,
-      14|fa-solid fa-utensils|취사도구,
-      15|fa-solid fa-fire-burner|바베큐 시설,
-      16|fa-solid fa-person-swimming|수영장,
-      17|fa-solid fa-volume-xmark|방음 시설,
-      18|fa-solid fa-microphone|마이크/오디오,
-      19|fa-solid fa-speaker|앰프/스피커,
-      20|fa-solid fa-lightbulb|조명 장비,
-      21|fa-solid fa-camera|삼각대/촬영 장비,
-      22|fa-brands fa-bluetooth-b|블루투스 스피커,
-      23|fa-solid fa-drum|악기류,
-      24|fa-solid fa-video|빔프로젝터,
-      25|fa-solid fa-display|TV 모니터,
-      26|fa-solid fa-chalkboard|화이트보드,
-      27|fa-solid fa-print|프린터/복합기,
-      28|fa-solid fa-chair|의자/책상,
-      29|fa-solid fa-mug-hot|커피머신,
-      30|fa-solid fa-shower|화장실/샤워실,
-      31|fa-solid fa-sink|취사장/개수대,
-      32|fa-solid fa-plug|전기 공급,
-      33|fa-solid fa-campground|텐트/타프,
-      34|fa-solid fa-fire|캠프파이어,
-      35|fa-solid fa-table-picnic|야외 테이블/의자,
-      36|fa-solid fa-bug-slash|벌레퇴치용품
-    " delims=",">
-      <c:set var="facInfo" value="${fn:split(fac, '|')}" />
-      <c:set var="id" value="${fn:trim(facInfo[0])}" />
-      <c:set var="idInt" value="${id + 0}" />
-      <c:set var="icon" value="${facInfo[1]}" />
-      <c:set var="name" value="${facInfo[2]}" />
-
-<c:set var="isChecked" value="false"/>
-<c:forEach var="check" items="${checkedList}">
-    <c:if test="${check == idInt}">
-        <c:set var="isChecked" value="true"/>
-    </c:if>
-</c:forEach>
-<div class="facility-box ${isChecked ? 'active' : ''}" data-value="${id}">
-    <i class="${icon}"></i>
-    <span>${name}</span>
-    <input type="checkbox" name="facilitySeqs" value="${id}" ${isChecked ? 'checked' : ''} style="display:none;" />
-</div>
-    </c:forTokens>
+    <c:forEach var="fac" items="${facility}">
+      <div class="facility-box" data-value="${fac.facSeq}">
+        <input 
+          type="checkbox" 
+          name="facilitySeqs" 
+          value="${fac.facSeq}"
+          <c:if test="${fn:contains(checkedList, fac.facSeq)}">checked</c:if>
+        >
+        <img 
+          src="${pageContext.request.contextPath}/resources/upload/facility/${fac.facSeq}.png" 
+          alt="${fac.facName}" 
+          style="height:40px; margin-right:8px;"
+        >
+        <span>${fac.facName}</span>
+      </div>
+    </c:forEach>
   </div>
 </div>
 
