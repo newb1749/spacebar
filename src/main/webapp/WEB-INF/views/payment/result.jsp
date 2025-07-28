@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <meta charset="UTF-8" />
   <title>마일리지 결제 결과</title>
   <style>
