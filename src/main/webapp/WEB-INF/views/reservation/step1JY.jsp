@@ -43,18 +43,20 @@
   <script>
     // 로그인 여부 체크
     $(document).ready(function() {
-      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("sessionUserId") : "" %>';
+      var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("SESSION_USER_ID") : "" %>';
       if (!sessionUserId) {
         alert("로그인이 필요합니다.");
         window.location.href = '${pageContext.request.contextPath}/index.jsp';
       }
+      
+      // 디버깅용 로그
+      console.log("checkInTime: ${checkInTime}");
+      console.log("checkOutTime: ${checkOutTime}");
     });
   </script>
 </head>
 <body>
-
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
-
 <section class="bg-light" style="margin-top: 100px; padding-top: 60px; padding-bottom: 60px;">
   <div class="container">
     <div class="card mx-auto reservation-card">
@@ -66,26 +68,48 @@
           <li><strong>체크아웃 날짜:</strong> ${checkOut}</li>
           <li><strong>인원 수:</strong> ${numGuests}명</li>
         </ul>
-
         <!-- 예약 확인 페이지로 POST 전송 -->
         <form action="${pageContext.request.contextPath}/reservation/detailJY" method="post">
           <input type="hidden" name="roomTypeSeq" value="${roomTypeSeq}" />
           <input type="hidden" name="rsvCheckInDt" value="${checkIn}" />
           <input type="hidden" name="rsvCheckOutDt" value="${checkOut}" />
           <input type="hidden" name="numGuests" value="${numGuests}" />
-
+          <!-- 🔥 시간 정보 추가 -->
+          <input type="hidden" name="rsvCheckInTime" value="${checkInTime}" />
+          <input type="hidden" name="rsvCheckOutTime" value="${checkOutTime}" />
+          
           <!-- 체크인 시간 표시 -->
           <div class="mb-3 time-info">
             <label class="form-label">체크인 시간</label>
-            : <span class="time-value">${fn:substring(checkInTime, 0, 2)}:${fn:substring(checkInTime, 2, 4)}</span>
+            : <span class="time-value">
+              <c:choose>
+                <c:when test="${not empty checkInTime and fn:length(checkInTime) eq 4}">
+                  ${fn:substring(checkInTime, 0, 2)}:${fn:substring(checkInTime, 2, 4)}
+                </c:when>
+                <c:when test="${not empty checkInTime}">
+                  ${checkInTime}
+                </c:when>
+                <c:otherwise>15:00</c:otherwise>
+              </c:choose>
+            </span>
           </div>
-
+          
           <!-- 체크아웃 시간 표시 -->
           <div class="mb-3 time-info">
             <label class="form-label">체크아웃 시간</label>
-            : <span class="time-value">${fn:substring(checkOutTime, 0, 2)}:${fn:substring(checkOutTime, 2, 4)}</span>
+            : <span class="time-value">
+              <c:choose>
+                <c:when test="${not empty checkOutTime and fn:length(checkOutTime) eq 4}">
+                  ${fn:substring(checkOutTime, 0, 2)}:${fn:substring(checkOutTime, 2, 4)}
+                </c:when>
+                <c:when test="${not empty checkOutTime}">
+                  ${checkOutTime}
+                </c:when>
+                <c:otherwise>11:00</c:otherwise>
+              </c:choose>
+            </span>
           </div>
-
+          
           <div class="mb-3">
             <label class="form-label">요청사항</label>
             <textarea
@@ -100,7 +124,6 @@
     </div>
   </div>
 </section>
-
 <%@ include file="/WEB-INF/views/include/footer.jsp" %>
 <script src="${pageContext.request.contextPath}/resources/js/bootstrap.bundle.min.js"></script>
 </body>

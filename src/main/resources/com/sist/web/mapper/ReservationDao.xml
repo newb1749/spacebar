@@ -150,7 +150,7 @@
   </update>
 
   <!-- 예약 취소 처리 -->
-  <update id="cancelReservation" parameterType="com.sist.web.model.Reservation">
+  <!-- <update id="cancelReservation" parameterType="com.sist.web.model.Reservation">
     UPDATE RESERVATION
     SET RSV_STAT = '취소',
         RSV_PAYMENT_STAT = '취소',
@@ -159,7 +159,18 @@
         REFUND_AMT = #{refundAmt},
         UPDATE_DT = SYSDATE
     WHERE RSV_SEQ = #{rsvSeq}
-  </update>
+  </update> -->
+
+	<update id="cancelReservation" parameterType="com.sist.web.model.Reservation">
+	    UPDATE RESERVATION 
+	    SET RSV_STAT = '취소', 
+	        RSV_PAYMENT_STAT = '취소', 
+	        CANCEL_DT = SYSDATE, 
+	        CANCEL_REASON = #{cancelReason, jdbcType=VARCHAR}, 
+	        REFUND_AMT = #{refundAmt, jdbcType=NUMERIC}, 
+	        UPDATE_DT = SYSDATE 
+	    WHERE RSV_SEQ = #{rsvSeq, jdbcType=NUMERIC}
+	</update>
 
   <!-- 호스트 ID 조회 -->
   <select id="selectHostIdByRoomSeq" parameterType="int" resultType="String">

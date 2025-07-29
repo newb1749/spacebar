@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
@@ -37,6 +38,21 @@
     }
   </style>
   <script>
+    // 시간 포맷팅 함수 추가
+    function formatTime(timeStr) {
+      if (!timeStr) return "미정";
+      
+      // HHMM 형식을 HH:MM으로 변환
+      if (timeStr.length === 4) {
+        return timeStr.substring(0, 2) + ":" + timeStr.substring(2, 4);
+      }
+      // 이미 HH:MM 형식인 경우
+      if (timeStr.includes(":")) {
+        return timeStr;
+      }
+      return timeStr;
+    }
+    
     // 로그인 여부 체크
     $(document).ready(function() {
       var sessionUserId = '<%= session.getAttribute("SESSION_USER_ID") != null ? session.getAttribute("SESSION_USER_ID") : "" %>';
@@ -45,10 +61,18 @@
         window.location.href = '${pageContext.request.contextPath}/index.jsp';
       }
       
+      // 시간 포맷팅 적용
+      $('.time-format').each(function() {
+        var timeStr = $(this).text().trim();
+        $(this).text(formatTime(timeStr));
+      });
+      
       // 디버깅을 위한 로그
       console.log("Status: ${status}");
       console.log("Error: ${error}");
       console.log("Reservation: ${reservation}");
+      console.log("CheckIn Time: ${reservation.rsvCheckInTime}");
+      console.log("CheckOut Time: ${reservation.rsvCheckOutTime}");
     });
   </script>
 </head>
@@ -64,9 +88,22 @@
         Status: ${status}<br/>
         Error: ${error}<br/>
         Reservation rsvSeq: ${reservation.rsvSeq}<br/>
-        UserId: ${reservation.guestId}
+        UserId: ${reservation.guestId}<br/>
+        CheckIn Time: '${reservation.rsvCheckInTime}' (길이: ${fn:length(reservation.rsvCheckInTime)})<br/>
+        CheckOut Time: '${reservation.rsvCheckOutTime}' (길이: ${fn:length(reservation.rsvCheckOutTime)})
       </div>
     </c:if>
+    
+    <!-- 임시 디버깅 - 실제 시간 값 확인용 (나중에 제거) -->
+  <%--   <div class="alert alert-warning">
+      <strong>시간 데이터 확인:</strong><br/>
+      CheckIn Time 원본: '[${reservation.rsvCheckInTime}]'<br/>
+      CheckOut Time 원본: '[${reservation.rsvCheckOutTime}]'<br/>
+      CheckIn Time empty? ${empty reservation.rsvCheckInTime}<br/>
+      CheckOut Time empty? ${empty reservation.rsvCheckOutTime}<br/>
+      CheckIn Time null? ${reservation.rsvCheckInTime == null}<br/>
+      CheckOut Time null? ${reservation.rsvCheckOutTime == null}
+    </div> --%>
     
     <c:choose>
       <c:when test="${status eq 'SUCCESS'}">
@@ -98,12 +135,66 @@
           <h5>📅 체크인/체크아웃 정보</h5>
           <div class="row">
             <div class="col-sm-6">
-              <p><strong>체크인:</strong> ${reservation.rsvCheckInDt}</p>
-              <p><strong>체크인 시간:</strong> ${reservation.rsvCheckInTime}</p>
+              <p><strong>체크인:</strong> 
+                <c:choose>
+                  <c:when test="${not empty reservation.rsvCheckInDt}">
+                    <c:set var="checkInDate" value="${reservation.rsvCheckInDt}" />
+                    <c:choose>
+                      <c:when test="${fn:length(checkInDate) eq 8}">
+                        ${fn:substring(checkInDate, 0, 4)}.${fn:substring(checkInDate, 4, 6)}.${fn:substring(checkInDate, 6, 8)}
+                      </c:when>
+                      <c:otherwise>
+                        ${checkInDate}
+                      </c:otherwise>
+                    </c:choose>
+                  </c:when>
+                  <c:otherwise>미정</c:otherwise>
+                </c:choose>
+              </p>
+              <p><strong>체크인 시간:</strong> 
+                <c:choose>
+                  <c:when test="${empty reservation.rsvCheckInTime or reservation.rsvCheckInTime == null}">
+                    미정
+                  </c:when>
+                  <c:when test="${fn:length(reservation.rsvCheckInTime) eq 4 and not fn:contains(reservation.rsvCheckInTime, ':')}">
+                    ${fn:substring(reservation.rsvCheckInTime, 0, 2)}:${fn:substring(reservation.rsvCheckInTime, 2, 4)}
+                  </c:when>
+                  <c:otherwise>
+                    ${reservation.rsvCheckInTime}
+                  </c:otherwise>
+                </c:choose>
+              </p>
             </div>
             <div class="col-sm-6">
-              <p><strong>체크아웃:</strong> ${reservation.rsvCheckOutDt}</p>
-              <p><strong>체크아웃 시간:</strong> ${reservation.rsvCheckOutTime}</p>
+              <p><strong>체크아웃:</strong> 
+                <c:choose>
+                  <c:when test="${not empty reservation.rsvCheckOutDt}">
+                    <c:set var="checkOutDate" value="${reservation.rsvCheckOutDt}" />
+                    <c:choose>
+                      <c:when test="${fn:length(checkOutDate) eq 8}">
+                        ${fn:substring(checkOutDate, 0, 4)}.${fn:substring(checkOutDate, 4, 6)}.${fn:substring(checkOutDate, 6, 8)}
+                      </c:when>
+                      <c:otherwise>
+                        ${checkOutDate}
+                      </c:otherwise>
+                    </c:choose>
+                  </c:when>
+                  <c:otherwise>미정</c:otherwise>
+                </c:choose>
+              </p>
+              <p><strong>체크아웃 시간:</strong> 
+                <c:choose>
+                  <c:when test="${empty reservation.rsvCheckOutTime or reservation.rsvCheckOutTime == null}">
+                    미정
+                  </c:when>
+                  <c:when test="${fn:length(reservation.rsvCheckOutTime) eq 4 and not fn:contains(reservation.rsvCheckOutTime, ':')}">
+                    ${fn:substring(reservation.rsvCheckOutTime, 0, 2)}:${fn:substring(reservation.rsvCheckOutTime, 2, 4)}
+                  </c:when>
+                  <c:otherwise>
+                    ${reservation.rsvCheckOutTime}
+                  </c:otherwise>
+                </c:choose>
+              </p>
             </div>
           </div>
         </div>
