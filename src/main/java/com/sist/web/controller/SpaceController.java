@@ -92,9 +92,9 @@ public class SpaceController {
 		}
 		
 		//체크인 시간(대여공간)
-		String startTime = HttpUtil.get(request, "startTime", "");
+		int startTime = HttpUtil.get(request, "startTime", 0);
 		//체크아웃 시간(대여공간)
-		String endTime = HttpUtil.get(request, "endTime", "");
+		int endTime = HttpUtil.get(request, "endTime", 0);
 		
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
@@ -134,9 +134,9 @@ public class SpaceController {
 			search.setStartDate(startDate);
 			search.setEndDate(endDate);
 		}
-		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+		if(startTime != 0 && endTime != 0)
 		{
-			if(!StringUtil.equals(startTime, endTime))
+			if(startTime != endTime )
 			{
 				search.setStartTime(startTime);
 				search.setEndTime(endTime);
@@ -245,9 +245,9 @@ public class SpaceController {
 		}
 		
 		//체크인 시간(대여공간)
-		String startTime = HttpUtil.get(request, "startTime", "");
+		int startTime = HttpUtil.get(request, "startTime", 0);
 		//체크아웃 시간(대여공간)
-		String endTime = HttpUtil.get(request, "endTime","");
+		int endTime = HttpUtil.get(request, "endTime", 0);
 		
 		//카테고리
 		String category = HttpUtil.get(request, "category","");
@@ -289,9 +289,9 @@ public class SpaceController {
 			search.setStartDate(startDate);
 			search.setEndDate(endDate);
 		}
-		if(!StringUtil.isEmpty(startTime) && !StringUtil.isEmpty(endTime))
+		if(startTime != 0 && endTime != 0)
 		{
-			if(!StringUtil.equals(startTime, endTime))
+			if(startTime != endTime )
 			{
 				search.setStartTime(startTime);
 				search.setEndTime(endTime);

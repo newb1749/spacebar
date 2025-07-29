@@ -385,7 +385,7 @@ $(document).ready(function(){
   const et = parseInt(endTime, 10);
   
 
-  if (startDate === endDate && st >= et) {
+/*   if (startDate === endDate && st >= et) {
     alert("올바른 시간대를 입력해주세요.");
     return;
   }
@@ -394,7 +394,7 @@ $(document).ready(function(){
 	  {
 	  	alert("시작과 끝 시간은 같이 입력해주세요.");
 	  	return;
-	  }
+	  } */
   
 });
 	

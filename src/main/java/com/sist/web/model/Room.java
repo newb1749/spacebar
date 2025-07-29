@@ -49,8 +49,8 @@ public class Room implements Serializable{
 	
 	private String startDate;
 	private String endDate;
-	private String startTime;
-	private String endTime;
+	private int startTime;
+	private int endTime;
 	
 	private String category;
 	private int personCount;
@@ -98,8 +98,8 @@ public class Room implements Serializable{
 		
 		startDate = "";
 		endDate = "";
-		startTime = "";
-		endTime = "";
+		startTime = 0;
+		endTime = 0;
 		
 		category = "";
 		personCount = 0;
@@ -314,28 +314,28 @@ public class Room implements Serializable{
 
 
 
-	public String getStartTime() {
+	public int getStartTime() {
 		return startTime;
 	}
 
 
 
 
-	public void setStartTime(String startTime) {
+	public void setStartTime(int startTime) {
 		this.startTime = startTime;
 	}
 
 
 
 
-	public String getEndTime() {
+	public int getEndTime() {
 		return endTime;
 	}
 
 
 
 
-	public void setEndTime(String endTime) {
+	public void setEndTime(int endTime) {
 		this.endTime = endTime;
 	}
 
