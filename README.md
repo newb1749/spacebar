@@ -1,9 +1,9 @@
 # spacebar
 ## Spring MVC 기반 공간 렌탈, 예약 플랫폼
 > ppt:
-> https://drive.google.com/file/d/1t6AHIRF21UiMPsJeyUO_Fam_4Q-dvu_r/view?usp=drive_link
+> https://drive.google.com/file/d/1t6AHIRF21UiMPsJeyUO_Fam_4Q-dvu_r/view?usp=drive_link <br />
 > 관리자 깃허브 주소
-> https://github.com/JKH9797/spacebarManager
+> https://github.com/JKH9797/spacebarManager <br />
 
 ## 🚨 브랜치 전략
 
