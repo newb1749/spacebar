@@ -362,7 +362,7 @@
   <div class="container">
     <div class="row mb-5 align-items-center">
       <div class="col-lg-6">
-        <h2 class="font-weight-bold text-primary heading">신규등록공간</h2>
+        <h2 class="font-weight-bold text-primary heading">신규 공간</h2>
       </div>
       <div class="col-lg-6 text-lg-end">
         <a href="${pageContext.request.contextPath}/room/spaceList" class="link-seeall">모든공간보기</a>
@@ -440,7 +440,7 @@
   <div class="container">
     <div class="row mb-5 align-items-center">
       <div class="col-lg-6">
-        <h2 class="font-weight-bold text-primary heading">신규등록숙소</h2>
+        <h2 class="font-weight-bold text-primary heading">신규 숙소</h2>
       </div>
       <div class="col-lg-6 text-lg-end">
         <a href="${pageContext.request.contextPath}/room/roomList" class="link-seeall">모든숙소보기</a>

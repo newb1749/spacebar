@@ -401,21 +401,23 @@ $(function(){
                            </td>
                            <td>
                              <c:choose>
-                               <c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
-                                  <c:choose>
-                                     <c:when test="${r.reviewYn eq 'N'}">
-                                 <form action="${pageContext.request.contextPath}/review/writeForm" method="get" target="_blank">
-                                   <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
-                                   <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
-                                   <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
-                                 </form>
-
-                                     </c:when>
-                                     <c:otherwise>
-                                        <br>리뷰작성완료
-                                     </c:otherwise>
-                                    </c:choose>
-                               </c:when>
+								<c:when test="${r.rsvPaymentStat eq 'PAID'}">결제완료
+								  <c:choose>
+								    <c:when test="${r.reviewYn eq 'N' and r.rsvCheckOutDateObj lt now}">
+								      <form action="${pageContext.request.contextPath}/review/writeForm" method="get" target="_blank">
+								        <input type="hidden" name="rsvSeq" value="${r.rsvSeq}" />
+								        <input type="hidden" name="roomTypeSeq" value="${r.roomTypeSeq}" />
+								        <button type="submit" class="btn btn-sm btn-success">리뷰작성</button>
+								      </form>
+								    </c:when>
+								    <c:when test="${r.reviewYn eq 'N' and r.rsvCheckOutDateObj ge now}">
+								      <br><span class="text-muted">체크아웃 후 작성 가능</span>
+								    </c:when>
+								    <c:otherwise>
+								      <br>리뷰작성완료
+								    </c:otherwise>
+								  </c:choose>
+								</c:when>
                                <c:when test="${r.rsvPaymentStat eq 'UNPAID'}">미결제</c:when>
                                <c:when test="${r.rsvPaymentStat eq '취소'}">예약취소</c:when>
                                <c:otherwise>-</c:otherwise>
