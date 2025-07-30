@@ -52,7 +52,7 @@
       NVL(DISCOUNT_AMT, 0) DISCOUNT_AMT,
       NVL(MIN_ORDER_AMT, 0) MIN_ORDER_AMT,
       ISSUE_START_DT,
-      ISSUE_END_DT,
+      to_char(ISSUE_END_DT, 'yyyy-mm-dd') || ' 23:59:59' ISSUE_END_DT,
       NVL(CPN_TYPE, '') CPN_TYPE,
       NVL(CPN_STAT, '') CPN_STAT,
       NVL(TOTAL_CPN_CNT, 0) TOTAL_CPN_CNT,
