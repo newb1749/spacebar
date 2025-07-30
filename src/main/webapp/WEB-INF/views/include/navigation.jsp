@@ -138,6 +138,7 @@ nav.site-nav .nav-cart  i { color:#4aa3ff !important; }
 
         <!-- 메뉴: 오른쪽 -->
         <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu">
+          <li><a href="${pageContext.request.contextPath}/location/nearbyMap">위치검색</a></li>
           <li><a href="${pageContext.request.contextPath}/room/roomList">숙소목록</a></li>
           <li><a href="${pageContext.request.contextPath}/room/spaceList">공간대여목록</a></li>
 

@@ -35,11 +35,8 @@ public class Reservation implements Serializable{
 	    private String roomTypeTitle;
 	    private Integer couponSeq; // 쿠폰 ID 저장용 필드
 	    private Coupon coupon;
-
 	    private String roomTypeImgName;
-	    
 	    private String reviewYn;
-
 		private long startRow;
 		private long endRow;
 		private int roomSeq;

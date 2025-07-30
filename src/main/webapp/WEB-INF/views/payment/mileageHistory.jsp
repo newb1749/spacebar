@@ -5,18 +5,20 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <meta charset="UTF-8" />
   <title>마일리지 거래 내역</title>
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>
   <link href="${pageContext.request.contextPath}/resources/css/bootstrap.min.css" rel="stylesheet" />
   <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <style>
     body {
-      padding-top: 80px;
+      /* padding-top: 80px; */
       background-color: #f8f9fa;
     }
     h2 {
-      margin-top: 120px;
+      /* margin-top: 120px; */
       text-align: left !important;
     }
     .alert strong {

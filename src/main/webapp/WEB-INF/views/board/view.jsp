@@ -156,9 +156,9 @@
          등록일: <c:out value="${freeBoard.regDt}" /> |
          조회수: <fmt:formatNumber value="${freeBoard.freeBoardViews}" type="number" groupingUsed="true" />
       </div>
-      <div class="view-content">
-         <c:out value="${freeBoard.freeBoardContent}" />
-      </div>
+<div class="view-content">
+    <c:out value="${freeBoard.freeBoardContent}" escapeXml="false"/>
+</div>
    </div>
 
 	<%-- 게시물 하단 액션 버튼 그룹 --%>

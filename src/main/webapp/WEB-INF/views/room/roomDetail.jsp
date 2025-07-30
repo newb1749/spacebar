@@ -571,7 +571,15 @@ function fn_review_list(page) {
 			      ${room.roomAddr} (${room.region})
 			    </p>
 			    <!-- 상세 설명 -->
-			    <p class="text-black-50">${room.roomDesc}</p>
+				<%
+				    // controller에서 처리하는 것이 더 좋지만, jsp에서 처리한다면 scriptlet을 사용해 newline 문자를 정의할 수 있습니다.
+				    pageContext.setAttribute("brTag", "<br/>");
+				    pageContext.setAttribute("newLineChar", "\n");
+				%>
+				<p class="text-black-50">
+				    <c:out value="${fn:replace(room.roomDesc, newLineChar, brTag)}" escapeXml="false"/>
+				</p>
+
 			  </div>
 			</section>
 			
@@ -628,7 +636,9 @@ function fn_review_list(page) {
                 ${rt.roomTypeTitle}
               </h5>
               <c:if test="${not empty rt.roomTypeDesc}">
-                <p class="text-muted mb-0">${rt.roomTypeDesc}</p>
+			      <p class="text-muted mb-0">
+			          <c:out value="${fn:replace(rt.roomTypeDesc, newLineChar, brTag)}" escapeXml="false"/>
+			      </p>
               </c:if>
               <div style="border-bottom:1px solid #eee; margin: 16px 0;"></div>
               <p class="mb-3 price-line">
@@ -767,13 +777,21 @@ function fn_review_list(page) {
     <div class="card-body text-center">
     
      <p class="text-secondary mb-2">이 방의 호스트</p>
-      <!-- 1) 프로필 이미지 -->
+	<!-- 1) 프로필 이미지 -->
+      <c:choose>
+	      <c:when test="${!empty host.profImgExt}">
 		      <img
 		        src="${pageContext.request.contextPath}/resources/upload/userprofile/${host.userId}.${host.profImgExt}"
 		        alt="호스트 프로필"
 		        class="rounded-circle mb-3"
 		        style="width: 80px; height: 80px; object-fit: cover;"
 		      />
+	      </c:when>
+	      <c:otherwise>
+	      	 <img src="/resources/upload/userprofile/default_profile.png" alt="profile" width="40" height="40" style="border-radius: 50%;" />
+	      </c:otherwise>
+	  </c:choose>
+
       <!-- 2) 호스트 이름 -->
       <h5 class="card-title mb-1">${host.nickName}</h5>
 

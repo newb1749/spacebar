@@ -37,6 +37,8 @@ import com.sist.web.service.RoomCategoryService;
 import com.sist.web.service.RoomService;
 import com.sist.web.service.WishlistService;
 import com.sist.web.util.CookieUtil;
+import java.util.Collections; 
+import java.util.StringJoiner;
 
 /**
  * <pre>
@@ -92,6 +94,25 @@ public class IndexController
         List<RoomCategory> cats2 = roomategoryService.spaceCategoryList();
         
         List<Review> reviews = reviewService.allReviewList();
+        
+        for (Review rev : reviews) {
+            if (rev.getReviewContent() != null && !rev.getReviewContent().isEmpty()) {
+                String content = rev.getReviewContent();
+
+                // 맨 앞/뒤의 모든 공백과 줄바꿈을 강력하게 제거
+                content = content.replaceFirst("^[\\s\\r\\n]+", "").replaceAll("[\\s\\r\\n]+$", "");
+
+                // 각 라인을 분리
+                String[] lines = content.split("\\r?\\n");
+                
+                // 각 라인의 좌우 공백을 제거하며 <br/>로 합치기
+                StringJoiner joiner = new StringJoiner("<br/>");
+                for (String line : lines) {
+                    joiner.add(line.trim()); 
+                }
+                rev.setReviewContent(joiner.toString());
+            }
+        }
         
         String sessionUserId = (String)request.getSession().getAttribute(AUTH_SESSION_NAME);
 	    if (sessionUserId != null && !sessionUserId.isEmpty()) {

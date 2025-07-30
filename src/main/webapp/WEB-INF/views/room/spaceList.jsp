@@ -688,7 +688,7 @@ function fn_roomDetail(roomSeq)
     <div class="room-list-item">
       <img src="/resources/upload/room/main/${room.roomImageName}" alt="${room.roomTitle}" class="room-thumbnail" onclick="fn_roomDetail(${room.roomSeq});">
       <div class="room-details">
-        <div class="room-title" style="cursor: pointer;" onclick="fn_roomDetail(${room.roomSeq});">${room.roomTitle}  ${room.roomSeq}</div>
+        <div class="room-title" style="cursor: pointer;" onclick="fn_roomDetail(${room.roomSeq});">${room.roomTitle}</div>
         <div class="room-location">${room.roomAddr}</div>
         <div class="room-rating">⭐ ${room.averageRating} (${room.reviewCount}명)</div>
         <div class="room-price">

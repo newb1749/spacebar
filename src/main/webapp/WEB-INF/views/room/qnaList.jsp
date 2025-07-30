@@ -168,7 +168,7 @@ function fn_list(curPage) {
              </div>
              <div class="qna-content w-100">
                <p class="fw-bold mb-1">${qna.nickName}</p>
-               <p class="mb-1">${qna.roomQnaContent}</p>
+               <pre class="mb-1">${qna.roomQnaContent}</pre>
 			<p class="text-muted mb-2" style="font-size: 0.9em;">
 			    <c:choose>
 			    	<%-- 수정일자가 있을 경우 --%>

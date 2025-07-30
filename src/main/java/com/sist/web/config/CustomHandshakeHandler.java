@@ -19,7 +19,7 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
             HttpSession session = servletRequest.getServletRequest().getSession(false);
             if (session != null) {
-                final String userId = (String) session.getAttribute("SESSION_USER_ID");
+                final String userId = (String) session.getAttribute("sessionUserId");
                 if (userId != null) {
                     return new Principal() {
                         @Override

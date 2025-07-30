@@ -248,7 +248,7 @@
 				                <option value="충북" <c:if test="${room.region eq '충북'}">selected</c:if>>충북</option>
 				            </select>
 				        </div>
-				        <div class="form-check mb-3">
+				        <!--<div class="form-check mb-3">
 				            <c:choose>
 				                <c:when test="${room.autoConfirmYn eq 'Y'}">
 				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y" checked>
@@ -257,10 +257,10 @@
 				                    <input class="form-check-input" type="checkbox" id="autoConfirmYn" name="autoConfirmYn" value="Y">
 				                </c:otherwise>
 				            </c:choose>
-				            <label class="form-check-label" for="autoConfirmYn">
+				              <label class="form-check-label" for="autoConfirmYn">
 				                예약 자동 승인 사용
 				            </label>
-				        </div>
+				        </div>-->
 				    </div>
 				</div>
 
